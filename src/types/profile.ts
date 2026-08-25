@@ -1,0 +1,205 @@
+export type ProfileType = 'individual' | 'team-member' | 'company';
+
+export type UserRole = 'owner' | 'team_member' | 'company_admin' | 'visitor';
+
+export type NavigationOrigin = 'company' | 'my_card' | 'direct' | 'team';
+
+export interface SocialLink {
+  platform: 'linkedin' | 'instagram' | 'twitter' | 'github' | 'website' | 'email' | 'facebook' | 'dribbble' | 'behance' | 'youtube';
+  url: string;
+  label?: string;
+  handle?: string;
+}
+
+export interface MetricHighlight {
+  label: string;
+  value: string;
+  description?: string;
+}
+
+export interface SkillItem {
+  name: string;
+  category?: string;
+  level?: string;
+}
+
+export interface ServiceItem {
+  id: string;
+  title: string;
+  description?: string;
+  badge?: string;
+}
+
+export interface ProjectItem {
+  id: string;
+  title: string;
+  tagline?: string;
+  description: string;
+  coverImage?: string;
+  category: string;
+  technology?: string;
+  tags?: string[];
+  liveUrl?: string;
+  client?: string;
+  year?: string;
+}
+
+export interface ExperienceItem {
+  id: string;
+  role?: string;
+  company: string;
+  period?: string;
+  location?: string;
+  description?: string;
+}
+
+export interface CertificationItem {
+  id: string;
+  name: string;
+  issuer: string;
+  issued: string;
+  expires?: string;
+  credentialId?: string;
+  url?: string;
+}
+
+export interface VolunteerItem {
+  id: string;
+  role: string;
+  organization: string;
+  period: string;
+  category?: string;
+}
+
+export interface LanguageItem {
+  language: string;
+  proficiency: string;
+}
+
+export interface RecommendationItem {
+  id: string;
+  author: string;
+  designation?: string;
+  company?: string;
+  summary: string;
+  fullText?: string;
+  avatar?: string;
+}
+
+export interface TestimonialItem {
+  id: string;
+  quote: string;
+  author: string;
+  designation: string;
+  company: string;
+  avatar: string;
+  rating?: number;
+  date?: string;
+}
+
+export interface TeamMemberItem {
+  id: string;
+  name: string;
+  role: string;
+  department: string;
+  avatar: string;
+  bio: string;
+  email?: string;
+  phone?: string;
+  profileId?: string;
+  socials?: SocialLink[];
+}
+
+export interface CompanyInfo {
+  id: string;
+  name: string;
+  tagline: string;
+  logo: string;
+  industry: string;
+  location: string;
+  website: string;
+  employeeCount?: string;
+  profileId: string;
+}
+
+export interface CustomCta {
+  label: string;
+  url: string;
+  active: boolean;
+}
+
+export interface DirectContactItem {
+  id: string;
+  type: 'whatsapp' | 'phone' | 'email' | 'website' | 'location' | 'telegram' | 'booking' | 'custom';
+  label: string;
+  value: string;
+  url?: string;
+  active?: boolean;
+}
+
+export interface ProfileData {
+  id: string;
+  type: ProfileType;
+  slug: string;
+  companyId?: string;
+  companyName?: string;
+  
+  // Identity
+  name: string;
+  designation?: string;
+  department?: string;
+  company?: string;
+  companyLogo?: string;
+  companyInfo?: CompanyInfo;
+  tagline?: string;
+  coverSlogan?: string;
+  avatar: string;
+  coverImage?: string;
+  verified?: boolean;
+  pronouns?: string;
+  location: string;
+  shortBio?: string;
+  fullBio?: string;
+  statusBadge?: string;
+  customCta?: CustomCta;
+  followersCount?: string;
+  connectionsCount?: string;
+
+  // Contact Channels
+  phone?: string;
+  whatsapp?: string;
+  email?: string;
+  website?: string;
+  bookingUrl?: string;
+  officeAddress?: string;
+  googleMapsUrl?: string;
+  contactOrder?: string[];
+  customContacts?: DirectContactItem[];
+
+  // NFC Pass
+  nfcCard?: {
+    cardNumber: string;
+    chipId: string;
+    finish?: 'obsidian' | 'white' | 'emerald' | 'gold';
+  };
+
+  // Highlights & Sections
+  highlights?: MetricHighlight[];
+  skills?: SkillItem[];
+  services?: ServiceItem[];
+  experiences?: ExperienceItem[];
+  projects?: ProjectItem[];
+  certifications?: CertificationItem[];
+  volunteerExperiences?: VolunteerItem[];
+  languages?: LanguageItem[];
+  recommendations?: RecommendationItem[];
+  testimonials?: TestimonialItem[];
+  resumeUrl?: string;
+  resumeFileName?: string;
+  
+  // For Company Profiles
+  teamMembers?: TeamMemberItem[];
+
+  // Socials
+  socials: SocialLink[];
+}
