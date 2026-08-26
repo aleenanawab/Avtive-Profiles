@@ -15,6 +15,7 @@ import { RecommendationsSection } from './RecommendationsSection';
 import { ContactSection } from './ContactSection';
 import { CompanyCard } from './CompanyCard';
 import { TeamSection } from './TeamSection';
+import { NFCCardPreview } from './NFCCardPreview';
 
 interface AvtiveDigitalCardProps {
   profile: ProfileData;
@@ -74,6 +75,12 @@ export function AvtiveDigitalCard({
           onOpenEdit={onOpenEdit}
           onOpenShare={onOpenShare}
           onOpenConnect={onOpenConnect}
+          onOpenVirtualCard={() => {
+            const el = document.getElementById('virtual-card-section');
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
           onNavigateToCompany={onViewCompany}
           onNavigateBack={onNavigateBack}
         />
@@ -145,14 +152,25 @@ export function AvtiveDigitalCard({
         )}
 
         {/* ========================================================================= */}
-        {/* 12. SEND MESSAGE ON WHATSAPP                                              */}
+        {/* 12. VIRTUAL CARD (Requirement #16 & #24)                                  */}
         {/* ========================================================================= */}
-        {profile.whatsapp && (
-          <ContactSection
+        <div id="virtual-card-section" className="px-6 sm:px-8 py-6 bg-[#F8FAFC] dark:bg-[#060B1E] border-t border-[#E2E8F0] dark:border-white/10 transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#0A1128] dark:text-white/80 font-mono">
+              VIRTUAL CARD
+            </h2>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#1E3A8A]/10 dark:bg-white/10 text-[#1E3A8A] dark:text-[#60A5FA] font-bold font-mono">
+              Digital Identity
+            </span>
+          </div>
+
+          <NFCCardPreview
             profile={profile}
-            onSendMessage={onSendMessage}
+            onViewCompany={onViewCompany}
+            onDownloadCard={onSaveContact}
+            isDark={isDark}
           />
-        )}
+        </div>
 
         {/* ========================================================================= */}
         {/* 13. FOOTER: ONLY "Powered by Avtive"                                     */}
@@ -164,7 +182,7 @@ export function AvtiveDigitalCard({
               href="https://www.avtive.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold text-[#0A1128] dark:text-white hover:text-[#1E3A8A] transition-colors"
+              className="font-bold text-[#1E3A8A] dark:text-[#60A5FA] hover:underline transition-colors"
             >
               Avtive
             </a>

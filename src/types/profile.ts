@@ -40,6 +40,8 @@ export interface ProjectItem {
   technology?: string;
   tags?: string[];
   liveUrl?: string;
+  imagePosition?: string;
+  imageFit?: 'cover' | 'contain';
   client?: string;
   year?: string;
 }

@@ -18,32 +18,28 @@ export const founderProfile: ProfileData = {
   company: 'Avtive',
   location: 'Islamabad, Pakistan',
   officeAddress: 'NSTP, Islamabad, Pakistan',
-  avatar: '/images/syed-mesum-raza.png',
-  coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop',
-  coverSlogan: 'STRATEGY • DESIGN • DIRECTION',
-  verified: false,
-  followersCount: '2K+',
-  connectionsCount: '500+',
+  avatar: '/images/founder-pfp.jpg',
+  coverImage: '/images/founder-cover.jpg',
   
   // Real LinkedIn positioning
   shortBio: 'Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.',
   fullBio: 'Strategy-based artist with over 10 years of experience focusing on creating compelling design solutions that help brands stand out. Specialized in brand identity, visual communication design, animation, photography, video production, and design strategy.',
 
   // Direct Contact items
-  whatsapp: '+92 300 1234567',
-  phone: '+92 300 1234567',
+  whatsapp: '+92 312 5175041',
+  phone: '+92 312 5175041',
   email: 'mesum@avtive.app',
   website: 'https://www.avtive.app',
   googleMapsUrl: 'https://maps.google.com/?q=NSTP+Islamabad+Pakistan',
-  contactOrder: ['whatsapp', 'phone', 'email', 'website', 'location'],
+  contactOrder: ['phone', 'whatsapp', 'email', 'website', 'location'],
   customContacts: [],
 
   companyInfo: {
     id: 'avtive-company',
     name: 'Avtive',
-    tagline: 'Smart Contactless NFC & Cloud Identity Solutions',
-    logo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=300&auto=format&fit=crop',
-    industry: 'SaaS • NFC Hardware • Digital Identity',
+    tagline: 'SaaS Platform for Digital Profiles & Cloud Identity',
+    logo: '/images/avtive-symbol.png',
+    industry: 'B2B SaaS • Digital Profile Platform • Cloud Identity',
     location: 'NSTP, Islamabad, Pakistan',
     website: 'https://www.avtive.app',
     employeeCount: '11-50',
@@ -57,17 +53,17 @@ export const founderProfile: ProfileData = {
     finish: 'obsidian'
   },
 
-  // Publicly Listed Services / Expertise on LinkedIn
+  // 10 Actual Founder Services
   services: [
-    { id: 'srv-1', title: 'Ad Design' },
-    { id: 'srv-2', title: '3D Design' },
-    { id: 'srv-3', title: 'Animation' },
-    { id: 'srv-4', title: 'Brand Design' },
-    { id: 'srv-5', title: 'Print Design' },
-    { id: 'srv-6', title: 'Visual Design' },
-    { id: 'srv-7', title: 'Video Editing' },
-    { id: 'srv-8', title: 'Graphic Design' },
-    { id: 'srv-9', title: 'Brand Marketing' },
+    { id: 'srv-1', title: 'Brand Design' },
+    { id: 'srv-2', title: 'Graphic Design' },
+    { id: 'srv-3', title: 'Ad Design' },
+    { id: 'srv-4', title: 'Visual Design' },
+    { id: 'srv-5', title: 'Video Editing' },
+    { id: 'srv-6', title: 'Print Design' },
+    { id: 'srv-7', title: 'Brand Marketing' },
+    { id: 'srv-8', title: '3D Design' },
+    { id: 'srv-9', title: 'Animation' },
     { id: 'srv-10', title: 'Presentation Design' }
   ],
 
@@ -93,7 +89,7 @@ export const founderProfile: ProfileData = {
     }
   ],
 
-  // Real Public Selected Projects
+  // Real Public Selected Projects with Actual Assets
   projects: [
     {
       id: 'proj-1',
@@ -101,18 +97,20 @@ export const founderProfile: ProfileData = {
       category: 'Campaign & Advertising Design',
       client: 'DIFC Gate Avenue',
       description: 'Offline marketing and advertising campaign design for the Dubai double big bus tours campaign for the client, DIFC Gate Avenue.',
-      coverImage: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=800&auto=format&fit=crop',
+      coverImage: '/images/project-difc-bus.jpg',
       technology: 'Offline Marketing • Out-of-Home (OOH) Advertising',
       tags: ['Offline Marketing', 'Advertising', 'Campaign Design', 'DIFC Gate Avenue']
     },
     {
       id: 'proj-2',
-      title: 'Then Apprentice – Donut Trump Story',
-      category: 'Creative Design & Video Production',
-      description: 'Creative design and video production services supporting the film’s marketing and advertising.',
-      coverImage: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800&auto=format&fit=crop',
-      technology: 'Creative Design • Video Production • Film Marketing',
-      tags: ['Creative Design', 'Video Production', 'Film Marketing', 'Advertising']
+      title: 'The Apprentice – The Trump Story',
+      category: 'Creative Design & Key Art',
+      client: 'Film Marketing & Advertising',
+      description: 'Official Middle East theatrical marketing, poster localization, and creative advertising design supporting the release.',
+      coverImage: '/images/project-the-apprentice.jpg',
+      imagePosition: 'object-[center_30%]',
+      technology: 'Creative Design • Key Art • Film Marketing',
+      tags: ['Creative Design', 'Key Art', 'Film Marketing', 'Advertising']
     }
   ],
 
@@ -168,6 +166,12 @@ export const founderProfile: ProfileData = {
       url: 'https://www.linkedin.com/in/syedmesumraza/',
       label: 'LinkedIn',
       handle: 'in/syedmesumraza'
+    },
+    {
+      platform: 'behance',
+      url: 'https://www.behance.net/thisissyedbadshah',
+      label: 'Behance',
+      handle: 'thisissyedbadshah'
     },
     {
       platform: 'website',
@@ -264,26 +268,26 @@ export const companyProfile: ProfileData = {
   type: 'company',
   
   name: 'Avtive',
-  designation: 'Smart Contactless NFC & Corporate Identity Platform',
-  company: 'Avtive SaaS & Hardware Systems',
+  designation: 'B2B SaaS Digital Profile & Cloud Identity Platform',
+  company: 'Avtive SaaS Platform',
   location: 'NSTP, Islamabad, Pakistan',
   officeAddress: 'National Science & Technology Park (NSTP), Islamabad, Pakistan',
-  avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+  avatar: '/images/avtive-symbol.png',
   coverImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop',
   coverSlogan: 'THE DIGITAL IDENTITY STANDARD',
   verified: false,
   
-  shortBio: 'Building next-generation smart NFC business cards, enterprise employee directories, and seamless digital identity platforms for forward-thinking organizations.',
-  fullBio: 'Avtive is a technology company based at NSTP, Islamabad, specializing in contactless NFC hardware, digital business cards, and scalable organization identity infrastructure.',
+  shortBio: 'B2B SaaS platform for intelligent digital profiles, enterprise team directories, and cloud-managed contactless identity solutions.',
+  fullBio: 'Avtive is a software-as-a-service (SaaS) platform based at NSTP, Islamabad, enabling forward-thinking organizations to deploy and manage digital business profiles and enterprise identity seamlessly.',
 
-  whatsapp: '+92 300 1234567',
-  phone: '+92 300 1234567',
+  whatsapp: '+92 312 5175041',
+  phone: '+92 312 5175041',
   email: 'contact@avtive.app',
   website: 'https://www.avtive.app',
   contactOrder: ['whatsapp', 'phone', 'email', 'website', 'location'],
 
   services: [
-    { id: 'srv-c1', title: 'Smart NFC Digital Cards' },
+    { id: 'srv-c1', title: 'Enterprise SaaS Digital Profiles', badge: 'SaaS' },
     { id: 'srv-c2', title: 'Corporate Identity Infrastructure' },
     { id: 'srv-c3', title: 'Team Directory Management' }
   ],
@@ -294,7 +298,7 @@ export const companyProfile: ProfileData = {
       name: 'Syed Mesum Raza Shah',
       role: 'Founder & Creative Director',
       department: 'Executive Strategy & Design',
-      avatar: '/images/syed-mesum-raza.png',
+      avatar: '/images/founder-pfp.jpg',
       bio: 'Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.',
       profileId: 'individual'
     },

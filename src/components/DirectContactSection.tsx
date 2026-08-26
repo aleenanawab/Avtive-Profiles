@@ -13,7 +13,7 @@ import {
   Link as LinkIcon
 } from 'lucide-react';
 import { ProfileData } from '../types/profile';
-import { LinkedInIcon, TwitterXIcon, GithubIcon, InstagramIcon, FacebookIcon } from './BrandIcons';
+import { LinkedInIcon, TwitterXIcon, GithubIcon, InstagramIcon, FacebookIcon, BehanceIcon } from './BrandIcons';
 
 interface DirectContactSectionProps {
   profile: ProfileData;
@@ -110,6 +110,11 @@ export function DirectContactSection({ profile }: DirectContactSectionProps) {
           iconColor = 'text-[#1877F2]';
           icon = <FacebookIcon className="w-4 h-4 text-[#1877F2]" />;
           label = soc.label || 'Facebook';
+        } else if (soc.platform === 'behance') {
+          iconBg = 'bg-[#0057FF]/10 dark:bg-[#0057FF]/20';
+          iconColor = 'text-[#0057FF]';
+          icon = <BehanceIcon className="w-4 h-4 text-[#0057FF]" />;
+          label = soc.label || 'Behance';
         }
 
         const socialKey = soc.platform;
@@ -179,7 +184,7 @@ export function DirectContactSection({ profile }: DirectContactSectionProps) {
             href={item.href}
             target={item.target}
             rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
-            className="flex items-center justify-between p-3 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] dark:bg-[#0F172A] dark:hover:bg-[#152238] border border-[#E2E8F0] dark:border-white/10 transition-all group shadow-2xs hover:shadow-xs active:scale-[0.99]"
+            className="flex items-center justify-between p-3 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] dark:bg-[#0E1A38] dark:hover:bg-[#152445] border border-[#E2E8F0] dark:border-white/10 transition-all group shadow-2xs hover:shadow-xs active:scale-[0.99]"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className={`w-8 h-8 rounded-xl ${item.iconBg} flex items-center justify-center shrink-0 border border-[#E2E8F0] dark:border-white/10 shadow-2xs`}>

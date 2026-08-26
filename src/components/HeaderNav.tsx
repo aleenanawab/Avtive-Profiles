@@ -68,18 +68,22 @@ export function HeaderNav({
         <div 
           onClick={() => onSelectProfileType('company', 'direct')}
           className="flex items-center gap-2 cursor-pointer group"
-          title="Go to Avtive.app Company Home"
+          title="Go to Avtive Company Profile"
         >
-          <div className="w-8 h-8 rounded-xl bg-[#0A1128] dark:bg-white text-white dark:text-[#0A1128] font-black flex items-center justify-center text-sm shadow-xs font-mono group-hover:scale-105 transition-transform">
-            A
+          <div className="h-8 flex items-center">
+            <img 
+              src="/images/avtive-symbol.png" 
+              alt="Avtive Logo" 
+              className="h-7 w-auto object-contain"
+            />
           </div>
           <div className="text-left hidden sm:block">
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm text-[#0A1128] dark:text-white tracking-tight">
-                Avtive<span className="text-[#1E3A8A] dark:text-[#7EC384]">.app</span>
+              <span className="font-bold text-sm text-[#1E3A8A] dark:text-[#60A5FA] tracking-tight">
+                Avtive
               </span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#0A1128]/10 dark:bg-white/10 text-[#0A1128] dark:text-white font-bold font-mono">
-                SaaS
+              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#1E3A8A]/10 text-[#1E3A8A] dark:text-[#60A5FA] font-bold font-mono">
+                Official
               </span>
             </div>
             <p className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-medium">

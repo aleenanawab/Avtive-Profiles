@@ -87,7 +87,7 @@ export default function Home() {
       }
 
       // Check saved custom profiles if version matches
-      const savedProfiles = localStorage.getItem('avtive_custom_profiles_v3');
+      const savedProfiles = localStorage.getItem('avtive_custom_profiles_v6');
       if (savedProfiles) {
         setProfiles(JSON.parse(savedProfiles));
       } else {
@@ -176,7 +176,7 @@ export default function Home() {
     };
     setProfiles(updatedProfiles);
     try {
-      localStorage.setItem('avtive_custom_profiles_v3', JSON.stringify(updatedProfiles));
+      localStorage.setItem('avtive_custom_profiles_v6', JSON.stringify(updatedProfiles));
     } catch (e) {}
     showToast(`✓ Profile updated successfully!`);
   };

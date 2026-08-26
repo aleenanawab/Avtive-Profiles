@@ -1,16 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -20,9 +9,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Digital Profile System | Avtive.app",
-  description: "Avtive Luxury Digital Business Card & Contactless Smart NFC Identity System.",
-  keywords: ["Avtive", "Digital Business Card", "NFC Card", "Islamabad", "vCard"],
+  title: "Syed Mesum Raza Shah | Avtive Founder Profile",
+  description: "Founder & Creative Director at Avtive. Strategy-driven designer with 700+ projects.",
+  keywords: ["Syed Mesum Raza Shah", "Avtive", "Digital Profile", "Founder", "Creative Director", "Islamabad"],
 };
 
 export default function RootLayout({
@@ -34,9 +23,15 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className="h-full antialiased font-sans"
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
