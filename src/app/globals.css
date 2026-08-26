@@ -4,12 +4,13 @@
 
 @layer base {
   :root {
-    /* BRAND THEME: Deep Blue + White with subtle #7EC384 green accent */
-    --brand-blue: #0A1128;
-    --brand-blue-deep: #060B1E;
-    --brand-blue-accent: #1E3A8A;
-    --brand-blue-light: #2563EB;
-    --brand-green: #7EC384;
+    /* BRAND PALETTE: Deep Navy Blue + Pure White + Soft Earth Tone Accents */
+    --brand-navy: #0A1128;
+    --brand-navy-deep: #060B1E;
+    --brand-navy-card: #FFFFFF;
+    --brand-earth-clay: #C49A6C;
+    --brand-earth-beige: #F5EBE1;
+    --brand-avtive: #1E3A8A;
 
     /* LIGHT THEME TOKENS */
     --bg-main: #F8FAFC;
@@ -25,24 +26,26 @@
   }
 
   .dark {
-    /* DARK THEME TOKENS: Extra-Deep Blue Night */
-    --bg-main: #060B1E;
+    /* DARK THEME TOKENS: Extra-Deep Corporate Navy */
+    --bg-main: #040814;
     --bg-surface: #0A1128;
-    --bg-card: #0F172A;
+    --bg-card: #0E1A38;
     --bg-card-elevated: #152238;
-    --bg-subtle: #090E20;
+    --bg-subtle: #080D1F;
     --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-medium: rgba(255, 255, 255, 0.14);
+    --border-medium: rgba(255, 255, 255, 0.15);
     --text-primary: #FFFFFF;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
+    --brand-earth-clay: #D4A373;
+    --brand-avtive: #60A5FA;
   }
 }
 
 html, body {
   background-color: var(--bg-main);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;

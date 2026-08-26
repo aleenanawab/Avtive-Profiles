@@ -16,14 +16,14 @@ export function ExperienceSection({ profile }: ExperienceSectionProps) {
   return (
     <section className="px-6 sm:px-8 py-5 space-y-3.5 text-left bg-white dark:bg-[#0A1128] border-b border-[#E2E8F0] dark:border-white/10 transition-colors">
       <h2 className="text-xs font-bold uppercase tracking-wider text-[#0A1128] dark:text-white/80 font-mono">
-        Professional Experience
+        EXPERIENCE
       </h2>
 
       <div className="space-y-3">
         {profile.experiences.map((exp) => (
           <div
             key={exp.id}
-            className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-white/10 space-y-1.5 shadow-2xs"
+            className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#0E1A38] border border-[#E2E8F0] dark:border-white/10 space-y-1.5 shadow-2xs"
           >
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -31,7 +31,7 @@ export function ExperienceSection({ profile }: ExperienceSectionProps) {
                   {exp.company}
                 </h3>
                 {exp.role && (
-                  <p className="text-xs font-semibold text-[#1E3A8A] dark:text-[#7EC384] mt-0.5">
+                  <p className="text-xs font-semibold text-[#1E3A8A] dark:text-[#60A5FA] mt-0.5">
                     {exp.role}
                   </p>
                 )}
