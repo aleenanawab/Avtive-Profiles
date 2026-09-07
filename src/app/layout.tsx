@@ -9,6 +9,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: "Syed Mesum Raza Shah | Avtive Founder Profile",
   description: "Founder & Creative Director at Avtive. Strategy-driven designer with 700+ projects.",
   keywords: ["Syed Mesum Raza Shah", "Avtive", "Digital Profile", "Founder", "Creative Director", "Islamabad"],

@@ -3,24 +3,30 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ProfileData, ProjectItem } from '../types/profile';
+import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface PortfolioSectionProps {
   profile: ProfileData;
   onSelectProject?: (project: ProjectItem) => void;
+  theme?: ThemeConfig;
 }
 
-export function PortfolioSection({ profile, onSelectProject }: PortfolioSectionProps) {
+export function PortfolioSection({ 
+  profile, 
+  onSelectProject, 
+  theme = getThemeConfig(profile.theme || 'elegant') 
+}: PortfolioSectionProps) {
   if (!profile.projects || profile.projects.length === 0) {
     return null;
   }
 
   return (
-    <section className="px-6 sm:px-8 py-5 space-y-4 text-left bg-white dark:bg-[#0A1128] border-b border-[#E2E8F0] dark:border-white/10 transition-colors">
+    <section className={`px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
       <div className="flex items-center justify-between">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-[#0A1128] dark:text-white/80 font-mono">
+        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
           PROJECTS
         </h2>
-        <span className="text-[11px] text-[#94A3B8] font-semibold font-mono">
+        <span className={`text-[11px] ${theme.textMuted} font-semibold font-mono`}>
           {profile.projects.length} {profile.projects.length === 1 ? 'Project' : 'Projects'}
         </span>
       </div>
@@ -31,11 +37,11 @@ export function PortfolioSection({ profile, onSelectProject }: PortfolioSectionP
           <div
             key={project.id}
             onClick={() => onSelectProject && onSelectProject(project)}
-            className="group cursor-pointer rounded-2xl overflow-hidden bg-[#F8FAFC] dark:bg-[#0E1A38] border border-[#E2E8F0] dark:border-white/10 hover:border-[#1E3A8A] dark:hover:border-[#C49A6C]/50 transition-all shadow-2xs hover:shadow-md"
+            className={`group cursor-pointer rounded-2xl overflow-hidden ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} transition-all shadow-2xs hover:shadow-md`}
           >
             {/* Visual Project Image - Clean, no dark washes */}
             {project.coverImage && (
-              <div className="relative h-52 sm:h-60 w-full overflow-hidden bg-[#040814]">
+              <div className={`relative h-52 sm:h-60 w-full overflow-hidden ${theme.coverFallback}`}>
                 <img
                   src={project.coverImage}
                   alt={project.title}
@@ -43,7 +49,7 @@ export function PortfolioSection({ profile, onSelectProject }: PortfolioSectionP
                 />
                 
                 <div className="absolute top-3 left-3">
-                  <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-[#0A1128]/85 text-white backdrop-blur-md border border-white/20 shadow-xs">
+                  <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${theme.btnPrimary} backdrop-blur-md shadow-xs`}>
                     {project.category}
                   </span>
                 </div>
@@ -54,14 +60,14 @@ export function PortfolioSection({ profile, onSelectProject }: PortfolioSectionP
             <div className="p-4 sm:p-5 space-y-2.5">
               <div>
                 {!project.coverImage && (
-                  <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#0A1128]/10 dark:bg-white/10 text-[#0A1128] dark:text-white mb-2 font-mono">
+                  <span className={`inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold ${theme.badgeBg} ${theme.badgeText} mb-2 font-mono`}>
                     {project.category}
                   </span>
                 )}
-                <h3 className="text-base font-bold text-[#0A1128] dark:text-white group-hover:text-[#1E3A8A] dark:group-hover:text-[#60A5FA] transition-colors">
+                <h3 className={`text-base font-bold ${theme.textPrimary} group-hover:${theme.accentText} transition-colors`}>
                   {project.title}
                 </h3>
-                <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed mt-1">
+                <p className={`text-xs ${theme.textSecondary} leading-relaxed mt-1`}>
                   {project.description}
                 </p>
               </div>
@@ -72,7 +78,7 @@ export function PortfolioSection({ profile, onSelectProject }: PortfolioSectionP
                   {project.tags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-white dark:bg-[#152238] text-[#475569] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-white/10"
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${theme.badgeBg} ${theme.badgeText} border ${theme.subCardBorder}`}
                     >
                       {tag}
                     </span>
@@ -81,9 +87,9 @@ export function PortfolioSection({ profile, onSelectProject }: PortfolioSectionP
               )}
 
               {/* View Project Action */}
-              <div className="pt-2 border-t border-[#E2E8F0] dark:border-white/10 flex items-center justify-between text-xs font-bold text-[#0A1128] dark:text-white">
+              <div className={`pt-2 border-t ${theme.divider} flex items-center justify-between text-xs font-bold ${theme.textPrimary}`}>
                 <span>View Project</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#1E3A8A] dark:text-[#60A5FA]" />
+                <ArrowRight className={`w-3.5 h-3.5 group-hover:translate-x-1 transition-transform ${theme.accentText}`} />
               </div>
             </div>
           </div>

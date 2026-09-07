@@ -113,7 +113,7 @@ export default function Component({
               onClick={handleCopy}
               className="h-11 justify-start gap-2.5 rounded-xl bg-white hover:bg-slate-50 dark:bg-white/10 dark:hover:bg-white/20 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold shadow-xs"
             >
-              <Copy className="h-4 w-4 text-[#1E40AF]" /> {copied ? "Copied" : "Copy Email"}
+              <Copy className="h-4 w-4" /> {copied ? "Copied" : "Copy Email"}
             </Button>
           </div>
         </CardContent>

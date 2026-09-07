@@ -3,12 +3,17 @@
 import React, { useState } from 'react';
 import { Quote, ChevronDown, ChevronUp } from 'lucide-react';
 import { ProfileData } from '../types/profile';
+import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface RecommendationsSectionProps {
   profile: ProfileData;
+  theme?: ThemeConfig;
 }
 
-export function RecommendationsSection({ profile }: RecommendationsSectionProps) {
+export function RecommendationsSection({ 
+  profile, 
+  theme = getThemeConfig(profile.theme || 'elegant') 
+}: RecommendationsSectionProps) {
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
 
   if (!profile.recommendations || profile.recommendations.length === 0) {
@@ -20,8 +25,8 @@ export function RecommendationsSection({ profile }: RecommendationsSectionProps)
   };
 
   return (
-    <section className="px-6 sm:px-8 py-5 space-y-3.5 text-left bg-white dark:bg-[#0A1128] border-b border-[#E2E8F0] dark:border-white/10 transition-colors">
-      <h2 className="text-xs font-bold uppercase tracking-wider text-[#0A1128] dark:text-white/80 font-mono">
+    <section className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
+      <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
         Recommendations
       </h2>
 
@@ -32,19 +37,19 @@ export function RecommendationsSection({ profile }: RecommendationsSectionProps)
           return (
             <div
               key={rec.id}
-              className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-white/10 space-y-3 shadow-2xs transition-all"
+              className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-3 shadow-2xs transition-all`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-[#0A1128]/10 dark:bg-[#152238] text-[#0A1128] dark:text-white flex items-center justify-center shrink-0 border border-[#E2E8F0] dark:border-white/10">
-                    <Quote className="w-3.5 h-3.5 text-[#1E3A8A] dark:text-[#7EC384]" />
+                  <div className={`w-8 h-8 rounded-full ${theme.badgeBg} ${theme.accentText} flex items-center justify-center shrink-0 border ${theme.cardBorder}`}>
+                    <Quote className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-[#0A1128] dark:text-white">
+                    <h4 className={`text-xs font-bold ${theme.textPrimary}`}>
                       {rec.author}
                     </h4>
                     {rec.designation && (
-                      <p className="text-[10px] text-[#475569] dark:text-[#94A3B8]">
+                      <p className={`text-[10px] ${theme.textSecondary}`}>
                         {rec.designation} {rec.company ? `• ${rec.company}` : ''}
                       </p>
                     )}
@@ -53,21 +58,24 @@ export function RecommendationsSection({ profile }: RecommendationsSectionProps)
 
                 <button
                   onClick={() => toggleExpand(rec.id)}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold text-[#0A1128] dark:text-white bg-white dark:bg-[#152238] border border-[#E2E8F0] dark:border-white/10 hover:bg-[#F1F5F9] transition-colors shadow-2xs active:scale-95"
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold ${theme.textPrimary} ${theme.cardBg} border ${theme.subCardBorder} transition-colors shadow-2xs active:scale-95`}
                 >
                   <span>{isExpanded ? 'Hide' : 'View Recommendation'}</span>
                   {isExpanded ? (
-                    <ChevronUp className="w-3 h-3 text-[#1E3A8A] dark:text-[#7EC384]" />
+                    <ChevronUp className={`w-3 h-3 ${theme.accentText}`} />
                   ) : (
-                    <ChevronDown className="w-3 h-3 text-[#1E3A8A] dark:text-[#7EC384]" />
+                    <ChevronDown className={`w-3 h-3 ${theme.accentText}`} />
                   )}
                 </button>
               </div>
 
-              {/* Short summary or expanded complete text */}
-              <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed italic">
-                “{isExpanded && rec.fullText ? rec.fullText : rec.summary}”
-              </p>
+              {isExpanded && (
+                <div className={`pt-2 border-t ${theme.divider} space-y-2 text-xs leading-relaxed ${theme.textSecondary}`}>
+                  <p className="italic font-serif">
+                    &ldquo;{rec.fullText || rec.summary}&rdquo;
+                  </p>
+                </div>
+              )}
             </div>
           );
         })}

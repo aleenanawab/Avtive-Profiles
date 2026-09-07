@@ -9,6 +9,7 @@ export const founderProfile: ProfileData = {
   id: 'mesum-raza',
   slug: 'syedmesumraza',
   type: 'individual',
+  theme: 'elegant',
   companyId: 'avtive-company',
   companyName: 'Avtive',
   
@@ -19,7 +20,6 @@ export const founderProfile: ProfileData = {
   location: 'Islamabad, Pakistan',
   officeAddress: 'NSTP, Islamabad, Pakistan',
   avatar: '/images/founder-pfp.jpg',
-  coverImage: '/images/founder-cover.jpg',
   
   // Real LinkedIn positioning
   shortBio: 'Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.',
@@ -189,6 +189,7 @@ export const teamMemberProfile: ProfileData = {
   id: 'hamza-malik',
   slug: 'hamza-malik',
   type: 'team-member',
+  theme: 'elegant',
   companyId: 'avtive-company',
   companyName: 'Avtive',
   
@@ -199,7 +200,6 @@ export const teamMemberProfile: ProfileData = {
   location: 'Islamabad, Pakistan',
   officeAddress: 'NSTP, Islamabad, Pakistan',
   avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop',
-  coverImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop',
   coverSlogan: 'NFC ARCHITECTURE • SECURE PROTOCOLS',
   verified: false,
   
@@ -266,6 +266,7 @@ export const companyProfile: ProfileData = {
   id: 'avtive-company',
   slug: 'avtive',
   type: 'company',
+  theme: 'elegant',
   
   name: 'Avtive',
   designation: 'B2B SaaS Digital Profile & Cloud Identity Platform',
@@ -273,7 +274,6 @@ export const companyProfile: ProfileData = {
   location: 'NSTP, Islamabad, Pakistan',
   officeAddress: 'National Science & Technology Park (NSTP), Islamabad, Pakistan',
   avatar: '/images/avtive-symbol.png',
-  coverImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop',
   coverSlogan: 'THE DIGITAL IDENTITY STANDARD',
   verified: false,
   
