@@ -1,5 +1,32 @@
 export type ProfileType = 'individual' | 'team-member' | 'company';
 
+export type ProfileTheme = 'default' | 'dark' | 'minimal' | 'professional' | 'elegant' | 'modern';
+
+export interface UserSession {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface UserRecord {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  createdAt: string;
+}
+
+export interface UserConnection {
+  id: string;
+  fromUserId: string;
+  fromUserName: string;
+  fromUserEmail: string;
+  toProfileId: string;
+  toUserId?: string;
+  createdAt: string;
+  note?: string;
+}
+
 export type UserRole = 'owner' | 'team_member' | 'company_admin' | 'visitor';
 
 export type NavigationOrigin = 'company' | 'my_card' | 'direct' | 'team';
@@ -141,6 +168,8 @@ export interface DirectContactItem {
 
 export interface ProfileData {
   id: string;
+  userId?: string;
+  theme?: ProfileTheme;
   type: ProfileType;
   slug: string;
   companyId?: string;

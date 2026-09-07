@@ -1,60 +1,132 @@
 'use client';
 
 import React from 'react';
+import { Plus, X } from 'lucide-react';
 import { ProfileData, ServiceItem } from '../types/profile';
+import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface SkillsServicesSectionProps {
   profile: ProfileData;
+  isEditing?: boolean;
+  onUpdateField?: (field: keyof ProfileData, value: any) => void;
   onInquireService?: (service: ServiceItem) => void;
+  theme?: ThemeConfig;
 }
 
-export function SkillsServicesSection({ profile, onInquireService }: SkillsServicesSectionProps) {
+export function SkillsServicesSection({ 
+  profile, 
+  isEditing = false,
+  onUpdateField,
+  onInquireService,
+  theme = getThemeConfig(profile.theme || 'elegant')
+}: SkillsServicesSectionProps) {
   const hasServices = profile.services && profile.services.length > 0;
   const isIndividual = profile.type === 'individual';
   const hasSkills = !isIndividual && profile.skills && profile.skills.length > 0;
 
-  if (!hasServices && !hasSkills) return null;
+  if (!hasServices && !hasSkills && !isEditing) return null;
+
+  const handleAddService = () => {
+    const newService: ServiceItem = {
+      id: `svc-${Date.now()}`,
+      title: 'New Service',
+      badge: 'Available'
+    };
+    const updated = [...(profile.services || []), newService];
+    onUpdateField?.('services', updated);
+  };
+
+  const handleRemoveService = (id: string) => {
+    const updated = (profile.services || []).filter((s) => s.id !== id);
+    onUpdateField?.('services', updated);
+  };
+
+  const handleUpdateServiceTitle = (id: string, title: string) => {
+    const updated = (profile.services || []).map((s) => (s.id === id ? { ...s, title } : s));
+    onUpdateField?.('services', updated);
+  };
 
   return (
-    <section className="px-6 sm:px-8 py-5 space-y-3.5 text-left bg-white dark:bg-[#0A1128] border-b border-[#E2E8F0] dark:border-white/10 transition-colors">
+    <section className={`px-6 sm:px-8 py-5 space-y-3.5 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors`}>
       {/* Services Section with strict heading: SERVICES */}
-      {hasServices && (
-        <div className="space-y-2.5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#0A1128] dark:text-white/80 font-mono">
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
             SERVICES
           </h2>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {profile.services?.map((service) => (
-              <div
-                key={service.id}
-                className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#0E1A38] border border-[#E2E8F0] dark:border-white/10 flex items-center justify-between gap-1 shadow-2xs hover:border-[#1E3A8A] dark:hover:border-[#C49A6C]/40 transition-all"
-              >
-                <span className="text-xs font-bold text-[#0A1128] dark:text-white">
-                  {service.title}
-                </span>
-                {service.badge && (
-                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-[#1E3A8A]/10 text-[#1E3A8A] dark:text-[#60A5FA] font-mono">
-                    {service.badge}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
+          {isEditing && (
+            <button
+              type="button"
+              onClick={handleAddService}
+              className={`flex items-center gap-1 text-[11px] font-bold ${theme.accentText} hover:underline`}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Service</span>
+            </button>
+          )}
         </div>
-      )}
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {profile.services?.map((service) => (
+            <div
+              key={service.id}
+              className={`p-3 rounded-xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} flex items-center justify-between gap-1 shadow-2xs transition-all`}
+            >
+              {isEditing ? (
+                <div className="flex items-center justify-between w-full gap-1">
+                  <input
+                    type="text"
+                    value={service.title}
+                    onChange={(e) => handleUpdateServiceTitle(service.id, e.target.value)}
+                    className={`w-full bg-transparent text-xs font-bold ${theme.textPrimary} focus:outline-none border-b border-dashed border-slate-300 dark:border-white/20`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveService(service.id)}
+                    className="text-rose-500 hover:text-rose-700 p-0.5"
+                    title="Remove Service"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <span className={`text-xs font-bold ${theme.textPrimary}`}>
+                    {service.title}
+                  </span>
+                  {service.badge && (
+                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-md ${theme.badgeBg} ${theme.badgeText} font-mono`}>
+                      {service.badge}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          ))}
+          {isEditing && (!profile.services || profile.services.length === 0) && (
+            <button
+              type="button"
+              onClick={handleAddService}
+              className={`col-span-2 sm:col-span-3 p-3 rounded-xl border border-dashed ${theme.cardBorder} text-xs font-bold ${theme.textMuted} hover:${theme.accentText} flex items-center justify-center gap-1.5`}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add your first service</span>
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Additional Skills Chips for other profiles if provided */}
       {hasSkills && (
         <div className="space-y-2 pt-2">
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8] font-mono">
+          <h3 className={`text-[11px] font-bold uppercase tracking-wider ${theme.textMuted} font-mono`}>
             Competencies
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {profile.skills?.map((skill, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#0E1A38] border border-[#E2E8F0] dark:border-white/10 text-xs font-semibold text-[#0A1128] dark:text-white shadow-2xs"
+                className={`px-3 py-1 rounded-lg ${theme.cardBg} border ${theme.cardBorder} text-xs font-semibold ${theme.textPrimary} shadow-2xs`}
               >
                 {skill.name}
               </span>
@@ -65,3 +137,4 @@ export function SkillsServicesSection({ profile, onInquireService }: SkillsServi
     </section>
   );
 }
+

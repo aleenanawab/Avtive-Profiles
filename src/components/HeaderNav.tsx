@@ -8,12 +8,16 @@ import {
   Smartphone, 
   Tv, 
   Edit3, 
-  CreditCard,
-  Building2,
-  Users,
-  ChevronDown
+  CreditCard, 
+  Building2, 
+  Users, 
+  ChevronDown,
+  LogIn, 
+  LogOut 
 } from 'lucide-react';
-import { ProfileData, ProfileType, UserRole } from '../types/profile';
+import Link from 'next/link';
+import { ProfileData, ProfileType, UserRole, UserSession } from '../types/profile';
+import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface HeaderNavProps {
   currentProfile: ProfileData;
@@ -22,6 +26,7 @@ interface HeaderNavProps {
   onOpenEdit: () => void;
   onOpenShare: () => void;
   canEdit: boolean;
+  isEditing?: boolean;
   userRole: UserRole;
   onChangeUserRole: (role: UserRole) => void;
   isDark: boolean;
@@ -29,6 +34,9 @@ interface HeaderNavProps {
   viewMode: 'desktop' | 'mobile';
   onToggleViewMode: (mode: 'desktop' | 'mobile') => void;
   onOpenMyCard: () => void;
+  session?: UserSession | null;
+  onLogout?: () => void;
+  theme?: ThemeConfig;
 }
 
 export function HeaderNav({
@@ -38,13 +46,17 @@ export function HeaderNav({
   onOpenEdit,
   onOpenShare,
   canEdit,
+  isEditing = false,
   userRole,
   onChangeUserRole,
   isDark,
   onToggleTheme,
   viewMode,
   onToggleViewMode,
-  onOpenMyCard
+  onOpenMyCard,
+  session,
+  onLogout,
+  theme = getThemeConfig(currentProfile.theme || 'elegant')
 }: HeaderNavProps) {
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
@@ -62,7 +74,7 @@ export function HeaderNav({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-white/90 dark:bg-[#0A1128]/90 border-b border-[#E2E8F0] dark:border-white/10 transition-colors shadow-2xs">
+    <header className={`sticky top-0 z-40 w-full backdrop-blur-md ${theme.headerBg} border-b ${theme.divider} transition-colors shadow-2xs`}>
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 sm:gap-3">
         {/* Left: Avtive Brand */}
         <div 
@@ -79,28 +91,28 @@ export function HeaderNav({
           </div>
           <div className="text-left hidden sm:block">
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm text-[#1E3A8A] dark:text-[#60A5FA] tracking-tight">
+              <span className={`font-bold text-sm ${theme.accentText} tracking-tight`}>
                 Avtive
               </span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#1E3A8A]/10 text-[#1E3A8A] dark:text-[#60A5FA] font-bold font-mono">
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${theme.badgeBg} ${theme.badgeText} font-bold font-mono`}>
                 Official
               </span>
             </div>
-            <p className="text-[10px] text-[#475569] dark:text-[#94A3B8] font-medium">
+            <p className={`text-[10px] ${theme.textMuted} font-medium`}>
               Islamabad, Pakistan
             </p>
           </div>
         </div>
 
         {/* Center: Navigation Options (My Card + Company Directory) */}
-        <div className="flex items-center p-1 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-white/10 text-xs">
+        <div className={`flex items-center p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs`}>
           {/* 1. My Card */}
           <button
             onClick={onOpenMyCard}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
               profileType === 'individual'
-                ? 'bg-[#0A1128] dark:bg-white text-white dark:text-[#0A1128] shadow-xs'
-                : 'text-[#475569] dark:text-[#94A3B8] hover:text-[#0A1128] dark:hover:text-white'
+                ? `${theme.btnPrimary} shadow-xs`
+                : `${theme.textMuted} hover:${theme.textPrimary}`
             }`}
           >
             <CreditCard className="w-3.5 h-3.5" />
@@ -112,8 +124,8 @@ export function HeaderNav({
             onClick={() => onSelectProfileType('team-member', 'team')}
             className={`hidden md:flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
               profileType === 'team-member'
-                ? 'bg-[#0A1128] dark:bg-white text-white dark:text-[#0A1128] shadow-xs'
-                : 'text-[#475569] dark:text-[#94A3B8] hover:text-[#0A1128] dark:hover:text-white'
+                ? `${theme.btnPrimary} shadow-xs`
+                : `${theme.textMuted} hover:${theme.textPrimary}`
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -125,8 +137,8 @@ export function HeaderNav({
             onClick={() => onSelectProfileType('company', 'company')}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
               profileType === 'company'
-                ? 'bg-[#0A1128] dark:bg-white text-white dark:text-[#0A1128] shadow-xs'
-                : 'text-[#475569] dark:text-[#94A3B8] hover:text-[#0A1128] dark:hover:text-white'
+                ? `${theme.btnPrimary} shadow-xs`
+                : `${theme.textMuted} hover:${theme.textPrimary}`
             }`}
           >
             <Building2 className="w-3.5 h-3.5" />
@@ -140,17 +152,17 @@ export function HeaderNav({
           <div className="relative">
             <button
               onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#152238] text-xs font-bold text-[#0A1128] dark:text-white border border-[#E2E8F0] dark:border-white/10 hover:bg-[#F1F5F9] transition-colors shadow-2xs"
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs`}
               title="Switch user permission role"
             >
               <span>{getRoleLabel(userRole).icon}</span>
               <span className="hidden lg:inline text-[11px]">{getRoleLabel(userRole).label}</span>
-              <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
+              <ChevronDown className={`w-3 h-3 ${theme.textMuted}`} />
             </button>
 
             {isRoleDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-48 rounded-2xl bg-white dark:bg-[#0A1128] border border-[#E2E8F0] dark:border-white/15 shadow-xl p-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150">
-                <p className="px-2.5 py-1 text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider font-mono">
+              <div className={`absolute right-0 top-full mt-1.5 w-48 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} shadow-xl p-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150`}>
+                <p className={`px-2.5 py-1 text-[10px] font-bold ${theme.textMuted} uppercase tracking-wider font-mono`}>
                   Test Permissions
                 </p>
                 <button
@@ -159,7 +171,7 @@ export function HeaderNav({
                     setIsRoleDropdownOpen(false);
                   }}
                   className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'owner' ? 'bg-[#0A1128]/10 dark:bg-white/10 font-bold text-[#0A1128] dark:text-white' : 'text-[#0A1128] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#152238]'
+                    userRole === 'owner' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
                   }`}
                 >
                   <span>👑</span>
@@ -171,11 +183,11 @@ export function HeaderNav({
                     setIsRoleDropdownOpen(false);
                   }}
                   className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'team_member' ? 'bg-[#0A1128]/10 dark:bg-white/10 font-bold text-[#0A1128] dark:text-white' : 'text-[#0A1128] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#152238]'
+                    userRole === 'team_member' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
                   }`}
                 >
                   <span>👤</span>
-                  <span>Team Member (Hamza)</span>
+                  <span>Team (Hamza Malik)</span>
                 </button>
                 <button
                   onClick={() => {
@@ -183,7 +195,7 @@ export function HeaderNav({
                     setIsRoleDropdownOpen(false);
                   }}
                   className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'company_admin' ? 'bg-[#0A1128]/10 dark:bg-white/10 font-bold text-[#0A1128] dark:text-white' : 'text-[#0A1128] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#152238]'
+                    userRole === 'company_admin' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
                   }`}
                 >
                   <span>🏢</span>
@@ -195,33 +207,33 @@ export function HeaderNav({
                     setIsRoleDropdownOpen(false);
                   }}
                   className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'visitor' ? 'bg-[#0A1128]/10 dark:bg-white/10 font-bold text-[#0A1128] dark:text-white' : 'text-[#0A1128] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#152238]'
+                    userRole === 'visitor' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
                   }`}
                 >
                   <span>👁️</span>
-                  <span>Public Visitor (Read-Only)</span>
+                  <span>Public Visitor</span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* Edit Profile Button */}
-          {canEdit && (
+          {/* Edit Profile Button (Header Action) */}
+          {canEdit && !isEditing && (
             <button
               onClick={onOpenEdit}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white dark:bg-[#152238] hover:bg-[#F1F5F9] text-[#0A1128] dark:text-white text-xs font-bold border border-[#E2E8F0] dark:border-white/10 transition-colors shadow-2xs"
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs`}
             >
-              <Edit3 className="w-3.5 h-3.5 text-[#1E3A8A] dark:text-[#7EC384]" />
+              <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
               <span className="hidden sm:inline">Edit ✎</span>
             </button>
           )}
 
           {/* View Mode (Desktop vs Mobile Preview) */}
-          <div className="hidden lg:flex items-center p-0.5 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-white/10">
+          <div className={`hidden lg:flex items-center p-0.5 rounded-xl ${theme.cardBg} border ${theme.cardBorder}`}>
             <button
               onClick={() => onToggleViewMode('desktop')}
               className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'desktop' ? 'bg-[#0A1128] dark:bg-white text-white dark:text-[#0A1128] shadow-xs' : 'text-[#475569] dark:text-[#94A3B8]'
+                viewMode === 'desktop' ? `${theme.btnPrimary} shadow-xs` : `${theme.textMuted}`
               }`}
               title="Desktop View"
             >
@@ -230,7 +242,7 @@ export function HeaderNav({
             <button
               onClick={() => onToggleViewMode('mobile')}
               className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'mobile' ? 'bg-[#0A1128] dark:bg-white text-white dark:text-[#0A1128] shadow-xs' : 'text-[#475569] dark:text-[#94A3B8]'
+                viewMode === 'mobile' ? `${theme.btnPrimary} shadow-xs` : `${theme.textMuted}`
               }`}
               title="Mobile Card View"
             >
@@ -243,7 +255,7 @@ export function HeaderNav({
             onClick={onToggleTheme}
             aria-label="Toggle Theme"
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-[#0A1128] dark:text-white bg-white dark:bg-[#152238] border border-[#E2E8F0] dark:border-white/10 hover:bg-[#F1F5F9] transition-colors shadow-2xs font-bold text-xs flex items-center gap-1"
+            className={`p-2 sm:px-3 sm:py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1`}
           >
             {isDark ? (
               <>
@@ -261,11 +273,41 @@ export function HeaderNav({
           {/* Share Button */}
           <button
             onClick={onOpenShare}
-            className="flex items-center gap-1 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#0A1128] hover:bg-[#152238] dark:bg-white dark:hover:bg-slate-100 text-white dark:text-[#0A1128] font-bold text-xs shadow-xs transition-all active:scale-95"
+            className={`flex items-center gap-1 p-2 sm:px-3 sm:py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95`}
           >
             <Share2 className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Share</span>
           </button>
+
+          {/* Auth State Button (Sign In or Logout) */}
+          {session ? (
+            <div className="flex items-center gap-1.5">
+              <Link
+                href="/my-profile"
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.badgeBg} ${theme.badgeText} text-xs font-bold transition-colors shadow-2xs hover:opacity-90`}
+                title="View My Profile"
+              >
+                <span>My Profile</span>
+              </Link>
+              <button
+                onClick={onLogout}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors`}
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden xl:inline">Logout</span>
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs`}
+              title="Sign In"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sign In</span>
+            </Link>
+          )}
         </div>
       </div>
     </header>

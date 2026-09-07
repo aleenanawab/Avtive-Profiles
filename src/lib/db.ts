@@ -1,0 +1,380 @@
+import fs from 'fs';
+import path from 'path';
+import bcrypt from 'bcryptjs';
+import { ProfileData, UserRecord, ProfileTheme, UserConnection } from '@/types/profile';
+import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
+
+interface DatabaseSchema {
+  users: UserRecord[];
+  profiles: Record<string, ProfileData>;
+  connections?: UserConnection[];
+}
+
+const DB_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
+
+// Helper to slugify user names
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+// Initial Seed Database
+function getInitialSeedData(): DatabaseSchema {
+  const defaultPasswordHash = bcrypt.hashSync('Avtive@123', 10);
+
+  const founderUser: UserRecord = {
+    id: 'user-mesum',
+    name: 'Syed Mesum Raza Shah',
+    email: 'mesum@avtive.app',
+    passwordHash: defaultPasswordHash,
+    createdAt: new Date().toISOString()
+  };
+
+  const teamUser: UserRecord = {
+    id: 'user-hamza',
+    name: 'Hamza Malik',
+    email: 'hamza@avtive.app',
+    passwordHash: defaultPasswordHash,
+    createdAt: new Date().toISOString()
+  };
+
+  const seededFounderProfile: ProfileData = {
+    ...founderProfile,
+    userId: founderUser.id,
+    theme: (founderProfile.theme || 'elegant') as ProfileTheme
+  };
+
+  const seededTeamProfile: ProfileData = {
+    ...teamMemberProfile,
+    userId: teamUser.id,
+    theme: (teamMemberProfile.theme || 'elegant') as ProfileTheme
+  };
+
+  const seededCompanyProfile: ProfileData = {
+    ...companyProfile,
+    userId: founderUser.id,
+    theme: (companyProfile.theme || 'elegant') as ProfileTheme
+  };
+
+  return {
+    users: [founderUser, teamUser],
+    profiles: {
+      [seededFounderProfile.id]: seededFounderProfile,
+      [seededFounderProfile.slug]: seededFounderProfile,
+      [seededTeamProfile.id]: seededTeamProfile,
+      [seededTeamProfile.slug]: seededTeamProfile,
+      [seededCompanyProfile.id]: seededCompanyProfile,
+      [seededCompanyProfile.slug]: seededCompanyProfile
+    }
+  };
+}
+
+let inMemoryDb: DatabaseSchema | null = null;
+let lastDbMtime = 0;
+
+function loadDb(): DatabaseSchema {
+  try {
+    if (fs.existsSync(DB_FILE_PATH)) {
+      const stats = fs.statSync(DB_FILE_PATH);
+      if (!inMemoryDb || stats.mtimeMs > lastDbMtime) {
+        const content = fs.readFileSync(DB_FILE_PATH, 'utf8');
+        inMemoryDb = JSON.parse(content);
+        if (inMemoryDb && inMemoryDb.profiles) {
+          Object.values(inMemoryDb.profiles).forEach((p) => {
+            if (!p.theme || p.theme === 'default') p.theme = 'elegant';
+            if (p.coverImage && !p.coverImage.startsWith('/uploads/') && !p.coverImage.startsWith('data:')) {
+              delete (p as any).coverImage;
+            }
+          });
+        }
+        lastDbMtime = stats.mtimeMs;
+      }
+      return inMemoryDb!;
+    }
+  } catch (e) {
+    console.error('Failed to read db.json, checking seed:', e);
+  }
+
+  if (!inMemoryDb) {
+    inMemoryDb = getInitialSeedData();
+    saveDb(inMemoryDb);
+  }
+  return inMemoryDb;
+}
+
+function saveDb(data: DatabaseSchema): void {
+  try {
+    const dir = path.dirname(DB_FILE_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(DB_FILE_PATH, JSON.stringify(data, null, 2), 'utf8');
+    inMemoryDb = data;
+    try {
+      lastDbMtime = fs.statSync(DB_FILE_PATH).mtimeMs;
+    } catch (_) {}
+  } catch (e) {
+    console.error('Failed to write to db.json:', e);
+  }
+}
+
+export async function getUserByEmail(email: string): Promise<UserRecord | null> {
+  const db = loadDb();
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = db.users.find((u) => u.email.toLowerCase().trim() === normalizedEmail);
+  return user || null;
+}
+
+export async function getUserById(id: string): Promise<UserRecord | null> {
+  const db = loadDb();
+  const user = db.users.find((u) => u.id === id);
+  return user || null;
+}
+
+export async function createUser(data: {
+  name: string;
+  email: string;
+  passwordHash: string;
+  createProfile?: boolean;
+}): Promise<{ user: UserRecord; profile?: ProfileData }> {
+  const db = loadDb();
+  const userId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+
+  const newUser: UserRecord = {
+    id: userId,
+    name: data.name.trim(),
+    email: data.email.toLowerCase().trim(),
+    passwordHash: data.passwordHash,
+    createdAt: new Date().toISOString()
+  };
+
+  db.users.push(newUser);
+
+  let newProfile: ProfileData | undefined;
+  if (data.createProfile) {
+    const slug = `${slugify(data.name)}-${Math.random().toString(36).substring(2, 6)}`;
+    newProfile = {
+      id: `prof-${Date.now()}`,
+      userId: userId,
+      slug: slug,
+      type: 'individual',
+      name: data.name.trim(),
+      email: data.email.toLowerCase().trim(),
+      designation: 'Professional',
+      company: 'Avtive Network',
+      location: 'Global',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+      shortBio: 'Welcome to my digital profile on Avtive.',
+      fullBio: 'Connect with me directly via phone, WhatsApp, or email.',
+      theme: 'elegant',
+      contactOrder: ['whatsapp', 'phone', 'email', 'website', 'location'],
+      socials: [
+        {
+          platform: 'website',
+          url: 'https://www.avtive.app',
+          label: 'Website',
+          handle: 'avtive.app'
+        }
+      ]
+    };
+    db.profiles[newProfile.id] = newProfile;
+    db.profiles[newProfile.slug] = newProfile;
+  }
+
+  saveDb(db);
+  return { user: newUser, profile: newProfile };
+}
+
+export async function createProfileForUser(
+  userId: string,
+  data: Partial<ProfileData>
+): Promise<ProfileData> {
+  const db = loadDb();
+  const user = await getUserById(userId);
+  const name = (data.name || user?.name || 'Professional').trim();
+  const slug = `${slugify(name)}-${Math.random().toString(36).substring(2, 6)}`;
+  const profileId = `prof-${Date.now()}`;
+
+  const newProfile: ProfileData = {
+    id: profileId,
+    userId: userId,
+    slug: slug,
+    type: (data.type as any) || 'individual',
+    name: name,
+    email: (data.email || user?.email || '').toLowerCase().trim(),
+    designation: data.designation?.trim() || 'Professional',
+    company: data.company?.trim() || 'Avtive Network',
+    location: data.location?.trim() || 'Global',
+    avatar: data.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+    shortBio: data.shortBio?.trim() || 'Welcome to my digital profile on Avtive.',
+    fullBio: data.fullBio?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
+    phone: data.phone?.trim() || '',
+    whatsapp: data.whatsapp?.trim() || data.phone?.trim() || '',
+    theme: (data.theme && data.theme !== 'default' ? data.theme : 'elegant') as ProfileTheme,
+    contactOrder: ['whatsapp', 'phone', 'email', 'website', 'location'],
+    socials: data.socials || [
+      {
+        platform: 'website',
+        url: 'https://www.avtive.app',
+        label: 'Website',
+        handle: 'avtive.app'
+      }
+    ]
+  };
+
+  db.profiles[newProfile.id] = newProfile;
+  db.profiles[newProfile.slug] = newProfile;
+  saveDb(db);
+
+  return newProfile;
+}
+
+export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileData | null> {
+  const db = loadDb();
+  if (db.profiles[idOrSlug]) {
+    return db.profiles[idOrSlug];
+  }
+
+  // Linear search in case of lowercase/trim difference
+  const found = Object.values(db.profiles).find(
+    (p) => p.id.toLowerCase() === idOrSlug.toLowerCase() || p.slug.toLowerCase() === idOrSlug.toLowerCase()
+  );
+  return found || null;
+}
+
+export async function getProfileByUserId(userId: string): Promise<ProfileData | null> {
+  const db = loadDb();
+  // Prioritize individual profile if user has multiple (e.g. founder with personal + company)
+  const individual = Object.values(db.profiles).find(
+    (p) => p.userId === userId && p.type === 'individual'
+  );
+  if (individual) return individual;
+
+  const profile = Object.values(db.profiles).find((p) => p.userId === userId);
+  return profile || null;
+}
+
+export async function getAllProfiles(): Promise<ProfileData[]> {
+  const db = loadDb();
+  const unique = new Map<string, ProfileData>();
+  for (const p of Object.values(db.profiles)) {
+    unique.set(p.id, p);
+  }
+  return Array.from(unique.values());
+}
+
+export async function updateProfile(
+  profileId: string,
+  updatedData: Partial<ProfileData>,
+  sessionUserId: string
+): Promise<{ success: boolean; profile?: ProfileData; error?: string; status: number }> {
+  const db = loadDb();
+  const target = await getProfileByIdOrSlug(profileId);
+
+  if (!target) {
+    return { success: false, error: 'Profile not found.', status: 404 };
+  }
+
+  // Strict ownership check: session.userId === targetProfile.userId
+  if (!target.userId || target.userId !== sessionUserId) {
+    return {
+      success: false,
+      error: 'Forbidden: You do not own this profile. Only the verified owner can perform edits.',
+      status: 403
+    };
+  }
+
+  // Merge safe updates
+  const merged: ProfileData = {
+    ...target,
+    ...updatedData,
+    id: target.id, // Prevent tampering with immutable ID
+    userId: target.userId, // Prevent tampering with owner mapping
+    slug: target.slug // Keep canonical slug intact
+  };
+
+  // Persist to both id and slug keys
+  db.profiles[merged.id] = merged;
+  db.profiles[merged.slug] = merged;
+  saveDb(db);
+
+  return { success: true, profile: merged, status: 200 };
+}
+
+export async function createConnection(data: {
+  fromUserId: string;
+  fromUserName: string;
+  fromUserEmail: string;
+  toProfileId: string;
+  note?: string;
+}): Promise<{ success: boolean; connection?: UserConnection; error?: string; status: number }> {
+  const db = loadDb();
+  if (!db.connections) {
+    db.connections = [];
+  }
+
+  const targetProfile = await getProfileByIdOrSlug(data.toProfileId);
+  if (!targetProfile) {
+    return { success: false, error: 'Target profile not found.', status: 404 };
+  }
+
+  // Prevent user from connecting to their own profile
+  if (targetProfile.userId && targetProfile.userId === data.fromUserId) {
+    return { success: false, error: 'You cannot connect with your own profile.', status: 400 };
+  }
+
+  // Check if connection already exists
+  const existing = db.connections.find(
+    (c) =>
+      c.fromUserId === data.fromUserId &&
+      (c.toProfileId === targetProfile.id || c.toProfileId === targetProfile.slug)
+  );
+
+  if (existing) {
+    return { success: true, connection: existing, status: 200 };
+  }
+
+  const newConn: UserConnection = {
+    id: `conn-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    fromUserId: data.fromUserId,
+    fromUserName: data.fromUserName,
+    fromUserEmail: data.fromUserEmail,
+    toProfileId: targetProfile.id,
+    toUserId: targetProfile.userId,
+    createdAt: new Date().toISOString(),
+    note: data.note?.trim()
+  };
+
+  db.connections.push(newConn);
+  saveDb(db);
+
+  return { success: true, connection: newConn, status: 201 };
+}
+
+export async function checkIsConnected(fromUserId: string, toProfileId: string): Promise<boolean> {
+  const db = loadDb();
+  if (!db.connections) return false;
+
+  const target = await getProfileByIdOrSlug(toProfileId);
+  const targetId = target ? target.id : toProfileId;
+  const targetSlug = target ? target.slug : toProfileId;
+
+  return db.connections.some(
+    (c) =>
+      c.fromUserId === fromUserId &&
+      (c.toProfileId === targetId || c.toProfileId === targetSlug)
+  );
+}
+
+export async function getUserConnections(userId: string): Promise<UserConnection[]> {
+  const db = loadDb();
+  if (!db.connections) return [];
+
+  return db.connections.filter(
+    (c) => c.fromUserId === userId || c.toUserId === userId
+  );
+}

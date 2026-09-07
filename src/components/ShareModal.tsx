@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import { X, Copy, Check, Share2, Download, QrCode } from 'lucide-react';
 import { ProfileData } from '../types/profile';
+import { getThemeConfig } from './themeStyles';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -15,63 +16,67 @@ interface ShareModalProps {
 export function ShareModal({ isOpen, onClose, profile, onCopySuccess }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const [qrUrl, setQrUrl] = useState('');
+  const theme = getThemeConfig(profile.theme || 'elegant');
 
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://www.avtive.app';
+  const identifier = profile.slug || profile.id;
+  const canonicalPublicUrl = typeof window !== 'undefined' 
+    ? `${window.location.origin}/profile/${identifier}` 
+    : `https://www.avtive.app/profile/${identifier}`;
 
   useEffect(() => {
     if (isOpen) {
-      QRCode.toDataURL(currentUrl, {
+      QRCode.toDataURL(canonicalPublicUrl, {
         width: 320,
         margin: 1,
-        color: { dark: '#0A1128', light: '#FFFFFF' }
+        color: { dark: '#000000', light: '#FFFFFF' }
       })
         .then((url) => setQrUrl(url))
         .catch((err) => console.error(err));
     }
-  }, [isOpen, currentUrl]);
+  }, [isOpen, canonicalPublicUrl]);
 
   if (!isOpen) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(currentUrl);
+    navigator.clipboard.writeText(canonicalPublicUrl);
     setCopied(true);
     onCopySuccess();
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleNativeShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `${profile.name} - Avtive Digital Profile`,
-          text: `Check out ${profile.name}'s digital card on Avtive:`,
-          url: currentUrl,
-        });
-      } catch (err) {
-        // User cancelled or not supported
-      }
-    } else {
-      handleCopy();
-    }
+    setTimeout(() => setCopied(false), 2500);
   };
 
   const handleDownloadQR = () => {
     if (!qrUrl) return;
     const link = document.createElement('a');
     link.href = qrUrl;
-    link.download = `${profile.slug}-qr.png`;
+    link.download = `${identifier}-qr-code.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${profile.name} - Avtive Digital Identity`,
+          text: `Connect with ${profile.name} (${profile.designation || 'Professional'}) on Avtive`,
+          url: canonicalPublicUrl
+        });
+      } catch (err) {
+        // User dismissed or aborted
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left">
-      <div className="relative w-full max-w-sm rounded-[32px] bg-white dark:bg-[#0A1128] border border-[#E2E8F0] dark:border-white/10 shadow-2xl p-6 text-center space-y-5 transition-colors">
+      <div className={`relative w-full max-w-sm rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-6 text-center space-y-5 transition-colors`}>
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-[#94A3B8] hover:text-[#0A1128] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#152238] transition-colors"
+          className={`absolute top-4 right-4 p-2 rounded-full ${theme.textMuted} hover:${theme.textPrimary} ${theme.subCardBg} transition-colors`}
         >
           <X className="w-4 h-4" />
         </button>
@@ -84,32 +89,32 @@ export function ShareModal({ isOpen, onClose, profile, onCopySuccess }: ShareMod
               alt="Avtive" 
               className="h-6 w-auto object-contain" 
             />
-            <span className="text-xs font-bold text-[#1E3A8A] dark:text-[#60A5FA] tracking-wider font-mono">
+            <span className={`text-xs font-bold ${theme.accentText} tracking-wider font-mono`}>
               AVTIVE
             </span>
           </div>
-          <div className="w-16 h-16 rounded-2xl p-0.5 bg-[#1E3A8A]/20 dark:bg-white/20 shadow-md">
+          <div className={`w-16 h-16 rounded-2xl p-0.5 ${theme.badgeBg} shadow-md`}>
             <img
               src={profile.avatar}
               alt={profile.name}
-              className="w-full h-full object-cover rounded-xl border border-white dark:border-[#0A1128]"
+              className={`w-full h-full object-cover rounded-xl border ${theme.cardBorder}`}
             />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[#0A1128] dark:text-white">
+            <h3 className={`text-base font-bold ${theme.textPrimary}`}>
               {profile.name}
             </h3>
-            <p className="text-xs text-[#1E3A8A] dark:text-[#60A5FA] font-bold">
+            <p className={`text-xs ${theme.accentText} font-bold`}>
               {profile.designation}
             </p>
-            <p className="text-[11px] text-[#475569] dark:text-[#94A3B8]">
+            <p className={`text-[11px] ${theme.textSecondary}`}>
               {profile.company || 'Avtive'}
             </p>
           </div>
         </div>
 
         {/* Real Profile QR Code Card */}
-        <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#0E1A38] border border-[#E2E8F0] dark:border-white/10 inline-block shadow-inner">
+        <div className={`p-4 rounded-2xl ${theme.subCardBg} border ${theme.subCardBorder} inline-block shadow-inner`}>
           {qrUrl ? (
             <img
               src={qrUrl}
@@ -121,7 +126,7 @@ export function ShareModal({ isOpen, onClose, profile, onCopySuccess }: ShareMod
               <QrCode className="w-10 h-10 animate-pulse text-[#94A3B8]" />
             </div>
           )}
-          <p className="text-[11px] font-semibold text-[#475569] dark:text-[#94A3B8] mt-2.5 font-mono">
+          <p className={`text-[11px] font-semibold ${theme.textMuted} mt-2.5 font-mono`}>
             Scan to view digital profile
           </p>
         </div>
@@ -131,7 +136,7 @@ export function ShareModal({ isOpen, onClose, profile, onCopySuccess }: ShareMod
           {/* 1. Share Profile */}
           <button
             onClick={handleNativeShare}
-            className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#0A1128] hover:bg-[#152238] dark:bg-white dark:hover:bg-slate-100 text-white dark:text-[#0A1128] transition-colors active:scale-95 shadow-2xs font-bold"
+            className={`flex flex-col items-center justify-center p-2.5 rounded-xl ${theme.btnPrimary} transition-colors active:scale-95 shadow-2xs font-bold`}
           >
             <Share2 className="w-4 h-4 mb-1" />
             <span className="text-[10px]">Share Profile</span>
@@ -140,10 +145,10 @@ export function ShareModal({ isOpen, onClose, profile, onCopySuccess }: ShareMod
           {/* 2. Copy Link */}
           <button
             onClick={handleCopy}
-            className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#F1F5F9] dark:bg-[#152238] hover:bg-[#E2E8F0] dark:hover:bg-[#1E3050] text-[#0A1128] dark:text-white border border-[#E2E8F0] dark:border-white/10 transition-colors active:scale-95 shadow-2xs font-bold"
+            className={`flex flex-col items-center justify-center p-2.5 rounded-xl ${theme.btnSecondary} transition-colors active:scale-95 shadow-2xs font-bold`}
           >
             {copied ? (
-              <Check className="w-4 h-4 text-[#1E3A8A] dark:text-[#60A5FA] mb-1" />
+              <Check className="w-4 h-4 mb-1" />
             ) : (
               <Copy className="w-4 h-4 mb-1" />
             )}
@@ -153,7 +158,7 @@ export function ShareModal({ isOpen, onClose, profile, onCopySuccess }: ShareMod
           {/* 3. Download QR */}
           <button
             onClick={handleDownloadQR}
-            className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-[#F1F5F9] dark:bg-[#152238] hover:bg-[#E2E8F0] dark:hover:bg-[#1E3050] text-[#0A1128] dark:text-white border border-[#E2E8F0] dark:border-white/10 transition-colors active:scale-95 shadow-2xs font-bold"
+            className={`flex flex-col items-center justify-center p-2.5 rounded-xl ${theme.btnSecondary} transition-colors active:scale-95 shadow-2xs font-bold`}
           >
             <Download className="w-4 h-4 mb-1" />
             <span className="text-[10px]">Download QR</span>

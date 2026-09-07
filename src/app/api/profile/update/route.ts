@@ -1,17 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { UserRole, ProfileData } from '@/types/profile';
+import { getSession } from '@/lib/auth';
+import { updateProfile, getProfileByIdOrSlug } from '@/lib/db';
+import { ProfileData } from '@/types/profile';
 
-interface UpdateProfilePayload {
+interface UpdateProfileBody {
   profileId: string;
   updatedData: Partial<ProfileData>;
-  userRole: UserRole;
-  userId?: string;
 }
 
-export async function POST(request: NextRequest) {
+async function handleProfileUpdate(request: NextRequest) {
   try {
-    const body: UpdateProfilePayload = await request.json();
-    const { profileId, updatedData, userRole, userId } = body;
+    // 1. Server-Side Guardrail: Extract caller's session on the server
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json(
+        { 
+          error: 'Unauthorized: You must be logged in to modify a profile.',
+          authorized: false 
+        },
+        { status: 401 }
+      );
+    }
+
+    const body: UpdateProfileBody = await request.json();
+    const { profileId, updatedData } = body;
 
     if (!profileId || !updatedData) {
       return NextResponse.json(
@@ -20,49 +32,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Enforce Server-Side Permission Verification
-    // Rule: Normal visitors can NEVER edit any profile
-    if (userRole === 'visitor') {
+    // 2. Fetch target profile
+    const targetProfile = await getProfileByIdOrSlug(profileId);
+    if (!targetProfile) {
+      return NextResponse.json(
+        { error: 'Profile not found.' },
+        { status: 404 }
+      );
+    }
+
+    // 3. Strict Ownership Verification: session.userId === targetProfile.userId
+    // NEVER trust user IDs provided solely in client payloads or query parameters.
+    if (!targetProfile.userId || targetProfile.userId !== session.id) {
       return NextResponse.json(
         { 
-          error: 'Forbidden: Normal visitors do not have permission to edit this profile.',
+          error: 'Forbidden: You do not own this profile. Only the verified profile owner can perform edits.',
           authorized: false 
         },
         { status: 403 }
       );
     }
 
-    // Rule: Profile Owner can edit their own profile
-    if (userRole === 'owner') {
-      // Owner is authorized to edit individual founder profile
-      if (profileId !== 'mesum-raza' && profileId !== 'individual') {
-        // If an individual owner tries to edit company or other team members without admin rights
-        // Still allow if they are designated owner, else verify
-      }
+    // 4. Perform update
+    const result = await updateProfile(profileId, updatedData, session.id);
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Failed to update profile.' },
+        { status: result.status }
+      );
     }
 
-    // Rule: Team member can edit their own profile
-    if (userRole === 'team_member') {
-      if (profileId === 'avtive-company' || profileId === 'company') {
-        return NextResponse.json(
-          { 
-            error: 'Forbidden: Team members cannot modify the company organization profile.',
-            authorized: false 
-          },
-          { status: 403 }
-        );
-      }
-    }
-
-    // Rule: Company admin can edit company and authorized team members
-    // Authorized
-
-    // Return success response
     return NextResponse.json({
       success: true,
       authorized: true,
-      message: 'Profile updated and verified by Avtive Auth Service.',
-      updatedProfile: updatedData
+      message: 'Profile updated successfully.',
+      updatedProfile: result.profile
     }, { status: 200 });
 
   } catch (error) {
@@ -72,4 +76,16 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  return handleProfileUpdate(request);
+}
+
+export async function PUT(request: NextRequest) {
+  return handleProfileUpdate(request);
+}
+
+export async function PATCH(request: NextRequest) {
+  return handleProfileUpdate(request);
 }
