@@ -1,6 +1,37 @@
 export type ProfileType = 'individual' | 'team-member' | 'company';
 
-export type ProfileTheme = 'default' | 'dark' | 'minimal' | 'professional' | 'elegant' | 'modern';
+export type ProfileTheme = 
+  | 'editorial' 
+  | 'cyber' 
+  | 'luxe' 
+  | 'default' 
+  | 'dark' 
+  | 'minimal' 
+  | 'professional' 
+  | 'elegant' 
+  | 'modern';
+
+export interface SharingSettings {
+  photo?: boolean;
+  nameAndTitle?: boolean;
+  bio?: boolean;
+  contactInfo?: boolean;
+  email?: boolean;
+  phone?: boolean;
+  socialLinks?: boolean;
+  skills?: boolean;
+  experience?: boolean;
+  education?: boolean;
+  certifications?: boolean;
+  projects?: boolean;
+  services?: boolean;
+  recommendations?: boolean;
+  volunteer?: boolean;
+  languages?: boolean;
+  companySection?: boolean;
+  nfcCard?: boolean;
+}
+
 
 export interface UserSession {
   id: string;
@@ -233,4 +264,15 @@ export interface ProfileData {
 
   // Socials
   socials: SocialLink[];
+
+  // Multi-Profile Identity & Metadata
+  profileName?: string;
+  profession?: string;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Sharing Configuration & Order
+  sharingSettings?: SharingSettings;
+  sectionOrder?: string[];
 }
+

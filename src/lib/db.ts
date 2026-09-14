@@ -1,8 +1,43 @@
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
-import { ProfileData, UserRecord, ProfileTheme, UserConnection } from '@/types/profile';
+import { ProfileData, UserRecord, ProfileTheme, UserConnection, SharingSettings } from '@/types/profile';
 import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
+
+export const DEFAULT_SHARING_SETTINGS: SharingSettings = {
+  photo: true,
+  nameAndTitle: true,
+  bio: true,
+  contactInfo: true,
+  email: true,
+  phone: true,
+  socialLinks: true,
+  skills: true,
+  experience: true,
+  education: true,
+  certifications: true,
+  projects: true,
+  services: true,
+  volunteer: true,
+  languages: true,
+  recommendations: true,
+  companySection: true,
+  nfcCard: true
+};
+
+export const DEFAULT_SECTION_ORDER: string[] = [
+  'hero',
+  'about',
+  'services',
+  'skills',
+  'experience',
+  'projects',
+  'certifications',
+  'volunteer',
+  'languages',
+  'recommendations',
+  'virtual-card'
+];
 
 interface DatabaseSchema {
   users: UserRecord[];
@@ -21,6 +56,7 @@ export function slugify(text: string): string {
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
 
 // Initial Seed Database
 function getInitialSeedData(): DatabaseSchema {
@@ -89,12 +125,31 @@ function loadDb(): DatabaseSchema {
             if (p.coverImage && !p.coverImage.startsWith('/uploads/') && !p.coverImage.startsWith('data:')) {
               delete (p as any).coverImage;
             }
+            if (!p.profileName) {
+              p.profileName = p.designation || (p.type === 'company' ? 'Company Profile' : 'Primary Profile');
+            }
+            if (!p.profession) {
+              p.profession = p.designation || 'Professional';
+            }
+            if (!p.createdAt) {
+              p.createdAt = new Date().toISOString();
+            }
+            if (!p.updatedAt) {
+              p.updatedAt = p.createdAt || new Date().toISOString();
+            }
+            if (!p.sharingSettings) {
+              p.sharingSettings = { ...DEFAULT_SHARING_SETTINGS };
+            }
+            if (!p.sectionOrder || !p.sectionOrder.length) {
+              p.sectionOrder = [...DEFAULT_SECTION_ORDER];
+            }
           });
         }
         lastDbMtime = stats.mtimeMs;
       }
       return inMemoryDb!;
     }
+
   } catch (e) {
     console.error('Failed to read db.json, checking seed:', e);
   }
@@ -196,17 +251,23 @@ export async function createProfileForUser(
   const db = loadDb();
   const user = await getUserById(userId);
   const name = (data.name || user?.name || 'Professional').trim();
-  const slug = `${slugify(name)}-${Math.random().toString(36).substring(2, 6)}`;
-  const profileId = `prof-${Date.now()}`;
+  const profileName = (data.profileName || data.designation || 'Professional Profile').trim();
+  const profession = (data.profession || data.designation || 'Professional').trim();
+  const slugBase = slugify(data.profileName ? `${name}-${data.profileName}` : name);
+  const slug = `${slugBase}-${Math.random().toString(36).substring(2, 6)}`;
+  const profileId = `prof-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const now = new Date().toISOString();
 
   const newProfile: ProfileData = {
     id: profileId,
     userId: userId,
+    profileName: profileName,
+    profession: profession,
     slug: slug,
     type: (data.type as any) || 'individual',
     name: name,
     email: (data.email || user?.email || '').toLowerCase().trim(),
-    designation: data.designation?.trim() || 'Professional',
+    designation: data.designation?.trim() || profession,
     company: data.company?.trim() || 'Avtive Network',
     location: data.location?.trim() || 'Global',
     avatar: data.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
@@ -214,8 +275,8 @@ export async function createProfileForUser(
     fullBio: data.fullBio?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
     phone: data.phone?.trim() || '',
     whatsapp: data.whatsapp?.trim() || data.phone?.trim() || '',
-    theme: (data.theme && data.theme !== 'default' ? data.theme : 'elegant') as ProfileTheme,
-    contactOrder: ['whatsapp', 'phone', 'email', 'website', 'location'],
+    theme: (data.theme && data.theme !== 'default' ? data.theme : 'editorial') as ProfileTheme,
+    contactOrder: data.contactOrder || ['whatsapp', 'phone', 'email', 'website', 'location'],
     socials: data.socials || [
       {
         platform: 'website',
@@ -223,7 +284,22 @@ export async function createProfileForUser(
         label: 'Website',
         handle: 'avtive.app'
       }
-    ]
+    ],
+    skills: data.skills || [],
+    experiences: data.experiences || [],
+    projects: data.projects || [],
+    services: data.services || [],
+    certifications: data.certifications || [],
+    volunteerExperiences: data.volunteerExperiences || [],
+    languages: data.languages || [],
+    recommendations: data.recommendations || [],
+    testimonials: data.testimonials || [],
+    companyInfo: data.companyInfo,
+    nfcCard: data.nfcCard,
+    sharingSettings: data.sharingSettings ? { ...DEFAULT_SHARING_SETTINGS, ...data.sharingSettings } : { ...DEFAULT_SHARING_SETTINGS },
+    sectionOrder: (data.sectionOrder && data.sectionOrder.length) ? data.sectionOrder : [...DEFAULT_SECTION_ORDER],
+    createdAt: now,
+    updatedAt: now
   };
 
   db.profiles[newProfile.id] = newProfile;
@@ -256,6 +332,21 @@ export async function getProfileByUserId(userId: string): Promise<ProfileData | 
 
   const profile = Object.values(db.profiles).find((p) => p.userId === userId);
   return profile || null;
+}
+
+export async function getProfilesByUserId(userId: string): Promise<ProfileData[]> {
+  const db = loadDb();
+  const unique = new Map<string, ProfileData>();
+  for (const p of Object.values(db.profiles)) {
+    if (p.userId === userId) {
+      unique.set(p.id, p);
+    }
+  }
+  return Array.from(unique.values()).sort((a, b) => {
+    const timeA = new Date(a.createdAt || 0).getTime();
+    const timeB = new Date(b.createdAt || 0).getTime();
+    return timeA - timeB;
+  });
 }
 
 export async function getAllProfiles(): Promise<ProfileData[]> {
@@ -294,7 +385,8 @@ export async function updateProfile(
     ...updatedData,
     id: target.id, // Prevent tampering with immutable ID
     userId: target.userId, // Prevent tampering with owner mapping
-    slug: target.slug // Keep canonical slug intact
+    slug: target.slug, // Keep canonical slug intact
+    updatedAt: new Date().toISOString()
   };
 
   // Persist to both id and slug keys
@@ -304,6 +396,171 @@ export async function updateProfile(
 
   return { success: true, profile: merged, status: 200 };
 }
+
+export async function duplicateProfile(
+  profileId: string,
+  sessionUserId: string
+): Promise<{ success: boolean; profile?: ProfileData; error?: string; status: number }> {
+  const db = loadDb();
+  const target = await getProfileByIdOrSlug(profileId);
+
+  if (!target) {
+    return { success: false, error: 'Profile not found.', status: 404 };
+  }
+
+  // Strict ownership check
+  if (!target.userId || target.userId !== sessionUserId) {
+    return {
+      success: false,
+      error: 'Forbidden: You do not have permission to duplicate this profile.',
+      status: 403
+    };
+  }
+
+  const newId = `prof-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const duplicateName = target.profileName ? `${target.profileName} (Copy)` : `${target.name} (Copy)`;
+  const slugBase = slugify(`${target.name}-${duplicateName}`);
+  const newSlug = `${slugBase}-${Math.random().toString(36).substring(2, 6)}`;
+  const now = new Date().toISOString();
+
+  const cloned: ProfileData = {
+    ...JSON.parse(JSON.stringify(target)),
+    id: newId,
+    userId: sessionUserId,
+    profileName: duplicateName,
+    slug: newSlug,
+    createdAt: now,
+    updatedAt: now
+  };
+
+  db.profiles[cloned.id] = cloned;
+  db.profiles[cloned.slug] = cloned;
+  saveDb(db);
+
+  return { success: true, profile: cloned, status: 201 };
+}
+
+export async function deleteProfile(
+  profileId: string,
+  sessionUserId: string
+): Promise<{ success: boolean; error?: string; status: number }> {
+  const db = loadDb();
+  const target = await getProfileByIdOrSlug(profileId);
+
+  if (!target) {
+    return { success: false, error: 'Profile not found.', status: 404 };
+  }
+
+  // Strict ownership check
+  if (!target.userId || target.userId !== sessionUserId) {
+    return {
+      success: false,
+      error: 'Forbidden: You do not have permission to delete this profile.',
+      status: 403
+    };
+  }
+
+  // Delete from profiles
+  delete db.profiles[target.id];
+  delete db.profiles[target.slug];
+
+  // Clean up any remaining key references
+  for (const key of Object.keys(db.profiles)) {
+    if (db.profiles[key].id === target.id) {
+      delete db.profiles[key];
+    }
+  }
+
+  saveDb(db);
+  return { success: true, status: 200 };
+}
+
+/**
+ * Server-side projection that strips unshared/hidden fields from a profile.
+ * Ensures that if a user turns off Phone, Experience, Email, etc. in sharing settings,
+ * the public API / server props NEVER expose that data to viewers.
+ */
+export function sanitizeProfileForPublic(profile: ProfileData, isOwner: boolean = false): ProfileData {
+  if (isOwner) {
+    return profile;
+  }
+
+  const settings = profile.sharingSettings || DEFAULT_SHARING_SETTINGS;
+  const sanitized: ProfileData = { ...profile };
+
+  if (settings.photo === false) {
+    sanitized.avatar = '';
+    sanitized.coverImage = undefined;
+  }
+
+  if (settings.nameAndTitle === false) {
+    sanitized.name = 'Professional';
+    sanitized.designation = '';
+    sanitized.tagline = '';
+  }
+
+  if (settings.bio === false) {
+    sanitized.shortBio = '';
+    sanitized.fullBio = '';
+  }
+
+  if (settings.contactInfo === false || settings.phone === false) {
+    sanitized.phone = '';
+    sanitized.whatsapp = '';
+  }
+
+  if (settings.contactInfo === false || settings.email === false) {
+    sanitized.email = '';
+  }
+
+  if (settings.socialLinks === false) {
+    sanitized.socials = [];
+  }
+
+  if (settings.skills === false) {
+    sanitized.skills = [];
+  }
+
+  if (settings.experience === false) {
+    sanitized.experiences = [];
+  }
+
+  if (settings.certifications === false) {
+    sanitized.certifications = [];
+  }
+
+  if (settings.projects === false) {
+    sanitized.projects = [];
+  }
+
+  if (settings.services === false) {
+    sanitized.services = [];
+  }
+
+  if (settings.recommendations === false) {
+    sanitized.recommendations = [];
+    sanitized.testimonials = [];
+  }
+
+  if (settings.volunteer === false) {
+    sanitized.volunteerExperiences = [];
+  }
+
+  if (settings.languages === false) {
+    sanitized.languages = [];
+  }
+
+  if (settings.companySection === false) {
+    sanitized.companyInfo = undefined;
+  }
+
+  if (settings.nfcCard === false) {
+    sanitized.nfcCard = undefined;
+  }
+
+  return sanitized;
+}
+
 
 export async function createConnection(data: {
   fromUserId: string;

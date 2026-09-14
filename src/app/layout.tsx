@@ -10,9 +10,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: "Syed Mesum Raza Shah | Avtive Founder Profile",
-  description: "Founder & Creative Director at Avtive. Strategy-driven designer with 700+ projects.",
-  keywords: ["Syed Mesum Raza Shah", "Avtive", "Digital Profile", "Founder", "Creative Director", "Islamabad"],
+  title: "Aleena Nawab | Senior Systems Architect & Portfolio",
+  description: "Senior Full-Stack Architect & Product Strategist. Interactive multi-theme portfolio featuring Editorial Minimal, Developer Terminal, and Luxe Velvet.",
+  keywords: ["Aleena Nawab", "Portfolio", "Systems Architect", "Next.js", "TypeScript", "Tailwind CSS", "Design Systems"],
 };
 
 export default function RootLayout({
@@ -23,6 +23,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="editorial"
       suppressHydrationWarning
       className="h-full antialiased font-sans"
     >
@@ -33,11 +34,14 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
+                  var savedPortfolioTheme = localStorage.getItem('portfolio_theme') || 'editorial';
+                  document.documentElement.setAttribute('data-theme', savedPortfolioTheme);
                   var savedTheme = localStorage.getItem('avtive_theme_pref');
                   if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');

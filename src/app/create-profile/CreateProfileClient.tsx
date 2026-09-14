@@ -1,37 +1,132 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { User, Briefcase, Building, MapPin, Phone, FileText, Palette, Loader2, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Pencil, 
+  Loader2, 
+  AlertCircle, 
+  Check,
+  Camera,
+  Sparkles,
+  Terminal,
+  Gem
+} from 'lucide-react';
 import { ProfileTheme, UserSession } from '@/types/profile';
-import { PROFILE_THEMES } from '@/components/themeStyles';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CreateProfileClientProps {
   user: UserSession;
 }
 
+interface ThemeCardData {
+  id: ProfileTheme;
+  title: string;
+  subtitle: string;
+  accent: string;
+  thumbnailBg: string;
+  previewCardBg: string;
+  previewBorder: string;
+  previewAccent: string;
+}
+
+const THEME_CARDS: ThemeCardData[] = [
+  {
+    id: 'editorial',
+    title: 'Editorial Minimal',
+    subtitle: 'Clean · Classy · Professional',
+    accent: '#C2410C',
+    thumbnailBg: 'bg-[#FAFAF9]',
+    previewCardBg: 'bg-white',
+    previewBorder: 'border-stone-200',
+    previewAccent: 'bg-[#C2410C]'
+  },
+  {
+    id: 'cyber',
+    title: 'Developer Terminal',
+    subtitle: 'Dark · Techy · Modern',
+    accent: '#10B981',
+    thumbnailBg: 'bg-[#09090B]',
+    previewCardBg: 'bg-[#18181B]',
+    previewBorder: 'border-zinc-800',
+    previewAccent: 'bg-[#10B981]'
+  },
+  {
+    id: 'luxe',
+    title: 'Luxe Velvet',
+    subtitle: 'Rich · Bold · Premium',
+    accent: '#FB7185',
+    thumbnailBg: 'bg-[#0D0509]',
+    previewCardBg: 'bg-[#1A0C14]',
+    previewBorder: 'border-[#4C1D38]',
+    previewAccent: 'bg-[#FB7185]'
+  }
+];
+
 export function CreateProfileClient({ user }: CreateProfileClientProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const returnUrl = searchParams.get('returnUrl');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [name, setName] = useState(user.name || '');
-  const [designation, setDesignation] = useState('');
-  const [company, setCompany] = useState('Avtive');
-  const [location, setLocation] = useState('Islamabad, Pakistan');
-  const [phone, setPhone] = useState('');
-  const [shortBio, setShortBio] = useState('');
-  const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>('elegant');
+  // Step 1: Choose Theme (1/3), Step 2: Add Profile Details (2/3)
+  const [step, setStep] = useState<1 | 2>(1);
+
+  // Form State
+  const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>('editorial');
+  const [profileName, setProfileName] = useState('MERN Developer');
+  const [fullName, setFullName] = useState(user.name || 'Aleena Nawab');
+  const [professionalTitle, setProfessionalTitle] = useState('Full Stack Developer');
+  const [bio, setBio] = useState('Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.');
+  const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
+  const [profileType, setProfileType] = useState<'individual' | 'team-member' | 'company'>('individual');
+
+  const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle Photo Upload
+  const handlePhotoUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setErrorMessage('Please upload a valid image file.');
+      return;
+    }
+    setErrorMessage(null);
+
+    // Instant local preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (reader.result) setAvatar(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to server
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setAvatar(data.url);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Submit Profile Creation
+  const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!name.trim()) {
-      setErrorMessage('Please provide your name.');
+    if (!profileName.trim() || !fullName.trim()) {
+      setErrorMessage('Please provide both a profile name and your full name.');
       return;
     }
 
@@ -42,233 +137,317 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim(),
-          designation: designation.trim() || 'Professional',
-          company: company.trim() || 'Avtive',
-          location: location.trim() || 'Global',
-          phone: phone.trim(),
-          whatsapp: phone.trim(),
-          shortBio: shortBio.trim() || 'Welcome to my digital profile on Avtive.',
-          theme: selectedTheme
+          profileName: profileName.trim(),
+          name: fullName.trim(),
+          profession: professionalTitle.trim() || profileName.trim(),
+          designation: professionalTitle.trim() || profileName.trim(),
+          shortBio: bio.trim(),
+          avatar,
+          theme: selectedTheme,
+          type: profileType
         })
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMessage(data.error || 'Failed to create profile. Please try again.');
+        setErrorMessage(data.error || 'Failed to create profile.');
         setIsLoading(false);
         return;
       }
 
-      // Success: Redirect to their new profile or return destination
-      const slug = data.profile?.slug || data.profile?.id;
-      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/create-profile')) {
-        router.push(returnUrl);
-      } else if (slug) {
-        router.push(`/profile/${slug}`);
-      } else {
-        router.push('/my-profile');
-      }
+      // Success: redirect directly to the new profile or dashboard
+      router.push('/dashboard');
       router.refresh();
     } catch (err: any) {
       console.error(err);
-      setErrorMessage('Network error while saving profile. Please try again.');
+      setErrorMessage('Network error while creating profile.');
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#121216] border border-slate-200 dark:border-white/10 shadow-2xl p-6 sm:p-8 space-y-6 text-left">
-      {/* Brand & Heading */}
-      <div className="text-center space-y-2">
-        <div className="flex justify-center mb-2">
-          <Link href="/" className="inline-flex items-center gap-2 group">
-            <img src="/images/avtive-symbol.png" alt="Avtive" className="h-8 w-auto object-contain" />
-            <span className="font-bold text-lg text-slate-900 dark:text-white">Avtive</span>
-          </Link>
-        </div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Create Your Digital Profile
-        </h1>
-        <p className="text-xs text-slate-600 dark:text-slate-400">
-          Complete your profile to generate your verified contactless pass card and identity page.
-        </p>
-      </div>
-
-      {/* Error Alert */}
-      {errorMessage && (
-        <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs flex items-center gap-2.5">
-          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
-          <span>{errorMessage}</span>
-        </div>
-      )}
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Full Name */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-slate-900 dark:text-white">
-            Full Name *
-          </label>
-          <div className="relative">
-            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Syed Mesum Raza Shah"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-xs font-medium bg-slate-50 dark:bg-[#18181D] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400"
-            />
-          </div>
-        </div>
-
-        {/* Professional Title & Organization */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-900 dark:text-white">
-              Professional Title / Role
-            </label>
-            <div className="relative">
-              <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={designation}
-                onChange={(e) => setDesignation(e.target.value)}
-                placeholder="e.g. Software Engineer"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-xs font-medium bg-slate-50 dark:bg-[#18181D] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-900 dark:text-white">
-              Company / Organization
-            </label>
-            <div className="relative">
-              <Building className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                placeholder="e.g. Avtive"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-xs font-medium bg-slate-50 dark:bg-[#18181D] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Location & Phone */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-900 dark:text-white">
-              Location
-            </label>
-            <div className="relative">
-              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Islamabad, Pakistan"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-xs font-medium bg-slate-50 dark:bg-[#18181D] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-900 dark:text-white">
-              Phone / WhatsApp
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="e.g. +92 312 5175041"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-xs font-medium bg-slate-50 dark:bg-[#18181D] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Short Bio */}
-        <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-slate-900 dark:text-white">
-            Short Bio
-          </label>
-          <div className="relative">
-            <FileText className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
-            <textarea
-              rows={2}
-              value={shortBio}
-              onChange={(e) => setShortBio(e.target.value)}
-              placeholder="Brief professional intro for your digital card..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/15 text-xs font-medium bg-slate-50 dark:bg-[#18181D] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-400 resize-none"
-            />
-          </div>
-        </div>
-
-        {/* Theme Selection */}
-        <div className="space-y-2">
-          <label className="block text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-            <Palette className="w-3.5 h-3.5 text-slate-400" />
-            <span>Profile Theme</span>
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {Object.values(PROFILE_THEMES).map((t) => (
+    <div className="w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-7 shadow-sm text-slate-900 dark:text-white transition-colors">
+      <AnimatePresence mode="wait">
+        {step === 1 ? (
+          /* ========================================================================= */
+          /* SCREEN 2: CHOOSE THEME                                                    */
+          /* ========================================================================= */
+          <motion.div
+            key="step1"
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 16 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
+            {/* Top Bar: Back & Step Indicator */}
+            <div className="flex items-center justify-between">
               <button
-                key={t.id}
                 type="button"
-                onClick={() => setSelectedTheme(t.id)}
-                className={`p-2.5 rounded-xl border text-left text-xs font-bold transition-all ${
-                  selectedTheme === t.id
-                    ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-white/10 shadow-xs'
-                    : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#18181D] hover:opacity-90'
-                }`}
+                onClick={() => router.back()}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                title="Back"
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-bold truncate">{t.name}</span>
-                  <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-200 dark:bg-white/10">{t.tag}</span>
-                </div>
-                <p className="text-[9px] text-slate-500 line-clamp-1">{t.description}</p>
+                <ArrowLeft className="w-4 h-4" />
               </button>
-            ))}
-          </div>
-        </div>
+              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
+                1/3
+              </span>
+            </div>
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black font-bold text-xs shadow-md transition-all active:scale-[0.99] disabled:opacity-50 mt-2"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Saving Profile...</span>
-            </>
-          ) : (
-            <>
-              <span>Create Profile & View Digital Card</span>
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
-        </button>
-      </form>
+            {/* Header */}
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Choose Your Theme
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">
+                Pick a style that matches your vibe. You can change it later.
+              </p>
+            </div>
 
-      {/* Info notice */}
-      <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#18181D] border border-slate-200 dark:border-white/10 text-left space-y-1">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase font-mono">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Same-Page Editing & NFC Ready</span>
-        </div>
-        <p className="text-[11px] text-slate-600 dark:text-slate-400">
-          Once created, you can edit your profile inline anytime, change themes, share your QR pass, or link to organizations.
-        </p>
-      </div>
+            {/* Theme Cards List */}
+            <div className="space-y-3 pt-1">
+              {THEME_CARDS.map((theme) => {
+                const isSelected = selectedTheme === theme.id;
+                return (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    onClick={() => setSelectedTheme(theme.id)}
+                    className={`w-full text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3.5 ${
+                      isSelected
+                        ? 'border-slate-900 dark:border-white shadow-xs ring-1 ring-slate-900/10 dark:ring-white/20 bg-slate-50/50 dark:bg-zinc-800/30'
+                        : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-[#18181B]'
+                    }`}
+                  >
+                    {/* Left: Thumbnail Preview & Metadata */}
+                    <div className="flex items-center gap-3.5">
+                      {/* Mini Preview Thumbnail */}
+                      <div className={`w-14 h-11 rounded-lg ${theme.thumbnailBg} border ${theme.previewBorder} p-1.5 flex flex-col justify-between shrink-0 shadow-2xs overflow-hidden`}>
+                        <div className="flex items-center gap-1">
+                          <div className={`w-2.5 h-2.5 rounded-full ${theme.previewAccent}`} />
+                          <div className="w-5 h-1 rounded-full bg-slate-400/40" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="w-7 h-1 rounded-full bg-slate-400/30" />
+                          <div className="w-4 h-1 rounded-full bg-slate-400/20" />
+                        </div>
+                      </div>
+
+                      {/* Labels */}
+                      <div className="space-y-0.5">
+                        <div className="text-sm font-bold text-slate-900 dark:text-white">
+                          {theme.title}
+                        </div>
+                        <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                          {theme.subtitle}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Radio Selector */}
+                    <div className="shrink-0 pr-1">
+                      <div
+                        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                          isSelected
+                            ? 'border-2'
+                            : 'border border-slate-300 dark:border-zinc-600'
+                        }`}
+                        style={{
+                          borderColor: isSelected ? theme.accent : undefined
+                        }}
+                      >
+                        {isSelected && (
+                          <div
+                            className="w-2.5 h-2.5 rounded-full"
+                            style={{ backgroundColor: theme.accent }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Bottom Action: Next */}
+            <div className="pt-4">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm transition-all active:scale-[0.99] shadow-sm"
+              >
+                Next
+              </button>
+            </div>
+          </motion.div>
+        ) : (
+          /* ========================================================================= */
+          /* SCREEN 3: CREATE YOUR PROFILE                                             */
+          /* ========================================================================= */
+          <motion.div
+            key="step2"
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -16 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
+            {/* Top Bar: Back & Step Indicator */}
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                title="Back to theme selection"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
+                2/3
+              </span>
+            </div>
+
+            {/* Header */}
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Create Your Profile
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">
+                Add your basic information to get started.
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {/* Avatar with Edit Badge */}
+            <div className="flex justify-center pt-1 pb-2">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-slate-200 dark:border-zinc-700 shadow-sm bg-slate-100 dark:bg-zinc-800">
+                  <img
+                    src={avatar}
+                    alt={fullName}
+                    className="w-full h-full object-cover"
+                  />
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Edit Pencil Icon Badge */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center justify-center text-slate-700 dark:text-zinc-200 hover:scale-105 transition-transform"
+                  title="Upload profile photo"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handlePhotoUpload(file);
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleCreateProfile} className="space-y-4">
+              {/* Profile Name */}
+              <div className="space-y-1.5 text-left">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                  Profile Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  placeholder="e.g. MERN Developer"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500"
+                />
+              </div>
+
+              {/* Full Name */}
+              <div className="space-y-1.5 text-left">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="e.g. Aleena Nawab"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500"
+                />
+              </div>
+
+              {/* Professional Title */}
+              <div className="space-y-1.5 text-left">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                  Professional Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={professionalTitle}
+                  onChange={(e) => setProfessionalTitle(e.target.value)}
+                  placeholder="e.g. Full Stack Developer"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500"
+                />
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-1.5 text-left">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                  Bio
+                </label>
+                <textarea
+                  rows={3}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="Passionate developer with a love for building modern web applications..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500 resize-none"
+                />
+              </div>
+
+              {/* Bottom Action: Next / Create */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-sm disabled:opacity-50"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Creating Profile...</span>
+                    </>
+                  ) : (
+                    <span>Next</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

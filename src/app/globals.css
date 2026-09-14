@@ -88,3 +88,292 @@ html, body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
 }
+
+/* ========================================================================= */
+/* DYNAMIC CSS VARIABLE THEME ENGINE                                         */
+/* Enables real-time, isolated theme rendering per profile with 0 page reload*/
+/* ========================================================================= */
+
+[data-theme] {
+  transition: background-color 0.2s ease,
+              border-color 0.2s ease,
+              color 0.2s ease,
+              box-shadow 0.2s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ========================================================================= */
+/* THEME 1: EDITORIAL (Light & Dark)                                        */
+/* ========================================================================= */
+
+[data-theme="editorial"] {
+  /* Editorial Light (Warm off-white, crisp cards, subtle borders, terracotta) */
+  --bg-primary: #FAFAF9;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F5F5F4;
+  --border-color: #E5E5E5;
+  --border-hover: #C2410C;
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #78716C;
+  --accent: #C2410C;
+  --accent-hover: #9A3412;
+  --accent-soft: rgba(194, 65, 12, 0.08);
+  --accent-border: rgba(194, 65, 12, 0.25);
+  --font-heading: 'Inter', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Inter', monospace;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --radius-pill: 9999px;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --glow: none;
+
+  /* Compatibility tokens */
+  --theme-bg: #FAFAF9;
+  --theme-card: #FFFFFF;
+  --theme-border: #E5E5E5;
+  --theme-accent: #C2410C;
+  --theme-accent-hover: #9A3412;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 12px;
+  --theme-radius-btn: 8px;
+}
+
+:where(.dark, .dark *) [data-theme="editorial"],
+[data-theme="editorial"]:where(.dark, .dark *) {
+  /* Editorial Dark (Warm dark background, slightly lighter cards, terracotta) */
+  --bg-primary: #1C1917;
+  --bg-surface: #24201E;
+  --bg-card: #292524;
+  --bg-elevated: #332E2C;
+  --border-color: rgba(255, 255, 255, 0.12);
+  --border-hover: #EA580C;
+  --text-primary: #FAF8F5;
+  --text-secondary: #D6D3D1;
+  --text-muted: #A8A29E;
+  --accent: #EA580C;
+  --accent-hover: #F97316;
+  --accent-soft: rgba(234, 88, 12, 0.15);
+  --accent-border: rgba(234, 88, 12, 0.35);
+
+  --theme-bg: #1C1917;
+  --theme-card: #292524;
+  --theme-border: rgba(255, 255, 255, 0.12);
+  --theme-accent: #EA580C;
+  --theme-accent-hover: #F97316;
+}
+
+/* ========================================================================= */
+/* THEME 2: DEVELOPER / CYBER (Light & Dark)                                */
+/* ========================================================================= */
+
+[data-theme="developer"],
+[data-theme="cyber"] {
+  /* Developer Light (Clean light background, dark text, subtle emerald accent) */
+  --bg-primary: #F4F4F5;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #E4E4E7;
+  --border-color: #E4E4E7;
+  --border-hover: #059669;
+  --text-primary: #09090B;
+  --text-secondary: #52525B;
+  --text-muted: #71717A;
+  --accent: #059669;
+  --accent-hover: #047857;
+  --accent-soft: rgba(5, 150, 105, 0.08);
+  --accent-border: rgba(5, 150, 105, 0.25);
+  --font-heading: 'Inter', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Inter', monospace;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --radius-pill: 9999px;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --glow: none;
+
+  --theme-bg: #F4F4F5;
+  --theme-card: #FFFFFF;
+  --theme-border: #E4E4E7;
+  --theme-accent: #059669;
+  --theme-accent-hover: #047857;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 12px;
+  --theme-radius-btn: 8px;
+}
+
+:where(.dark, .dark *) [data-theme="developer"],
+:where(.dark, .dark *) [data-theme="cyber"],
+[data-theme="developer"]:where(.dark, .dark *),
+[data-theme="cyber"]:where(.dark, .dark *) {
+  /* Developer Dark (Near-black background, obsidian cards, subtle emerald) */
+  --bg-primary: #09090B;
+  --bg-surface: #121215;
+  --bg-card: #18181B;
+  --bg-elevated: #27272A;
+  --border-color: #27272A;
+  --border-hover: #10B981;
+  --text-primary: #F4F4F5;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --accent: #10B981;
+  --accent-hover: #059669;
+  --accent-soft: rgba(16, 185, 129, 0.12);
+  --accent-border: rgba(16, 185, 129, 0.35);
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+
+  --theme-bg: #09090B;
+  --theme-card: #18181B;
+  --theme-border: #27272A;
+  --theme-accent: #10B981;
+  --theme-accent-hover: #059669;
+}
+
+/* ========================================================================= */
+/* THEME 3: LUXE (Light & Dark)                                             */
+/* ========================================================================= */
+
+[data-theme="luxe"] {
+  /* Luxe Light (Warm neutral background, white cards, restrained rose/clay) */
+  --bg-primary: #FAF5F0;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F5EBE1;
+  --border-color: #EADFD5;
+  --border-hover: #BE123C;
+  --text-primary: #2B1D24;
+  --text-secondary: #785966;
+  --text-muted: #9E7B8B;
+  --accent: #BE123C;
+  --accent-hover: #9F1239;
+  --accent-soft: rgba(190, 18, 60, 0.08);
+  --accent-border: rgba(190, 18, 60, 0.25);
+  --font-heading: 'Inter', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'Inter', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-card: 14px;
+  --radius-btn: 9999px;
+  --radius-pill: 9999px;
+  --card-shadow: 0 2px 8px 0 rgba(190, 18, 60, 0.06);
+  --glow: none;
+
+  --theme-bg: #FAF5F0;
+  --theme-card: #FFFFFF;
+  --theme-border: #EADFD5;
+  --theme-accent: #BE123C;
+  --theme-accent-hover: #9F1239;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 14px;
+  --theme-radius-btn: 9999px;
+}
+
+:where(.dark, .dark *) [data-theme="luxe"],
+[data-theme="luxe"]:where(.dark, .dark *) {
+  /* Luxe Dark (Deep rich background, deep burgundy cards, restrained rose) */
+  --bg-primary: #0D0509;
+  --bg-surface: #14080F;
+  --bg-card: #1A0C14;
+  --bg-elevated: #25101D;
+  --border-color: #4C1D38;
+  --border-hover: #FB7185;
+  --text-primary: #FFF1F2;
+  --text-secondary: #FDA4AF;
+  --text-muted: #9F1239;
+  --accent: #FB7185;
+  --accent-hover: #E11D48;
+  --accent-soft: rgba(225, 29, 72, 0.15);
+  --accent-border: rgba(225, 29, 72, 0.3);
+  --card-shadow: 0 6px 25px -4px rgba(0, 0, 0, 0.6);
+
+  --theme-bg: #0D0509;
+  --theme-card: #1A0C14;
+  --theme-border: #4C1D38;
+  --theme-accent: #FB7185;
+  --theme-accent-hover: #E11D48;
+}
+
+/* ========================================================================= */
+/* TYPOGRAPHY UTILITY HELPER CLASSES - STRICTLY INTER ONLY                  */
+/* ========================================================================= */
+
+.font-heading,
+.font-body,
+.font-mono-code {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* Legacy theme aliases mapped smoothly to standard system */
+[data-theme="elegant"] {
+  --theme-bg: #FAFAF9;
+  --theme-card: #FFFFFF;
+  --theme-border: #E5E5E5;
+  --theme-accent: #C2410C;
+  --theme-accent-hover: #9A3412;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 12px;
+  --theme-radius-btn: 8px;
+}
+
+[data-theme="dark"] {
+  --theme-bg: #09090B;
+  --theme-card: #18181B;
+  --theme-border: #27272A;
+  --theme-accent: #10B981;
+  --theme-accent-hover: #059669;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 12px;
+  --theme-radius-btn: 8px;
+}
+
+[data-theme="minimal"] {
+  --theme-bg: #F4F4F5;
+  --theme-card: #FFFFFF;
+  --theme-border: #E4E4E7;
+  --theme-accent: #18181B;
+  --theme-accent-hover: #09090B;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 12px;
+  --theme-radius-btn: 8px;
+}
+
+[data-theme="professional"] {
+  --theme-bg: #F4F4F5;
+  --theme-card: #FFFFFF;
+  --theme-border: #E4E4E7;
+  --theme-accent: #059669;
+  --theme-accent-hover: #047857;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 12px;
+  --theme-radius-btn: 8px;
+}
+
+[data-theme="modern"] {
+  --theme-bg: #F4F4F5;
+  --theme-card: #FFFFFF;
+  --theme-border: #E4E4E7;
+  --theme-accent: #059669;
+  --theme-accent-hover: #047857;
+  --theme-font-heading: 'Inter', sans-serif;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-radius-card: 12px;
+  --theme-radius-btn: 8px;
+}
+

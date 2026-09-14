@@ -197,12 +197,102 @@ export const PROFILE_THEMES: Record<ProfileTheme, ThemeConfig> = {
     pillTheme: 'bg-emerald-100 text-emerald-800',
     coverFallback: 'bg-white dark:bg-[#071511]',
     accentRim: 'bg-gradient-to-r from-transparent via-emerald-500 to-transparent'
+  },
+  editorial: {
+    id: 'editorial',
+    name: 'Editorial Minimal',
+    tag: 'Editorial',
+    description: 'Clean, classy, and professional with warm terracotta accents and plenty of whitespace',
+    previewClass: 'bg-[#FAFAF9] dark:bg-[#1C1917] border-[#E5E5E5] dark:border-white/10 text-stone-900 dark:text-white',
+    pageBg: 'bg-[#FAFAF9] dark:bg-[#1C1917]',
+    headerBg: 'bg-[#FAFAF9]/95 dark:bg-[#1C1917]/95 border-[#E5E5E5] dark:border-white/10',
+    container: 'bg-[#FFFFFF] dark:bg-[#292524] text-stone-900 dark:text-stone-100 border border-[#E5E5E5] dark:border-white/10 shadow-sm rounded-xl',
+    cardBg: 'bg-[#FFFFFF] dark:bg-[#292524]',
+    cardBorder: 'border-[#E5E5E5] dark:border-white/10',
+    subCardBg: 'bg-[#FAFAF9] dark:bg-[#24201E]',
+    subCardBorder: 'border-[#E5E5E5] dark:border-white/10',
+    hoverBorder: 'hover:border-[#C2410C]/60 dark:hover:border-[#EA580C]/60',
+    textPrimary: 'text-stone-900 dark:text-stone-100 font-sans',
+    textSecondary: 'text-stone-600 dark:text-stone-400',
+    textMuted: 'text-stone-400 dark:text-stone-500',
+    accentText: 'text-[#C2410C] dark:text-[#EA580C]',
+    badgeBg: 'bg-[#C2410C]/10 dark:bg-[#EA580C]/15',
+    badgeText: 'text-[#C2410C] dark:text-[#EA580C] border border-[#C2410C]/25 dark:border-[#EA580C]/30 font-medium',
+    btnPrimary: 'bg-[#C2410C] hover:bg-[#9A3412] dark:bg-[#EA580C] dark:hover:bg-[#C2410C] text-white font-medium rounded-lg shadow-xs',
+    btnSecondary: 'bg-[#FAFAF9] hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-[#E5E5E5] dark:border-stone-700 rounded-lg',
+    divider: 'border-[#E5E5E5] dark:border-white/10',
+    fontFamily: 'font-sans',
+    pillTheme: 'bg-stone-100 dark:bg-stone-800 text-[#C2410C] dark:text-[#EA580C]',
+    coverFallback: 'bg-[#FAFAF9] dark:bg-[#1C1917]',
+    accentRim: 'bg-gradient-to-r from-transparent via-[#C2410C] to-transparent'
+  },
+  cyber: {
+    id: 'cyber',
+    name: 'Developer Terminal',
+    tag: 'Developer',
+    description: 'Clean modern developer identity with crisp emerald accents and high readability',
+    previewClass: 'bg-[#F4F4F5] dark:bg-[#09090B] border-[#E4E4E7] dark:border-[#27272A] text-slate-900 dark:text-[#10B981]',
+    pageBg: 'bg-[#F4F4F5] dark:bg-[#09090B]',
+    headerBg: 'bg-white/95 dark:bg-[#09090B]/95 border-[#E4E4E7] dark:border-[#27272A]',
+    container: 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-zinc-100 border border-[#E4E4E7] dark:border-[#27272A] shadow-sm rounded-xl',
+    cardBg: 'bg-white dark:bg-[#18181B]',
+    cardBorder: 'border-[#E4E4E7] dark:border-[#27272A]',
+    subCardBg: 'bg-[#F4F4F5] dark:bg-[#121215]',
+    subCardBorder: 'border-[#E4E4E7] dark:border-[#27272A]',
+    hoverBorder: 'hover:border-[#059669]/60 dark:hover:border-[#10B981]/70',
+    textPrimary: 'text-slate-900 dark:text-zinc-100 font-sans',
+    textSecondary: 'text-slate-600 dark:text-zinc-400',
+    textMuted: 'text-slate-400 dark:text-zinc-500',
+    accentText: 'text-[#059669] dark:text-[#10B981]',
+    badgeBg: 'bg-[#059669]/10 dark:bg-[#10B981]/10',
+    badgeText: 'text-[#059669] dark:text-[#10B981] border border-[#059669]/20 dark:border-[#10B981]/30 font-medium text-xs',
+    btnPrimary: 'bg-[#059669] hover:bg-[#047857] dark:bg-[#10B981] dark:hover:bg-[#059669] text-white dark:text-black font-semibold rounded-lg shadow-xs',
+    btnSecondary: 'bg-[#F4F4F5] hover:bg-slate-200 dark:bg-[#27272A] dark:hover:bg-zinc-700 text-slate-900 dark:text-zinc-100 border border-[#E4E4E7] dark:border-[#3F3F46] rounded-lg',
+    divider: 'border-[#E4E4E7] dark:border-[#27272A]',
+    fontFamily: 'font-sans',
+    pillTheme: 'bg-emerald-50 dark:bg-zinc-800 text-[#059669] dark:text-[#10B981]',
+    coverFallback: 'bg-[#F4F4F5] dark:bg-[#18181B]',
+    accentRim: 'bg-gradient-to-r from-transparent via-[#10B981] to-transparent'
+  },
+  luxe: {
+    id: 'luxe',
+    name: 'Luxe Velvet',
+    tag: 'Executive',
+    description: 'Rich, bold, and premium with deep burgundy backdrop and restrained rose accents',
+    previewClass: 'bg-[#FAF5F0] dark:bg-[#0D0509] border-[#EADFD5] dark:border-[#4C1D38] text-rose-950 dark:text-[#FB7185]',
+    pageBg: 'bg-[#FAF5F0] dark:bg-[#0D0509]',
+    headerBg: 'bg-[#FAF5F0]/95 dark:bg-[#0D0509]/95 border-[#EADFD5] dark:border-[#4C1D38]',
+    container: 'bg-white dark:bg-[#1A0C14] text-rose-950 dark:text-rose-50 border border-[#EADFD5] dark:border-[#4C1D38] shadow-sm rounded-2xl',
+    cardBg: 'bg-white dark:bg-[#1A0C14]',
+    cardBorder: 'border-[#EADFD5] dark:border-[#4C1D38]',
+    subCardBg: 'bg-[#FAF5F0] dark:bg-[#14080F]',
+    subCardBorder: 'border-[#EADFD5] dark:border-[#4C1D38]',
+    hoverBorder: 'hover:border-[#BE123C]/60 dark:hover:border-[#FB7185]/70',
+    textPrimary: 'text-rose-950 dark:text-rose-50 font-sans tracking-tight',
+    textSecondary: 'text-rose-800/80 dark:text-rose-200/70',
+    textMuted: 'text-rose-500/70 dark:text-rose-300/40',
+    accentText: 'text-[#BE123C] dark:text-[#FB7185]',
+    badgeBg: 'bg-[#BE123C]/10 dark:bg-[#E11D48]/15',
+    badgeText: 'text-[#BE123C] dark:text-[#FB7185] border border-[#BE123C]/20 dark:border-[#E11D48]/30 font-medium rounded-full',
+    btnPrimary: 'bg-[#BE123C] hover:bg-[#9F1239] dark:bg-gradient-to-r dark:from-[#E11D48] dark:to-[#FB7185] text-white font-semibold rounded-full shadow-xs',
+    btnSecondary: 'bg-[#FAF5F0] hover:bg-rose-100 dark:bg-[#4C1D38]/50 dark:hover:bg-[#4C1D38]/80 text-rose-950 dark:text-rose-100 border border-[#EADFD5] dark:border-[#4C1D38] rounded-full',
+    divider: 'border-[#EADFD5] dark:border-[#4C1D38]',
+    fontFamily: 'font-sans',
+    pillTheme: 'bg-rose-100 dark:bg-[#4C1D38] text-[#BE123C] dark:text-[#FB7185]',
+    coverFallback: 'bg-[#FAF5F0] dark:bg-[#1A0C14]',
+    accentRim: 'bg-gradient-to-r from-transparent via-[#BE123C] to-transparent'
   }
 };
 
 export function getThemeConfig(theme?: ProfileTheme | string): ThemeConfig {
-  if (!theme || theme === 'default') {
-    return PROFILE_THEMES.elegant;
+  if (!theme || theme === 'default' || theme === 'editorial') {
+    return PROFILE_THEMES.editorial;
   }
-  return PROFILE_THEMES[theme as ProfileTheme] || PROFILE_THEMES.elegant;
+  if (theme === 'cyber' || (theme as any) === 'developer') {
+    return PROFILE_THEMES.cyber;
+  }
+  if (theme === 'luxe') {
+    return PROFILE_THEMES.luxe;
+  }
+  return PROFILE_THEMES[theme as ProfileTheme] || PROFILE_THEMES.editorial;
 }

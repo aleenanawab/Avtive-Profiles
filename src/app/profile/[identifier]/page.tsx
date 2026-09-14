@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getProfileByIdOrSlug } from '@/lib/db';
+import { getProfileByIdOrSlug, sanitizeProfileForPublic } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { PublicProfileClient } from './PublicProfileClient';
 import { ArrowLeft, UserX } from 'lucide-react';
@@ -78,9 +78,14 @@ export default async function ProfilePage({ params }: PageProps) {
     session?.id && profile.userId && session.id === profile.userId
   );
 
+  // 3. ZERO TOLERANCE SERVER-SIDE FILTERING:
+  // If caller is NOT the owner, sanitize the profile data server-side
+  // so hidden contact info, experience, etc. are strictly omitted before sending to client
+  const servedProfile = sanitizeProfileForPublic(profile, isOwner);
+
   return (
     <PublicProfileClient
-      initialProfile={profile}
+      initialProfile={servedProfile}
       session={session}
       isOwner={isOwner}
     />
