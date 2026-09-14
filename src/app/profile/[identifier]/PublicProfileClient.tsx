@@ -10,6 +10,7 @@ import {
 } from '@/types/profile';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { getThemeConfig } from '@/components/themeStyles';
+import { ShareModal } from '@/components/ShareModal';
 import { 
   Sun, 
   Moon, 
@@ -42,6 +43,7 @@ export function PublicProfileClient({
   const [isDark, setIsDark] = useState(false);
   const [viewMode, setViewMode] = useState<'standard' | 'web'>('standard');
   const [isEditing, setIsEditing] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const activeThemeConfig = getThemeConfig(activeTheme);
@@ -135,8 +137,8 @@ export function PublicProfileClient({
             </span>
           </div>
 
-          {/* Middle: Profile Type Switcher (Owner / Employee / Company visibly in header) */}
-          <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-slate-100/90 dark:bg-zinc-900/90 border border-slate-200/80 dark:border-zinc-800/80 shadow-2xs">
+          {/* Middle: Profile Type Switcher (Owner / Employee / Company visibly in desktop/tablet header frame only) */}
+          <div className="hidden md:flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-slate-100/90 dark:bg-zinc-900/90 border border-slate-200/80 dark:border-zinc-800/80 shadow-2xs">
             <Link
               href="/profile/syedmesumraza"
               className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
@@ -211,15 +213,16 @@ export function PublicProfileClient({
               {viewMode === 'web' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
             </button>
 
-            {/* Share Button (in-flow link to /share) */}
-            <Link
-              href={`/profile/${identifier}/share`}
-              className="hidden sm:flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs font-semibold text-slate-700 dark:text-zinc-200 transition-colors shadow-2xs"
-              title="Share Profile"
+            {/* Share Button (triggers granular 4-step share modal) */}
+            <button
+              type="button"
+              onClick={() => setIsShareModalOpen(true)}
+              className="hidden sm:flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs font-semibold text-slate-700 dark:text-zinc-200 transition-colors shadow-2xs cursor-pointer"
+              title="Share Profile Pass"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span className="text-[11px]">Share</span>
-            </Link>
+            </button>
 
             {/* Theme Toggle Button */}
             <button
@@ -277,7 +280,7 @@ export function PublicProfileClient({
             onCancelEdit={() => setIsEditing(false)}
             onSaveEdits={handleSaveEdits}
             onSaveContact={() => showToast('Contact information saved!')}
-            onOpenShare={() => router.push(`/profile/${identifier}/share`)}
+            onOpenShare={() => setIsShareModalOpen(true)}
             onOpenConnect={() => showToast('Connected!')}
             onOpenQRModal={() => {}}
             onOpenResumeModal={() => {}}
@@ -312,13 +315,14 @@ export function PublicProfileClient({
             <span className="text-[10px] font-medium">Profiles</span>
           </Link>
 
-          <Link
-            href={`/profile/${identifier}/share`}
-            className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+          <button
+            type="button"
+            onClick={() => setIsShareModalOpen(true)}
+            className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
           >
             <Share2 className="w-5 h-5" />
             <span className="text-[10px] font-medium">Share</span>
-          </Link>
+          </button>
 
           {isOwner && (
             <button
@@ -332,6 +336,17 @@ export function PublicProfileClient({
           )}
         </div>
       </nav>
+      {/* Granular 4-Step Share Modal */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        profile={profile}
+        onCopySuccess={() => showToast('Profile link copied to clipboard!')}
+        onUpdateProfile={(updated) => {
+          setProfile(updated);
+          showToast('Sharing & privacy settings saved!');
+        }}
+      />
     </div>
   );
 }

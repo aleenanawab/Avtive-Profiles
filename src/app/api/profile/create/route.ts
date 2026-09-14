@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
 
     const newProfile = await createProfileForUser(session.id, {
       name,
+      type: body.type || 'owner',
       profileName,
       profession: body.profession?.trim() || body.designation?.trim() || 'Professional',
       email: session.email,
