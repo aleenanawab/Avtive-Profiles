@@ -32,7 +32,7 @@ ${profile.fullBio || profile.shortBio || 'No summary provided.'}
 
 CORE COMPETENCIES & SERVICES
 -----------------------------------------------------
-${profile.skills ? profile.skills.map(s => `• ${s.name}`).join('\n') : 'N/A'}
+${profile.skills ? profile.skills.map(s => typeof s === 'string' ? `• ${s}` : `• ${s.name}`).join('\n') : 'N/A'}
 ${profile.services ? profile.services.map(s => `• ${s.title}`).join('\n') : ''}
 
 PROFESSIONAL EXPERIENCE
@@ -111,7 +111,7 @@ Profile URL: https://www.avtive.app/profile/${profile.slug || profile.id}
                 {profile.skills.map((skill, idx) => (
                   <div key={idx} className={`flex items-center gap-2 text-xs ${theme.textPrimary}`}>
                     <CheckCircle2 className={`w-3.5 h-3.5 ${theme.accentText} shrink-0`} />
-                    <span>{skill.name}</span>
+                    <span>{typeof skill === 'string' ? skill : skill.name}</span>
                   </div>
                 ))}
               </div>

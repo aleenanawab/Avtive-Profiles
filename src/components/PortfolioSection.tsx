@@ -40,26 +40,28 @@ export function PortfolioSection({
             className={`group cursor-pointer rounded-2xl overflow-hidden ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} transition-all shadow-2xs hover:shadow-md`}
           >
             {/* Visual Project Image - Clean, no dark washes */}
-            {project.coverImage && (
+            {(project.image || project.coverImage) && (
               <div className={`relative h-52 sm:h-60 w-full overflow-hidden ${theme.coverFallback}`}>
                 <img
-                  src={project.coverImage}
+                  src={project.image || project.coverImage}
                   alt={project.title}
                   className={`w-full h-full object-cover ${project.imagePosition || 'object-center'} group-hover:scale-[1.02] transition-transform duration-300`}
                 />
                 
-                <div className="absolute top-3 left-3">
-                  <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${theme.btnPrimary} backdrop-blur-md shadow-xs`}>
-                    {project.category}
-                  </span>
-                </div>
+                {project.category && (
+                  <div className="absolute top-3 left-3">
+                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${theme.btnPrimary} backdrop-blur-md shadow-xs`}>
+                      {project.category}
+                    </span>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Project Content */}
             <div className="p-4 sm:p-5 space-y-2.5">
               <div>
-                {!project.coverImage && (
+                {!project.image && !project.coverImage && project.category && (
                   <span className={`inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold ${theme.badgeBg} ${theme.badgeText} mb-2 font-mono`}>
                     {project.category}
                   </span>

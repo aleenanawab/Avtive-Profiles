@@ -120,9 +120,9 @@ function DetailsStepContent() {
         return;
       }
 
-      // Requirement 1.3: User lands on their own unique dynamic profile edit route
-      const slug = data.profile?.slug || data.profile?.id;
-      router.push(`/profile/${slug}?welcome=true`);
+      // User lands on their own personal editable profile dashboard (Step 5)
+      const targetIdentifier = data.profile?.userId || data.profile?.slug || data.profile?.id;
+      router.push(`/profile/${targetIdentifier}/edit?welcome=true`);
       router.refresh();
     } catch (err) {
       console.error(err);
