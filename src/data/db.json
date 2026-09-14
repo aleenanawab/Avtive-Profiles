@@ -202,6 +202,13 @@
       "email": "e2e_user_1789385345449@avtive.app",
       "passwordHash": "hash-test-pass",
       "createdAt": "2026-09-14T11:29:05.465Z"
+    },
+    {
+      "id": "user-1789386362876-wo1bh",
+      "name": "Alex Vance",
+      "email": "e2e_user_1789386362854@avtive.app",
+      "passwordHash": "hash-test-pass",
+      "createdAt": "2026-09-14T11:46:02.876Z"
     }
   ],
   "profiles": {
@@ -5620,7 +5627,7 @@
       "profileName": "MERN Developer",
       "profession": "Full Stack Developer",
       "slug": "aleena-nawab-mern-developer-uu41",
-      "type": "individual",
+      "type": "company",
       "name": "ALEENA NAWAB",
       "email": "aleenaknawab@gmail.com",
       "designation": "Full Stack Developer",
@@ -5631,7 +5638,7 @@
       "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
       "phone": "",
       "whatsapp": "",
-      "theme": "editorial",
+      "theme": "cyber",
       "contactOrder": [
         "whatsapp",
         "phone",
@@ -5674,7 +5681,7 @@
         "education"
       ],
       "createdAt": "2026-09-14T10:29:45.980Z",
-      "updatedAt": "2026-09-14T10:30:24.300Z"
+      "updatedAt": "2026-09-14T11:33:44.254Z"
     },
     "aleena-nawab-mern-developer-uu41": {
       "id": "prof-1789381785980-rpal9",
@@ -5682,7 +5689,7 @@
       "profileName": "MERN Developer",
       "profession": "Full Stack Developer",
       "slug": "aleena-nawab-mern-developer-uu41",
-      "type": "individual",
+      "type": "company",
       "name": "ALEENA NAWAB",
       "email": "aleenaknawab@gmail.com",
       "designation": "Full Stack Developer",
@@ -5693,7 +5700,7 @@
       "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
       "phone": "",
       "whatsapp": "",
-      "theme": "editorial",
+      "theme": "cyber",
       "contactOrder": [
         "whatsapp",
         "phone",
@@ -5736,7 +5743,7 @@
         "education"
       ],
       "createdAt": "2026-09-14T10:29:45.980Z",
-      "updatedAt": "2026-09-14T10:30:24.300Z"
+      "updatedAt": "2026-09-14T11:33:44.254Z"
     },
     "aleena-mern": {
       "id": "aleena-mern",
