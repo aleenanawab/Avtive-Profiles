@@ -3,11 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Pencil, Globe, Mail, Phone, UserPlus, Share2, MessageSquare } from 'lucide-react';
+import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare } from 'lucide-react';
 import { ProfileData, normalizeProfileType } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon } from './BrandIcons';
 import { StatsRow } from './profiles/StatsRow';
+import { ProfileSwitcher } from './profiles/ProfileSwitcher';
 
 interface HeroSectionProps {
   profile: ProfileData;
@@ -78,17 +79,20 @@ export function HeroSection({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
 
-        {/* SECTION 4 RULE: Show ONLY the small edit icon on the cover image */}
-        {canEdit && (
-          <button
-            type="button"
-            onClick={onOpenEdit}
-            className="absolute bottom-3 right-3 sm:right-5 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
-            title="Edit Profile"
-          >
-            <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-          </button>
-        )}
+        {/* Cover Header Controls: Multi-Role Persona Switcher & Edit Icon */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-5 flex items-center gap-2 z-20">
+          <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} />
+          {canEdit && (
+            <button
+              type="button"
+              onClick={onOpenEdit}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              title="Edit Profile & Cover"
+            >
+              <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 2. Identity Header */}
@@ -131,24 +135,24 @@ export function HeroSection({
           </p>
         )}
 
-        {/* Action Buttons: [ Connect ] [ Share ] */}
+        {/* Action Buttons Below Avatar: [ Share ] [ Connect ] */}
         <div className="flex flex-wrap items-center gap-2.5 pt-1">
           <button
             type="button"
-            onClick={onOpenConnect}
-            className="flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+            onClick={onOpenShare}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer"
           >
-            <UserPlus className="w-4 h-4 text-amber-500 dark:text-amber-600" />
-            <span>+ Connect</span>
+            <Share2 className="w-4 h-4 text-amber-500 dark:text-amber-600" />
+            <span>Share</span>
           </button>
 
           <button
             type="button"
-            onClick={onOpenShare}
-            className="flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-900 dark:text-white font-bold text-xs border border-slate-200 dark:border-zinc-700 transition-all active:scale-[0.98] cursor-pointer"
+            onClick={onOpenConnect}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-900 dark:text-white font-bold text-xs border border-slate-200 dark:border-zinc-700 transition-all active:scale-[0.98] cursor-pointer"
           >
-            <Share2 className="w-4 h-4 text-slate-600 dark:text-zinc-300" />
-            <span>Share</span>
+            <UserPlus className="w-4 h-4 text-slate-600 dark:text-zinc-300" />
+            <span>+ Connect</span>
           </button>
         </div>
 

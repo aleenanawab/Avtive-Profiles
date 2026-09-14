@@ -6,6 +6,7 @@ import Link from 'next/link';
 import QRCode from 'qrcode';
 import { 
   ArrowLeft, 
+  ArrowRight,
   GripVertical, 
   Copy, 
   QrCode, 
@@ -23,9 +24,8 @@ import {
   Award,
   Eye,
   EyeOff,
-  ChevronDown,
-  ChevronUp,
-  Sparkles
+  Sparkles,
+  Download
 } from 'lucide-react';
 import { ProfileData, SharingSettings } from '@/types/profile';
 import { GithubIcon, LinkedInIcon, TwitterXIcon } from '@/components/BrandIcons';
@@ -46,33 +46,53 @@ const SECTION_DEFINITIONS: SectionItem[] = [
   { id: 'photo', key: 'photo', label: 'Profile Photo', icon: User },
   { id: 'nameAndTitle', key: 'nameAndTitle', label: 'Name & Title', icon: User },
   { id: 'bio', key: 'bio', label: 'Bio', icon: FileText },
-  { id: 'contactInfo', key: 'contactInfo', label: 'Contact Information', icon: Phone },
-  { id: 'socialLinks', key: 'socialLinks', label: 'Social Links', icon: Link2 },
   { id: 'skills', key: 'skills', label: 'Skills', icon: Code },
+  { id: 'projects', key: 'projects', label: 'Projects', icon: FolderGit2 },
   { id: 'experience', key: 'experience', label: 'Experience', icon: Briefcase },
   { id: 'education', key: 'education', label: 'Education', icon: GraduationCap },
-  { id: 'projects', key: 'projects', label: 'Projects', icon: FolderGit2 },
-  { id: 'certifications', key: 'certifications', label: 'Certifications', icon: Award }
+  { id: 'contactInfo', key: 'contactInfo', label: 'Contact Information', icon: Phone },
+  { id: 'socialLinks', key: 'socialLinks', label: 'Social Links', icon: Link2 }
 ];
 
 export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
   const router = useRouter();
 
-  // Step 1 = Limitation Page (1/2), Step 2 = Drag & Drop Order (2/2), Step 3 = Share Page
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
+  // Step 1: Choose Role to Share
+  // Step 2: What do you want to show? (Visibility)
+  // Step 3: Reorder Sections (Drag & Drop)
+  // Step 4: Share Link Generation
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+
+  // Available roles for user
+  const [roles, setRoles] = useState<ProfileData[]>([initialProfile]);
+  const [selectedProfile, setSelectedProfile] = useState<ProfileData>(initialProfile);
+
+  // Fetch all user profiles for Step 1
+  useEffect(() => {
+    fetch('/api/profile/list')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.profiles && data.profiles.length > 0) {
+          setRoles(data.profiles);
+          const found = data.profiles.find((p: ProfileData) => p.id === initialProfile.id || p.slug === initialProfile.slug);
+          if (found) setSelectedProfile(found);
+        }
+      })
+      .catch(() => {});
+  }, [initialProfile]);
 
   // Sharing Settings
   const [sharingSettings, setSharingSettings] = useState<SharingSettings>({
     photo: initialProfile.sharingSettings?.photo ?? true,
     nameAndTitle: initialProfile.sharingSettings?.nameAndTitle ?? true,
     bio: initialProfile.sharingSettings?.bio ?? true,
-    contactInfo: initialProfile.sharingSettings?.contactInfo ?? false,
+    contactInfo: initialProfile.sharingSettings?.contactInfo ?? true,
     socialLinks: initialProfile.sharingSettings?.socialLinks ?? true,
     skills: initialProfile.sharingSettings?.skills ?? true,
-    experience: initialProfile.sharingSettings?.experience ?? false,
-    education: initialProfile.sharingSettings?.education ?? false,
+    experience: initialProfile.sharingSettings?.experience ?? true,
+    education: initialProfile.sharingSettings?.education ?? true,
     projects: initialProfile.sharingSettings?.projects ?? true,
-    certifications: initialProfile.sharingSettings?.certifications ?? false
+    certifications: initialProfile.sharingSettings?.certifications ?? true
   });
 
   // Reorder State
@@ -80,7 +100,6 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
     const existingOrder = initialProfile.sectionOrder || [];
     const validKeys = SECTION_DEFINITIONS.map((s) => s.id);
     const filtered = existingOrder.filter((id) => validKeys.includes(id));
-    // Add any missing
     SECTION_DEFINITIONS.forEach((s) => {
       if (!filtered.includes(s.id)) filtered.push(s.id);
     });
@@ -108,7 +127,7 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
   const handleToggle = (key: keyof SharingSettings) => {
     setSharingSettings((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: prev[key] === false ? true : false
     }));
   };
 
@@ -133,7 +152,7 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
     e.dataTransfer.setData('text/plain', String(index));
   };
 
-  const handleDragOver = (e: React.DragEvent, index: number) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
@@ -146,54 +165,39 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
     currentVisible.splice(draggedIndex, 1);
     currentVisible.splice(targetIndex, 0, itemToMove);
 
-    // Merge new active order with hidden order
     setVisibleOrder([...currentVisible, ...hiddenSections]);
     setDraggedIndex(null);
   };
 
-  // Up/Down move fallbacks
-  const handleMoveUp = (index: number) => {
-    if (index === 0) return;
-    const currentVisible = [...activeSections];
-    const temp = currentVisible[index - 1];
-    currentVisible[index - 1] = currentVisible[index];
-    currentVisible[index] = temp;
-    setVisibleOrder([...currentVisible, ...hiddenSections]);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index >= activeSections.length - 1) return;
-    const currentVisible = [...activeSections];
-    const temp = currentVisible[index + 1];
-    currentVisible[index + 1] = currentVisible[index];
-    currentVisible[index] = temp;
-    setVisibleOrder([...currentVisible, ...hiddenSections]);
-  };
-
   // Public URL
-  const publicIdentifier = initialProfile.slug || initialProfile.id;
+  const publicIdentifier = selectedProfile.slug || selectedProfile.id;
   const publicUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/profile/${publicIdentifier}`
     : `https://avtive.app/profile/${publicIdentifier}`;
+  const displayUrl = `avtive.profiles/${publicIdentifier}`;
 
-  // Generate QR Code on mount
+  // Generate QR Code on mount or profile change
   useEffect(() => {
-    QRCode.toDataURL(publicUrl, { width: 300, margin: 2, color: { dark: '#000000', light: '#ffffff' } })
+    QRCode.toDataURL(publicUrl, {
+      width: 400,
+      margin: 1,
+      color: { dark: '#000000', light: '#FFFFFF' }
+    })
       .then((url) => setQrCodeDataUrl(url))
       .catch((err) => console.error(err));
   }, [publicUrl]);
 
-  // Save Settings to Database
-  const handleSaveSettings = async () => {
+  // Save Settings when progressing from Step 3 to Step 4
+  const handleSaveAndProceedToShare = async () => {
     setIsSaving(true);
     try {
       const res = await fetch('/api/profile/share-settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profileId: initialProfile.id,
+          profileId: selectedProfile.id,
           sharingSettings,
-          sectionOrder: visibleOrder
+          sectionOrder: ['hero', ...visibleOrder]
         })
       });
 
@@ -201,11 +205,10 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
         console.error('Failed to persist share settings');
       }
 
-      // Transition to Screen 8 (Share Page)
-      setCurrentStep(3);
+      setCurrentStep(4);
     } catch (e) {
       console.error(e);
-      setCurrentStep(3);
+      setCurrentStep(4);
     } finally {
       setIsSaving(false);
     }
@@ -220,19 +223,19 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
   return (
     <div className="w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-7 shadow-sm text-slate-900 dark:text-white transition-colors font-sans">
       <AnimatePresence mode="wait">
+
+        {/* ========================================================================= */}
+        {/* STEP 1: CHOOSE ROLE TO SHARE                                              */}
+        {/* ========================================================================= */}
         {currentStep === 1 && (
-          /* ========================================================================= */
-          /* SCREEN 6: LIMITATION / VISIBILITY PAGE                                    */
-          /* ========================================================================= */
           <motion.div
-            key="screen6"
+            key="step1"
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 16 }}
             transition={{ duration: 0.2 }}
             className="space-y-6"
           >
-            {/* Top Bar: Back & Step Indicator */}
             <div className="flex items-center justify-between">
               <button
                 type="button"
@@ -244,15 +247,111 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               </button>
 
               <span className="text-sm font-bold text-slate-900 dark:text-white">
+                Share Profile
+              </span>
+
+              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
+                1/4
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Which role profile you want to share?
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">
+                Select from your configured role profiles to export and share.
+              </p>
+            </div>
+
+            <div className="space-y-2.5 pt-1">
+              {roles.map((r) => {
+                const isSelected = selectedProfile.id === r.id || selectedProfile.slug === r.slug;
+                return (
+                  <div
+                    key={r.id}
+                    onClick={() => setSelectedProfile(r)}
+                    className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                      isSelected
+                        ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs'
+                        : 'border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={r.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
+                        alt={r.name}
+                        className="w-10 h-10 rounded-xl object-cover border border-white/20 shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xs font-bold truncate">
+                            {r.profileName || r.name}
+                          </h4>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
+                            isSelected ? 'bg-white/20 text-white dark:bg-black/20 dark:text-black' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400'
+                          }`}>
+                            {r.type || 'role'}
+                          </span>
+                        </div>
+                        <p className={`text-[11px] truncate ${isSelected ? 'opacity-80' : 'text-slate-500 dark:text-zinc-400'}`}>
+                          {r.profession || r.designation || 'Professional Profile'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
+                      isSelected ? 'border-white bg-white text-black dark:border-black dark:bg-black dark:text-white' : 'border-slate-300 dark:border-zinc-700'
+                    }`}>
+                      {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setCurrentStep(2)}
+              className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Next: Visibility Settings</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* STEP 2: WHAT DO YOU WANT TO SHOW? (VISIBILITY)                            */}
+        {/* ========================================================================= */}
+        {currentStep === 2 && (
+          <motion.div
+            key="step2"
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 16 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                title="Back"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+
+              <span className="text-sm font-bold text-slate-900 dark:text-white">
                 Share
               </span>
 
               <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                1/2
+                2/4
               </span>
             </div>
 
-            {/* Header */}
             <div className="space-y-1">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                 What do you want to show?
@@ -262,7 +361,6 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               </p>
             </div>
 
-            {/* Toggle List (Screen 6) */}
             <div className="divide-y divide-slate-100 dark:divide-zinc-800/80 pt-1">
               {SECTION_DEFINITIONS.map((sec) => {
                 const isChecked = sharingSettings[sec.key] !== false;
@@ -282,13 +380,12 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                       </span>
                     </div>
 
-                    {/* Clean Green Switch Toggle (Screen 6) */}
                     <button
                       type="button"
                       role="switch"
                       aria-checked={isChecked}
                       onClick={() => handleToggle(sec.key)}
-                      className={`w-11 h-6 rounded-full p-0.5 transition-colors focus:outline-none shrink-0 ${
+                      className={`w-11 h-6 rounded-full p-0.5 transition-colors focus:outline-none shrink-0 cursor-pointer ${
                         isChecked ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-zinc-700'
                       }`}
                     >
@@ -303,165 +400,139 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               })}
             </div>
 
-            {/* Bottom Action: Next */}
-            <div className="pt-3">
+            <div className="flex items-center justify-between gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => setCurrentStep(2)}
-                className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm transition-all active:scale-[0.99] shadow-sm"
+                onClick={() => setCurrentStep(1)}
+                className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 font-medium text-xs transition-colors cursor-pointer"
               >
-                Next
+                Back
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCurrentStep(3)}
+                className="py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <span>Next: Reorder</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </motion.div>
         )}
 
-        {currentStep === 2 && (
-          /* ========================================================================= */
-          /* SCREEN 7: DRAG & DROP ORDER                                               */
-          /* ========================================================================= */
+        {/* ========================================================================= */}
+        {/* STEP 3: REORDER SECTIONS                                                  */}
+        {/* ========================================================================= */}
+        {currentStep === 3 && (
           <motion.div
-            key="screen7"
-            initial={{ opacity: 0, x: 16 }}
+            key="step3"
+            initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -16 }}
+            exit={{ opacity: 0, x: 16 }}
             transition={{ duration: 0.2 }}
             className="space-y-6"
           >
-            {/* Top Bar: Back & Step Indicator */}
             <div className="flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setCurrentStep(1)}
+                onClick={() => setCurrentStep(2)}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back to visibility selection"
+                title="Back"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
 
               <span className="text-sm font-bold text-slate-900 dark:text-white">
-                Share
+                Reorder Sections
               </span>
 
               <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                2/2
+                3/4
               </span>
             </div>
 
-            {/* Header */}
             <div className="space-y-1">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Reorder Sections <span className="text-xs font-normal text-slate-400 dark:text-zinc-500">(Drag & Drop)</span>
+                Reorder Sections
               </h1>
               <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Arrange the sections in the order you want them to appear.
+                Drag or arrange visible and hidden modules for your shared pass.
               </p>
             </div>
 
-            {/* Active Reorderable List Container (Screen 7) */}
-            <div className="border border-slate-200 dark:border-zinc-800 rounded-2xl p-2 bg-slate-50/50 dark:bg-zinc-900/40 divide-y divide-slate-100 dark:divide-zinc-800/80">
-              {activeSections.length === 0 ? (
-                <div className="p-4 text-center text-xs text-slate-400">
-                  No visible sections selected.
-                </div>
-              ) : (
-                activeSections.map((id, index) => {
-                  const sec = SECTION_DEFINITIONS.find((s) => s.id === id);
-                  if (!sec) return null;
-                  const Icon = sec.icon;
+            {/* Visible Sections */}
+            <div className="space-y-2">
+              <div className="text-[11px] font-mono text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                Visible Sections ({activeSections.length})
+              </div>
+              <div className="space-y-2">
+                {activeSections.map((id, index) => {
+                  const def = SECTION_DEFINITIONS.find((s) => s.id === id);
+                  if (!def) return null;
+                  const Icon = def.icon;
 
                   return (
                     <div
                       key={id}
                       draggable
                       onDragStart={(e) => handleDragStart(e, index)}
-                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, index)}
-                      className={`p-2.5 flex items-center justify-between gap-3 text-xs bg-white dark:bg-[#18181B] rounded-xl my-1 transition-all ${
-                        draggedIndex === index ? 'opacity-40 border border-dashed border-slate-400' : 'shadow-2xs'
-                      }`}
+                      className="p-3 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 flex items-center justify-between gap-2 shadow-2xs hover:border-slate-300 dark:hover:border-zinc-700 transition-colors cursor-grab active:cursor-grabbing"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200">
-                          <GripVertical className="w-4 h-4" />
-                        </div>
-                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-500 dark:text-zinc-400 shrink-0">
+                      <div className="flex items-center gap-2.5">
+                        <GripVertical className="w-4 h-4 text-slate-400 dark:text-zinc-600 shrink-0" />
+                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-600 dark:text-zinc-300">
                           <Icon className="w-3.5 h-3.5" />
                         </div>
-                        <span className="font-semibold text-slate-900 dark:text-white">
-                          {sec.label}
+                        <span className="text-xs font-semibold text-slate-900 dark:text-white">
+                          {def.label}
                         </span>
                       </div>
 
-                      {/* Quick Move and Hide Actions */}
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => handleMoveUp(index)}
-                          disabled={index === 0}
-                          className="w-6 h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 disabled:opacity-20"
-                          title="Move up"
-                        >
-                          <ChevronUp className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveDown(index)}
-                          disabled={index === activeSections.length - 1}
-                          className="w-6 h-6 rounded-md flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 disabled:opacity-20"
-                          title="Move down"
-                        >
-                          <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveToHidden(id)}
-                          className="text-[11px] text-slate-400 hover:text-rose-600 px-1.5 py-0.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
-                          title="Hide section"
-                        >
-                          Hide
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleMoveToHidden(id)}
+                        className="text-xs text-rose-500 hover:text-rose-600 p-1 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                        title="Hide Section"
+                      >
+                        <EyeOff className="w-4 h-4" />
+                      </button>
                     </div>
                   );
-                })
-              )}
+                })}
+              </div>
             </div>
 
-            {/* Hidden Sections (Screen 7) */}
+            {/* Hidden Sections */}
             {hiddenSections.length > 0 && (
-              <div className="space-y-2 pt-1 text-left">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
-                  Hidden Sections
-                </h3>
-
-                <div className="border border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl p-2 bg-slate-50/20 dark:bg-zinc-900/20 space-y-1">
+              <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-zinc-800">
+                <div className="text-[11px] font-mono text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                  Hidden Sections ({hiddenSections.length})
+                </div>
+                <div className="space-y-2">
                   {hiddenSections.map((id) => {
-                    const sec = SECTION_DEFINITIONS.find((s) => s.id === id);
-                    if (!sec) return null;
-                    const Icon = sec.icon;
+                    const def = SECTION_DEFINITIONS.find((s) => s.id === id);
+                    if (!def) return null;
+                    const Icon = def.icon;
 
                     return (
                       <div
                         key={id}
-                        className="p-2.5 flex items-center justify-between gap-3 text-xs bg-white/70 dark:bg-[#18181B]/70 rounded-xl"
+                        className="p-2.5 rounded-xl border border-slate-200/60 dark:border-zinc-800/60 bg-slate-50 dark:bg-zinc-900/20 flex items-center justify-between text-slate-400 dark:text-zinc-600 text-xs"
                       >
-                        <div className="flex items-center gap-3">
-                          <GripVertical className="w-4 h-4 text-slate-300 dark:text-zinc-600" />
-                          <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-400 shrink-0">
-                            <Icon className="w-3.5 h-3.5" />
-                          </div>
-                          <span className="text-slate-500 dark:text-zinc-400">
-                            {sec.label}
-                          </span>
+                        <div className="flex items-center gap-2.5">
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{def.label}</span>
                         </div>
-
                         <button
                           type="button"
                           onClick={() => handleMoveToVisible(id)}
-                          className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold px-2 py-0.5 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                          className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold p-1 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-md transition-colors flex items-center gap-1"
                         >
-                          + Show
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Show</span>
                         </button>
                       </div>
                     );
@@ -470,233 +541,176 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               </div>
             )}
 
-            {/* Bottom Actions: Back and Save & Continue */}
-            <div className="flex items-center gap-3 pt-3">
+            <div className="flex items-center justify-between gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => setCurrentStep(1)}
-                className="flex-1 py-3 px-4 rounded-full border border-slate-200 dark:border-zinc-700 text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors text-center"
+                onClick={() => setCurrentStep(2)}
+                className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 font-medium text-xs transition-colors cursor-pointer"
               >
                 Back
               </button>
 
               <button
                 type="button"
-                onClick={handleSaveSettings}
+                onClick={handleSaveAndProceedToShare}
                 disabled={isSaving}
-                className="flex-2 py-3 px-5 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-sm disabled:opacity-50"
+                className="py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
               >
                 {isSaving ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     <span>Saving...</span>
                   </>
                 ) : (
-                  <span>Save & Continue</span>
+                  <>
+                    <span>Next: Share Link</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
                 )}
               </button>
             </div>
           </motion.div>
         )}
 
-        {currentStep === 3 && (
-          /* ========================================================================= */
-          /* SCREEN 8: SHARE PAGE WITH LIVE PREVIEW                                    */
-          /* ========================================================================= */
+        {/* ========================================================================= */}
+        {/* STEP 4: SHARE LINK GENERATION                                             */}
+        {/* ========================================================================= */}
+        {currentStep === 4 && (
           <motion.div
-            key="screen8"
-            initial={{ opacity: 0, x: 16 }}
+            key="step4"
+            initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -16 }}
+            exit={{ opacity: 0, x: 16 }}
             transition={{ duration: 0.2 }}
             className="space-y-6"
           >
-            {/* Top Bar */}
             <div className="flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setCurrentStep(2)}
+                onClick={() => setCurrentStep(3)}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back to ordering"
+                title="Back"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
 
               <span className="text-sm font-bold text-slate-900 dark:text-white">
-                Share
+                Share Link
               </span>
 
-              <div className="w-8" />
+              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
+                4/4
+              </span>
             </div>
 
-            {/* In-Page Card Showing LIVE PROFILE PREVIEW (Screen 8) */}
-            <div className="rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] overflow-hidden shadow-sm text-left">
-              {/* Cover Banner */}
-              {sharingSettings.photo !== false && (
-                <div className="h-24 w-full bg-slate-900 overflow-hidden relative">
-                  <img
-                    src={initialProfile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'}
-                    alt="Cover Preview"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/20" />
-                </div>
-              )}
-
-              {/* Avatar & Info */}
-              <div className="p-4 relative">
-                {sharingSettings.photo !== false && (
-                  <div className="-mt-10 mb-2">
-                    <img
-                      src={initialProfile.avatar}
-                      alt={initialProfile.name}
-                      className="w-14 h-14 rounded-full border-2 border-white dark:border-[#18181B] object-cover shadow-sm bg-slate-100"
-                    />
-                  </div>
-                )}
-
-                {sharingSettings.nameAndTitle !== false && (
-                  <div className="space-y-0.5 mb-1.5">
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                      {initialProfile.name}
+            {/* Preview Pass Card */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
+              <div className="flex items-center gap-3">
+                <img
+                  src={selectedProfile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
+                  alt={selectedProfile.name}
+                  className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-zinc-700 shrink-0"
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                      {selectedProfile.name}
                     </h3>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                      {initialProfile.profileName || initialProfile.designation || 'Professional'}
-                    </p>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-zinc-800 font-mono text-slate-700 dark:text-zinc-300">
+                      {selectedProfile.profileName || selectedProfile.type}
+                    </span>
                   </div>
-                )}
-
-                {sharingSettings.bio !== false && (
-                  <p className="text-[11px] text-slate-600 dark:text-zinc-300 leading-relaxed line-clamp-2 mb-3">
-                    {initialProfile.shortBio || 'Passionate developer with a love for building modern web applications...'}
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">
+                    {selectedProfile.profession || selectedProfile.designation || 'Professional Profile'}
                   </p>
-                )}
+                </div>
+              </div>
 
-                {/* Social Icons (Respects visibility!) */}
-                {sharingSettings.socialLinks !== false && (
-                  <div className="flex items-center gap-2 pt-1 text-slate-600 dark:text-zinc-400">
-                    <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
-                      <GithubIcon className="w-3 h-3" />
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
-                      <LinkedInIcon className="w-3 h-3" />
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
-                      <TwitterXIcon className="w-3 h-3" />
-                    </div>
-                  </div>
-                )}
+              <div className="pt-2 border-t border-slate-200/60 dark:border-zinc-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
+                <span>Active Modules: {activeSections.length}</span>
+                <span>Theme: {selectedProfile.theme || 'editorial'}</span>
               </div>
             </div>
 
-            {/* Share Profile Link Section (Screen 8) */}
-            <div className="space-y-3 text-left">
-              <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                Share Profile Link
+            {/* Public Profile URL Box */}
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-semibold text-slate-600 dark:text-zinc-400 block">
+                Public Profile URL
               </label>
-
-              {/* Link Box */}
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/70 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 text-xs">
-                <span className="truncate text-slate-600 dark:text-zinc-300 font-mono text-[11px] select-all">
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-800">
+                <span className="text-xs font-mono text-slate-800 dark:text-zinc-200 truncate flex-1 select-all">
                   {publicUrl}
                 </span>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="shrink-0 pl-2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
-                  title="Copy Link"
+                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy Link</span>
+                    </>
+                  )}
                 </button>
-              </div>
-
-              {/* Action Buttons: Copy Link & QR Code (Screen 8) */}
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="py-3 px-4 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-sm"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copied ? 'Copied!' : 'Copy Link'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowQrModal(true)}
-                  className="py-3 px-4 rounded-xl border border-slate-200 dark:border-zinc-700 hover:border-slate-300 dark:hover:border-zinc-600 bg-white dark:bg-[#18181B] text-slate-800 dark:text-zinc-200 font-semibold text-xs flex items-center justify-center gap-2 transition-all active:scale-[0.99]"
-                >
-                  <QrCode className="w-3.5 h-3.5" />
-                  <span>QR Code</span>
-                </button>
-              </div>
-
-              {/* Success Banner (Screen 8) */}
-              <div className="pt-2 flex items-center justify-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400 text-center">
-                <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                  <Check className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <span>Your profile is live and ready to be shared!</span>
               </div>
             </div>
 
-            {/* Quick Actions Footer */}
-            <div className="pt-2 flex items-center justify-between text-xs text-slate-500 dark:text-zinc-400 border-t border-slate-100 dark:border-zinc-800/80">
+            {/* QR Code Action Box */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <QrCode className="w-5 h-5 text-slate-700 dark:text-zinc-300" />
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">QR Code Pass</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400">Scan to open digital pass</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowQrModal(!showQrModal)}
+                className="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs font-medium transition-colors cursor-pointer"
+              >
+                {showQrModal ? 'Hide QR' : 'Show QR'}
+              </button>
+            </div>
+
+            {showQrModal && qrCodeDataUrl && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-4 rounded-2xl bg-white border border-slate-200 flex flex-col items-center justify-center gap-3 text-center"
+              >
+                <img src={qrCodeDataUrl} alt="QR Code" className="w-48 h-48 rounded-xl" />
+                <a
+                  href={qrCodeDataUrl}
+                  download={`${selectedProfile.slug || 'profile'}-qr.png`}
+                  className="text-xs text-slate-900 font-semibold hover:underline inline-flex items-center gap-1"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download QR Image</span>
+                </a>
+              </motion.div>
+            )}
+
+            <div className="pt-2">
               <Link
                 href={`/profile/${publicIdentifier}`}
-                className="hover:underline text-slate-800 dark:text-white font-medium"
+                className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                View Public Profile →
-              </Link>
-
-              <Link
-                href="/dashboard"
-                className="hover:underline"
-              >
-                Back to My Profiles
+                <span>Done &amp; View Profile</span>
+                <Check className="w-4 h-4" />
               </Link>
             </div>
           </motion.div>
         )}
+
       </AnimatePresence>
-
-      {/* QR Code Modal / View */}
-      {showQrModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-xs rounded-3xl bg-white dark:bg-[#18181B] border border-slate-200 dark:border-zinc-800 p-6 space-y-4 text-center">
-            <div className="space-y-1">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                Scan Profile QR Code
-              </h3>
-              <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                Point any smartphone camera to view this profile instantly.
-              </p>
-            </div>
-
-            {qrCodeDataUrl ? (
-              <div className="p-3 bg-white rounded-2xl border border-slate-200 inline-block mx-auto shadow-xs">
-                <img
-                  src={qrCodeDataUrl}
-                  alt="Profile QR Code"
-                  className="w-44 h-44 object-contain mx-auto"
-                />
-              </div>
-            ) : (
-              <div className="w-44 h-44 flex items-center justify-center mx-auto text-xs text-slate-400">
-                Generating QR...
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={() => setShowQrModal(false)}
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-xs"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
