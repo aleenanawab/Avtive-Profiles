@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { AvtivePlatformHeader } from "@/components/AvtivePlatformHeader";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -10,9 +12,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: "Aleena Nawab | Senior Systems Architect & Portfolio",
-  description: "Senior Full-Stack Architect & Product Strategist. Interactive multi-theme portfolio featuring Editorial Minimal, Developer Terminal, and Luxe Velvet.",
-  keywords: ["Aleena Nawab", "Portfolio", "Systems Architect", "Next.js", "TypeScript", "Tailwind CSS", "Design Systems"],
+  title: "Avtive | Complete Profile Platform",
+  description: "Avtive - Complete Profile Platform. Multiple Profiles, Custom Themes, and Smart Privacy Sharing.",
+  keywords: ["Avtive", "Profile Platform", "Digital Identity", "Privacy Sharing", "Next.js", "TypeScript"],
 };
 
 export default function RootLayout({
@@ -54,7 +56,12 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-[var(--bg-main)] text-[var(--text-primary)] transition-colors duration-200">
+        <ThemeProvider>
+          <AvtivePlatformHeader />
+          <div className="flex-1 flex flex-col">{children}</div>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

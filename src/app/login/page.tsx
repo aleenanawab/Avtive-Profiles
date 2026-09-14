@@ -1,23 +1,33 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, Loader2, AlertCircle, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Loader2, AlertCircle, CheckCircle2, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-function LoginFormContent() {
+export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const registered = searchParams.get('registered') === 'true';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(
-    registered ? 'Account created successfully! Please sign in below.' : null
-  );
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get('registered') === 'true') {
+        setSuccessMessage('Account created successfully! Please sign in below.');
+      }
+    }
+  }, []);
+
+  const getReturnUrl = () => {
+    if (typeof window === 'undefined') return null;
+    return new URLSearchParams(window.location.search).get('returnUrl');
+  };
 
   // 1. Session check: if already authenticated, redirect to Profile or Onboarding
   useEffect(() => {
@@ -25,7 +35,7 @@ function LoginFormContent() {
       .then((res) => res.json())
       .then((data) => {
         if (data.user) {
-          const returnUrl = searchParams.get('returnUrl');
+          const returnUrl = getReturnUrl();
           const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
           if (hasProfiles) {
             const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug;
@@ -42,7 +52,7 @@ function LoginFormContent() {
         }
       })
       .catch(() => {});
-  }, [router, searchParams]);
+  }, [router]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -60,7 +70,7 @@ function LoginFormContent() {
         return;
       }
       if (data.hasProfile && data.profileSlug) {
-        const returnUrl = searchParams.get('returnUrl');
+        const returnUrl = getReturnUrl();
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
           router.push(returnUrl);
         } else {
@@ -104,7 +114,7 @@ function LoginFormContent() {
         return;
       }
 
-      const returnUrl = searchParams.get('returnUrl');
+      const returnUrl = getReturnUrl();
       if (data.hasProfile && data.profileSlug) {
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
           router.push(returnUrl);
@@ -125,70 +135,131 @@ function LoginFormContent() {
     }
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <div className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden bg-[#09090B] font-sans text-white">
-      {/* Mountain Dusk Background Image */}
-      <div 
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop')`
-        }}
+    <div className="min-h-[calc(100vh-65px)] w-full flex items-center justify-center p-3 sm:p-6 py-8 font-sans transition-colors">
+      {/* Figma Mobile Screen Card (Screen 2. Login) */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.2 }}
+        className="figma-phone-frame w-full max-w-[390px] p-6 sm:p-7 flex flex-col justify-between relative"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-black/95" />
-      </div>
-
-      {/* Top Bar: Avtive Brand */}
-      <header className="relative z-10 w-full max-w-md mx-auto px-6 pt-8 sm:pt-10 flex items-center justify-between">
-        <Link href="/login" className="inline-flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center font-bold text-white tracking-wider text-sm shadow-sm group-hover:bg-white/20 transition-all">
-            A
+        {/* Mobile Top Status Bar (9:41, Wifi, Battery) */}
+        <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-zinc-400 mb-6 px-1 font-mono">
+          <span>9:41</span>
+          <div className="flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
+            </svg>
+            <div className="w-5 h-2.5 border border-current rounded-xs p-0.5 flex items-center">
+              <div className="w-full h-full bg-current rounded-2xs" />
+            </div>
           </div>
-          <span className="font-semibold text-lg tracking-tight text-white/90">
-            Avtive
-          </span>
-        </Link>
-      </header>
+        </div>
 
-      {/* Main Login Card */}
-      <main className="relative z-10 w-full max-w-md mx-auto px-6 pb-10 flex-1 flex flex-col justify-end">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="bg-black/65 backdrop-blur-xl border border-white/15 rounded-2xl p-5 sm:p-6 space-y-4 shadow-2xl"
-        >
-          {/* Headings */}
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-white">
-              Welcome Back
+        {/* Centered Brand Header: Logo + "Avtive" */}
+        <div className="flex flex-col items-center justify-center pt-2 pb-6 text-center">
+          <div className="flex items-center justify-center gap-2.5 mb-1">
+            <div className="w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-lg shadow-sm font-sans">
+              A
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Avtive
             </h1>
-            <p className="text-xs text-white/70">
-              Sign in to manage your verified profiles, personas, and privacy sharing.
-            </p>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-zinc-400">
+            Welcome Back · The secondary landing screen
+          </p>
+        </div>
+
+        {/* Success / Info Alert */}
+        {successMessage && (
+          <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{successMessage}</span>
+          </div>
+        )}
+
+        {/* Error Alert */}
+        {errorMessage && (
+          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
+        {/* Form Fields: Email & Password */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div className="space-y-1.5 text-left">
+            <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
+              Email
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="e.g. aleena@example.com"
+              className="figma-input w-full px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
+            />
           </div>
 
-          {/* Success / Info Alert */}
-          {successMessage && (
-            <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-              <span>{successMessage}</span>
+          <div className="space-y-1.5 text-left">
+            <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="figma-input w-full pl-4 pr-11 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 cursor-pointer p-1"
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
-          )}
+          </div>
 
-          {/* Error Alert */}
-          {errorMessage && (
-            <div className="p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
+          {/* Primary Action Button: White Pill Button */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Signing In...</span>
+                </>
+              ) : (
+                <span>Login</span>
+              )}
+            </button>
+          </div>
+        </form>
 
-          {/* Prominent Continue with Google Button */}
+        {/* Secondary Action: Continue with Google Pill Button */}
+        <div className="pt-3">
           <button
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-full bg-white hover:bg-zinc-100 text-zinc-900 font-semibold text-sm transition-all active:scale-[0.99] shadow-md cursor-pointer disabled:opacity-50"
+            className="figma-pill-secondary w-full py-3 px-6 text-sm font-medium flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -198,128 +269,56 @@ function LoginFormContent() {
             </svg>
             <span>Continue with Google</span>
           </button>
+        </div>
 
-          <div className="relative flex items-center justify-center">
-            <div className="border-t border-white/10 w-full" />
-            <span className="bg-black/80 px-3 text-[11px] uppercase tracking-wider text-white/40 absolute font-mono">
-              or sign in with email
-            </span>
-          </div>
-
-          {/* Login Form: Email & Password */}
-          <form onSubmit={handleLogin} className="space-y-3 pt-1">
-            <div className="space-y-1">
-              <label className="text-[11px] font-medium text-white/80">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. aleena@avtive.app"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[11px] font-medium text-white/80">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40"
-                />
-              </div>
-            </div>
-
+        {/* Demo Account Quick Access */}
+        <div className="pt-4 mt-2 text-center space-y-1.5 border-t border-slate-200 dark:border-white/10">
+          <div className="text-[11px] text-slate-500 dark:text-zinc-400">Quick Demo Accounts:</div>
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
             <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full mt-2 py-3 px-4 rounded-xl bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 active:scale-[0.99] cursor-pointer disabled:opacity-50"
+              type="button"
+              onClick={() => {
+                setEmail('aleenaknawab@gmail.com');
+                setPassword('Avtive@123');
+              }}
+              className="text-[10px] text-slate-700 dark:text-zinc-200 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 border border-slate-300 dark:border-white/15 transition-colors cursor-pointer"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Signing In...</span>
-                </>
-              ) : (
-                <>
-                  <span>Sign In</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </>
-              )}
+              Aleena (Full Profile)
             </button>
-          </form>
-
-          {/* Demo Account Quick Access */}
-          <div className="pt-2 text-center space-y-1.5 border-t border-white/10">
-            <div className="text-[11px] text-white/50">Quick Demo Sign In:</div>
-            <div className="flex flex-wrap items-center justify-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('aleenaknawab@gmail.com');
-                  setPassword('Avtive@123');
-                }}
-                className="text-[11px] text-white/90 hover:text-white px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-colors cursor-pointer"
-              >
-                Aleena Nawab (Reference)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('mesum@avtive.app');
-                  setPassword('Avtive@123');
-                }}
-                className="text-[11px] text-white/70 hover:text-white px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 transition-colors cursor-pointer"
-              >
-                Mesum (Owner)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('hamza@avtive.app');
-                  setPassword('Avtive@123');
-                }}
-                className="text-[11px] text-white/70 hover:text-white px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 transition-colors cursor-pointer"
-              >
-                Hamza (Employee)
-              </button>
-            </div>
-          </div>
-
-          {/* Link: Don't have an account? Sign up */}
-          <div className="pt-1 text-center text-xs text-white/60">
-            <span>Don&apos;t have an account? </span>
-            <Link
-              href="/register"
-              className="font-semibold text-white hover:underline ml-1"
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('mesum@avtive.app');
+                setPassword('Avtive@123');
+              }}
+              className="text-[10px] text-slate-700 dark:text-zinc-200 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 border border-slate-300 dark:border-white/15 transition-colors cursor-pointer"
             >
-              Sign up
-            </Link>
+              Mesum (Owner)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('hamza@avtive.app');
+                setPassword('Avtive@123');
+              }}
+              className="text-[10px] text-slate-700 dark:text-zinc-200 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 border border-slate-300 dark:border-white/15 transition-colors cursor-pointer"
+            >
+              Hamza (Employee)
+            </button>
           </div>
-        </motion.div>
-      </main>
+        </div>
 
-      {/* Footer */}
-      <footer className="relative z-10 w-full max-w-md mx-auto px-6 py-4 flex items-center justify-center gap-1.5 text-[11px] text-white/40">
-        <ShieldCheck className="w-3.5 h-3.5" />
-        <span>Avtive Enterprise Security & Privacy Encrypted</span>
-      </footer>
+        {/* Footer Link: Already have an account? Log in */}
+        <div className="pt-4 pb-2 text-center text-xs text-slate-500 dark:text-zinc-400">
+          <span>Don&apos;t have an account? </span>
+          <Link
+            href="/register"
+            className="font-bold text-slate-900 dark:text-white hover:underline ml-1"
+          >
+            Sign up
+          </Link>
+        </div>
+      </motion.div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#09090B] flex items-center justify-center text-white text-sm font-sans">Loading login...</div>}>
-      <LoginFormContent />
-    </Suspense>
   );
 }
