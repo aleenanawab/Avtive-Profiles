@@ -146,6 +146,48 @@
       "email": "social_facebook_1788799712532@test.com",
       "passwordHash": "oauth_facebook_verified_1788799722469",
       "createdAt": "2026-09-07T16:48:42.470Z"
+    },
+    {
+      "id": "user-1789368780153-qfff6",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789368779792@avtive.app",
+      "passwordHash": "$2b$10$ciqxM1WCaDW9mVGYQoTZvOito5wQjYO1Qw0iXG4ECy2Jpb2sSlL8i",
+      "createdAt": "2026-09-14T06:53:00.153Z"
+    },
+    {
+      "id": "user-1789369113405-bomym",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789369113267@avtive.app",
+      "passwordHash": "$2b$10$crDzqDrk01MUrMQcJxWDxuDUeiKlgDojaTvLJFuc/gz1zK2QBEvYq",
+      "createdAt": "2026-09-14T06:58:33.406Z"
+    },
+    {
+      "id": "user-1789369346095-9dqep",
+      "name": "Aleena Test",
+      "email": "phase4_user_1789369345951@avtive.app",
+      "passwordHash": "$2b$10$Zw8klTGKFnHxtGx64SoNT.dUE5c.OfrZ2hXMxzcUEDpIDkoxIaxEi",
+      "createdAt": "2026-09-14T07:02:26.096Z"
+    },
+    {
+      "id": "user-1789370051346-zexm9",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789370051227@avtive.app",
+      "passwordHash": "$2b$10$r7jmGs8NyFN15obfStRobOOG17lJHWYzqB5WofGIc5IbJkefEQxdm",
+      "createdAt": "2026-09-14T07:14:11.346Z"
+    },
+    {
+      "id": "user-1789370076005-nti3l",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789370075878@avtive.app",
+      "passwordHash": "$2b$10$ho5MDXCoZuVgOwiSQxPlfuB3HUaic7ozu06o5UVsNNcntWpMZOY5a",
+      "createdAt": "2026-09-14T07:14:36.006Z"
+    },
+    {
+      "id": "user-1789370328382-w97lp",
+      "name": "Alex Vance",
+      "email": "e2e_user_1789370328378@avtive.app",
+      "passwordHash": "hash-test-pass",
+      "createdAt": "2026-09-14T07:18:48.382Z"
     }
   ],
   "profiles": {
@@ -345,7 +387,29 @@
         }
       ],
       "userId": "user-mesum",
-      "theme": "elegant"
+      "theme": "elegant",
+      "profileName": "Strategy-based Artist & Creative Director",
+      "profession": "Strategy-based Artist & Creative Director",
+      "createdAt": "2026-09-14T06:53:00.150Z",
+      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "sharingSettings": {
+        "email": true,
+        "phone": true,
+        "contactInfo": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "syedmesumraza": {
       "id": "mesum-raza",
@@ -543,7 +607,29 @@
         }
       ],
       "userId": "user-mesum",
-      "theme": "elegant"
+      "theme": "elegant",
+      "profileName": "Strategy-based Artist & Creative Director",
+      "profession": "Strategy-based Artist & Creative Director",
+      "createdAt": "2026-09-14T06:53:00.150Z",
+      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "sharingSettings": {
+        "email": true,
+        "phone": true,
+        "contactInfo": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "hamza-malik": {
       "id": "hamza-malik",
@@ -630,7 +716,41 @@
         }
       ],
       "userId": "user-hamza",
-      "theme": "elegant"
+      "theme": "elegant",
+      "profileName": "Lead Mobile & NFC Systems Engineer",
+      "profession": "Lead Mobile & NFC Systems Engineer",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "avtive-company": {
       "id": "avtive-company",
@@ -707,7 +827,41 @@
         }
       ],
       "userId": "user-mesum",
-      "theme": "elegant"
+      "theme": "elegant",
+      "profileName": "B2B SaaS Digital Profile & Cloud Identity Platform",
+      "profession": "B2B SaaS Digital Profile & Cloud Identity Platform",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "avtive": {
       "id": "avtive-company",
@@ -784,7 +938,41 @@
         }
       ],
       "userId": "user-mesum",
-      "theme": "elegant"
+      "theme": "elegant",
+      "profileName": "B2B SaaS Digital Profile & Cloud Identity Platform",
+      "profession": "B2B SaaS Digital Profile & Cloud Identity Platform",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "prof-1788782031980": {
       "id": "prof-1788782031980",
@@ -814,6 +1002,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Senior Strategy Consultant",
+      "profession": "Senior Strategy Consultant",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "jane-doe-c2n0": {
@@ -844,6 +1066,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Senior Strategy Consultant",
+      "profession": "Senior Strategy Consultant",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788782083177": {
@@ -874,6 +1130,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Cybersecurity Architect",
+      "profession": "Cybersecurity Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "sarah-connor-3h4s": {
@@ -904,6 +1194,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Cybersecurity Architect",
+      "profession": "Cybersecurity Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788782534301": {
@@ -919,7 +1243,7 @@
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
       "shortBio": "Welcome to my digital profile on Avtive.",
       "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
-      "theme": "elegant",
+      "theme": "editorial",
       "contactOrder": [
         "whatsapp",
         "phone",
@@ -934,6 +1258,41 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T08:08:40.212Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": false,
+        "nfcCard": false,
+        "companySection": false
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "aleena-nawab-adhb": {
@@ -949,7 +1308,7 @@
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
       "shortBio": "Welcome to my digital profile on Avtive.",
       "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
-      "theme": "elegant",
+      "theme": "editorial",
       "contactOrder": [
         "whatsapp",
         "phone",
@@ -964,6 +1323,41 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T08:08:40.212Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": false,
+        "nfcCard": false,
+        "companySection": false
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788783656219": {
@@ -997,7 +1391,41 @@
       ],
       "phone": "+92 300 1112233",
       "whatsapp": "+92 312 4445566",
-      "website": "https://alice.design"
+      "website": "https://alice.design",
+      "profileName": "Principal UI/UX Architect",
+      "profession": "Principal UI/UX Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "alice-designer-c5a5": {
       "id": "prof-1788783656219",
@@ -1030,7 +1458,41 @@
       ],
       "phone": "+92 300 1112233",
       "whatsapp": "+92 312 4445566",
-      "website": "https://alice.design"
+      "website": "https://alice.design",
+      "profileName": "Principal UI/UX Architect",
+      "profession": "Principal UI/UX Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "prof-1788783656969": {
       "id": "prof-1788783656969",
@@ -1060,6 +1522,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "bob-engineer-vops": {
@@ -1090,6 +1586,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788787437694": {
@@ -1123,7 +1653,41 @@
       ],
       "phone": "+92 300 1112233",
       "whatsapp": "+92 312 4445566",
-      "website": "https://alice.design"
+      "website": "https://alice.design",
+      "profileName": "Principal UI/UX Architect",
+      "profession": "Principal UI/UX Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "alice-designer-qqqv": {
       "id": "prof-1788787437694",
@@ -1156,7 +1720,41 @@
       ],
       "phone": "+92 300 1112233",
       "whatsapp": "+92 312 4445566",
-      "website": "https://alice.design"
+      "website": "https://alice.design",
+      "profileName": "Principal UI/UX Architect",
+      "profession": "Principal UI/UX Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "prof-1788787438525": {
       "id": "prof-1788787438525",
@@ -1186,6 +1784,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "bob-engineer-df5t": {
@@ -1216,6 +1848,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788787550288": {
@@ -1249,7 +1915,41 @@
       ],
       "phone": "+92 300 1112233",
       "whatsapp": "+92 312 4445566",
-      "website": "https://alice.design"
+      "website": "https://alice.design",
+      "profileName": "Principal UI/UX Architect",
+      "profession": "Principal UI/UX Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "alice-designer-3uw0": {
       "id": "prof-1788787550288",
@@ -1282,7 +1982,41 @@
       ],
       "phone": "+92 300 1112233",
       "whatsapp": "+92 312 4445566",
-      "website": "https://alice.design"
+      "website": "https://alice.design",
+      "profileName": "Principal UI/UX Architect",
+      "profession": "Principal UI/UX Architect",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ]
     },
     "prof-1788787551209": {
       "id": "prof-1788787551209",
@@ -1312,6 +2046,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "bob-engineer-mau0": {
@@ -1342,6 +2110,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788788018664": {
@@ -1372,6 +2174,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "aleeza-a26n": {
@@ -1402,6 +2238,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788789773224": {
@@ -1432,6 +2302,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "google-founder-13wk": {
@@ -1462,6 +2366,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788789773255": {
@@ -1492,6 +2430,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "linkedin-professional-39rd": {
@@ -1522,6 +2494,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788789893722": {
@@ -1552,6 +2558,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "aleena-nawab-po4w": {
@@ -1582,6 +2622,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788789976653": {
@@ -1612,6 +2686,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "aleena-nawab-7zst": {
@@ -1642,6 +2750,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "prof-1788799714788": {
@@ -1674,6 +2816,40 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Staff Product Designer",
+      "profession": "Staff Product Designer",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
     },
     "new-user-1788799712532-21dw": {
@@ -1706,7 +2882,2861 @@
           "label": "Website",
           "handle": "avtive.app"
         }
+      ],
+      "profileName": "Staff Product Designer",
+      "profession": "Staff Product Designer",
+      "createdAt": "2026-09-14T06:53:00.153Z",
+      "updatedAt": "2026-09-14T06:53:00.153Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
       ]
+    },
+    "prof-1789368780163-6d4zi": {
+      "id": "prof-1789368780163-6d4zi",
+      "userId": "user-1789368780153-qfff6",
+      "profileName": "Developer Profile",
+      "profession": "Full-Stack Developer",
+      "slug": "test-multi-user-developer-profile-h9x8",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789368779792@avtive.app",
+      "designation": "Full-Stack Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0199",
+      "whatsapp": "+1 555 0199",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Next.js"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "exp-1",
+          "company": "Tech Corp",
+          "role": "Senior Engineer",
+          "period": "2022 - Present"
+        }
+      ],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:53:00.163Z",
+      "updatedAt": "2026-09-14T06:53:00.163Z"
+    },
+    "test-multi-user-developer-profile-h9x8": {
+      "id": "prof-1789368780163-6d4zi",
+      "userId": "user-1789368780153-qfff6",
+      "profileName": "Developer Profile",
+      "profession": "Full-Stack Developer",
+      "slug": "test-multi-user-developer-profile-h9x8",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789368779792@avtive.app",
+      "designation": "Full-Stack Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0199",
+      "whatsapp": "+1 555 0199",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Next.js"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "exp-1",
+          "company": "Tech Corp",
+          "role": "Senior Engineer",
+          "period": "2022 - Present"
+        }
+      ],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:53:00.163Z",
+      "updatedAt": "2026-09-14T06:53:00.163Z"
+    },
+    "prof-1789368780168-bwau8": {
+      "id": "prof-1789368780168-bwau8",
+      "userId": "user-1789368780153-qfff6",
+      "profileName": "HR Profile",
+      "profession": "Talent Acquisition Manager",
+      "slug": "test-multi-user-hr-profile-j6bx",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789368779792@avtive.app",
+      "designation": "Talent Acquisition Manager",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0200",
+      "whatsapp": "+1 555 0200",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Recruiting"
+        },
+        {
+          "name": "People Operations"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:53:00.168Z",
+      "updatedAt": "2026-09-14T06:53:00.168Z"
+    },
+    "test-multi-user-hr-profile-j6bx": {
+      "id": "prof-1789368780168-bwau8",
+      "userId": "user-1789368780153-qfff6",
+      "profileName": "HR Profile",
+      "profession": "Talent Acquisition Manager",
+      "slug": "test-multi-user-hr-profile-j6bx",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789368779792@avtive.app",
+      "designation": "Talent Acquisition Manager",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0200",
+      "whatsapp": "+1 555 0200",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Recruiting"
+        },
+        {
+          "name": "People Operations"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:53:00.168Z",
+      "updatedAt": "2026-09-14T06:53:00.168Z"
+    },
+    "prof-1789368780178-005bm": {
+      "id": "prof-1789368780178-005bm",
+      "userId": "user-1789368780153-qfff6",
+      "profileName": "UI/UX Designer Profile",
+      "profession": "Product Designer",
+      "slug": "test-multi-user-uiux-designer-profile-nxu0",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789368779792@avtive.app",
+      "designation": "Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Figma"
+        },
+        {
+          "name": "Design Systems"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:53:00.178Z",
+      "updatedAt": "2026-09-14T06:53:00.178Z"
+    },
+    "test-multi-user-uiux-designer-profile-nxu0": {
+      "id": "prof-1789368780178-005bm",
+      "userId": "user-1789368780153-qfff6",
+      "profileName": "UI/UX Designer Profile",
+      "profession": "Product Designer",
+      "slug": "test-multi-user-uiux-designer-profile-nxu0",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789368779792@avtive.app",
+      "designation": "Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Figma"
+        },
+        {
+          "name": "Design Systems"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:53:00.178Z",
+      "updatedAt": "2026-09-14T06:53:00.178Z"
+    },
+    "prof-1789369113412-dk7it": {
+      "id": "prof-1789369113412-dk7it",
+      "userId": "user-1789369113405-bomym",
+      "profileName": "Developer Profile",
+      "profession": "Senior MERN Developer",
+      "slug": "dashboard-tester-developer-profile-s60g",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789369113267@avtive.app",
+      "designation": "Senior MERN Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Building scalable systems with TypeScript and Node.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:58:33.412Z",
+      "updatedAt": "2026-09-14T06:58:33.412Z"
+    },
+    "dashboard-tester-developer-profile-s60g": {
+      "id": "prof-1789369113412-dk7it",
+      "userId": "user-1789369113405-bomym",
+      "profileName": "Developer Profile",
+      "profession": "Senior MERN Developer",
+      "slug": "dashboard-tester-developer-profile-s60g",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789369113267@avtive.app",
+      "designation": "Senior MERN Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Building scalable systems with TypeScript and Node.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:58:33.412Z",
+      "updatedAt": "2026-09-14T06:58:33.412Z"
+    },
+    "prof-1789369113415-szet1": {
+      "id": "prof-1789369113415-szet1",
+      "userId": "user-1789369113405-bomym",
+      "profileName": "HR Professional",
+      "profession": "Director of People Operations",
+      "slug": "dashboard-tester-hr-professional-zi0z",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789369113267@avtive.app",
+      "designation": "Director of People Operations",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Connecting top tech talent with ambitious organizations.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:58:33.415Z",
+      "updatedAt": "2026-09-14T06:58:33.415Z"
+    },
+    "dashboard-tester-hr-professional-zi0z": {
+      "id": "prof-1789369113415-szet1",
+      "userId": "user-1789369113405-bomym",
+      "profileName": "HR Professional",
+      "profession": "Director of People Operations",
+      "slug": "dashboard-tester-hr-professional-zi0z",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789369113267@avtive.app",
+      "designation": "Director of People Operations",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Connecting top tech talent with ambitious organizations.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:58:33.415Z",
+      "updatedAt": "2026-09-14T06:58:33.415Z"
+    },
+    "prof-1789369113418-t1y9e": {
+      "id": "prof-1789369113418-t1y9e",
+      "userId": "user-1789369113405-bomym",
+      "profileName": "UI/UX Designer",
+      "profession": "Lead Product Designer",
+      "slug": "dashboard-tester-uiux-designer-l5gy",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789369113267@avtive.app",
+      "designation": "Lead Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Crafting bespoke luxury design experiences.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:58:33.418Z",
+      "updatedAt": "2026-09-14T06:58:33.418Z"
+    },
+    "dashboard-tester-uiux-designer-l5gy": {
+      "id": "prof-1789369113418-t1y9e",
+      "userId": "user-1789369113405-bomym",
+      "profileName": "UI/UX Designer",
+      "profession": "Lead Product Designer",
+      "slug": "dashboard-tester-uiux-designer-l5gy",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789369113267@avtive.app",
+      "designation": "Lead Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Crafting bespoke luxury design experiences.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T06:58:33.418Z",
+      "updatedAt": "2026-09-14T06:58:33.418Z"
+    },
+    "prof-1789369346101-he0tw": {
+      "id": "prof-1789369346101-he0tw",
+      "userId": "user-1789369346095-9dqep",
+      "profileName": "Developer Profile",
+      "profession": "Full-Stack Developer",
+      "slug": "aleena-test-developer-profile-57rt",
+      "type": "individual",
+      "name": "Aleena Test",
+      "email": "phase4_user_1789369345951@avtive.app",
+      "designation": "Full-Stack Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Specializing in reactive systems and developer tools.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Next.js"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:02:26.101Z",
+      "updatedAt": "2026-09-14T07:02:26.114Z"
+    },
+    "aleena-test-developer-profile-57rt": {
+      "id": "prof-1789369346101-he0tw",
+      "userId": "user-1789369346095-9dqep",
+      "profileName": "Developer Profile",
+      "profession": "Full-Stack Developer",
+      "slug": "aleena-test-developer-profile-57rt",
+      "type": "individual",
+      "name": "Aleena Test",
+      "email": "phase4_user_1789369345951@avtive.app",
+      "designation": "Full-Stack Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Specializing in reactive systems and developer tools.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Next.js"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:02:26.101Z",
+      "updatedAt": "2026-09-14T07:02:26.114Z"
+    },
+    "prof-1789369346105-cxzr5": {
+      "id": "prof-1789369346105-cxzr5",
+      "userId": "user-1789369346095-9dqep",
+      "profileName": "HR Profile",
+      "profession": "People & Culture Lead",
+      "slug": "aleena-test-hr-profile-54iy",
+      "type": "individual",
+      "name": "Aleena Test",
+      "email": "phase4_user_1789369345951@avtive.app",
+      "designation": "People & Culture Lead",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Scaling high performance teams.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Talent Acquisition"
+        },
+        {
+          "name": "Organizational Strategy"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:02:26.105Z",
+      "updatedAt": "2026-09-14T07:02:26.105Z"
+    },
+    "aleena-test-hr-profile-54iy": {
+      "id": "prof-1789369346105-cxzr5",
+      "userId": "user-1789369346095-9dqep",
+      "profileName": "HR Profile",
+      "profession": "People & Culture Lead",
+      "slug": "aleena-test-hr-profile-54iy",
+      "type": "individual",
+      "name": "Aleena Test",
+      "email": "phase4_user_1789369345951@avtive.app",
+      "designation": "People & Culture Lead",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Scaling high performance teams.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Talent Acquisition"
+        },
+        {
+          "name": "Organizational Strategy"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:02:26.105Z",
+      "updatedAt": "2026-09-14T07:02:26.105Z"
+    },
+    "prof-1789369346108-6ukzz": {
+      "id": "prof-1789369346108-6ukzz",
+      "userId": "user-1789369346095-9dqep",
+      "profileName": "UI/UX Designer Profile",
+      "profession": "Senior Product Designer",
+      "slug": "aleena-test-uiux-designer-profile-nujz",
+      "type": "individual",
+      "name": "Aleena Test",
+      "email": "phase4_user_1789369345951@avtive.app",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Designing luxury and executive product identities.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Design Systems"
+        },
+        {
+          "name": "Figma"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:02:26.108Z",
+      "updatedAt": "2026-09-14T07:02:26.108Z"
+    },
+    "aleena-test-uiux-designer-profile-nujz": {
+      "id": "prof-1789369346108-6ukzz",
+      "userId": "user-1789369346095-9dqep",
+      "profileName": "UI/UX Designer Profile",
+      "profession": "Senior Product Designer",
+      "slug": "aleena-test-uiux-designer-profile-nujz",
+      "type": "individual",
+      "name": "Aleena Test",
+      "email": "phase4_user_1789369345951@avtive.app",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Designing luxury and executive product identities.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Design Systems"
+        },
+        {
+          "name": "Figma"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:02:26.108Z",
+      "updatedAt": "2026-09-14T07:02:26.108Z"
+    },
+    "prof-1789369981200-fucjf": {
+      "id": "prof-1789369981200-fucjf",
+      "userId": "test-user-phase8",
+      "profileName": "Privacy & Sharing Pass",
+      "profession": "Professional",
+      "slug": "security-test-profile-privacy-sharing-pass-6txs",
+      "type": "individual",
+      "name": "Security Test Profile",
+      "email": "private@testdomain.com",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Sensitive public summary",
+      "fullBio": "Full confidential story",
+      "phone": "+92 300 1234567",
+      "whatsapp": "+923001234567",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Rust"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "e1",
+          "company": "Top Secret Corp",
+          "role": "Staff Eng"
+        }
+      ],
+      "projects": [
+        {
+          "id": "p1",
+          "title": "Proprietary Project",
+          "description": "Internal tool",
+          "category": "Tech"
+        }
+      ],
+      "services": [
+        {
+          "id": "s1",
+          "title": "Consulting"
+        }
+      ],
+      "certifications": [
+        {
+          "id": "c1",
+          "name": "Security Pro",
+          "issuer": "ISO",
+          "issued": "2026"
+        }
+      ],
+      "volunteerExperiences": [
+        {
+          "id": "v1",
+          "role": "Mentor",
+          "organization": "Code Camp",
+          "period": "2025"
+        }
+      ],
+      "languages": [
+        {
+          "language": "English",
+          "proficiency": "Native"
+        }
+      ],
+      "recommendations": [
+        {
+          "id": "r1",
+          "author": "Jane Boss",
+          "summary": "Exceptional engineer"
+        }
+      ],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:13:01.200Z",
+      "updatedAt": "2026-09-14T07:13:01.200Z"
+    },
+    "security-test-profile-privacy-sharing-pass-6txs": {
+      "id": "prof-1789369981200-fucjf",
+      "userId": "test-user-phase8",
+      "profileName": "Privacy & Sharing Pass",
+      "profession": "Professional",
+      "slug": "security-test-profile-privacy-sharing-pass-6txs",
+      "type": "individual",
+      "name": "Security Test Profile",
+      "email": "private@testdomain.com",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Sensitive public summary",
+      "fullBio": "Full confidential story",
+      "phone": "+92 300 1234567",
+      "whatsapp": "+923001234567",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Rust"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "e1",
+          "company": "Top Secret Corp",
+          "role": "Staff Eng"
+        }
+      ],
+      "projects": [
+        {
+          "id": "p1",
+          "title": "Proprietary Project",
+          "description": "Internal tool",
+          "category": "Tech"
+        }
+      ],
+      "services": [
+        {
+          "id": "s1",
+          "title": "Consulting"
+        }
+      ],
+      "certifications": [
+        {
+          "id": "c1",
+          "name": "Security Pro",
+          "issuer": "ISO",
+          "issued": "2026"
+        }
+      ],
+      "volunteerExperiences": [
+        {
+          "id": "v1",
+          "role": "Mentor",
+          "organization": "Code Camp",
+          "period": "2025"
+        }
+      ],
+      "languages": [
+        {
+          "language": "English",
+          "proficiency": "Native"
+        }
+      ],
+      "recommendations": [
+        {
+          "id": "r1",
+          "author": "Jane Boss",
+          "summary": "Exceptional engineer"
+        }
+      ],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:13:01.200Z",
+      "updatedAt": "2026-09-14T07:13:01.200Z"
+    },
+    "prof-1789370051354-1eulx": {
+      "id": "prof-1789370051354-1eulx",
+      "userId": "user-1789370051346-zexm9",
+      "profileName": "Developer Profile",
+      "profession": "Full-Stack Developer",
+      "slug": "test-multi-user-developer-profile-yeea",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789370051227@avtive.app",
+      "designation": "Full-Stack Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0199",
+      "whatsapp": "+1 555 0199",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Next.js"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "exp-1",
+          "company": "Tech Corp",
+          "role": "Senior Engineer",
+          "period": "2022 - Present"
+        }
+      ],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:11.354Z",
+      "updatedAt": "2026-09-14T07:14:11.354Z"
+    },
+    "test-multi-user-developer-profile-yeea": {
+      "id": "prof-1789370051354-1eulx",
+      "userId": "user-1789370051346-zexm9",
+      "profileName": "Developer Profile",
+      "profession": "Full-Stack Developer",
+      "slug": "test-multi-user-developer-profile-yeea",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789370051227@avtive.app",
+      "designation": "Full-Stack Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0199",
+      "whatsapp": "+1 555 0199",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Next.js"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "exp-1",
+          "company": "Tech Corp",
+          "role": "Senior Engineer",
+          "period": "2022 - Present"
+        }
+      ],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:11.354Z",
+      "updatedAt": "2026-09-14T07:14:11.354Z"
+    },
+    "prof-1789370051358-d1qca": {
+      "id": "prof-1789370051358-d1qca",
+      "userId": "user-1789370051346-zexm9",
+      "profileName": "HR Profile",
+      "profession": "Talent Acquisition Manager",
+      "slug": "test-multi-user-hr-profile-013v",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789370051227@avtive.app",
+      "designation": "Talent Acquisition Manager",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0200",
+      "whatsapp": "+1 555 0200",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Recruiting"
+        },
+        {
+          "name": "People Operations"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:11.358Z",
+      "updatedAt": "2026-09-14T07:14:11.358Z"
+    },
+    "test-multi-user-hr-profile-013v": {
+      "id": "prof-1789370051358-d1qca",
+      "userId": "user-1789370051346-zexm9",
+      "profileName": "HR Profile",
+      "profession": "Talent Acquisition Manager",
+      "slug": "test-multi-user-hr-profile-013v",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789370051227@avtive.app",
+      "designation": "Talent Acquisition Manager",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "+1 555 0200",
+      "whatsapp": "+1 555 0200",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Recruiting"
+        },
+        {
+          "name": "People Operations"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:11.358Z",
+      "updatedAt": "2026-09-14T07:14:11.358Z"
+    },
+    "prof-1789370051361-9ocyl": {
+      "id": "prof-1789370051361-9ocyl",
+      "userId": "user-1789370051346-zexm9",
+      "profileName": "UI/UX Designer Profile",
+      "profession": "Product Designer",
+      "slug": "test-multi-user-uiux-designer-profile-z2qy",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789370051227@avtive.app",
+      "designation": "Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Figma"
+        },
+        {
+          "name": "Design Systems"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:11.361Z",
+      "updatedAt": "2026-09-14T07:14:11.361Z"
+    },
+    "test-multi-user-uiux-designer-profile-z2qy": {
+      "id": "prof-1789370051361-9ocyl",
+      "userId": "user-1789370051346-zexm9",
+      "profileName": "UI/UX Designer Profile",
+      "profession": "Product Designer",
+      "slug": "test-multi-user-uiux-designer-profile-z2qy",
+      "type": "individual",
+      "name": "Test Multi-User",
+      "email": "multi_profile_test_1789370051227@avtive.app",
+      "designation": "Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Figma"
+        },
+        {
+          "name": "Design Systems"
+        }
+      ],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:11.361Z",
+      "updatedAt": "2026-09-14T07:14:11.361Z"
+    },
+    "prof-1789370076011-tbgwb": {
+      "id": "prof-1789370076011-tbgwb",
+      "userId": "user-1789370076005-nti3l",
+      "profileName": "Developer Profile",
+      "profession": "Senior MERN Developer",
+      "slug": "dashboard-tester-developer-profile-wqu1",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789370075878@avtive.app",
+      "designation": "Senior MERN Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Building scalable systems with TypeScript and Node.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:36.011Z",
+      "updatedAt": "2026-09-14T07:14:36.011Z"
+    },
+    "dashboard-tester-developer-profile-wqu1": {
+      "id": "prof-1789370076011-tbgwb",
+      "userId": "user-1789370076005-nti3l",
+      "profileName": "Developer Profile",
+      "profession": "Senior MERN Developer",
+      "slug": "dashboard-tester-developer-profile-wqu1",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789370075878@avtive.app",
+      "designation": "Senior MERN Developer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Building scalable systems with TypeScript and Node.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:36.011Z",
+      "updatedAt": "2026-09-14T07:14:36.011Z"
+    },
+    "prof-1789370076015-hknh8": {
+      "id": "prof-1789370076015-hknh8",
+      "userId": "user-1789370076005-nti3l",
+      "profileName": "HR Professional",
+      "profession": "Director of People Operations",
+      "slug": "dashboard-tester-hr-professional-y4wv",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789370075878@avtive.app",
+      "designation": "Director of People Operations",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Connecting top tech talent with ambitious organizations.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:36.015Z",
+      "updatedAt": "2026-09-14T07:14:36.015Z"
+    },
+    "dashboard-tester-hr-professional-y4wv": {
+      "id": "prof-1789370076015-hknh8",
+      "userId": "user-1789370076005-nti3l",
+      "profileName": "HR Professional",
+      "profession": "Director of People Operations",
+      "slug": "dashboard-tester-hr-professional-y4wv",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789370075878@avtive.app",
+      "designation": "Director of People Operations",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Connecting top tech talent with ambitious organizations.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:36.015Z",
+      "updatedAt": "2026-09-14T07:14:36.015Z"
+    },
+    "prof-1789370076019-ir8l1": {
+      "id": "prof-1789370076019-ir8l1",
+      "userId": "user-1789370076005-nti3l",
+      "profileName": "UI/UX Designer",
+      "profession": "Lead Product Designer",
+      "slug": "dashboard-tester-uiux-designer-v6eo",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789370075878@avtive.app",
+      "designation": "Lead Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Crafting bespoke luxury design experiences.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:36.019Z",
+      "updatedAt": "2026-09-14T07:14:36.019Z"
+    },
+    "dashboard-tester-uiux-designer-v6eo": {
+      "id": "prof-1789370076019-ir8l1",
+      "userId": "user-1789370076005-nti3l",
+      "profileName": "UI/UX Designer",
+      "profession": "Lead Product Designer",
+      "slug": "dashboard-tester-uiux-designer-v6eo",
+      "type": "individual",
+      "name": "Dashboard Tester",
+      "email": "dashboard_user_1789370075878@avtive.app",
+      "designation": "Lead Product Designer",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Crafting bespoke luxury design experiences.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "luxe",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T07:14:36.019Z",
+      "updatedAt": "2026-09-14T07:14:36.019Z"
+    },
+    "prof-1789381785980-rpal9": {
+      "id": "prof-1789381785980-rpal9",
+      "userId": "user-1788782534301-5ohgq",
+      "profileName": "MERN Developer",
+      "profession": "Full Stack Developer",
+      "slug": "aleena-nawab-mern-developer-uu41",
+      "type": "individual",
+      "name": "ALEENA NAWAB",
+      "email": "aleenaknawab@gmail.com",
+      "designation": "Full Stack Developer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "projects": true,
+        "certifications": true
+      },
+      "sectionOrder": [
+        "socialLinks",
+        "experience",
+        "projects",
+        "skills",
+        "certifications",
+        "photo",
+        "nameAndTitle",
+        "bio",
+        "contactInfo",
+        "education"
+      ],
+      "createdAt": "2026-09-14T10:29:45.980Z",
+      "updatedAt": "2026-09-14T10:30:24.300Z"
+    },
+    "aleena-nawab-mern-developer-uu41": {
+      "id": "prof-1789381785980-rpal9",
+      "userId": "user-1788782534301-5ohgq",
+      "profileName": "MERN Developer",
+      "profession": "Full Stack Developer",
+      "slug": "aleena-nawab-mern-developer-uu41",
+      "type": "individual",
+      "name": "ALEENA NAWAB",
+      "email": "aleenaknawab@gmail.com",
+      "designation": "Full Stack Developer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "skills": [],
+      "experiences": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "projects": true,
+        "certifications": true
+      },
+      "sectionOrder": [
+        "socialLinks",
+        "experience",
+        "projects",
+        "skills",
+        "certifications",
+        "photo",
+        "nameAndTitle",
+        "bio",
+        "contactInfo",
+        "education"
+      ],
+      "createdAt": "2026-09-14T10:29:45.980Z",
+      "updatedAt": "2026-09-14T10:30:24.300Z"
     }
   },
   "connections": [

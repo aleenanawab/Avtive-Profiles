@@ -49,6 +49,9 @@ export function getProfileThemeClasses(theme: ProfileTheme = 'elegant') {
 }
 
 const THEME_SELECTION_LIST: { id: ProfileTheme; name: string; tag: string }[] = [
+  { id: 'editorial', name: 'Editorial', tag: 'Minimal' },
+  { id: 'cyber', name: 'Developer', tag: 'Terminal' },
+  { id: 'luxe', name: 'Luxe Velvet', tag: 'Executive' },
   { id: 'elegant', name: 'Elegant', tag: 'Luxury' },
   { id: 'dark', name: 'Dark', tag: 'Executive' },
   { id: 'minimal', name: 'Minimal', tag: 'Pure' },
@@ -170,7 +173,10 @@ export function AvtiveDigitalCard({
   return (
     <div className="relative w-full pb-20 sm:pb-8 text-left">
       {/* Main Profile Container Card with dynamic theme styling */}
-      <div className={`w-full rounded-[28px] sm:rounded-[36px] border overflow-hidden transition-all duration-300 ${theme.container}`}>
+      <div 
+        data-theme={activeThemeKey}
+        className={`w-full rounded-[28px] sm:rounded-[36px] border overflow-hidden transition-all duration-300 ${theme.container}`}
+      >
         
         {/* ========================================================================= */}
         {/* INSTAGRAM-STYLE IN-PLACE EDIT HEADER: Sticky top Save / Cancel & Themes    */}
@@ -294,103 +300,166 @@ export function AvtiveDigitalCard({
         />
 
         {/* ========================================================================= */}
-        {/* 2. SUBTLE COMPANY CONNECTION CARD                                         */}
+        {/* DYNAMIC PROFILE SECTIONS RENDERED ACCORDING TO sectionOrder & sharingSettings */}
         {/* ========================================================================= */}
-        {!isCompany && draftProfile.companyInfo && onViewCompany && (
-          <CompanyCard
-            companyInfo={draftProfile.companyInfo}
-            onViewCompany={() => onViewCompany(draftProfile.companyId || 'avtive-company')}
-            theme={theme}
-          />
-        )}
+        {(() => {
+          const defaultCardSectionOrder = [
+            'company',
+            'about',
+            'services',
+            'experience',
+            'projects',
+            'certifications',
+            'volunteer',
+            'languages',
+            'recommendations',
+            'virtual-card'
+          ];
 
-        {/* ========================================================================= */}
-        {/* 3. ABOUT SECTION                                                         */}
-        {/* ========================================================================= */}
-        <AboutSection 
-          profile={draftProfile} 
-          isEditing={isEditing}
-          onUpdateField={handleFieldUpdate}
-          theme={theme}
-        />
+          const userOrder = (draftProfile.sectionOrder || []).filter((s) => s !== 'hero');
+          const effectiveOrder: string[] = [];
+          
+          for (const s of userOrder) {
+            const normalized = s === 'skills' ? 'services' : s;
+            if (!effectiveOrder.includes(normalized) && defaultCardSectionOrder.includes(normalized)) {
+              effectiveOrder.push(normalized);
+            }
+          }
+          
+          for (const s of defaultCardSectionOrder) {
+            if (!effectiveOrder.includes(s)) {
+              effectiveOrder.push(s);
+            }
+          }
 
-        {/* ========================================================================= */}
-        {/* 4. SERVICES SECTION                                                      */}
-        {/* ========================================================================= */}
-        <SkillsServicesSection
-          profile={draftProfile}
-          isEditing={isEditing}
-          onUpdateField={handleFieldUpdate}
-          onInquireService={onInquireService}
-          theme={theme}
-        />
+          const sharing = draftProfile.sharingSettings || {};
 
-        {/* ========================================================================= */}
-        {/* 5. PROFESSIONAL EXPERIENCE                                               */}
-        {/* ========================================================================= */}
-        <ExperienceSection profile={draftProfile} theme={theme} />
+          return effectiveOrder.map((sectionKey) => {
+            switch (sectionKey) {
+              case 'company':
+                if (!isEditing && sharing.companySection === false) return null;
+                if (!isCompany && draftProfile.companyInfo && onViewCompany) {
+                  return (
+                    <CompanyCard
+                      key="company"
+                      companyInfo={draftProfile.companyInfo}
+                      onViewCompany={() => onViewCompany(draftProfile.companyId || 'avtive-company')}
+                      theme={theme}
+                    />
+                  );
+                }
+                if (isCompany && draftProfile.teamMembers && onSelectTeamMember) {
+                  return (
+                    <TeamSection
+                      key="team"
+                      profile={draftProfile}
+                      onSelectTeamMember={onSelectTeamMember}
+                      theme={theme}
+                    />
+                  );
+                }
+                return null;
 
-        {/* ========================================================================= */}
-        {/* 6. SELECTED PROJECTS / WORK                                              */}
-        {/* ========================================================================= */}
-        <PortfolioSection
-          profile={draftProfile}
-          onSelectProject={onSelectProject}
-          theme={theme}
-        />
+              case 'about':
+                if (!isEditing && sharing.bio === false) return null;
+                return (
+                  <AboutSection 
+                    key="about"
+                    profile={draftProfile} 
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
+                    theme={theme}
+                  />
+                );
 
-        {/* ========================================================================= */}
-        {/* 7. CERTIFICATIONS                                                        */}
-        {/* ========================================================================= */}
-        <CertificationsSection profile={draftProfile} theme={theme} />
+              case 'services':
+              case 'skills':
+                if (!isEditing && sharing.services === false && sharing.skills === false) return null;
+                return (
+                  <SkillsServicesSection
+                    key="services"
+                    profile={draftProfile}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
+                    onInquireService={onInquireService}
+                    theme={theme}
+                  />
+                );
 
-        {/* ========================================================================= */}
-        {/* 8. VOLUNTEER EXPERIENCE                                                  */}
-        {/* ========================================================================= */}
-        <VolunteerSection profile={draftProfile} theme={theme} />
+              case 'experience':
+                if (!isEditing && sharing.experience === false) return null;
+                if (!isEditing && (!draftProfile.experiences || draftProfile.experiences.length === 0)) return null;
+                return (
+                  <ExperienceSection key="experience" profile={draftProfile} theme={theme} />
+                );
 
-        {/* ========================================================================= */}
-        {/* 9. LANGUAGES                                                             */}
-        {/* ========================================================================= */}
-        <LanguagesSection profile={draftProfile} theme={theme} />
+              case 'projects':
+                if (!isEditing && sharing.projects === false) return null;
+                if (!isEditing && (!draftProfile.projects || draftProfile.projects.length === 0)) return null;
+                return (
+                  <PortfolioSection
+                    key="projects"
+                    profile={draftProfile}
+                    onSelectProject={onSelectProject}
+                    theme={theme}
+                  />
+                );
 
-        {/* ========================================================================= */}
-        {/* 10. RECOMMENDATIONS                                                      */}
-        {/* ========================================================================= */}
-        <RecommendationsSection profile={draftProfile} theme={theme} />
+              case 'certifications':
+                if (!isEditing && sharing.certifications === false) return null;
+                if (!isEditing && (!draftProfile.certifications || draftProfile.certifications.length === 0)) return null;
+                return (
+                  <CertificationsSection key="certifications" profile={draftProfile} theme={theme} />
+                );
 
-        {/* ========================================================================= */}
-        {/* 11. COMPANY SPECIAL: Live Team Directory                                 */}
-        {/* ========================================================================= */}
-        {isCompany && draftProfile.teamMembers && (
-          <TeamSection
-            profile={draftProfile}
-            onSelectTeamMember={onSelectTeamMember}
-            theme={theme}
-          />
-        )}
+              case 'volunteer':
+                if (!isEditing && sharing.volunteer === false) return null;
+                if (!isEditing && (!draftProfile.volunteerExperiences || draftProfile.volunteerExperiences.length === 0)) return null;
+                return (
+                  <VolunteerSection key="volunteer" profile={draftProfile} theme={theme} />
+                );
 
-        {/* ========================================================================= */}
-        {/* 12. VIRTUAL CARD (Requirement #16 & #24)                                  */}
-        {/* ========================================================================= */}
-        <div id="virtual-card-section" className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-              VIRTUAL CARD
-            </h2>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-bold font-mono`}>
-              Digital Identity
-            </span>
-          </div>
+              case 'languages':
+                if (!isEditing && sharing.languages === false) return null;
+                if (!isEditing && (!draftProfile.languages || draftProfile.languages.length === 0)) return null;
+                return (
+                  <LanguagesSection key="languages" profile={draftProfile} theme={theme} />
+                );
 
-          <NFCCardPreview
-            profile={draftProfile}
-            onViewCompany={onViewCompany}
-            onDownloadCard={onSaveContact}
-            isDark={isDark}
-            theme={theme}
-          />
-        </div>
+              case 'recommendations':
+                if (!isEditing && sharing.recommendations === false) return null;
+                return (
+                  <RecommendationsSection key="recommendations" profile={draftProfile} theme={theme} />
+                );
+
+              case 'virtual-card':
+                if (!isEditing && sharing.nfcCard === false) return null;
+                return (
+                  <div key="virtual-card" id="virtual-card-section" className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+                        VIRTUAL CARD
+                      </h2>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-bold font-mono`}>
+                        Digital Identity
+                      </span>
+                    </div>
+
+                    <NFCCardPreview
+                      profile={draftProfile}
+                      onViewCompany={onViewCompany}
+                      onDownloadCard={onSaveContact}
+                      isDark={isDark}
+                      theme={theme}
+                    />
+                  </div>
+                );
+
+              default:
+                return null;
+            }
+          });
+        })()}
 
         {/* ========================================================================= */}
         {/* 13. FOOTER: ONLY "Powered by Avtive"                                     */}

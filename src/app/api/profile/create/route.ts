@@ -12,31 +12,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Guardrail: Ensure user does not already have a profile
-    const existing = await getProfileByUserId(session.id);
-    if (existing) {
-      return NextResponse.json(
-        {
-          success: true,
-          message: 'Profile already exists for this account.',
-          profile: existing
-        },
-        { status: 200 }
-      );
-    }
-
     const body = await request.json().catch(() => ({}));
+    const profileName = (body.profileName || body.designation || 'Professional Profile').trim();
+    const name = (body.name || session.name || 'Professional').trim();
+
     const newProfile = await createProfileForUser(session.id, {
-      name: body.name || session.name,
+      name,
+      profileName,
+      profession: body.profession?.trim() || body.designation?.trim() || 'Professional',
       email: session.email,
-      designation: body.designation,
-      company: body.company,
-      location: body.location,
-      phone: body.phone,
-      whatsapp: body.whatsapp || body.phone,
-      shortBio: body.shortBio,
-      fullBio: body.fullBio,
-      theme: body.theme || 'elegant'
+      designation: body.designation?.trim() || body.profession?.trim() || 'Professional',
+      company: body.company?.trim() || 'Avtive',
+      location: body.location?.trim() || 'Global',
+      avatar: body.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+      coverImage: body.coverImage,
+      phone: body.phone?.trim() || '',
+      whatsapp: body.whatsapp?.trim() || body.phone?.trim() || '',
+      shortBio: body.shortBio?.trim() || 'Welcome to my digital profile on Avtive.',
+      fullBio: body.fullBio?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
+      theme: body.theme || 'editorial',
+      skills: body.skills || [],
+      experiences: body.experiences || [],
+      projects: body.projects || [],
+      services: body.services || [],
+      certifications: body.certifications || [],
+      socials: body.socials || [],
+      sharingSettings: body.sharingSettings,
+      sectionOrder: body.sectionOrder
     });
 
     return NextResponse.json(
@@ -47,6 +49,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
+
   } catch (error) {
     console.error('Create Profile API Error:', error);
     return NextResponse.json(
