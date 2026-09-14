@@ -4,9 +4,10 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Pencil, Globe, Mail, Phone } from 'lucide-react';
-import { ProfileData } from '../types/profile';
+import { ProfileData, normalizeProfileType } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon } from './BrandIcons';
+import { StatsRow } from './profiles/StatsRow';
 
 interface HeroSectionProps {
   profile: ProfileData;
@@ -34,6 +35,27 @@ export function HeroSection({
   const coverUrl = profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop';
   const avatarUrl = profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop';
   const sharing = profile.sharingSettings || {};
+
+  const normalizedType = normalizeProfileType(profile.type);
+  const typeBadgeLabel = normalizedType === 'owner' ? 'Owner' : normalizedType === 'employee' ? 'Employee' : 'Company';
+
+  const defaultStats = normalizedType === 'owner'
+    ? [
+        { value: profile.highlights?.[0]?.value || '5', label: profile.highlights?.[0]?.label || 'Team Members' },
+        { value: profile.highlights?.[1]?.value || '3', label: profile.highlights?.[1]?.label || 'Company Projects' },
+        { value: profile.highlights?.[2]?.value || '2', label: profile.highlights?.[2]?.label || 'Years' }
+      ]
+    : normalizedType === 'employee'
+    ? [
+        { value: profile.highlights?.[0]?.value || '12', label: profile.highlights?.[0]?.label || 'Team Members' },
+        { value: profile.highlights?.[1]?.value || '8', label: profile.highlights?.[1]?.label || 'Projects' },
+        { value: profile.highlights?.[2]?.value || '5', label: profile.highlights?.[2]?.label || 'Years' }
+      ]
+    : [
+        { value: profile.highlights?.[0]?.value || '15+', label: profile.highlights?.[0]?.label || 'Team' },
+        { value: profile.highlights?.[1]?.value || '25+', label: profile.highlights?.[1]?.label || 'Projects' },
+        { value: profile.highlights?.[2]?.value || '4+', label: profile.highlights?.[2]?.label || 'Years' }
+      ];
 
   // Social Links matching Screen 9
   const socials = profile.socials || [];
@@ -78,9 +100,12 @@ export function HeroSection({
           </div>
         )}
 
-        {/* Name & Professional Title */}
+        {/* Profile Role Badge & Name */}
         {sharing.nameAndTitle !== false && (
-          <div className="space-y-0.5 pt-1">
+          <div className="space-y-1 pt-1">
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-zinc-300 border border-black/5 dark:border-white/10">
+              {typeBadgeLabel}
+            </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               {profile.name}
             </h1>
@@ -96,6 +121,11 @@ export function HeroSection({
             {profile.shortBio}
           </p>
         )}
+
+        {/* Stats Row (Screens 5, 13, 14 in reference) */}
+        <div className="pt-1">
+          <StatsRow stats={defaultStats} />
+        </div>
 
         {/* Social Icons Row (Screen 9) */}
         {sharing.socialLinks !== false && (

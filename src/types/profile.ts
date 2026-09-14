@@ -1,4 +1,11 @@
-export type ProfileType = 'individual' | 'team-member' | 'company';
+export type ProfileType = 'owner' | 'employee' | 'company' | 'individual' | 'team-member';
+
+export function normalizeProfileType(type?: string): 'owner' | 'employee' | 'company' {
+  if (!type || type === 'individual' || type === 'owner') return 'owner';
+  if (type === 'team-member' || type === 'employee') return 'employee';
+  if (type === 'company') return 'company';
+  return 'owner';
+}
 
 export type ProfileTheme = 
   | 'editorial' 

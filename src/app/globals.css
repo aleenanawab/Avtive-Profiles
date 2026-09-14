@@ -52,6 +52,11 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Strict single-font rule: Guarantee Inter across all font utilities */
+.font-mono, .font-serif, .font-sans {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
 /* 3D Card Perspective Utilities */
 .perspective-1000 {
   perspective: 1000px;

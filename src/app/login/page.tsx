@@ -115,7 +115,12 @@ function LoginFormContent() {
         });
         const loginData = await loginRes.json();
         if (loginRes.ok) {
-          router.push('/create-profile');
+          const returnUrl = searchParams.get('returnUrl');
+          if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
+            router.push(returnUrl);
+          } else {
+            router.push('/create-profile');
+          }
           router.refresh();
           return;
         }
@@ -248,18 +253,43 @@ function LoginFormContent() {
               </div>
 
               {/* Demo Account Quick Access */}
-              <div className="pt-2 text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail('mesum@avtive.app');
-                    setPassword('Avtive@123');
-                    setMode('login');
-                  }}
-                  className="text-xs text-white/60 hover:text-white transition-colors underline decoration-white/30"
-                >
-                  Quick Demo: Sign in as Mesum (Founder)
-                </button>
+              <div className="pt-2 text-center space-y-1.5">
+                <div className="text-[11px] text-white/50">Quick Demo Sign In:</div>
+                <div className="flex flex-wrap items-center justify-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('aleena@avtive.app');
+                      setPassword('Avtive@123');
+                      setMode('login');
+                    }}
+                    className="text-[11px] text-white/90 hover:text-white px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-colors"
+                  >
+                    Aleena Nawab (Reference)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('mesum@avtive.app');
+                      setPassword('Avtive@123');
+                      setMode('login');
+                    }}
+                    className="text-[11px] text-white/70 hover:text-white px-2 py-1 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 transition-colors"
+                  >
+                    Mesum (Founder)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('hamza@avtive.app');
+                      setPassword('Avtive@123');
+                      setMode('login');
+                    }}
+                    className="text-[11px] text-white/70 hover:text-white px-2 py-1 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 transition-colors"
+                  >
+                    Hamza (Employee)
+                  </button>
+                </div>
               </div>
 
               {/* Footer Switcher */}

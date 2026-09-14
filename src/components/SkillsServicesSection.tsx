@@ -21,8 +21,7 @@ export function SkillsServicesSection({
   theme = getThemeConfig(profile.theme || 'elegant')
 }: SkillsServicesSectionProps) {
   const hasServices = profile.services && profile.services.length > 0;
-  const isIndividual = profile.type === 'individual';
-  const hasSkills = !isIndividual && profile.skills && profile.skills.length > 0;
+  const hasSkills = profile.skills && profile.skills.length > 0;
 
   if (!hasServices && !hasSkills && !isEditing) return null;
 
@@ -116,17 +115,17 @@ export function SkillsServicesSection({
         </div>
       </div>
 
-      {/* Additional Skills Chips for other profiles if provided */}
+      {/* Skills Pills matching Screen 11 & 12 */}
       {hasSkills && (
-        <div className="space-y-2 pt-2">
-          <h3 className={`text-[11px] font-bold uppercase tracking-wider ${theme.textMuted} font-mono`}>
-            Competencies
-          </h3>
+        <div className="space-y-2.5 pt-1 text-left">
+          <h2 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
+            Skills
+          </h2>
           <div className="flex flex-wrap gap-1.5">
             {profile.skills?.map((skill, idx) => (
               <span
                 key={idx}
-                className={`px-3 py-1 rounded-lg ${theme.cardBg} border ${theme.cardBorder} text-xs font-semibold ${theme.textPrimary} shadow-2xs`}
+                className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700/80 text-xs font-medium text-slate-800 dark:text-zinc-200 shadow-2xs"
               >
                 {skill.name}
               </span>

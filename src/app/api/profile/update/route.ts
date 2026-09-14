@@ -22,8 +22,13 @@ async function handleProfileUpdate(request: NextRequest) {
       );
     }
 
-    const body: UpdateProfileBody = await request.json();
-    const { profileId, updatedData } = body;
+    const body = await request.json();
+    const profileId = body.profileId;
+    const rawUpdatedData = body.updatedData || { ...body };
+    if (!body.updatedData) {
+      delete rawUpdatedData.profileId;
+    }
+    const updatedData = rawUpdatedData;
 
     if (!profileId || !updatedData) {
       return NextResponse.json(

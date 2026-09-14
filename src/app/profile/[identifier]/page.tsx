@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getProfileByIdOrSlug, sanitizeProfileForPublic } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { PublicProfileClient } from './PublicProfileClient';
@@ -34,8 +35,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProfilePage({ params }: PageProps) {
   const { identifier } = await params;
-  const profile = await getProfileByIdOrSlug(identifier);
   const session = await getSession();
+
+  // 1. Mandatory Gatekeeper: Register/Login must come first before profile access (Req 13 & 47)
+  if (!session) {
+    redirect(`/login?returnUrl=/profile/${encodeURIComponent(identifier)}`);
+  }
+
+  const profile = await getProfileByIdOrSlug(identifier);
 
   // 1. If Profile does not exist, show clean 404
   if (!profile) {
