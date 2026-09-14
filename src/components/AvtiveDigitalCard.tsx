@@ -83,6 +83,7 @@ interface AvtiveDigitalCardProps {
   onSendMessage?: (data: { name: string; email: string; message: string }) => void;
   onOpenMyCard?: () => void;
   isDark: boolean;
+  viewMode?: 'standard' | 'web';
 }
 
 export function AvtiveDigitalCard({
@@ -107,7 +108,8 @@ export function AvtiveDigitalCard({
   onInquireService,
   onSendMessage,
   onOpenMyCard,
-  isDark
+  isDark,
+  viewMode = 'standard'
 }: AvtiveDigitalCardProps) {
   const [draftProfile, setDraftProfile] = useState<ProfileData>(profile);
   const [isSaving, setIsSaving] = useState(false);
@@ -334,7 +336,7 @@ export function AvtiveDigitalCard({
 
           const sharing = draftProfile.sharingSettings || {};
 
-          return effectiveOrder.map((sectionKey) => {
+          const renderSection = (sectionKey: string) => {
             switch (sectionKey) {
               case 'company':
                 if (!isEditing && sharing.companySection === false) return null;
@@ -458,7 +460,26 @@ export function AvtiveDigitalCard({
               default:
                 return null;
             }
-          });
+          };
+
+          if (viewMode === 'web') {
+            const leftKeys = ['company', 'about', 'virtual-card'];
+            const leftSections = effectiveOrder.filter((k) => leftKeys.includes(k));
+            const rightSections = effectiveOrder.filter((k) => !leftKeys.includes(k));
+
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-12 border-t border-slate-200/80 dark:border-zinc-800/80 divide-y lg:divide-y-0 lg:divide-x divide-slate-200/80 dark:divide-zinc-800/80">
+                <div className="lg:col-span-5 flex flex-col">
+                  {leftSections.map(renderSection)}
+                </div>
+                <div className="lg:col-span-7 flex flex-col">
+                  {rightSections.map(renderSection)}
+                </div>
+              </div>
+            );
+          }
+
+          return effectiveOrder.map(renderSection);
         })()}
 
         {/* ========================================================================= */}
