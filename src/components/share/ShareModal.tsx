@@ -398,7 +398,7 @@ export function ShareModal({
                           type="button"
                           onClick={() => handleToggle(mod.key)}
                           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                            isVisible ? 'bg-white' : 'bg-white/20'
+                            isVisible ? 'bg-[#10B981]' : 'bg-[#2A2E39]'
                           }`}
                           role="switch"
                           aria-checked={isVisible}
@@ -407,8 +407,8 @@ export function ShareModal({
                             aria-hidden="true"
                             className={`pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out ${
                               isVisible
-                                ? 'translate-x-5 bg-zinc-900'
-                                : 'translate-x-0 bg-white/60'
+                                ? 'translate-x-5 bg-white'
+                                : 'translate-x-0 bg-white/50'
                             }`}
                           />
                         </button>
@@ -640,7 +640,7 @@ export function ShareModal({
             <button
               type="button"
               onClick={() => setCurrentStep((prev) => (prev - 1) as any)}
-              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs border border-white/15 transition-all active:scale-[0.98] cursor-pointer"
+              className="inline-flex items-center gap-1.5 py-2.5 px-5 rounded-full bg-white/10 hover:bg-white/15 text-white font-medium text-xs border border-white/15 transition-all active:scale-[0.98] cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -649,7 +649,7 @@ export function ShareModal({
             <button
               type="button"
               onClick={onClose}
-              className="py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 font-medium text-xs transition-all cursor-pointer"
+              className="py-2.5 px-5 rounded-full bg-white/5 hover:bg-white/10 text-white/70 font-medium text-xs transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -659,7 +659,7 @@ export function ShareModal({
             <button
               type="button"
               onClick={() => setCurrentStep((prev) => (prev + 1) as any)}
-              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-md cursor-pointer"
             >
               <span>{currentStep === 1 ? 'Next: Visibility' : currentStep === 2 ? 'Next: Reorder' : 'Next: Share Link'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -669,7 +669,7 @@ export function ShareModal({
               type="button"
               onClick={handleSaveAndShare}
               disabled={isSaving}
-              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-xl bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-md cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-md cursor-pointer disabled:opacity-50"
             >
               {isSaving ? (
                 <>

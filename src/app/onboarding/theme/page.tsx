@@ -66,99 +66,124 @@ function ThemeStepContent() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Step Indicator */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-white text-black font-bold text-xs flex items-center justify-center">
-            1
-          </span>
-          <span className="text-xs font-semibold text-white/80">Step 1 of 3</span>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2 }}
+      className="figma-phone-frame w-full max-w-[390px] p-6 sm:p-7 flex flex-col justify-between relative"
+    >
+      {/* Mobile Top Status Bar (9:41, Wifi, Battery) */}
+      <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-zinc-400 mb-4 px-1 font-mono">
+        <span>9:41</span>
+        <div className="flex items-center gap-1.5">
+          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
+          </svg>
+          <div className="w-5 h-2.5 border border-current rounded-xs p-0.5 flex items-center">
+            <div className="w-full h-full bg-current rounded-2xs" />
+          </div>
         </div>
-        <span className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
-          Visual Identity
-        </span>
       </div>
 
-      {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-          Choose Your Theme
-        </h1>
-        <p className="text-xs sm:text-sm text-white/60">
-          Select a signature aesthetic for your Avtive digital profile card.
-        </p>
+      {/* Screen 3 Header: Back Arrow, Step 2/3, Title & Subtitle */}
+      <div className="space-y-2 mb-5">
+        <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
+            aria-label="Go back"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <span className="text-xs font-mono font-medium tracking-wider">
+            2/3
+          </span>
+        </div>
+
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Choose Theme
+            <span className="sr-only"> - Choose Your Theme</span>
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 leading-normal">
+            Pick a style that matches your vibe. You can change it first.
+          </p>
+        </div>
       </div>
 
-      {/* Theme Cards Grid */}
-      <div className="space-y-3 pt-2">
-        {THEME_OPTIONS.map((theme) => {
-          const isSelected = selectedTheme === theme.id;
-          const Icon = theme.icon;
+      {/* Theme Cards List matching Figma Screen 3 */}
+      <div className="space-y-3 mb-6">
+        {THEME_OPTIONS.map((item) => {
+          const isSelected = selectedTheme === item.id;
 
           return (
-            <motion.div
-              key={theme.id}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => setSelectedTheme(theme.id)}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer relative ${
+            <div
+              key={item.id}
+              onClick={() => setSelectedTheme(item.id)}
+              className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                 isSelected
-                  ? 'bg-white/10 border-white shadow-xl ring-1 ring-white/30'
-                  : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/[0.07]'
+                  ? 'bg-slate-50 dark:bg-[#1B1E28] border-slate-900 dark:border-rose-500/80 shadow-xs ring-1 ring-slate-900/10 dark:ring-rose-500/30'
+                  : 'bg-white dark:bg-[#151821] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
               }`}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3.5">
-                  <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/10"
-                    style={{ backgroundColor: `${theme.accentColor}20` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: theme.accentColor }} />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm sm:text-base font-bold text-white">
-                        {theme.title}
-                      </h3>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/70 font-mono">
-                        {theme.subtitle}
-                      </span>
-                    </div>
-                    <p className="text-xs text-white/60 leading-relaxed">
-                      {theme.description}
-                    </p>
+              <div className="flex items-center gap-3">
+                {/* Visual Thumbnail Preview matching Figma */}
+                <div 
+                  className={`w-14 h-12 rounded-xl p-1.5 flex flex-col justify-between shrink-0 border ${
+                    item.id === 'editorial'
+                      ? 'bg-[#FAFAF9] border-stone-200 text-stone-900'
+                      : item.id === 'cyber'
+                      ? 'bg-[#09090B] border-emerald-500/40 text-emerald-400'
+                      : 'bg-[#180D15] border-rose-500/40 text-rose-300'
+                  }`}
+                >
+                  <div className="w-full h-2 rounded-xs bg-current opacity-30" />
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-current opacity-60 shrink-0" />
+                    <div className="w-6 h-1 rounded-2xs bg-current opacity-40" />
                   </div>
                 </div>
 
-                {/* Radio indicator */}
-                <div
-                  className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                    isSelected
-                      ? 'bg-white border-white text-black'
-                      : 'border-white/30 bg-black/20'
-                  }`}
-                >
-                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                {/* Details */}
+                <div className="text-left">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
+                    {item.subtitle}
+                  </p>
                 </div>
               </div>
-            </motion.div>
+
+              {/* Radio Indicator */}
+              <div
+                className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                  isSelected
+                    ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-black'
+                    : 'border-slate-300 dark:border-zinc-700 bg-transparent'
+                }`}
+              >
+                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+              </div>
+            </div>
           );
         })}
       </div>
 
-      {/* Action Controls */}
-      <div className="pt-4 flex items-center justify-end">
+      {/* Primary Action Button: White Pill Button */}
+      <div>
         <button
           type="button"
           onClick={handleNext}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-8 rounded-xl bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-lg cursor-pointer"
+          className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
         >
           <span>Next</span>
-          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

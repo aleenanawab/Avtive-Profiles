@@ -8,6 +8,9 @@ interface ThemeContextType {
   theme: PortfolioTheme;
   setTheme: (theme: PortfolioTheme) => void;
   cycleTheme: () => void;
+  isDark: boolean;
+  toggleDarkMode: () => void;
+  setDarkMode: (val: boolean) => void;
   isMounted: boolean;
 }
 
@@ -15,6 +18,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<PortfolioTheme>('editorial');
+  const [isDark, setIsDarkState] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -25,8 +29,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setThemeState(saved);
         document.documentElement.setAttribute('data-theme', saved);
       } else {
-        // Default to editorial
         document.documentElement.setAttribute('data-theme', 'editorial');
+      }
+
+      const savedPref = localStorage.getItem('avtive_theme_pref');
+      const hasDark = savedPref === 'dark' || (!savedPref && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      setIsDarkState(hasDark);
+      if (hasDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
     } catch {
       document.documentElement.setAttribute('data-theme', 'editorial');
@@ -49,8 +61,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(order[nextIndex]);
   };
 
+  const setDarkMode = (dark: boolean) => {
+    setIsDarkState(dark);
+    try {
+      if (dark) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('avtive_theme_pref', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('avtive_theme_pref', 'light');
+      }
+    } catch (e) {
+      console.error('Failed to update dark mode in localStorage', e);
+    }
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!isDark);
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme, isMounted }}>
+    <ThemeContext.Provider value={{ theme, setTheme, cycleTheme, isDark, toggleDarkMode, setDarkMode, isMounted }}>
       {children}
     </ThemeContext.Provider>
   );

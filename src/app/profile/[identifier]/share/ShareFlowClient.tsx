@@ -221,46 +221,51 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
   };
 
   return (
-    <div className="w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-7 shadow-sm text-slate-900 dark:text-white transition-colors font-sans">
+    <div className="figma-phone-frame w-full max-w-[390px] p-6 sm:p-7 flex flex-col justify-between relative text-slate-900 dark:text-white transition-colors font-sans">
+      {/* Mobile Top Status Bar (9:41, Wifi, Battery) */}
+      <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-zinc-400 mb-4 px-1 font-mono">
+        <span>9:41</span>
+        <div className="flex items-center gap-1.5">
+          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
+          </svg>
+          <div className="w-5 h-2.5 border border-current rounded-xs p-0.5 flex items-center">
+            <div className="w-full h-full bg-current rounded-2xs" />
+          </div>
+        </div>
+      </div>
+
       <AnimatePresence mode="wait">
 
         {/* ========================================================================= */}
-        {/* STEP 1: CHOOSE ROLE TO SHARE                                              */}
+        {/* STEP 1 / SCREEN 12 & 13: CHOOSE ROLE PROFILE TO SHARE                      */}
         {/* ========================================================================= */}
         {currentStep === 1 && (
           <motion.div
             key="step1"
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 16 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back"
+                className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
+                aria-label="Go back"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-5 h-5" />
               </button>
-
-              <span className="text-sm font-bold text-slate-900 dark:text-white">
-                Share Profile
-              </span>
-
-              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                1/4
-              </span>
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 Which role profile you want to share?
               </h1>
               <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Select from your configured role profiles to export and share.
+                Select from your configured role profiles to share.
               </p>
             </div>
 
@@ -273,8 +278,8 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                     onClick={() => setSelectedProfile(r)}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                       isSelected
-                        ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs'
-                        : 'border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-800/50'
+                        ? 'bg-slate-50 dark:bg-[#1B1E28] border-slate-900 dark:border-white/30 shadow-xs ring-1 ring-slate-900/10 dark:ring-white/20'
+                        : 'bg-white dark:bg-[#151821] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -283,25 +288,20 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                         alt={r.name}
                         className="w-10 h-10 rounded-xl object-cover border border-white/20 shrink-0"
                       />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-xs font-bold truncate">
+                      <div className="min-w-0 text-left">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-xs font-bold truncate text-slate-900 dark:text-white">
                             {r.profileName || r.name}
                           </h4>
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
-                            isSelected ? 'bg-white/20 text-white dark:bg-black/20 dark:text-black' : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400'
-                          }`}>
-                            {r.type || 'role'}
-                          </span>
                         </div>
-                        <p className={`text-[11px] truncate ${isSelected ? 'opacity-80' : 'text-slate-500 dark:text-zinc-400'}`}>
-                          {r.profession || r.designation || 'Professional Profile'}
+                        <p className="text-[11px] truncate text-slate-500 dark:text-zinc-400">
+                          {r.type === 'owner' ? 'Full control of the profile' : r.type === 'employee' ? 'Work at a company' : 'Business / Organization'}
                         </p>
                       </div>
                     </div>
 
                     <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
-                      isSelected ? 'border-white bg-white text-black dark:border-black dark:bg-black dark:text-white' : 'border-slate-300 dark:border-zinc-700'
+                      isSelected ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-black' : 'border-slate-300 dark:border-zinc-700'
                     }`}>
                       {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                     </div>
@@ -310,54 +310,54 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               })}
             </div>
 
-            <button
-              type="button"
-              onClick={() => setCurrentStep(2)}
-              className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Next: Visibility Settings</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(2)}
+                className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+              >
+                <span>Next</span>
+              </button>
+            </div>
           </motion.div>
         )}
 
         {/* ========================================================================= */}
-        {/* STEP 2: WHAT DO YOU WANT TO SHOW? (VISIBILITY)                            */}
+        {/* STEP 2 / SCREEN 8: LIMITATION PAGE (WHAT DO YOU WANT TO SHOW?)            */}
         {/* ========================================================================= */}
         {currentStep === 2 && (
           <motion.div
             key="step2"
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 16 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back"
+                className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
+                aria-label="Go back"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-5 h-5" />
               </button>
-
-              <span className="text-sm font-bold text-slate-900 dark:text-white">
-                Share
-              </span>
-
-              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                2/4
-              </span>
+              <button
+                type="button"
+                className="p-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
+                title="Edit preferences"
+              >
+                <span className="text-sm">✎</span>
+              </button>
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 What do you want to show?
               </h1>
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Choose the sections you want to share and hide from your profile.
+              <p className="text-xs text-slate-500 dark:text-zinc-400 leading-normal">
+                Choose the information you want to make private below:
               </p>
             </div>
 
@@ -369,10 +369,10 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                 return (
                   <div
                     key={sec.id}
-                    className="py-3 flex items-center justify-between gap-3 text-left"
+                    className="py-2.5 flex items-center justify-between gap-3 text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-500 dark:text-zinc-400 shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800/80 flex items-center justify-center text-slate-600 dark:text-zinc-300 shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
                       <span className="text-xs font-medium text-slate-900 dark:text-zinc-100">
@@ -386,7 +386,7 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                       aria-checked={isChecked}
                       onClick={() => handleToggle(sec.key)}
                       className={`w-11 h-6 rounded-full p-0.5 transition-colors focus:outline-none shrink-0 cursor-pointer ${
-                        isChecked ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-zinc-700'
+                        isChecked ? 'bg-[#10B981]' : 'bg-slate-200 dark:bg-zinc-700'
                       }`}
                     >
                       <div
@@ -400,73 +400,56 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               })}
             </div>
 
-            <div className="flex items-center justify-between gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(1)}
-                className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 font-medium text-xs transition-colors cursor-pointer"
-              >
-                Back
-              </button>
-
+            <div className="pt-2">
               <button
                 type="button"
                 onClick={() => setCurrentStep(3)}
-                className="py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                <span>Next: Reorder</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span>Next</span>
               </button>
             </div>
           </motion.div>
         )}
 
         {/* ========================================================================= */}
-        {/* STEP 3: REORDER SECTIONS                                                  */}
+        {/* STEP 3 / SCREEN 9: DRAG & DROP HIDER (REORDER SECTIONS)                   */}
         {/* ========================================================================= */}
         {currentStep === 3 && (
           <motion.div
             key="step3"
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 16 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
               <button
                 type="button"
                 onClick={() => setCurrentStep(2)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back"
+                className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
+                aria-label="Go back"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-5 h-5" />
               </button>
-
-              <span className="text-sm font-bold text-slate-900 dark:text-white">
-                Reorder Sections
-              </span>
-
-              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                3/4
-              </span>
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 Reorder Sections
               </h1>
               <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Drag or arrange visible and hidden modules for your shared pass.
+                Drag to rearrange your sections.
               </p>
             </div>
 
             {/* Visible Sections */}
             <div className="space-y-2">
-              <div className="text-[11px] font-mono text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                Visible Sections ({activeSections.length})
+              <div className="text-[11px] font-bold text-slate-700 dark:text-zinc-300">
+                Visible Sections
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {activeSections.map((id, index) => {
                   const def = SECTION_DEFINITIONS.find((s) => s.id === id);
                   if (!def) return null;
@@ -479,14 +462,11 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                       onDragStart={(e) => handleDragStart(e, index)}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, index)}
-                      className="p-3 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 flex items-center justify-between gap-2 shadow-2xs hover:border-slate-300 dark:hover:border-zinc-700 transition-colors cursor-grab active:cursor-grabbing"
+                      className="p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151821] flex items-center justify-between gap-2 shadow-2xs cursor-grab active:cursor-grabbing"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <GripVertical className="w-4 h-4 text-slate-400 dark:text-zinc-600 shrink-0" />
-                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-600 dark:text-zinc-300">
-                          <Icon className="w-3.5 h-3.5" />
-                        </div>
-                        <span className="text-xs font-semibold text-slate-900 dark:text-white">
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500 shrink-0" />
+                        <span className="text-xs font-medium text-slate-900 dark:text-white">
                           {def.label}
                         </span>
                       </div>
@@ -494,10 +474,10 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                       <button
                         type="button"
                         onClick={() => handleMoveToHidden(id)}
-                        className="text-xs text-rose-500 hover:text-rose-600 p-1 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                        className="text-xs text-slate-400 hover:text-rose-500 p-1 rounded-md transition-colors"
                         title="Hide Section"
                       >
-                        <EyeOff className="w-4 h-4" />
+                        <EyeOff className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   );
@@ -507,31 +487,27 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
 
             {/* Hidden Sections */}
             {hiddenSections.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-zinc-800">
-                <div className="text-[11px] font-mono text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                  Hidden Sections ({hiddenSections.length})
+              <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10">
+                <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400">
+                  Hidden Sections
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {hiddenSections.map((id) => {
                     const def = SECTION_DEFINITIONS.find((s) => s.id === id);
                     if (!def) return null;
-                    const Icon = def.icon;
 
                     return (
                       <div
                         key={id}
-                        className="p-2.5 rounded-xl border border-slate-200/60 dark:border-zinc-800/60 bg-slate-50 dark:bg-zinc-900/20 flex items-center justify-between text-slate-400 dark:text-zinc-600 text-xs"
+                        className="p-2.5 rounded-xl border border-slate-200/60 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] flex items-center justify-between text-slate-400 dark:text-zinc-500 text-xs"
                       >
-                        <div className="flex items-center gap-2.5">
-                          <Icon className="w-3.5 h-3.5" />
-                          <span>{def.label}</span>
-                        </div>
+                        <span>{def.label}</span>
                         <button
                           type="button"
                           onClick={() => handleMoveToVisible(id)}
-                          className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold p-1 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-md transition-colors flex items-center gap-1"
+                          className="text-xs text-emerald-600 hover:text-emerald-700 font-medium p-1 transition-colors flex items-center gap-1"
                         >
-                          <Eye className="w-3.5 h-3.5" />
+                          <Eye className="w-3 h-3" />
                           <span>Show</span>
                         </button>
                       </div>
@@ -541,142 +517,126 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               </div>
             )}
 
-            <div className="flex items-center justify-between gap-3 pt-2">
+            {/* Action Buttons matching Screen 9 */}
+            <div className="grid grid-cols-2 gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setCurrentStep(2)}
-                className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 font-medium text-xs transition-colors cursor-pointer"
+                className="figma-pill-secondary py-3 text-xs font-semibold cursor-pointer text-center"
               >
-                Back
+                Next
               </button>
 
               <button
                 type="button"
                 onClick={handleSaveAndProceedToShare}
                 disabled={isSaving}
-                className="py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                className="figma-pill-primary py-3 px-4 text-xs font-bold shadow-md cursor-pointer disabled:opacity-50 text-center"
               >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Saving...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Next: Share Link</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </>
-                )}
+                {isSaving ? 'Saving...' : 'Save & Sections'}
               </button>
             </div>
           </motion.div>
         )}
 
         {/* ========================================================================= */}
-        {/* STEP 4: SHARE LINK GENERATION                                             */}
+        {/* STEP 4 / SCREEN 10: SHARE PAGE                                            */}
         {/* ========================================================================= */}
         {currentStep === 4 && (
           <motion.div
             key="step4"
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 16 }}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="space-y-6"
+            className="space-y-4"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
               <button
                 type="button"
                 onClick={() => setCurrentStep(3)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back"
+                className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
+                aria-label="Go back"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-5 h-5" />
               </button>
-
-              <span className="text-sm font-bold text-slate-900 dark:text-white">
-                Share Link
-              </span>
-
-              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                4/4
-              </span>
             </div>
 
-            {/* Preview Pass Card */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
-              <div className="flex items-center gap-3">
+            <div className="space-y-1">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Share
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">
+                Your profile is ready to share!
+              </p>
+            </div>
+
+            {/* Preview Mini Card matching Screen 10 */}
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-[#151821] border border-slate-200 dark:border-white/10 space-y-2.5 shadow-2xs">
+              <div className="flex items-start gap-3">
                 <img
                   src={selectedProfile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
                   alt={selectedProfile.name}
-                  className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-zinc-700 shrink-0"
+                  className="w-11 h-11 rounded-full object-cover border border-slate-200 dark:border-white/20 shrink-0"
                 />
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                      {selectedProfile.name}
-                    </h3>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-zinc-800 font-mono text-slate-700 dark:text-zinc-300">
-                      {selectedProfile.profileName || selectedProfile.type}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 truncate">
-                    {selectedProfile.profession || selectedProfile.designation || 'Professional Profile'}
+                <div className="min-w-0 text-left">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                    {selectedProfile.name}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                    {selectedProfile.profession || selectedProfile.designation || 'MERN Developer'}
+                  </p>
+                  <p className="text-[10px] text-slate-400 dark:text-zinc-500 line-clamp-1 mt-0.5">
+                    {selectedProfile.shortBio || selectedProfile.fullBio || 'Passionate professional'}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-200/60 dark:border-zinc-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
-                <span>Active Modules: {activeSections.length}</span>
-                <span>Theme: {selectedProfile.theme || 'editorial'}</span>
+              <div className="pt-2 border-t border-slate-100 dark:border-white/10 flex items-center justify-center gap-3 text-slate-500 dark:text-zinc-400">
+                <GithubIcon className="w-3.5 h-3.5" />
+                <LinkedInIcon className="w-3.5 h-3.5" />
+                <TwitterXIcon className="w-3.5 h-3.5" />
               </div>
             </div>
 
-            {/* Public Profile URL Box */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold text-slate-600 dark:text-zinc-400 block">
-                Public Profile URL
+            {/* Share Profile Link input box with copy button */}
+            <div className="space-y-1 text-left">
+              <label className="text-[11px] font-medium text-slate-600 dark:text-zinc-400 block ml-1">
+                Share Profile Link
               </label>
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-800">
-                <span className="text-xs font-mono text-slate-800 dark:text-zinc-200 truncate flex-1 select-all">
+              <div className="flex items-center gap-2 p-2 rounded-xl figma-input">
+                <span className="text-xs font-mono text-slate-800 dark:text-zinc-200 truncate flex-1 select-all px-1">
                   {publicUrl}
                 </span>
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+                  className="p-1 text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white cursor-pointer"
+                  title="Copy link"
                 >
-                  {copied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy Link</span>
-                    </>
-                  )}
+                  {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* QR Code Action Box */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <QrCode className="w-5 h-5 text-slate-700 dark:text-zinc-300" />
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">QR Code Pass</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-zinc-400">Scan to open digital pass</p>
-                </div>
-              </div>
+            {/* Copy Link and QR Code Action Pill Buttons */}
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="figma-pill-secondary py-2.5 text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>{copied ? 'Copied!' : 'Copy Link'}</span>
+              </button>
 
               <button
                 type="button"
                 onClick={() => setShowQrModal(!showQrModal)}
-                className="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-800 dark:text-zinc-200 text-xs font-medium transition-colors cursor-pointer"
+                className="figma-pill-secondary py-2.5 text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5"
               >
-                {showQrModal ? 'Hide QR' : 'Show QR'}
+                <QrCode className="w-3.5 h-3.5" />
+                <span>QR Code</span>
               </button>
             </div>
 
@@ -684,27 +644,27 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="p-4 rounded-2xl bg-white border border-slate-200 flex flex-col items-center justify-center gap-3 text-center"
+                className="p-4 rounded-2xl bg-white border border-slate-200 flex flex-col items-center justify-center gap-2.5 text-center"
               >
-                <img src={qrCodeDataUrl} alt="QR Code" className="w-48 h-48 rounded-xl" />
+                <img src={qrCodeDataUrl} alt="QR Code" className="w-40 h-40 rounded-xl" />
                 <a
                   href={qrCodeDataUrl}
                   download={`${selectedProfile.slug || 'profile'}-qr.png`}
                   className="text-xs text-slate-900 font-semibold hover:underline inline-flex items-center gap-1"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download QR Image</span>
+                  <span>Download QR</span>
                 </a>
               </motion.div>
             )}
 
+            {/* Primary Share Pill Button matching Screen 10 */}
             <div className="pt-2">
               <Link
                 href={`/profile/${publicIdentifier}`}
-                className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md text-center"
               >
-                <span>Done &amp; View Profile</span>
-                <Check className="w-4 h-4" />
+                <span>Share</span>
               </Link>
             </div>
           </motion.div>

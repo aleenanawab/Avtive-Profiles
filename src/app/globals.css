@@ -27,11 +27,11 @@
 
   .dark {
     /* DARK THEME TOKENS: Clean Neutral Obsidian - Adapts to theme without forcing navy blue */
-    --bg-main: #0C0A09;
-    --bg-surface: #141210;
-    --bg-card: #181513;
-    --bg-card-elevated: #211E1A;
-    --bg-subtle: #0F0E0D;
+    --bg-main: #090A0F;
+    --bg-surface: #111319;
+    --bg-card: #141720;
+    --bg-card-elevated: #1B1E28;
+    --bg-subtle: #0D0E15;
     --border-subtle: rgba(255, 255, 255, 0.08);
     --border-medium: rgba(255, 255, 255, 0.15);
     --text-primary: #FFFFFF;
@@ -40,6 +40,78 @@
     --brand-earth-clay: #D4A373;
     --brand-avtive: currentColor;
   }
+}
+
+/* FIGMA UI SYSTEM UTILITIES */
+.figma-phone-frame {
+  background: #111319;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+html:not(.dark) .figma-phone-frame {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+.figma-input {
+  background: #1B1E26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border-radius: 14px;
+}
+
+html:not(.dark) .figma-input {
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
+}
+
+.figma-pill-primary {
+  background: #FFFFFF;
+  color: #09090B;
+  font-weight: 700;
+  border-radius: 9999px;
+  transition: all 0.15s ease;
+}
+
+.figma-pill-primary:hover {
+  background: #E4E4E7;
+}
+
+html:not(.dark) .figma-pill-primary {
+  background: #0F172A;
+  color: #FFFFFF;
+}
+
+html:not(.dark) .figma-pill-primary:hover {
+  background: #1E293B;
+}
+
+.figma-pill-secondary {
+  background: #1C1F28;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: all 0.15s ease;
+}
+
+.figma-pill-secondary:hover {
+  background: #252936;
+}
+
+html:not(.dark) .figma-pill-secondary {
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #0F172A;
+}
+
+html:not(.dark) .figma-pill-secondary:hover {
+  background: #E2E8F0;
 }
 
 html, body {

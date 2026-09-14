@@ -59,115 +59,111 @@ function RoleStepContent() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Step Indicator */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-white text-black font-bold text-xs flex items-center justify-center">
-            2
-          </span>
-          <span className="text-xs font-semibold text-white/80">Step 2 of 3</span>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2 }}
+      className="figma-phone-frame w-full max-w-[390px] p-6 sm:p-7 flex flex-col justify-between relative"
+    >
+      {/* Mobile Top Status Bar (9:41, Wifi, Battery) */}
+      <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-zinc-400 mb-4 px-1 font-mono">
+        <span>9:41</span>
+        <div className="flex items-center gap-1.5">
+          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
+          </svg>
+          <div className="w-5 h-2.5 border border-current rounded-xs p-0.5 flex items-center">
+            <div className="w-full h-full bg-current rounded-2xs" />
+          </div>
         </div>
-        <span className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
-          Profile Persona
-        </span>
       </div>
 
-      {/* Header */}
-      <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-          Select Profile Type
-        </h1>
-        <p className="text-xs sm:text-sm text-white/60">
-          Choose whether this profile represents you as an Owner, Employee, or Company.
-        </p>
+      {/* Screen 4 Header: Back Arrow, Title & Subtitle */}
+      <div className="space-y-2 mb-5">
+        <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
+            aria-label="Go back"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Select Profile Type
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 leading-normal">
+            Select the type that matches for your profile.
+          </p>
+        </div>
       </div>
 
-      {/* Role Cards List */}
-      <div className="space-y-3 pt-2">
+      {/* Role Cards List matching Figma Screen 4 */}
+      <div className="space-y-3 mb-6">
         {ROLE_OPTIONS.map((role) => {
           const isSelected = selectedRole === role.id;
           const Icon = role.icon;
 
           return (
-            <motion.div
+            <div
               key={role.id}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
               onClick={() => setSelectedRole(role.id)}
-              className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer relative ${
+              className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                 isSelected
-                  ? 'bg-white/10 border-white shadow-xl ring-1 ring-white/30'
-                  : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/[0.07]'
+                  ? 'bg-slate-50 dark:bg-[#1B1E28] border-slate-900 dark:border-white/30 shadow-xs ring-1 ring-slate-900/10 dark:ring-white/20'
+                  : 'bg-white dark:bg-[#151821] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
               }`}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm sm:text-base font-bold text-white">
-                        {role.title}
-                      </h3>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 font-medium">
-                        {role.badge}
-                      </span>
-                    </div>
-                    <p className="text-xs text-white/60 leading-relaxed">
-                      {role.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {role.features.map((feat, idx) => (
-                        <span
-                          key={idx}
-                          className="text-[10px] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-white/70"
-                        >
-                          {feat}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+              <div className="flex items-center gap-3.5">
+                {/* Circular Icon matching Figma Screen 4 */}
+                <div className="w-11 h-11 rounded-full bg-slate-100 dark:bg-[#1E222D] border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0">
+                  <Icon className="w-5 h-5 text-slate-800 dark:text-white" />
                 </div>
-
-                {/* Radio indicator */}
-                <div
-                  className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                    isSelected
-                      ? 'bg-white border-white text-black'
-                      : 'border-white/30 bg-black/20'
-                  }`}
-                >
-                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                <div className="text-left">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                    {role.title}
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
+                    {role.title === 'Owner' 
+                      ? 'Full control of the profile' 
+                      : role.title === 'Employee' 
+                      ? 'Work at a company' 
+                      : 'Business / Organization'}
+                  </p>
                 </div>
               </div>
-            </motion.div>
+
+              {/* Radio Indicator */}
+              <div
+                className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                  isSelected
+                    ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-black'
+                    : 'border-slate-300 dark:border-zinc-700 bg-transparent'
+                }`}
+              >
+                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+              </div>
+            </div>
           );
         })}
       </div>
 
-      {/* Action Controls */}
-      <div className="pt-4 flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 py-3 px-5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs border border-white/15 transition-all active:scale-[0.98] cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
-        </button>
-
+      {/* Primary Action Button: White Pill Button */}
+      <div>
         <button
           type="button"
           onClick={handleNext}
-          className="inline-flex items-center gap-2 py-3 px-8 rounded-xl bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-lg cursor-pointer"
+          className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
         >
           <span>Next</span>
-          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
