@@ -195,6 +195,13 @@
       "email": "aleena@avtive.app",
       "passwordHash": "$2b$10$7oliayuAZWQm8AXUyT/dveDvxJzqun1ewrfKiO7Wty0yBlESRId5.",
       "createdAt": "2026-09-14T10:55:37.839Z"
+    },
+    {
+      "id": "user-1789385345465-68qc8",
+      "name": "Alex Vance",
+      "email": "e2e_user_1789385345449@avtive.app",
+      "passwordHash": "hash-test-pass",
+      "createdAt": "2026-09-14T11:29:05.465Z"
     }
   ],
   "profiles": {
@@ -1269,37 +1276,30 @@
       "profileName": "Professional",
       "profession": "Professional",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-14T08:08:40.212Z",
+      "updatedAt": "2026-09-14T11:03:44.752Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
         "bio": true,
         "contactInfo": true,
-        "email": true,
-        "phone": false,
         "socialLinks": true,
         "skills": true,
         "experience": true,
         "education": true,
-        "certifications": true,
         "projects": true,
-        "services": true,
-        "recommendations": false,
-        "nfcCard": false,
-        "companySection": false
+        "certifications": true
       },
       "sectionOrder": [
-        "hero",
-        "about",
-        "services",
-        "skills",
         "experience",
         "projects",
         "certifications",
-        "volunteer",
-        "languages",
-        "recommendations",
-        "virtual-card"
+        "photo",
+        "skills",
+        "nameAndTitle",
+        "bio",
+        "contactInfo",
+        "socialLinks",
+        "education"
       ]
     },
     "aleena-nawab-adhb": {
@@ -1334,37 +1334,30 @@
       "profileName": "Professional",
       "profession": "Professional",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-14T08:08:40.212Z",
+      "updatedAt": "2026-09-14T11:03:44.752Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
         "bio": true,
         "contactInfo": true,
-        "email": true,
-        "phone": false,
         "socialLinks": true,
         "skills": true,
         "experience": true,
         "education": true,
-        "certifications": true,
         "projects": true,
-        "services": true,
-        "recommendations": false,
-        "nfcCard": false,
-        "companySection": false
+        "certifications": true
       },
       "sectionOrder": [
-        "hero",
-        "about",
-        "services",
-        "skills",
         "experience",
         "projects",
         "certifications",
-        "volunteer",
-        "languages",
-        "recommendations",
-        "virtual-card"
+        "photo",
+        "skills",
+        "nameAndTitle",
+        "bio",
+        "contactInfo",
+        "socialLinks",
+        "education"
       ]
     },
     "prof-1788783656219": {
@@ -5757,7 +5750,6 @@
       "company": "Avtive Network",
       "location": "Islamabad, Pakistan",
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
-      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
       "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
       "fullBio": "Specializing in full-stack architecture with React, Next.js, Node.js, Express, MongoDB, and TypeScript. Committed to crafting high-performance, accessible, and responsive user experiences.",
       "theme": "cyber",
@@ -5901,7 +5893,6 @@
       "company": "Avtive Network",
       "location": "Islamabad, Pakistan",
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
-      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
       "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
       "fullBio": "Specializing in full-stack architecture with React, Next.js, Node.js, Express, MongoDB, and TypeScript. Committed to crafting high-performance, accessible, and responsive user experiences.",
       "theme": "cyber",
@@ -6045,7 +6036,6 @@
       "company": "Avtive Network",
       "location": "Islamabad, Pakistan",
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
-      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
       "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
       "fullBio": "Specializing in full-stack architecture with React, Next.js, Node.js, Express, MongoDB, and TypeScript. Committed to crafting high-performance, accessible, and responsive user experiences.",
       "theme": "cyber",
@@ -6189,7 +6179,6 @@
       "company": "Avtive People Operations",
       "location": "Islamabad, Pakistan",
       "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
-      "coverImage": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1200&auto=format&fit=crop",
       "shortBio": "Dedicated to building high-performing, inclusive teams and fostering organizational growth.",
       "theme": "editorial",
       "email": "aleena@avtive.app",
@@ -6281,7 +6270,6 @@
       "company": "Avtive Studio",
       "location": "Islamabad, Pakistan",
       "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600&auto=format&fit=crop",
-      "coverImage": "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1200&auto=format&fit=crop",
       "shortBio": "Crafting intentional digital products, bespoke design systems, and delightful interactions.",
       "theme": "luxe",
       "email": "aleena@avtive.app",
