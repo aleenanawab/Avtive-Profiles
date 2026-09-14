@@ -209,6 +209,13 @@
       "email": "e2e_user_1789386362854@avtive.app",
       "passwordHash": "hash-test-pass",
       "createdAt": "2026-09-14T11:46:02.876Z"
+    },
+    {
+      "id": "user-1789388829442-225hb",
+      "name": "Alex Vance",
+      "email": "e2e_user_1789388829435@avtive.app",
+      "passwordHash": "hash-test-pass",
+      "createdAt": "2026-09-14T12:27:09.442Z"
     }
   ],
   "profiles": {

@@ -31,7 +31,7 @@ import { CertificationsSection } from './CertificationsSection';
 import { VolunteerSection } from './VolunteerSection';
 import { LanguagesSection } from './LanguagesSection';
 import { RecommendationsSection } from './RecommendationsSection';
-import { ContactSection } from './ContactSection';
+import { ProfileContactSection } from './ProfileContactSection';
 import { CompanyCard } from './CompanyCard';
 import { TeamSection } from './TeamSection';
 import { NFCCardPreview } from './NFCCardPreview';
@@ -308,9 +308,11 @@ export function AvtiveDigitalCard({
           const defaultCardSectionOrder = [
             'company',
             'about',
+            'contact',
+            'skills',
             'services',
-            'experience',
             'projects',
+            'experience',
             'certifications',
             'volunteer',
             'languages',
@@ -368,6 +370,17 @@ export function AvtiveDigitalCard({
                   <AboutSection 
                     key="about"
                     profile={draftProfile} 
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
+                    theme={theme}
+                  />
+                );
+
+              case 'contact':
+                return (
+                  <ProfileContactSection
+                    key="contact"
+                    profile={draftProfile}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
                     theme={theme}
@@ -463,7 +476,7 @@ export function AvtiveDigitalCard({
           };
 
           if (viewMode === 'web') {
-            const leftKeys = ['company', 'about', 'virtual-card'];
+            const leftKeys = ['company', 'about', 'contact', 'virtual-card'];
             const leftSections = effectiveOrder.filter((k) => leftKeys.includes(k));
             const rightSections = effectiveOrder.filter((k) => !leftKeys.includes(k));
 

@@ -80,13 +80,14 @@ export function HeroSection({
 
         {/* SECTION 4 RULE: Show ONLY the small edit icon on the cover image */}
         {canEdit && (
-          <Link
-            href={`/edit-profile?id=${profile.id}`}
-            className="absolute bottom-3 right-3 sm:right-5 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+          <button
+            type="button"
+            onClick={onOpenEdit}
+            className="absolute bottom-3 right-3 sm:right-5 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
             title="Edit Profile"
           >
             <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-          </Link>
+          </button>
         )}
       </div>
 
@@ -135,7 +136,7 @@ export function HeroSection({
           <button
             type="button"
             onClick={onOpenConnect}
-            className="flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all active:scale-[0.98]"
+            className="flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer"
           >
             <UserPlus className="w-4 h-4 text-amber-500 dark:text-amber-600" />
             <span>+ Connect</span>
@@ -144,7 +145,7 @@ export function HeroSection({
           <button
             type="button"
             onClick={onOpenShare}
-            className="flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-900 dark:text-white font-bold text-xs border border-slate-200 dark:border-zinc-700 transition-all active:scale-[0.98]"
+            className="flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-900 dark:text-white font-bold text-xs border border-slate-200 dark:border-zinc-700 transition-all active:scale-[0.98] cursor-pointer"
           >
             <Share2 className="w-4 h-4 text-slate-600 dark:text-zinc-300" />
             <span>Share</span>
@@ -201,11 +202,6 @@ export function HeroSection({
             )}
           </div>
         )}
-
-        {/* Stats Row (Screens 5, 13, 14 in reference) */}
-        <div className="pt-1">
-          <StatsRow stats={defaultStats} />
-        </div>
 
         {/* Social Icons Row (Screen 9) */}
         {sharing.socialLinks !== false && (
