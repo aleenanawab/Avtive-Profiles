@@ -171,11 +171,11 @@ export function AvtiveDigitalCard({
   };
 
   return (
-    <div className="relative w-full pb-20 sm:pb-8 text-left">
+    <div className="relative w-full text-left">
       {/* Main Profile Container Card with dynamic theme styling */}
       <div 
         data-theme={activeThemeKey}
-        className={`w-full rounded-[28px] sm:rounded-[36px] border overflow-hidden transition-all duration-300 ${theme.container}`}
+        className="w-full overflow-hidden transition-colors duration-200"
       >
         
         {/* ========================================================================= */}
@@ -478,65 +478,6 @@ export function AvtiveDigitalCard({
           </div>
         </div>
       </div>
-
-      {/* ========================================================================= */}
-      {/* STICKY BOTTOM MOBILE ACTION BAR                                          */}
-      {/* ========================================================================= */}
-      {!isEditing && (
-        <div className={`sm:hidden fixed bottom-0 left-0 right-0 z-30 p-2.5 ${theme.cardBg}/95 backdrop-blur-lg border-t ${theme.divider} flex items-center justify-around gap-2 shadow-lg transition-colors`}>
-          {isCompany ? (
-            onOpenMyCard && (
-              <button
-                onClick={onOpenMyCard}
-                className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} active:scale-95 transition-transform`}
-              >
-                <CreditCard className={`w-3.5 h-3.5 ${theme.accentText}`} />
-                <span>My Card</span>
-              </button>
-            )
-          ) : (
-            onViewCompany && (
-              <button
-                onClick={() => onViewCompany(draftProfile.companyId || 'avtive-company')}
-                className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} active:scale-95 transition-transform`}
-              >
-                <Building2 className={`w-3.5 h-3.5 ${theme.accentText}`} />
-                <span className="truncate max-w-[70px]">{companyName}</span>
-              </button>
-            )
-          )}
-
-          {draftProfile.phone && (
-            <a
-              href={`tel:${draftProfile.phone.replace(/[^0-9+]/g, '')}`}
-              className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} active:scale-95 transition-transform`}
-            >
-              <Phone className={`w-3.5 h-3.5 ${theme.accentText}`} />
-              <span>Call</span>
-            </a>
-          )}
-
-          {draftProfile.whatsapp && (
-            <a
-              href={`https://wa.me/${draftProfile.whatsapp.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(draftProfile.name)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} active:scale-95 transition-transform`}
-            >
-              <MessageSquare className={`w-3.5 h-3.5 ${theme.accentText}`} />
-              <span>WhatsApp</span>
-            </a>
-          )}
-
-          <button
-            onClick={onSaveContact}
-            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl ${theme.btnPrimary} text-xs font-bold shadow-xs active:scale-95 transition-all`}
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Save</span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }

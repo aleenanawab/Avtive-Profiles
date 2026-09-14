@@ -13,7 +13,7 @@ import {
 } from '@/types/profile';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { getThemeConfig } from '@/components/themeStyles';
-import { Sun, Moon, LogIn, Share2, User } from 'lucide-react';
+import { Sun, Moon, LogIn, Share2, User, Home, Users } from 'lucide-react';
 
 interface PublicProfileClientProps {
   initialProfile: ProfileData;
@@ -139,14 +139,58 @@ export function PublicProfileClient({
             onOpenQRModal={() => {}}
             onOpenResumeModal={() => {}}
             onSelectProject={() => {}}
+            onSelectTeamMember={(member) => {
+              const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+              router.push(`/profile/${slug}`);
+            }}
+            onViewCompany={() => router.push('/profile/avtive')}
             isDark={isDark}
           />
         </div>
       </main>
 
+      {/* Mobile Bottom Navigation Bar (Matching Screen 4 & 13) */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-[#18181B]/90 backdrop-blur-md border-t border-slate-200 dark:border-zinc-800 transition-colors shadow-lg">
+        <div className="max-w-md mx-auto px-6 py-2 flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            <Home className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Home</span>
+          </Link>
+
+          <Link
+            href="/dashboard"
+            className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            <Users className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Profiles</span>
+          </Link>
+
+          <Link
+            href={`/profile/${identifier}/share`}
+            className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            <Share2 className="w-5 h-5" />
+            <span className="text-[10px] font-medium">Share</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleToggleTheme}
+            className="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            title="Toggle Light / Dark mode"
+          >
+            {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5" />}
+            <span className="text-[10px] font-medium">Mode</span>
+          </button>
+        </div>
+      </nav>
+
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-medium shadow-lg animate-in fade-in duration-150">
+        <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-medium shadow-lg animate-in fade-in duration-150">
           {toastMessage}
         </div>
       )}
