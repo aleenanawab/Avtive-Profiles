@@ -23,8 +23,8 @@ export function AboutSection({
 
   return (
     <section className={`px-6 sm:px-8 py-5 space-y-2 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors`}>
-      <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-        ABOUT
+      <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+        About
       </h2>
 
       {isEditing ? (

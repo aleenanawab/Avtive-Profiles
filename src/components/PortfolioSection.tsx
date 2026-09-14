@@ -23,11 +23,11 @@ export function PortfolioSection({
   return (
     <section className={`px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
       <div className="flex items-center justify-between">
-        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-          PROJECTS
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+          Projects
         </h2>
-        <span className={`text-[11px] ${theme.textMuted} font-semibold font-mono`}>
-          {profile.projects.length} {profile.projects.length === 1 ? 'Project' : 'Projects'}
+        <span className={`text-xs ${theme.accentText} font-medium flex items-center gap-1 hover:underline cursor-pointer`}>
+          View All <ArrowRight className="w-3 h-3" />
         </span>
       </div>
 

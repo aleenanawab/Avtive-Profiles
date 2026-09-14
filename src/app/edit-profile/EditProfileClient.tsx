@@ -15,7 +15,8 @@ import {
   Terminal,
   Gem
 } from 'lucide-react';
-import { ProfileData, ProfileTheme } from '@/types/profile';
+import { ProfileData, ProfileTheme, ProfileType } from '@/types/profile';
+import { ProfileTypeSelector } from '@/components/profiles/ProfileTypeSelector';
 
 interface EditProfileClientProps {
   initialProfile: ProfileData;
@@ -51,6 +52,7 @@ export function EditProfileClient({ initialProfile }: EditProfileClientProps) {
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState<ProfileData>(initialProfile);
+  const [profileType, setProfileType] = useState<ProfileType>(initialProfile.type || 'owner');
   const [profileName, setProfileName] = useState(initialProfile.profileName || initialProfile.name || '');
   const [professionalTitle, setProfessionalTitle] = useState(initialProfile.designation || initialProfile.profession || '');
   const [bio, setBio] = useState(initialProfile.shortBio || initialProfile.fullBio || '');
@@ -138,6 +140,7 @@ export function EditProfileClient({ initialProfile }: EditProfileClientProps) {
           profession: professionalTitle.trim(),
           shortBio: bio.trim(),
           theme,
+          type: profileType,
           avatar,
           coverImage
         })
@@ -320,7 +323,21 @@ export function EditProfileClient({ initialProfile }: EditProfileClientProps) {
           />
         </div>
 
-        {/* Theme Selector Row (Screen 5) */}
+        {/* Profile Type Selector (Screen 7) */}
+        <div className="space-y-2 text-left pt-1">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
+            Select Profile Type
+          </label>
+          <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+            Choose the type that best fits your profile.
+          </p>
+          <ProfileTypeSelector
+            selectedType={profileType}
+            onChange={setProfileType}
+          />
+        </div>
+
+        {/* Theme Selector Row (Screen 5 & 7) */}
         <div className="space-y-1.5 text-left">
           <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
             Theme

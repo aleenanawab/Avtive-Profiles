@@ -32,7 +32,7 @@
       "id": "user-1788782534301-5ohgq",
       "name": "ALEENA NAWAB",
       "email": "aleenaknawab@gmail.com",
-      "passwordHash": "$2b$10$AelZEk/acJ/.IHxAIOtLw.477LOxFfFMIDisYHED7nnF0V8U5yvAi",
+      "passwordHash": "$2b$10$7oliayuAZWQm8AXUyT/dveDvxJzqun1ewrfKiO7Wty0yBlESRId5.",
       "createdAt": "2026-09-07T12:02:14.301Z"
     },
     {
@@ -188,6 +188,13 @@
       "email": "e2e_user_1789370328378@avtive.app",
       "passwordHash": "hash-test-pass",
       "createdAt": "2026-09-14T07:18:48.382Z"
+    },
+    {
+      "id": "user-aleena",
+      "name": "Aleena Nawab",
+      "email": "aleena@avtive.app",
+      "passwordHash": "$2b$10$7oliayuAZWQm8AXUyT/dveDvxJzqun1ewrfKiO7Wty0yBlESRId5.",
+      "createdAt": "2026-09-14T10:55:37.839Z"
     }
   ],
   "profiles": {
@@ -5737,6 +5744,630 @@
       ],
       "createdAt": "2026-09-14T10:29:45.980Z",
       "updatedAt": "2026-09-14T10:30:24.300Z"
+    },
+    "aleena-mern": {
+      "id": "aleena-mern",
+      "userId": "user-aleena",
+      "slug": "aleena-dev",
+      "type": "owner",
+      "profileName": "MERN Developer",
+      "profession": "Full Stack Developer",
+      "name": "Aleena Nawab",
+      "designation": "MERN Developer",
+      "company": "Avtive Network",
+      "location": "Islamabad, Pakistan",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
+      "fullBio": "Specializing in full-stack architecture with React, Next.js, Node.js, Express, MongoDB, and TypeScript. Committed to crafting high-performance, accessible, and responsive user experiences.",
+      "theme": "cyber",
+      "email": "aleena@avtive.app",
+      "phone": "+92 300 1234567",
+      "whatsapp": "+92 300 1234567",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn",
+          "handle": "in/aleenanawab"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub",
+          "handle": "aleenanawab"
+        },
+        {
+          "platform": "twitter",
+          "url": "https://x.com",
+          "label": "X (Twitter)",
+          "handle": "aleenanawab"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "React",
+          "category": "Frontend"
+        },
+        {
+          "name": "Next.js",
+          "category": "Frontend"
+        },
+        {
+          "name": "Node.js",
+          "category": "Backend"
+        },
+        {
+          "name": "MongoDB",
+          "category": "Database"
+        },
+        {
+          "name": "Tailwind",
+          "category": "Styling"
+        },
+        {
+          "name": "TypeScript",
+          "category": "Language"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-tracker",
+          "title": "Task Tracker",
+          "tagline": "Task Management App",
+          "description": "A modern task management app with real-time updates and seamless team collaboration.",
+          "coverImage": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
+          "category": "Productivity SaaS",
+          "technology": "Next.js • TypeScript • Tailwind CSS",
+          "tags": [
+            "React",
+            "TypeScript",
+            "Tailwind CSS"
+          ]
+        }
+      ],
+      "highlights": [
+        {
+          "value": "5",
+          "label": "Team Members"
+        },
+        {
+          "value": "3",
+          "label": "Company Projects"
+        },
+        {
+          "value": "2",
+          "label": "Years"
+        }
+      ],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": false,
+        "email": false,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "volunteer": true,
+        "languages": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T10:55:37.856Z",
+      "updatedAt": "2026-09-14T10:55:37.856Z"
+    },
+    "aleena-dev": {
+      "id": "aleena-mern",
+      "userId": "user-aleena",
+      "slug": "aleena-dev",
+      "type": "owner",
+      "profileName": "MERN Developer",
+      "profession": "Full Stack Developer",
+      "name": "Aleena Nawab",
+      "designation": "MERN Developer",
+      "company": "Avtive Network",
+      "location": "Islamabad, Pakistan",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
+      "fullBio": "Specializing in full-stack architecture with React, Next.js, Node.js, Express, MongoDB, and TypeScript. Committed to crafting high-performance, accessible, and responsive user experiences.",
+      "theme": "cyber",
+      "email": "aleena@avtive.app",
+      "phone": "+92 300 1234567",
+      "whatsapp": "+92 300 1234567",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn",
+          "handle": "in/aleenanawab"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub",
+          "handle": "aleenanawab"
+        },
+        {
+          "platform": "twitter",
+          "url": "https://x.com",
+          "label": "X (Twitter)",
+          "handle": "aleenanawab"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "React",
+          "category": "Frontend"
+        },
+        {
+          "name": "Next.js",
+          "category": "Frontend"
+        },
+        {
+          "name": "Node.js",
+          "category": "Backend"
+        },
+        {
+          "name": "MongoDB",
+          "category": "Database"
+        },
+        {
+          "name": "Tailwind",
+          "category": "Styling"
+        },
+        {
+          "name": "TypeScript",
+          "category": "Language"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-tracker",
+          "title": "Task Tracker",
+          "tagline": "Task Management App",
+          "description": "A modern task management app with real-time updates and seamless team collaboration.",
+          "coverImage": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
+          "category": "Productivity SaaS",
+          "technology": "Next.js • TypeScript • Tailwind CSS",
+          "tags": [
+            "React",
+            "TypeScript",
+            "Tailwind CSS"
+          ]
+        }
+      ],
+      "highlights": [
+        {
+          "value": "5",
+          "label": "Team Members"
+        },
+        {
+          "value": "3",
+          "label": "Company Projects"
+        },
+        {
+          "value": "2",
+          "label": "Years"
+        }
+      ],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": false,
+        "email": false,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "volunteer": true,
+        "languages": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T10:55:37.856Z",
+      "updatedAt": "2026-09-14T10:55:37.856Z"
+    },
+    "aleenanawab": {
+      "id": "aleena-mern",
+      "userId": "user-aleena",
+      "slug": "aleena-dev",
+      "type": "owner",
+      "profileName": "MERN Developer",
+      "profession": "Full Stack Developer",
+      "name": "Aleena Nawab",
+      "designation": "MERN Developer",
+      "company": "Avtive Network",
+      "location": "Islamabad, Pakistan",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "shortBio": "Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.",
+      "fullBio": "Specializing in full-stack architecture with React, Next.js, Node.js, Express, MongoDB, and TypeScript. Committed to crafting high-performance, accessible, and responsive user experiences.",
+      "theme": "cyber",
+      "email": "aleena@avtive.app",
+      "phone": "+92 300 1234567",
+      "whatsapp": "+92 300 1234567",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn",
+          "handle": "in/aleenanawab"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub",
+          "handle": "aleenanawab"
+        },
+        {
+          "platform": "twitter",
+          "url": "https://x.com",
+          "label": "X (Twitter)",
+          "handle": "aleenanawab"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "skills": [
+        {
+          "name": "React",
+          "category": "Frontend"
+        },
+        {
+          "name": "Next.js",
+          "category": "Frontend"
+        },
+        {
+          "name": "Node.js",
+          "category": "Backend"
+        },
+        {
+          "name": "MongoDB",
+          "category": "Database"
+        },
+        {
+          "name": "Tailwind",
+          "category": "Styling"
+        },
+        {
+          "name": "TypeScript",
+          "category": "Language"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-tracker",
+          "title": "Task Tracker",
+          "tagline": "Task Management App",
+          "description": "A modern task management app with real-time updates and seamless team collaboration.",
+          "coverImage": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=600&auto=format&fit=crop",
+          "category": "Productivity SaaS",
+          "technology": "Next.js • TypeScript • Tailwind CSS",
+          "tags": [
+            "React",
+            "TypeScript",
+            "Tailwind CSS"
+          ]
+        }
+      ],
+      "highlights": [
+        {
+          "value": "5",
+          "label": "Team Members"
+        },
+        {
+          "value": "3",
+          "label": "Company Projects"
+        },
+        {
+          "value": "2",
+          "label": "Years"
+        }
+      ],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": false,
+        "email": false,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "volunteer": true,
+        "languages": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T10:55:37.856Z",
+      "updatedAt": "2026-09-14T10:55:37.856Z"
+    },
+    "aleena-hr": {
+      "id": "aleena-hr",
+      "userId": "user-aleena",
+      "slug": "aleena-hr",
+      "type": "owner",
+      "profileName": "HR Professional",
+      "profession": "People & Culture Strategist",
+      "name": "Aleena Nawab",
+      "designation": "HR Lead & Talent Strategist",
+      "company": "Avtive People Operations",
+      "location": "Islamabad, Pakistan",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1200&auto=format&fit=crop",
+      "shortBio": "Dedicated to building high-performing, inclusive teams and fostering organizational growth.",
+      "theme": "editorial",
+      "email": "aleena@avtive.app",
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive People"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Talent Acquisition"
+        },
+        {
+          "name": "People Operations"
+        },
+        {
+          "name": "Culture Building"
+        },
+        {
+          "name": "Performance Management"
+        }
+      ],
+      "highlights": [
+        {
+          "value": "50+",
+          "label": "Hires Closed"
+        },
+        {
+          "value": "98%",
+          "label": "Retention Rate"
+        },
+        {
+          "value": "4+",
+          "label": "Years Exp"
+        }
+      ],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": false,
+        "email": false,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "volunteer": true,
+        "languages": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T10:55:37.856Z",
+      "updatedAt": "2026-09-14T10:55:37.856Z"
+    },
+    "aleena-designer": {
+      "id": "aleena-designer",
+      "userId": "user-aleena",
+      "slug": "aleena-designer",
+      "type": "owner",
+      "profileName": "UI/UX Designer",
+      "profession": "Product Designer",
+      "name": "Aleena Nawab",
+      "designation": "Senior Product & UI/UX Designer",
+      "company": "Avtive Studio",
+      "location": "Islamabad, Pakistan",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1200&auto=format&fit=crop",
+      "shortBio": "Crafting intentional digital products, bespoke design systems, and delightful interactions.",
+      "theme": "luxe",
+      "email": "aleena@avtive.app",
+      "socials": [
+        {
+          "platform": "dribbble",
+          "url": "https://dribbble.com",
+          "label": "Dribbble"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Portfolio"
+        }
+      ],
+      "skills": [
+        {
+          "name": "Figma"
+        },
+        {
+          "name": "Design Systems"
+        },
+        {
+          "name": "Wireframing"
+        },
+        {
+          "name": "Prototyping"
+        },
+        {
+          "name": "UX Research"
+        }
+      ],
+      "highlights": [
+        {
+          "value": "20+",
+          "label": "UI Projects"
+        },
+        {
+          "value": "4",
+          "label": "Awards"
+        },
+        {
+          "value": "3+",
+          "label": "Years"
+        }
+      ],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": false,
+        "email": false,
+        "phone": false,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "recommendations": true,
+        "volunteer": true,
+        "languages": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-14T10:55:37.856Z",
+      "updatedAt": "2026-09-14T10:55:37.856Z"
     }
   },
   "connections": [

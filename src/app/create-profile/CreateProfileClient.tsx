@@ -14,8 +14,9 @@ import {
   Terminal,
   Gem
 } from 'lucide-react';
-import { ProfileTheme, UserSession } from '@/types/profile';
+import { ProfileTheme, UserSession, ProfileType } from '@/types/profile';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ProfileTypeSelector } from '@/components/profiles/ProfileTypeSelector';
 
 interface CreateProfileClientProps {
   user: UserSession;
@@ -69,17 +70,17 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Step 1: Choose Theme (1/3), Step 2: Add Profile Details (2/3)
-  const [step, setStep] = useState<1 | 2>(1);
+  // Step 1: Choose Theme (1/3), Step 2: Select Profile Type (2/3), Step 3: Add Profile Details (3/3)
+  const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Form State
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>('editorial');
+  const [profileType, setProfileType] = useState<ProfileType>('owner');
   const [profileName, setProfileName] = useState('MERN Developer');
   const [fullName, setFullName] = useState(user.name || 'Aleena Nawab');
   const [professionalTitle, setProfessionalTitle] = useState('Full Stack Developer');
   const [bio, setBio] = useState('Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.');
   const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
-  const [profileType, setProfileType] = useState<'individual' | 'team-member' | 'company'>('individual');
 
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -282,9 +283,9 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
               </button>
             </div>
           </motion.div>
-        ) : (
+        ) : step === 2 ? (
           /* ========================================================================= */
-          /* SCREEN 3: CREATE YOUR PROFILE                                             */
+          /* SCREEN 6: SELECT PROFILE TYPE                                             */
           /* ========================================================================= */
           <motion.div
             key="step2"
@@ -306,6 +307,60 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
               </button>
               <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
                 2/3
+              </span>
+            </div>
+
+            {/* Header */}
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Select Profile Type
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">
+                Choose the type that best fits your journey.
+              </p>
+            </div>
+
+            {/* Profile Type Radio Selector */}
+            <ProfileTypeSelector
+              selectedType={profileType}
+              onChange={(t) => setProfileType(t)}
+            />
+
+            {/* Bottom Action: Next */}
+            <div className="pt-4">
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm transition-all active:scale-[0.99] shadow-sm"
+              >
+                Next
+              </button>
+            </div>
+          </motion.div>
+        ) : (
+          /* ========================================================================= */
+          /* SCREEN 3: CREATE YOUR PROFILE                                             */
+          /* ========================================================================= */
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -16 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
+            {/* Top Bar: Back & Step Indicator */}
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                title="Back to profile type selection"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
+                3/3
               </span>
             </div>
 

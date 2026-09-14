@@ -264,7 +264,7 @@ export async function createProfileForUser(
     profileName: profileName,
     profession: profession,
     slug: slug,
-    type: (data.type as any) || 'individual',
+    type: (data.type as any) || 'owner',
     name: name,
     email: (data.email || user?.email || '').toLowerCase().trim(),
     designation: data.designation?.trim() || profession,
@@ -324,11 +324,11 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
 
 export async function getProfileByUserId(userId: string): Promise<ProfileData | null> {
   const db = loadDb();
-  // Prioritize individual profile if user has multiple (e.g. founder with personal + company)
-  const individual = Object.values(db.profiles).find(
-    (p) => p.userId === userId && p.type === 'individual'
+  // Prioritize owner or individual profile if user has multiple (e.g. founder with personal + company)
+  const ownerOrIndiv = Object.values(db.profiles).find(
+    (p) => p.userId === userId && (p.type === 'owner' || p.type === 'individual')
   );
-  if (individual) return individual;
+  if (ownerOrIndiv) return ownerOrIndiv;
 
   const profile = Object.values(db.profiles).find((p) => p.userId === userId);
   return profile || null;

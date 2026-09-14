@@ -16,8 +16,8 @@ export function ExperienceSection({ profile, theme = getThemeConfig(profile.them
 
   return (
     <section className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
-      <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-        EXPERIENCE
+      <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+        Experience
       </h2>
 
       <div className="space-y-3">
