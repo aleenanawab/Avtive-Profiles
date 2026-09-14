@@ -67,7 +67,7 @@ export function AvtivePlatformHeader() {
     {
       id: 'privacy',
       label: 'Share with Privacy',
-      href: '/profile/syedmesumraza/share',
+      href: '/profile/edit',
       icon: ShieldCheck,
       active: pathname?.includes('/share')
     },

@@ -38,13 +38,13 @@ export default function LoginPage() {
           const returnUrl = getReturnUrl();
           const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
           if (hasProfiles) {
-            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug;
+            const targetId = data.user?.id || data.profiles?.[0]?.slug || data.profile?.slug;
             if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
               router.replace(returnUrl);
-            } else if (targetSlug) {
-              router.replace(`/profile/${targetSlug}`);
+            } else if (targetId) {
+              router.replace(`/profile/${targetId}/edit`);
             } else {
-              router.replace('/dashboard');
+              router.replace('/onboarding/theme');
             }
           } else {
             router.replace('/onboarding/theme');
@@ -69,12 +69,13 @@ export default function LoginPage() {
         setIsLoading(false);
         return;
       }
-      if (data.hasProfile && data.profileSlug) {
+      if (data.hasProfile) {
         const returnUrl = getReturnUrl();
+        const targetId = data.user?.id || data.profileSlug;
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
           router.push(returnUrl);
         } else {
-          router.push(`/profile/${data.profileSlug}`);
+          router.push(`/profile/${targetId}/edit`);
         }
       } else {
         router.push('/onboarding/theme');
@@ -115,12 +116,13 @@ export default function LoginPage() {
       }
 
       const returnUrl = getReturnUrl();
-      if (data.hasProfile && data.profileSlug) {
+      if (data.hasProfile) {
+        const targetId = data.user?.id || data.profileSlug;
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
           router.push(returnUrl);
         } else {
-          // Dynamic isolated profile route
-          router.push(`/profile/${data.profileSlug}`);
+          // Dynamic isolated profile edit route
+          router.push(`/profile/${targetId}/edit`);
         }
       } else {
         // Unconfigured user: sequential onboarding

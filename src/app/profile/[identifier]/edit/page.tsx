@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { getProfileByIdOrSlug, getProfilesByUserId } from '@/lib/db';
 import { EditProfileClient } from '@/app/edit-profile/EditProfileClient';
@@ -10,30 +10,37 @@ export const metadata: Metadata = {
   description: 'Update your verified professional profile on Avtive.'
 };
 
-interface EditProfilePageProps {
-  searchParams: Promise<{ id?: string }>;
+interface ProfileIdentifierEditProps {
+  params: Promise<{ identifier: string }>;
 }
 
-export default async function ProfileEditPage({ searchParams }: EditProfilePageProps) {
+export default async function ProfileIdentifierEditPage({ params }: ProfileIdentifierEditProps) {
   const session = await getSession();
+  const { identifier } = await params;
+
   if (!session) {
-    redirect('/login?returnUrl=/profile/edit');
+    redirect(`/login?returnUrl=/profile/${identifier}/edit`);
   }
 
-  const { id } = await searchParams;
+  // Attempt lookup by identifier (slug, profileId, or userId)
+  let targetProfile = await getProfileByIdOrSlug(identifier);
 
-  let targetProfile = null;
-  if (id) {
-    targetProfile = await getProfileByIdOrSlug(id);
+  // If identifier is userId, fallback to user's profile
+  if (!targetProfile) {
+    const userProfiles = await getProfilesByUserId(identifier);
+    if (userProfiles.length > 0) {
+      targetProfile = userProfiles[0];
+    }
   }
 
-  // Fallback to user's first profile if not found or unauthorized
+  // If still not found or belongs to another user, restrict to current user's profile
   if (!targetProfile || targetProfile.userId !== session.id) {
-    const userProfiles = await getProfilesByUserId(session.id);
-    if (userProfiles.length === 0) {
+    const sessionProfiles = await getProfilesByUserId(session.id);
+    if (sessionProfiles.length === 0) {
       redirect('/onboarding/theme');
     }
-    targetProfile = userProfiles[0];
+    // Strictly isolate: only edit own profile
+    targetProfile = sessionProfiles[0];
   }
 
   const allUserProfiles = await getProfilesByUserId(session.id);

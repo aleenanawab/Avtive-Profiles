@@ -137,65 +137,21 @@ export function PublicProfileClient({
             </span>
           </div>
 
-          {/* Middle: Profile Type Switcher (Owner / Employee / Company visibly in desktop/tablet header frame only) */}
-          <div className="hidden md:flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-slate-100/90 dark:bg-zinc-900/90 border border-slate-200/80 dark:border-zinc-800/80 shadow-2xs">
-            <Link
-              href="/profile/syedmesumraza"
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                profile.slug === 'syedmesumraza'
-                  ? 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-xs font-bold'
-                  : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-              title="Owner Profile (Mesum Raza)"
-            >
-              <span>👑</span>
-              <span className="text-[11px]">Owner</span>
-            </Link>
-
-            <Link
-              href="/profile/hamza-malik"
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                profile.slug === 'hamza-malik'
-                  ? 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-xs font-bold'
-                  : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-              title="Employee Profile (Hamza Malik)"
-            >
-              <span>👤</span>
-              <span className="text-[11px]">Employee</span>
-            </Link>
-
-            <Link
-              href="/profile/avtive"
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                profile.slug === 'avtive'
-                  ? 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-xs font-bold'
-                  : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-              title="Company Profile (Avtive)"
-            >
-              <span>🏢</span>
-              <span className="text-[11px]">Company</span>
-            </Link>
-          </div>
+          {/* Middle: Clean spacing (Role selection only happens in onboarding or via profile header persona switcher) */}
+          <div className="flex-1" />
 
           {/* Right Controls: Edit, Web View, Share, Theme, Account */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Edit Button (for owner - activates same-page editing) */}
+            {/* Edit Button (for owner - links to personal edit dashboard) */}
             {isOwner && (
-              <button
-                type="button"
-                onClick={() => setIsEditing(!isEditing)}
-                className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all shadow-2xs cursor-pointer ${
-                  isEditing
-                    ? 'bg-amber-500 text-white border-amber-500 shadow-xs'
-                    : 'border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-200'
-                }`}
-                title="Edit Profile"
+              <Link
+                href={`/profile/${profile.userId || profile.slug}/edit`}
+                className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs font-semibold text-slate-700 dark:text-zinc-200 transition-colors shadow-2xs"
+                title="Edit Profile Dashboard"
               >
                 <Edit3 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline text-[11px]">{isEditing ? 'Editing' : 'Edit'}</span>
-              </button>
+                <span className="hidden sm:inline text-[11px]">Edit</span>
+              </Link>
             )}
 
             {/* Web View Presentation Toggle Button */}
@@ -276,7 +232,7 @@ export function PublicProfileClient({
             canEdit={isOwner}
             isEditing={isEditing}
             isConnected={false}
-            onOpenEdit={() => setIsEditing(true)}
+            onOpenEdit={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
             onCancelEdit={() => setIsEditing(false)}
             onSaveEdits={handleSaveEdits}
             onSaveContact={() => showToast('Contact information saved!')}
@@ -289,7 +245,11 @@ export function PublicProfileClient({
               const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
               router.push(`/profile/${slug}`);
             }}
-            onViewCompany={() => router.push('/profile/avtive')}
+            onViewCompany={() => {
+              if (profile.companyId) {
+                router.push(`/profile/${profile.companyId}`);
+              }
+            }}
             isDark={isDark}
             viewMode={viewMode}
           />

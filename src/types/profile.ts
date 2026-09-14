@@ -101,14 +101,25 @@ export interface ProjectItem {
   tagline?: string;
   description: string;
   coverImage?: string;
-  category: string;
+  image?: string;
+  category?: string;
   technology?: string;
   tags?: string[];
   liveUrl?: string;
+  link?: string;
   imagePosition?: string;
   imageFit?: 'cover' | 'contain';
   client?: string;
   year?: string;
+}
+
+export interface EducationItem {
+  id: string;
+  degree: string;
+  institution: string;
+  year?: string;
+  period?: string;
+  description?: string;
 }
 
 export interface ExperienceItem {
@@ -215,7 +226,11 @@ export interface ProfileData {
   
   // Identity
   name: string;
+  firstName?: string;
+  secondName?: string;
+  lastName?: string;
   designation?: string;
+  professionalTitle?: string;
   department?: string;
   company?: string;
   companyLogo?: string;
@@ -227,6 +242,8 @@ export interface ProfileData {
   verified?: boolean;
   pronouns?: string;
   location: string;
+  bio?: string;
+  about?: string;
   shortBio?: string;
   fullBio?: string;
   statusBadge?: string;
@@ -254,9 +271,11 @@ export interface ProfileData {
 
   // Highlights & Sections
   highlights?: MetricHighlight[];
-  skills?: SkillItem[];
+  skills?: (string | SkillItem)[];
   services?: ServiceItem[];
+  experience?: ExperienceItem[];
   experiences?: ExperienceItem[];
+  education?: EducationItem[];
   projects?: ProjectItem[];
   certifications?: CertificationItem[];
   volunteerExperiences?: VolunteerItem[];
@@ -271,6 +290,7 @@ export interface ProfileData {
 
   // Socials
   socials: SocialLink[];
+  socialLinks?: { platform: string; url: string; label?: string }[];
 
   // Multi-Profile Identity & Metadata
   profileName?: string;

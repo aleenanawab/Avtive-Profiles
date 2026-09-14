@@ -564,9 +564,10 @@ export function ShareModal({
 
                 {/* Generated Unique Public Profile Link */}
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-medium text-white/70 block">
-                    Public Profile URL
-                  </label>
+                  <div className="flex items-center justify-between text-[11px] font-medium text-white/70">
+                    <span>Public Profile URL</span>
+                    <span className="font-mono text-emerald-400 text-[10px]">avtive.profiles/{identifier}</span>
+                  </div>
                   <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/15">
                     <span className="text-xs text-white font-mono truncate flex-1 select-all">
                       {canonicalUrl}
@@ -574,7 +575,7 @@ export function ShareModal({
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="px-3 py-1.5 rounded-lg bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                      className="px-3.5 py-1.5 rounded-full bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
                     >
                       {copied ? (
                         <>

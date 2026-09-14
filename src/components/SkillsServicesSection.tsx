@@ -122,14 +122,17 @@ export function SkillsServicesSection({
             Skills
           </h2>
           <div className="flex flex-wrap gap-1.5">
-            {profile.skills?.map((skill, idx) => (
-              <span
-                key={idx}
-                className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700/80 text-xs font-medium text-slate-800 dark:text-zinc-200 shadow-2xs"
-              >
-                {skill.name}
-              </span>
-            ))}
+            {profile.skills?.map((skill, idx) => {
+              const skillLabel = typeof skill === 'string' ? skill : skill.name;
+              return (
+                <span
+                  key={idx}
+                  className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700/80 text-xs font-medium text-slate-800 dark:text-zinc-200 shadow-2xs"
+                >
+                  {skillLabel}
+                </span>
+              );
+            })}
           </div>
         </div>
       )}

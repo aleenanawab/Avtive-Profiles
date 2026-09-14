@@ -23,10 +23,11 @@ async function handleProfileUpdate(request: NextRequest) {
     }
 
     const body = await request.json();
-    const profileId = body.profileId;
+    const profileId = body.profileId || body.id;
     const rawUpdatedData = body.updatedData || { ...body };
     if (!body.updatedData) {
       delete rawUpdatedData.profileId;
+      delete rawUpdatedData.id;
     }
     const updatedData = rawUpdatedData;
 
@@ -71,6 +72,7 @@ async function handleProfileUpdate(request: NextRequest) {
       success: true,
       authorized: true,
       message: 'Profile updated successfully.',
+      profile: result.profile,
       updatedProfile: result.profile
     }, { status: 200 });
 

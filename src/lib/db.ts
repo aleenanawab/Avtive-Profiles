@@ -267,12 +267,19 @@ export async function createProfileForUser(
     type: (data.type as any) || 'owner',
     name: name,
     email: (data.email || user?.email || '').toLowerCase().trim(),
-    designation: data.designation?.trim() || profession,
+    firstName: data.firstName || (name.split(' ')[0] || ''),
+    secondName: data.secondName || data.lastName || (name.split(' ').slice(1).join(' ') || ''),
+    lastName: data.lastName || data.secondName || (name.split(' ').slice(1).join(' ') || ''),
+    professionalTitle: data.professionalTitle || data.designation || profession,
+    designation: data.designation?.trim() || data.professionalTitle?.trim() || profession,
     company: data.company?.trim() || 'Avtive Network',
     location: data.location?.trim() || 'Global',
     avatar: data.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
-    shortBio: data.shortBio?.trim() || 'Welcome to my digital profile on Avtive.',
-    fullBio: data.fullBio?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
+    coverImage: data.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop',
+    bio: data.bio?.trim() || data.shortBio?.trim() || 'Welcome to my digital profile on Avtive.',
+    about: data.about?.trim() || data.fullBio?.trim() || 'Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.',
+    shortBio: data.shortBio?.trim() || data.bio?.trim() || 'Welcome to my digital profile on Avtive.',
+    fullBio: data.fullBio?.trim() || data.about?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
     phone: data.phone?.trim() || '',
     whatsapp: data.whatsapp?.trim() || data.phone?.trim() || '',
     theme: (data.theme && data.theme !== 'default' ? data.theme : 'editorial') as ProfileTheme,
@@ -285,8 +292,11 @@ export async function createProfileForUser(
         handle: 'avtive.app'
       }
     ],
-    skills: data.skills || [],
-    experiences: data.experiences || [],
+    socialLinks: data.socialLinks || (data.socials ? data.socials.map(s => ({ platform: s.platform, url: s.url, label: s.label })) : []),
+    skills: data.skills || ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
+    experience: data.experience || data.experiences || [],
+    experiences: data.experiences || data.experience || [],
+    education: data.education || [],
     projects: data.projects || [],
     services: data.services || [],
     certifications: data.certifications || [],
@@ -319,7 +329,11 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
   const found = Object.values(db.profiles).find(
     (p) => p.id.toLowerCase() === idOrSlug.toLowerCase() || p.slug.toLowerCase() === idOrSlug.toLowerCase()
   );
-  return found || null;
+  if (found) return found;
+
+  // Fallback: check if idOrSlug matches a userId
+  const byUser = Object.values(db.profiles).find((p) => p.userId === idOrSlug);
+  return byUser || null;
 }
 
 export async function getProfileByUserId(userId: string): Promise<ProfileData | null> {

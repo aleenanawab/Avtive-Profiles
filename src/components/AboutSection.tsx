@@ -17,7 +17,7 @@ export function AboutSection({
   onUpdateField,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: AboutSectionProps) {
-  if (!profile.fullBio && !profile.shortBio && !isEditing) {
+  if (!profile.about && !profile.fullBio && !profile.shortBio && !isEditing) {
     return null;
   }
 
@@ -34,15 +34,15 @@ export function AboutSection({
           </label>
           <textarea
             rows={4}
-            value={profile.fullBio || profile.shortBio || ''}
-            onChange={(e) => onUpdateField?.('fullBio', e.target.value)}
+            value={profile.about || profile.fullBio || profile.shortBio || ''}
+            onChange={(e) => onUpdateField?.('about', e.target.value)}
             placeholder="Write your background, experience, accomplishments, or philosophy..."
             className={`w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-transparent text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:border-current`}
           />
         </div>
       ) : (
-        <p className={`text-xs sm:text-sm ${theme.textSecondary} leading-relaxed font-normal`}>
-          {profile.fullBio || profile.shortBio}
+        <p className={`text-xs sm:text-sm ${theme.textSecondary} leading-relaxed font-normal whitespace-pre-line`}>
+          {profile.about || profile.fullBio || profile.shortBio}
         </p>
       )}
     </section>
