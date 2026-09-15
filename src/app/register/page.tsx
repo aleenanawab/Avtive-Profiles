@@ -146,7 +146,7 @@ export default function RegisterPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Start with your account
+            Create Your Account
           </p>
         </div>
 

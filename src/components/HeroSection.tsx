@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare } from 'lucide-react';
-import { ProfileData, normalizeProfileType } from '../types/profile';
+import { ProfileData, normalizeProfileType, SocialLink } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon } from './BrandIcons';
 import { StatsRow } from './profiles/StatsRow';
@@ -62,7 +62,12 @@ export function HeroSection({
       ];
 
   // Social Links matching Screen 9
-  const socials = profile.socials || [];
+  const rawSocials = profile.socials;
+  const socials: SocialLink[] = Array.isArray(rawSocials)
+    ? rawSocials
+    : rawSocials && typeof rawSocials === 'object'
+    ? Object.entries(rawSocials).map(([platform, url]) => ({ platform: platform as any, url: String(url) }))
+    : [];
   const githubLink = socials.find((s) => s.platform === 'github')?.url;
   const linkedinLink = socials.find((s) => s.platform === 'linkedin')?.url;
   const twitterLink = socials.find((s) => s.platform === 'twitter')?.url;
@@ -135,127 +140,93 @@ export function HeroSection({
           </p>
         )}
 
-        {/* Action Buttons Below Avatar: [ Share ] [ Connect ] */}
-        <div className="flex flex-wrap items-center gap-2.5 pt-1">
-          <button
-            type="button"
-            onClick={onOpenShare}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer"
-          >
-            <Share2 className="w-4 h-4 text-amber-500 dark:text-amber-600" />
-            <span>Share</span>
-          </button>
-
+        {/* Action Buttons Below Avatar: [ Connect ] [ Share ] with Equal Visual Importance */}
+        <div className="flex items-center gap-3 pt-2 max-w-md">
           <button
             type="button"
             onClick={onOpenConnect}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-900 dark:text-white font-bold text-xs border border-slate-200 dark:border-zinc-700 transition-all active:scale-[0.98] cursor-pointer"
+            className="flex-1 py-2.5 px-5 rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-slate-200 dark:border-white/20"
           >
-            <UserPlus className="w-4 h-4 text-slate-600 dark:text-zinc-300" />
-            <span>+ Connect</span>
+            <UserPlus className="w-4 h-4" />
+            <span>Connect</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenShare}
+            className="flex-1 py-2.5 px-5 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-slate-700 dark:border-white/10"
+          >
+            <Share2 className="w-4 h-4 text-amber-400" />
+            <span>Share</span>
           </button>
         </div>
 
-        {/* Quick Direct Contact Links (WhatsApp & Phone) */}
-        {sharing.contactInfo !== false && (profile.whatsapp || profile.phone) && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 max-w-xl">
-            {profile.whatsapp && sharing.phone !== false && (
+        {/* Direct Social Icon Bar: WhatsApp, Gmail, GitHub, Twitter/X, LinkedIn, Portfolio */}
+        {sharing.socialLinks !== false && (
+          <div className="flex items-center gap-2.5 pt-2 text-slate-600 dark:text-zinc-300">
+            {profile.whatsapp && (
               <a
-                href={`https://wa.me/${profile.whatsapp.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(profile.name)}`}
+                href={`https://wa.me/${profile.whatsapp.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-zinc-900/80 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800 transition-colors group"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
+                title="WhatsApp"
+                aria-label="WhatsApp"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                    <MessageSquare className="w-4 h-4" />
-                  </div>
-                  <div className="text-left min-w-0">
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500 font-mono">
-                      WhatsApp
-                    </span>
-                    <span className="block text-xs font-semibold text-slate-900 dark:text-white truncate">
-                      {profile.whatsapp}
-                    </span>
-                  </div>
-                </div>
-                <span className="text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-xs">↗</span>
+                <Phone className="w-4 h-4 text-emerald-500" />
               </a>
             )}
 
-            {profile.phone && sharing.phone !== false && (
+            {profile.email && (
               <a
-                href={`tel:${profile.phone.replace(/[^0-9+]/g, '')}`}
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-zinc-900/80 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-800 transition-colors group"
+                href={`mailto:${profile.email}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
+                title="Email"
+                aria-label="Email"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <div className="text-left min-w-0">
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500 font-mono">
-                      Mobile
-                    </span>
-                    <span className="block text-xs font-semibold text-slate-900 dark:text-white truncate">
-                      {profile.phone}
-                    </span>
-                  </div>
-                </div>
-                <span className="text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-xs">↗</span>
+                <Mail className="w-4 h-4 text-rose-500" />
               </a>
             )}
-          </div>
-        )}
 
-        {/* Social Icons Row (Screen 9) */}
-        {sharing.socialLinks !== false && (
-          <div className="flex items-center gap-2.5 pt-1 text-slate-600 dark:text-zinc-400">
-            {githubLink ? (
+            {githubLink && (
               <a
                 href={githubLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
                 title="GitHub"
+                aria-label="GitHub"
               >
-                <GithubIcon className="w-4 h-4" />
+                <GithubIcon className="w-4 h-4 text-zinc-900 dark:text-white" />
               </a>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center opacity-80">
-                <GithubIcon className="w-4 h-4" />
-              </div>
             )}
 
-            {linkedinLink ? (
+            {linkedinLink && (
               <a
                 href={linkedinLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
                 title="LinkedIn"
+                aria-label="LinkedIn"
               >
-                <LinkedInIcon className="w-4 h-4" />
+                <LinkedInIcon className="w-4 h-4 text-blue-500" />
               </a>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center opacity-80">
-                <LinkedInIcon className="w-4 h-4" />
-              </div>
             )}
 
-            {twitterLink ? (
+            {twitterLink && (
               <a
                 href={twitterLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-colors"
-                title="X (Twitter)"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
+                title="Twitter / X"
+                aria-label="Twitter / X"
               >
-                <TwitterXIcon className="w-4 h-4" />
+                <TwitterXIcon className="w-4 h-4 text-zinc-900 dark:text-white" />
               </a>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center opacity-80">
-                <TwitterXIcon className="w-4 h-4" />
-              </div>
             )}
 
             {websiteLink && (
@@ -263,10 +234,11 @@ export function HeroSection({
                 href={websiteLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-colors"
-                title="Website"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
+                title="Portfolio"
+                aria-label="Portfolio"
               >
-                <Globe className="w-4 h-4" />
+                <Globe className="w-4 h-4 text-amber-500" />
               </a>
             )}
           </div>

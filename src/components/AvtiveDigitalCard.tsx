@@ -453,7 +453,7 @@ export function AvtiveDigitalCard({
                   <div key="virtual-card" id="virtual-card-section" className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-                        VIRTUAL CARD
+                        Virtual Card Preview
                       </h2>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-bold font-mono`}>
                         Digital Identity
@@ -464,6 +464,7 @@ export function AvtiveDigitalCard({
                       profile={draftProfile}
                       onViewCompany={onViewCompany}
                       onDownloadCard={onSaveContact}
+                      onOpenShare={onOpenShare}
                       isDark={isDark}
                       theme={theme}
                     />

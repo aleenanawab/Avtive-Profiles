@@ -120,9 +120,8 @@ function DetailsStepContent() {
         return;
       }
 
-      // User lands on their own personal editable profile dashboard (Step 5)
-      const targetIdentifier = data.profile?.userId || data.profile?.slug || data.profile?.id;
-      router.push(`/profile/${targetIdentifier}/edit?welcome=true`);
+      // Step 5: Route directly to My Profiles dashboard per specification
+      router.push('/dashboard?created=true');
       router.refresh();
     } catch (err) {
       console.error(err);

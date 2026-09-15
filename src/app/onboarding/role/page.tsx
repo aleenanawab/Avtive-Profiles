@@ -55,7 +55,7 @@ function RoleStepContent() {
   };
 
   const handleNext = () => {
-    router.push(`/onboarding/details?theme=${theme}&role=${selectedRole}`);
+    router.push(`/onboarding/create?theme=${theme}&role=${selectedRole}`);
   };
 
   return (

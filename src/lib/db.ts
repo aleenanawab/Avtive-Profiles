@@ -109,56 +109,57 @@ function getInitialSeedData(): DatabaseSchema {
   };
 }
 
-let inMemoryDb: DatabaseSchema | null = null;
-let lastDbMtime = 0;
-
 function loadDb(): DatabaseSchema {
   try {
     if (fs.existsSync(DB_FILE_PATH)) {
-      const stats = fs.statSync(DB_FILE_PATH);
-      if (!inMemoryDb || stats.mtimeMs > lastDbMtime) {
-        const content = fs.readFileSync(DB_FILE_PATH, 'utf8');
-        inMemoryDb = JSON.parse(content);
-        if (inMemoryDb && inMemoryDb.profiles) {
-          Object.values(inMemoryDb.profiles).forEach((p) => {
-            if (!p.theme || p.theme === 'default') p.theme = 'elegant';
-            if (p.coverImage && !p.coverImage.startsWith('/uploads/') && !p.coverImage.startsWith('data:')) {
-              delete (p as any).coverImage;
+      const content = fs.readFileSync(DB_FILE_PATH, 'utf8');
+      const data: DatabaseSchema = JSON.parse(content);
+      if (data && data.profiles) {
+        Object.values(data.profiles).forEach((p) => {
+          if (!p.theme || p.theme === 'default') p.theme = 'editorial';
+          if (!p.profileName) {
+            p.profileName = p.designation || (p.type === 'company' ? 'Company Profile' : 'Primary Profile');
+          }
+          if (!p.profession) {
+            p.profession = p.designation || 'Professional';
+          }
+          if (!p.createdAt) {
+            p.createdAt = new Date().toISOString();
+          }
+          if (!p.updatedAt) {
+            p.updatedAt = p.createdAt || new Date().toISOString();
+          }
+          if (!p.sharingSettings) {
+            p.sharingSettings = { ...DEFAULT_SHARING_SETTINGS };
+          }
+          if (!p.sectionOrder || !p.sectionOrder.length) {
+            p.sectionOrder = [...DEFAULT_SECTION_ORDER];
+          }
+          if (!Array.isArray(p.socials)) {
+            if (p.socials && typeof p.socials === 'object') {
+              p.socials = Object.entries(p.socials).map(([platform, url]) => ({
+                platform: platform as any,
+                url: String(url),
+                label: platform
+              }));
+            } else {
+              p.socials = [];
             }
-            if (!p.profileName) {
-              p.profileName = p.designation || (p.type === 'company' ? 'Company Profile' : 'Primary Profile');
-            }
-            if (!p.profession) {
-              p.profession = p.designation || 'Professional';
-            }
-            if (!p.createdAt) {
-              p.createdAt = new Date().toISOString();
-            }
-            if (!p.updatedAt) {
-              p.updatedAt = p.createdAt || new Date().toISOString();
-            }
-            if (!p.sharingSettings) {
-              p.sharingSettings = { ...DEFAULT_SHARING_SETTINGS };
-            }
-            if (!p.sectionOrder || !p.sectionOrder.length) {
-              p.sectionOrder = [...DEFAULT_SECTION_ORDER];
-            }
-          });
-        }
-        lastDbMtime = stats.mtimeMs;
+          }
+          if (!Array.isArray(p.socialLinks)) {
+            p.socialLinks = p.socials.map((s: any) => ({ platform: s.platform, url: s.url, label: s.label }));
+          }
+        });
       }
-      return inMemoryDb!;
+      return data;
     }
-
   } catch (e) {
     console.error('Failed to read db.json, checking seed:', e);
   }
 
-  if (!inMemoryDb) {
-    inMemoryDb = getInitialSeedData();
-    saveDb(inMemoryDb);
-  }
-  return inMemoryDb;
+  const seed = getInitialSeedData();
+  saveDb(seed);
+  return seed;
 }
 
 function saveDb(data: DatabaseSchema): void {
@@ -168,10 +169,6 @@ function saveDb(data: DatabaseSchema): void {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(DB_FILE_PATH, JSON.stringify(data, null, 2), 'utf8');
-    inMemoryDb = data;
-    try {
-      lastDbMtime = fs.statSync(DB_FILE_PATH).mtimeMs;
-    } catch (_) {}
   } catch (e) {
     console.error('Failed to write to db.json:', e);
   }
@@ -284,15 +281,27 @@ export async function createProfileForUser(
     whatsapp: data.whatsapp?.trim() || data.phone?.trim() || '',
     theme: (data.theme && data.theme !== 'default' ? data.theme : 'editorial') as ProfileTheme,
     contactOrder: data.contactOrder || ['whatsapp', 'phone', 'email', 'website', 'location'],
-    socials: data.socials || [
-      {
-        platform: 'website',
-        url: 'https://www.avtive.app',
-        label: 'Website',
-        handle: 'avtive.app'
-      }
-    ],
-    socialLinks: data.socialLinks || (data.socials ? data.socials.map(s => ({ platform: s.platform, url: s.url, label: s.label })) : []),
+    socials: Array.isArray(data.socials)
+      ? data.socials
+      : data.socials && typeof data.socials === 'object'
+      ? Object.entries(data.socials).map(([platform, url]) => ({
+          platform: platform as any,
+          url: String(url),
+          label: platform
+        }))
+      : [
+          {
+            platform: 'website',
+            url: 'https://www.avtive.app',
+            label: 'Website',
+            handle: 'avtive.app'
+          }
+        ],
+    socialLinks: Array.isArray(data.socialLinks)
+      ? data.socialLinks
+      : Array.isArray(data.socials)
+      ? data.socials.map(s => ({ platform: s.platform, url: s.url, label: s.label }))
+      : [],
     skills: data.skills || ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
     experience: data.experience || data.experiences || [],
     experiences: data.experiences || data.experience || [],

@@ -154,16 +154,18 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   const [education, setEducation] = useState<EducationItem[]>(initialEduList);
 
   // 7. Social Links
+  const safeSocials = Array.isArray(initialProfile.socials) ? initialProfile.socials : [];
+  const safeSocialLinks = Array.isArray(initialProfile.socialLinks) ? initialProfile.socialLinks : [];
   const [githubUrl, setGithubUrl] = useState(
-    initialProfile.socials?.find((s) => s.platform === 'github')?.url || 
-    initialProfile.socialLinks?.find((s) => s.platform === 'github')?.url || ''
+    safeSocials.find((s) => s.platform === 'github')?.url || 
+    safeSocialLinks.find((s) => s.platform === 'github')?.url || ''
   );
   const [linkedinUrl, setLinkedinUrl] = useState(
-    initialProfile.socials?.find((s) => s.platform === 'linkedin')?.url || 
-    initialProfile.socialLinks?.find((s) => s.platform === 'linkedin')?.url || ''
+    safeSocials.find((s) => s.platform === 'linkedin')?.url || 
+    safeSocialLinks.find((s) => s.platform === 'linkedin')?.url || ''
   );
   const [websiteUrl, setWebsiteUrl] = useState(
-    initialProfile.socials?.find((s) => s.platform === 'website')?.url || 
+    safeSocials.find((s) => s.platform === 'website')?.url || 
     initialProfile.website || ''
   );
 

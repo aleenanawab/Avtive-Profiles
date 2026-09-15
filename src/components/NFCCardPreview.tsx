@@ -8,7 +8,8 @@ import {
   Download, 
   Zap, 
   ExternalLink,
-  QrCode
+  QrCode,
+  Share2
 } from 'lucide-react';
 import { ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
@@ -19,6 +20,7 @@ interface NFCCardPreviewProps {
   onOpenQRModal?: () => void;
   onViewCompany?: (companyId?: string) => void;
   onDownloadCard?: () => void;
+  onOpenShare?: () => void;
   isDark?: boolean;
   theme?: ThemeConfig;
 }
@@ -29,6 +31,7 @@ export function NFCCardPreview({
   onOpenQRModal, 
   onViewCompany, 
   onDownloadCard,
+  onOpenShare,
   isDark,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: NFCCardPreviewProps) {
@@ -215,25 +218,37 @@ export function NFCCardPreview({
         </div>
       </div>
 
-      {/* Card Action Controls: Flip Card + Download Card */}
-      <div className="grid grid-cols-2 gap-2 w-full max-w-[360px]">
-        {/* 1. Flip Card */}
+      {/* Card Action Controls: Download Virtual Card + Share Card + Flip */}
+      <div className="flex flex-col gap-2 w-full max-w-[360px]">
+        <div className="grid grid-cols-2 gap-2 w-full">
+          {/* Download Virtual Card */}
+          <button
+            onClick={handleDownload}
+            className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl ${theme.btnPrimary} text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer`}
+            title="Download Virtual Card (.vcf)"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Download Virtual Card</span>
+          </button>
+
+          {/* Share Card */}
+          <button
+            onClick={onOpenShare}
+            className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl ${theme.btnSecondary} text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer`}
+            title="Share Virtual Card"
+          >
+            <Share2 className="w-3.5 h-3.5 text-amber-500" />
+            <span>Share Card</span>
+          </button>
+        </div>
+
+        {/* Flip to QR */}
         <button
           onClick={() => setIsFlipped(!isFlipped)}
-          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl ${theme.btnSecondary} text-xs font-bold transition-all shadow-2xs active:scale-95`}
+          className={`w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 ${theme.subCardBg} text-[11px] font-semibold ${theme.textSecondary} hover:${theme.textPrimary} transition-all active:scale-95 cursor-pointer`}
         >
-          <RotateCw className="w-3.5 h-3.5" />
-          <span>{isFlipped ? 'Show Front' : 'Flip to QR'}</span>
-        </button>
-
-        {/* 2. Download Card Action */}
-        <button
-          onClick={handleDownload}
-          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl ${theme.btnPrimary} text-xs font-bold shadow-xs transition-all active:scale-95`}
-          title="Download Digital Identity Card"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>Download Card</span>
+          <RotateCw className="w-3 h-3" />
+          <span>{isFlipped ? 'Show Front of Card' : 'Flip to View QR Code'}</span>
         </button>
       </div>
     </div>

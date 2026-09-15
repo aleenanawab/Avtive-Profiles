@@ -242,15 +242,15 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
         <div className="space-y-3 pt-2">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-              My Profiles
+              My Profiles — {profiles.length}
             </h2>
 
             <Link
-              href="/create-profile"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-[#18181B] text-xs font-semibold text-slate-900 dark:text-white shadow-2xs hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all"
+              href="/onboarding/theme"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-[#18181B] text-xs font-semibold text-slate-900 dark:text-white shadow-2xs hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Create New</span>
+              <Plus className="w-3.5 h-3.5 text-amber-500" />
+              <span>+ Create New Profile</span>
             </Link>
           </div>
 
@@ -286,6 +286,9 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                         {p.profileName || p.name}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
+                        <span className="capitalize font-semibold text-amber-500 dark:text-amber-400">
+                          {p.type || 'Owner'}
+                        </span>
                         <span>• {themeName}</span>
                         {isActive && (
                           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
@@ -296,46 +299,62 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                     </div>
                   </div>
 
-                  {/* Right: Actions Menu */}
-                  <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      type="button"
-                      onClick={() => setOpenMenuId(isMenuOpen ? null : p.id)}
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                      title="Profile actions"
+                  {/* Quick Action Buttons & Menu */}
+                  <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <Link
+                      href={`/profile/${p.slug || p.id}`}
+                      className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-zinc-800 text-[11px] font-semibold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
                     >
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
+                      <Eye className="w-3 h-3" />
+                      <span>View</span>
+                    </Link>
+                    <Link
+                      href={`/profile/${p.slug || p.id}/edit`}
+                      className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-zinc-800 text-[11px] font-semibold text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                      <span>Edit</span>
+                    </Link>
 
-                    {/* Popover Menu */}
-                    {isMenuOpen && (
-                      <div className="absolute right-0 top-full mt-1 w-48 rounded-2xl bg-white dark:bg-[#18181B] border border-slate-200 dark:border-zinc-800 shadow-xl p-1.5 z-40 space-y-0.5 text-xs text-slate-700 dark:text-zinc-200 animate-in fade-in duration-150">
-                        <Link
-                          href={`/profile/${p.slug || p.id}`}
-                          onClick={() => setOpenMenuId(null)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-slate-500" />
-                          <span>View Public Profile</span>
-                        </Link>
+                    <div className="relative shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setOpenMenuId(isMenuOpen ? null : p.id)}
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                        title="Profile actions"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
 
-                        <Link
-                          href={`/edit-profile?id=${p.id}`}
-                          onClick={() => setOpenMenuId(null)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                        >
-                          <Edit3 className="w-3.5 h-3.5 text-slate-500" />
-                          <span>Edit Profile</span>
-                        </Link>
+                      {/* Popover Menu */}
+                      {isMenuOpen && (
+                        <div className="absolute right-0 top-full mt-1 w-48 rounded-2xl bg-white dark:bg-[#18181B] border border-slate-200 dark:border-zinc-800 shadow-xl p-1.5 z-40 space-y-0.5 text-xs text-slate-700 dark:text-zinc-200 animate-in fade-in duration-150">
+                          <Link
+                            href={`/profile/${p.slug || p.id}`}
+                            onClick={() => setOpenMenuId(null)}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-slate-500" />
+                            <span>View Public Profile</span>
+                          </Link>
 
-                        <Link
-                          href={`/profile/${p.slug || p.id}/share`}
-                          onClick={() => setOpenMenuId(null)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                        >
-                          <Share2 className="w-3.5 h-3.5 text-slate-500" />
-                          <span>Share Profile</span>
-                        </Link>
+                          <Link
+                            href={`/profile/${p.slug || p.id}/edit`}
+                            onClick={() => setOpenMenuId(null)}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                          >
+                            <Edit3 className="w-3.5 h-3.5 text-slate-500" />
+                            <span>Edit Profile</span>
+                          </Link>
+
+                          <Link
+                            href={`/profile/${p.slug || p.id}/share`}
+                            onClick={() => setOpenMenuId(null)}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                          >
+                            <Share2 className="w-3.5 h-3.5 text-slate-500" />
+                            <span>Share Profile</span>
+                          </Link>
 
                         <button
                           type="button"
@@ -372,8 +391,9 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                     )}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
           </div>
         </div>
       </div>

@@ -225,7 +225,8 @@ export function EditProfileModal({
     if (key === 'location') return { label: 'Location / Address', value: formData.officeAddress || formData.location || 'Not configured', icon: <MapPin className="w-4 h-4 text-[#EF4444]" />, isCustom: false };
 
     if (key === 'linkedin' || key === 'instagram' || key === 'twitter' || key === 'github' || key === 'facebook') {
-      const soc = formData.socials?.find(s => s.platform === key);
+      const safeSocials = Array.isArray(formData.socials) ? formData.socials : [];
+      const soc = safeSocials.find(s => s.platform === key);
       let icon = <LinkedInIcon className="w-4 h-4 text-[#0A66C2]" />;
       let label = 'LinkedIn Profile';
       if (key === 'instagram') { icon = <InstagramIcon className="w-4 h-4 text-[#E4405F]" />; label = 'Instagram'; }
