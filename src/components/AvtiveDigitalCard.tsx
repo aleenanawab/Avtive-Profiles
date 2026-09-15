@@ -12,7 +12,8 @@ import {
   Loader2, 
   Palette, 
   Check, 
-  AlertCircle 
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import { 
   ProfileData, 
@@ -35,7 +36,7 @@ import { ProfileContactSection } from './ProfileContactSection';
 import { CompanyCard } from './CompanyCard';
 import { TeamSection } from './TeamSection';
 import { NFCCardPreview } from './NFCCardPreview';
-import { getThemeConfig, PROFILE_THEMES, ThemeConfig } from './themeStyles';
+import { getThemeConfig, getButtonRadiusClass, getButtonStyleClass, PROFILE_THEMES, ThemeConfig } from './themeStyles';
 
 export { getThemeConfig };
 
@@ -306,6 +307,7 @@ export function AvtiveDigitalCard({
         {/* ========================================================================= */}
         {(() => {
           const defaultCardSectionOrder = [
+            'links',
             'company',
             'about',
             'contact',
@@ -340,6 +342,38 @@ export function AvtiveDigitalCard({
 
           const renderSection = (sectionKey: string) => {
             switch (sectionKey) {
+              case 'links': {
+                const activeLinks = (draftProfile.links || []).filter((l) => l.visible !== false);
+                if (!isEditing && sharing.links === false) return null;
+                if (activeLinks.length === 0) return null;
+                const radiusClass = getButtonRadiusClass(draftProfile.buttonRadius);
+                const buttonStyleClass = getButtonStyleClass(draftProfile.buttonStyle, draftProfile.theme);
+
+                return (
+                  <div key="links" className="w-full px-6 py-4 space-y-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className={`text-xs font-bold uppercase tracking-wider ${theme.accentText}`}>
+                        Featured Links
+                      </h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {activeLinks.map((link) => (
+                        <a
+                          key={link.id}
+                          href={link.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`py-3.5 px-4 flex items-center justify-between text-xs sm:text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 ${radiusClass} ${buttonStyleClass}`}
+                        >
+                          <span className="truncate">{link.title}</span>
+                          <ExternalLink className="w-4 h-4 opacity-70 shrink-0 ml-2" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
               case 'company':
                 if (!isEditing && sharing.companySection === false) return null;
                 if (!isCompany && draftProfile.companyInfo && onViewCompany) {
