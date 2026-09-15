@@ -15,23 +15,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Check if already authenticated
-  useEffect(() => {
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
-          if (hasProfiles) {
-            const slug = data.profiles?.[0]?.slug || data.profile?.slug || 'dashboard';
-            router.replace(`/profile/${slug}`);
-          } else {
-            router.replace('/onboarding/theme');
-          }
-        }
-      })
-      .catch(() => {});
-  }, [router]);
+
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
