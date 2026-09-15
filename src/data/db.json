@@ -356,6 +356,13 @@
       "email": "test_flow_1789452990845@example.com",
       "passwordHash": "$2b$10$NKgjP9vUJJYkZwUYAlpGPONeicKvsBpm384G22mcOji90hjOTojBK",
       "createdAt": "2026-09-15T06:16:31.178Z"
+    },
+    {
+      "id": "user-1789453938262-7gcsf",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789453938069@example.com",
+      "passwordHash": "$2b$10$JhuLLKp4cEfSPLUv6iHHre4gRZnyq1ihTswKWSpEPFi4d7oSIzckS",
+      "createdAt": "2026-09-15T06:32:18.262Z"
     }
   ],
   "profiles": {
@@ -9907,6 +9914,236 @@
       ],
       "createdAt": "2026-09-15T06:16:31.738Z",
       "updatedAt": "2026-09-15T06:16:31.827Z"
+    },
+    "prof-1789453938715-9vqg9": {
+      "id": "prof-1789453938715-9vqg9",
+      "userId": "user-1789453938262-7gcsf",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-6n0b",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789453938069@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:32:18.715Z",
+      "updatedAt": "2026-09-15T06:32:18.715Z"
+    },
+    "eman-tariq-professional-profile-6n0b": {
+      "id": "prof-1789453938715-9vqg9",
+      "userId": "user-1789453938262-7gcsf",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-6n0b",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789453938069@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:32:18.715Z",
+      "updatedAt": "2026-09-15T06:32:18.715Z"
     }
   },
   "connections": [
