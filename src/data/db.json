@@ -10558,6 +10558,480 @@
       ],
       "createdAt": "2026-09-15T06:49:09.499Z",
       "updatedAt": "2026-09-15T06:49:09.499Z"
+    },
+    "prof-abcd": {
+      "id": "prof-abcd",
+      "slug": "abcd-user-profile",
+      "type": "individual",
+      "companyId": "avtive-company",
+      "companyName": "Avtive",
+      "name": "ABCD User",
+      "designation": "Strategy-based Artist & Creative Director",
+      "company": "Avtive",
+      "location": "NSTP, Islamabad, Pakistan",
+      "officeAddress": "NSTP, Islamabad, Pakistan",
+      "avatar": "/images/founder-pfp.jpg",
+      "shortBio": "Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.",
+      "fullBio": "Strategy-based artist with over 10 years of experience focusing on creating compelling design solutions that help brands stand out. Specialized in brand identity, visual communication design, animation, photography, video production, and design strategy.",
+      "whatsapp": "+92 312 5175041",
+      "phone": "+92 312 5175041",
+      "email": "abcd@gmail.com",
+      "website": "https://www.avtive.app",
+      "googleMapsUrl": "https://maps.google.com/?q=NSTP+Islamabad+Pakistan",
+      "contactOrder": [
+        "phone",
+        "whatsapp",
+        "email",
+        "website",
+        "location"
+      ],
+      "customContacts": [],
+      "companyInfo": {
+        "id": "avtive-company",
+        "name": "Avtive",
+        "tagline": "SaaS Platform for Digital Profiles & Cloud Identity",
+        "logo": "/images/avtive-symbol.png",
+        "industry": "B2B SaaS • Digital Profile Platform • Cloud Identity",
+        "location": "NSTP, Islamabad, Pakistan",
+        "website": "https://www.avtive.app",
+        "employeeCount": "11-50",
+        "profileId": "company"
+      },
+      "nfcCard": {
+        "cardNumber": "AVTIVE • SYED MESUM RAZA SHAH",
+        "chipId": "NTAG216-7EC384",
+        "finish": "obsidian"
+      },
+      "services": [
+        {
+          "id": "srv-1",
+          "title": "Brand Design"
+        },
+        {
+          "id": "srv-2",
+          "title": "Graphic Design"
+        },
+        {
+          "id": "srv-3",
+          "title": "Ad Design"
+        },
+        {
+          "id": "srv-4",
+          "title": "Visual Design"
+        },
+        {
+          "id": "srv-5",
+          "title": "Video Editing"
+        },
+        {
+          "id": "srv-6",
+          "title": "Print Design"
+        },
+        {
+          "id": "srv-7",
+          "title": "Brand Marketing"
+        },
+        {
+          "id": "srv-8",
+          "title": "3D Design"
+        },
+        {
+          "id": "srv-9",
+          "title": "Animation"
+        },
+        {
+          "id": "srv-10",
+          "title": "Presentation Design"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "exp-1",
+          "company": "Avtive",
+          "role": "Creative Direction & Strategy",
+          "location": "NSTP, Islamabad, Pakistan"
+        },
+        {
+          "id": "exp-2",
+          "company": "Financial Monitoring Unit (FMU)",
+          "role": "Multimedia Designer",
+          "period": "Nov 2021 – Jun 2022"
+        },
+        {
+          "id": "exp-3",
+          "company": "USAID – Pakistan",
+          "role": "Multimedia Designer",
+          "period": "Feb 2021 – Aug 2021"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "DIFC | Gate Avenue | Dubai Big Bus Tours Campaign",
+          "category": "Campaign & Advertising Design",
+          "client": "DIFC Gate Avenue",
+          "description": "Offline marketing and advertising campaign design for the Dubai double big bus tours campaign for the client, DIFC Gate Avenue.",
+          "coverImage": "/images/project-difc-bus.jpg",
+          "technology": "Offline Marketing • Out-of-Home (OOH) Advertising",
+          "tags": [
+            "Offline Marketing",
+            "Advertising",
+            "Campaign Design",
+            "DIFC Gate Avenue"
+          ]
+        },
+        {
+          "id": "proj-2",
+          "title": "The Apprentice – The Trump Story",
+          "category": "Creative Design & Key Art",
+          "client": "Film Marketing & Advertising",
+          "description": "Official Middle East theatrical marketing, poster localization, and creative advertising design supporting the release.",
+          "coverImage": "/images/project-the-apprentice.jpg",
+          "imagePosition": "object-[center_30%]",
+          "technology": "Creative Design • Key Art • Film Marketing",
+          "tags": [
+            "Creative Design",
+            "Key Art",
+            "Film Marketing",
+            "Advertising"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "id": "cert-1",
+          "name": "LinkedIn Content and Creative Design Certification",
+          "issuer": "LinkedIn",
+          "issued": "August 2025",
+          "expires": "August 2027",
+          "credentialId": "5naai9rhydco"
+        }
+      ],
+      "volunteerExperiences": [
+        {
+          "id": "vol-1",
+          "role": "Medical Assistant",
+          "organization": "Anjuman Janisaran-E-Ahlebait (A.S), Pakistan",
+          "period": "Feb 2018 – Present",
+          "category": "Social Services"
+        }
+      ],
+      "languages": [
+        {
+          "language": "English",
+          "proficiency": "Full professional proficiency"
+        },
+        {
+          "language": "Urdu",
+          "proficiency": "Native or bilingual proficiency"
+        }
+      ],
+      "recommendations": [
+        {
+          "id": "rec-1",
+          "author": "Sehrish Kanwal",
+          "summary": "Hard working, cooperative, innovative, strong in creativity and strategic thinking, capable of conceptualizing and executing campaigns, effective in leading brainstorming, and a visionary creative professional.",
+          "fullText": "Syed Mesum Raza Shah is exceptionally hardworking, cooperative, and innovative with profound strength in strategic thinking and creative execution. Capable of conceptualizing high-impact campaigns and leading productive brainstorming sessions."
+        }
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn",
+          "handle": "in/syedmesumraza"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance",
+          "handle": "thisissyedbadshah"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app",
+          "handle": "avtive.app"
+        }
+      ],
+      "userId": "user-abcd",
+      "theme": "elegant",
+      "profileName": "Primary Profile",
+      "profession": "Strategy-based Artist & Creative Director",
+      "createdAt": "2026-09-14T06:53:00.150Z",
+      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "sharingSettings": {
+        "email": true,
+        "phone": true,
+        "contactInfo": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app"
+        }
+      ]
+    },
+    "abcd-user-profile": {
+      "id": "prof-abcd",
+      "slug": "abcd-user-profile",
+      "type": "individual",
+      "companyId": "avtive-company",
+      "companyName": "Avtive",
+      "name": "ABCD User",
+      "designation": "Strategy-based Artist & Creative Director",
+      "company": "Avtive",
+      "location": "NSTP, Islamabad, Pakistan",
+      "officeAddress": "NSTP, Islamabad, Pakistan",
+      "avatar": "/images/founder-pfp.jpg",
+      "shortBio": "Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.",
+      "fullBio": "Strategy-based artist with over 10 years of experience focusing on creating compelling design solutions that help brands stand out. Specialized in brand identity, visual communication design, animation, photography, video production, and design strategy.",
+      "whatsapp": "+92 312 5175041",
+      "phone": "+92 312 5175041",
+      "email": "abcd@gmail.com",
+      "website": "https://www.avtive.app",
+      "googleMapsUrl": "https://maps.google.com/?q=NSTP+Islamabad+Pakistan",
+      "contactOrder": [
+        "phone",
+        "whatsapp",
+        "email",
+        "website",
+        "location"
+      ],
+      "customContacts": [],
+      "companyInfo": {
+        "id": "avtive-company",
+        "name": "Avtive",
+        "tagline": "SaaS Platform for Digital Profiles & Cloud Identity",
+        "logo": "/images/avtive-symbol.png",
+        "industry": "B2B SaaS • Digital Profile Platform • Cloud Identity",
+        "location": "NSTP, Islamabad, Pakistan",
+        "website": "https://www.avtive.app",
+        "employeeCount": "11-50",
+        "profileId": "company"
+      },
+      "nfcCard": {
+        "cardNumber": "AVTIVE • SYED MESUM RAZA SHAH",
+        "chipId": "NTAG216-7EC384",
+        "finish": "obsidian"
+      },
+      "services": [
+        {
+          "id": "srv-1",
+          "title": "Brand Design"
+        },
+        {
+          "id": "srv-2",
+          "title": "Graphic Design"
+        },
+        {
+          "id": "srv-3",
+          "title": "Ad Design"
+        },
+        {
+          "id": "srv-4",
+          "title": "Visual Design"
+        },
+        {
+          "id": "srv-5",
+          "title": "Video Editing"
+        },
+        {
+          "id": "srv-6",
+          "title": "Print Design"
+        },
+        {
+          "id": "srv-7",
+          "title": "Brand Marketing"
+        },
+        {
+          "id": "srv-8",
+          "title": "3D Design"
+        },
+        {
+          "id": "srv-9",
+          "title": "Animation"
+        },
+        {
+          "id": "srv-10",
+          "title": "Presentation Design"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "exp-1",
+          "company": "Avtive",
+          "role": "Creative Direction & Strategy",
+          "location": "NSTP, Islamabad, Pakistan"
+        },
+        {
+          "id": "exp-2",
+          "company": "Financial Monitoring Unit (FMU)",
+          "role": "Multimedia Designer",
+          "period": "Nov 2021 – Jun 2022"
+        },
+        {
+          "id": "exp-3",
+          "company": "USAID – Pakistan",
+          "role": "Multimedia Designer",
+          "period": "Feb 2021 – Aug 2021"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "DIFC | Gate Avenue | Dubai Big Bus Tours Campaign",
+          "category": "Campaign & Advertising Design",
+          "client": "DIFC Gate Avenue",
+          "description": "Offline marketing and advertising campaign design for the Dubai double big bus tours campaign for the client, DIFC Gate Avenue.",
+          "coverImage": "/images/project-difc-bus.jpg",
+          "technology": "Offline Marketing • Out-of-Home (OOH) Advertising",
+          "tags": [
+            "Offline Marketing",
+            "Advertising",
+            "Campaign Design",
+            "DIFC Gate Avenue"
+          ]
+        },
+        {
+          "id": "proj-2",
+          "title": "The Apprentice – The Trump Story",
+          "category": "Creative Design & Key Art",
+          "client": "Film Marketing & Advertising",
+          "description": "Official Middle East theatrical marketing, poster localization, and creative advertising design supporting the release.",
+          "coverImage": "/images/project-the-apprentice.jpg",
+          "imagePosition": "object-[center_30%]",
+          "technology": "Creative Design • Key Art • Film Marketing",
+          "tags": [
+            "Creative Design",
+            "Key Art",
+            "Film Marketing",
+            "Advertising"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "id": "cert-1",
+          "name": "LinkedIn Content and Creative Design Certification",
+          "issuer": "LinkedIn",
+          "issued": "August 2025",
+          "expires": "August 2027",
+          "credentialId": "5naai9rhydco"
+        }
+      ],
+      "volunteerExperiences": [
+        {
+          "id": "vol-1",
+          "role": "Medical Assistant",
+          "organization": "Anjuman Janisaran-E-Ahlebait (A.S), Pakistan",
+          "period": "Feb 2018 – Present",
+          "category": "Social Services"
+        }
+      ],
+      "languages": [
+        {
+          "language": "English",
+          "proficiency": "Full professional proficiency"
+        },
+        {
+          "language": "Urdu",
+          "proficiency": "Native or bilingual proficiency"
+        }
+      ],
+      "recommendations": [
+        {
+          "id": "rec-1",
+          "author": "Sehrish Kanwal",
+          "summary": "Hard working, cooperative, innovative, strong in creativity and strategic thinking, capable of conceptualizing and executing campaigns, effective in leading brainstorming, and a visionary creative professional.",
+          "fullText": "Syed Mesum Raza Shah is exceptionally hardworking, cooperative, and innovative with profound strength in strategic thinking and creative execution. Capable of conceptualizing high-impact campaigns and leading productive brainstorming sessions."
+        }
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn",
+          "handle": "in/syedmesumraza"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance",
+          "handle": "thisissyedbadshah"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app",
+          "handle": "avtive.app"
+        }
+      ],
+      "userId": "user-abcd",
+      "theme": "elegant",
+      "profileName": "Primary Profile",
+      "profession": "Strategy-based Artist & Creative Director",
+      "createdAt": "2026-09-14T06:53:00.150Z",
+      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "sharingSettings": {
+        "email": true,
+        "phone": true,
+        "contactInfo": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app"
+        }
+      ]
     }
   },
   "connections": [
