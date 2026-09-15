@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { updateProfile, getProfileByIdOrSlug, getProfileByUserId } from '@/lib/db';
+import { updateProfile, getProfileByIdOrSlug, getProfileByUserId, setProfileResponseCookies } from '@/lib/db';
 import { ProfileData } from '@/types/profile';
 
 async function handleProfileUpdate(request: NextRequest) {
@@ -60,21 +60,8 @@ async function handleProfileUpdate(request: NextRequest) {
       updatedProfile: result.profile
     }, { status: 200 });
 
-    // 3. Set cookie for serverless cross-lambda persistence
-    try {
-      response.cookies.set(
-        'avtive_last_profile',
-        encodeURIComponent(JSON.stringify(result.profile)),
-        {
-          path: '/',
-          httpOnly: true,
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 30
-        }
-      );
-    } catch (cookieErr) {
-      console.error('Failed to set profile cookie in update API:', cookieErr);
-    }
+    // 3. Set cookie for serverless cross-lambda persistence (chunked)
+    setProfileResponseCookies(response, result.profile);
 
     return response;
 

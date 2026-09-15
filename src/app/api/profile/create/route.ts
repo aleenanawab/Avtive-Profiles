@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { getProfileByUserId, createProfileForUser } from '@/lib/db';
+import { getProfileByUserId, createProfileForUser, setProfileResponseCookies } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,19 +60,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
 
-    try {
-      response.cookies.set(
-        'avtive_last_profile',
-        encodeURIComponent(JSON.stringify(newProfile)),
-        {
-          path: '/',
-          httpOnly: true,
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 30
-        }
-      );
-    } catch {}
-
+    setProfileResponseCookies(response, newProfile);
     return response;
 
   } catch (error) {

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { getProfileByIdOrSlug, sanitizeProfileForPublic } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { PublicProfileClient } from './PublicProfileClient';
-import { ArrowLeft, UserX } from 'lucide-react';
+import { ProfileNotFoundFallback } from './ProfileNotFoundFallback';
 
 interface PageProps {
   params: Promise<{ identifier: string }>;
@@ -44,40 +44,9 @@ export default async function ProfilePage({ params }: PageProps) {
 
   const profile = await getProfileByIdOrSlug(identifier);
 
-  // 1. If Profile does not exist, show clean 404
+  // 1. If Profile was not found on server, use ProfileNotFoundFallback to hydrate from localStorage if available
   if (!profile) {
-    return (
-      <main className="min-h-screen w-full flex items-center justify-center p-4 bg-[#F8FAFC] dark:bg-[#09090B] text-slate-900 dark:text-white">
-        <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#121216] border border-slate-200 dark:border-white/10 shadow-2xl p-8 text-center space-y-5">
-          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/10 mx-auto flex items-center justify-center text-[#475569] dark:text-[#94A3B8]">
-            <UserX className="w-8 h-8" />
-          </div>
-          <div className="space-y-1.5">
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-              Profile Not Found
-            </h1>
-            <p className="text-xs text-[#475569] dark:text-[#94A3B8]">
-              The profile &quot;{identifier}&quot; does not exist or has been moved.
-            </p>
-          </div>
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
-            <Link
-              href="/"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Home</span>
-            </Link>
-            <Link
-              href="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white font-bold text-xs transition-colors"
-            >
-              <span>Sign In</span>
-            </Link>
-          </div>
-        </div>
-      </main>
-    );
+    return <ProfileNotFoundFallback identifier={identifier} session={session} />;
   }
 
   // 2. Strict Owner Verification: Caller's session ID === targetProfile.userId
