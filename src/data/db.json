@@ -265,6 +265,97 @@
       "email": "aleenanawab3@gmail.com",
       "passwordHash": "$2b$10$lwtzSazKckUResrlMQPuv.8wdrlXJ3Prn0ID7wcLlnb/2YqrUIfzS",
       "createdAt": "2026-09-14T15:17:56.773Z"
+    },
+    {
+      "id": "user-1789452450592-bu4zd",
+      "name": "Taylor Reed",
+      "email": "schema_user_1789452450298@example.com",
+      "passwordHash": "$2b$10$VLME8nKu8T1zQONCrbHn/em1tfmlnGdqAPVG1N.AUjy8sT9.bFdbW",
+      "createdAt": "2026-09-15T06:07:30.592Z"
+    },
+    {
+      "id": "user-1789452521694-2gfxq",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789452521492@example.com",
+      "passwordHash": "$2b$10$sZlj3pHrdneGzYeoNIMU9e0tLSXbIffZ2EVhQ.DZOLmi3/1cl3pHK",
+      "createdAt": "2026-09-15T06:08:41.695Z"
+    },
+    {
+      "id": "user-1789452549597-uce3z",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452549347@example.com",
+      "passwordHash": "$2b$10$kcXNwQ4wycQsnfAI0Ubdhe6eggXzXxhC0GAqKVfcm8B8PK.B/yjV.",
+      "createdAt": "2026-09-15T06:09:09.597Z"
+    },
+    {
+      "id": "user-1789452569795-9qv09",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452569653@example.com",
+      "passwordHash": "$2b$10$q.0mkch2ACaGRMRUZRiUZOW9YOX2VsOrywuBmjA11yBJoCIxFCgle",
+      "createdAt": "2026-09-15T06:09:29.795Z"
+    },
+    {
+      "id": "user-1789452597275-jsooz",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452597136@example.com",
+      "passwordHash": "$2b$10$NsuRGZlGF5oNsx5Pmqp71eaLxWSLGC6K4oOFmzQzjjmfI.J2M6z12",
+      "createdAt": "2026-09-15T06:09:57.275Z"
+    },
+    {
+      "id": "user-1789452619681-hcupi",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452619500@example.com",
+      "passwordHash": "$2b$10$UWT.85gwKRMSxDwyidXsEeRj4FRk4LRhILvVSxNVtKwI1DJa8KZcC",
+      "createdAt": "2026-09-15T06:10:19.681Z"
+    },
+    {
+      "id": "user-1789452663636-lhurg",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452663146@example.com",
+      "passwordHash": "$2b$10$pxsVE4RmFjHhPyKiKCezNuDIVA1t19nOF5DlOlegxIpau4clXYDyi",
+      "createdAt": "2026-09-15T06:11:03.636Z"
+    },
+    {
+      "id": "user-1789452690036-vspzd",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452689911@example.com",
+      "passwordHash": "$2b$10$Epke1KPXru66jHvaMpkOBew207GhqEz3lXYRSwgaEGYx/SOInYPQu",
+      "createdAt": "2026-09-15T06:11:30.036Z"
+    },
+    {
+      "id": "user-1789452709936-r4plm",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452709806@example.com",
+      "passwordHash": "$2b$10$6OGfXozUVAolLxrMC6cVFeJJZABE7HanXI2PLYFPYAGv2t54dTaOi",
+      "createdAt": "2026-09-15T06:11:49.936Z"
+    },
+    {
+      "id": "user-1789452726608-35j5v",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452726374@example.com",
+      "passwordHash": "$2b$10$xGYGAtecvyk2XMA4Ct5i..9.LUF7nhWOfAZmna.ptdaczKPbfwIt6",
+      "createdAt": "2026-09-15T06:12:06.608Z"
+    },
+    {
+      "id": "user-1789452974784-kou5r",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452974441@example.com",
+      "passwordHash": "$2b$10$p94mR4hzMlwB2UB4FVxNt.cRJC1lNJTV.4BY1P4BCm.csCopLThAi",
+      "createdAt": "2026-09-15T06:16:14.784Z"
+    },
+    {
+      "id": "user-1789452982690-lv3g7",
+      "name": "Taylor Reed",
+      "email": "schema_user_1789452982484@example.com",
+      "passwordHash": "$2b$10$fHrxxPVMtlj/xBl.zVjfEuq1/b.33.aVf1wlZ60vJJC.z9Geuw00q",
+      "createdAt": "2026-09-15T06:16:22.690Z"
+    },
+    {
+      "id": "user-1789452991178-cd5g1",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789452990845@example.com",
+      "passwordHash": "$2b$10$NKgjP9vUJJYkZwUYAlpGPONeicKvsBpm384G22mcOji90hjOTojBK",
+      "createdAt": "2026-09-15T06:16:31.178Z"
     }
   ],
   "profiles": {
@@ -486,6 +577,23 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app"
+        }
       ]
     },
     "syedmesumraza": {
@@ -706,6 +814,23 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app"
+        }
       ]
     },
     "hamza-malik": {
@@ -827,6 +952,18 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/company/avtive",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive Platform"
+        }
       ]
     },
     "avtive-company": {
@@ -938,6 +1075,18 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Official Website"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/company/avtive",
+          "label": "LinkedIn"
+        }
       ]
     },
     "avtive": {
@@ -1049,6 +1198,18 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Official Website"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/company/avtive",
+          "label": "LinkedIn"
+        }
       ]
     },
     "prof-1788782031980": {
@@ -1113,6 +1274,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "jane-doe-c2n0": {
@@ -1177,6 +1345,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788782083177": {
@@ -1241,6 +1416,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "sarah-connor-3h4s": {
@@ -1305,6 +1487,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788782534301": {
@@ -1330,16 +1519,20 @@
       ],
       "socials": [
         {
+          "platform": "linkedin",
+          "url": "www.linkedin.com/in/aleena-nawab-69128b3aa",
+          "label": "LinkedIn"
+        },
+        {
           "platform": "website",
           "url": "https://www.avtive.app",
-          "label": "Website",
-          "handle": "avtive.app"
+          "label": "Website"
         }
       ],
       "profileName": "Professional",
       "profession": "Professional",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-14T11:03:44.752Z",
+      "updatedAt": "2026-09-15T04:30:22.058Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1363,6 +1556,49 @@
         "contactInfo",
         "socialLinks",
         "education"
+      ],
+      "firstName": "ALEENA",
+      "secondName": "NAWAB",
+      "lastName": "NAWAB",
+      "professionalTitle": "Professional",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Connect with me directly via phone, WhatsApp, or email.",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Avtive Profiles Platform",
+          "description": "Verified digital identity cards and granular privacy profiles built with Next.js and Tailwind CSS.",
+          "tags": [
+            "Next.js",
+            "TypeScript",
+            "Tailwind CSS"
+          ],
+          "link": "https://www.avtive.app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
+          "category": "Web App"
+        }
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "www.linkedin.com/in/aleena-nawab-69128b3aa",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "aleena-nawab-adhb": {
@@ -1388,16 +1624,20 @@
       ],
       "socials": [
         {
+          "platform": "linkedin",
+          "url": "www.linkedin.com/in/aleena-nawab-69128b3aa",
+          "label": "LinkedIn"
+        },
+        {
           "platform": "website",
           "url": "https://www.avtive.app",
-          "label": "Website",
-          "handle": "avtive.app"
+          "label": "Website"
         }
       ],
       "profileName": "Professional",
       "profession": "Professional",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-14T11:03:44.752Z",
+      "updatedAt": "2026-09-15T04:30:22.058Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1421,6 +1661,49 @@
         "contactInfo",
         "socialLinks",
         "education"
+      ],
+      "firstName": "ALEENA",
+      "secondName": "NAWAB",
+      "lastName": "NAWAB",
+      "professionalTitle": "Professional",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Connect with me directly via phone, WhatsApp, or email.",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Avtive Profiles Platform",
+          "description": "Verified digital identity cards and granular privacy profiles built with Next.js and Tailwind CSS.",
+          "tags": [
+            "Next.js",
+            "TypeScript",
+            "Tailwind CSS"
+          ],
+          "link": "https://www.avtive.app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
+          "category": "Web App"
+        }
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "www.linkedin.com/in/aleena-nawab-69128b3aa",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788783656219": {
@@ -1488,6 +1771,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "alice-designer-c5a5": {
@@ -1555,6 +1845,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788783656969": {
@@ -1619,6 +1916,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "bob-engineer-vops": {
@@ -1683,6 +1987,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788787437694": {
@@ -1750,6 +2061,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "alice-designer-qqqv": {
@@ -1817,6 +2135,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788787438525": {
@@ -1881,6 +2206,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "bob-engineer-df5t": {
@@ -1945,6 +2277,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788787550288": {
@@ -2012,6 +2351,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "alice-designer-3uw0": {
@@ -2079,6 +2425,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788787551209": {
@@ -2143,6 +2496,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "bob-engineer-mau0": {
@@ -2207,6 +2567,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788788018664": {
@@ -2271,6 +2638,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "aleeza-a26n": {
@@ -2335,6 +2709,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788789773224": {
@@ -2399,6 +2780,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "google-founder-13wk": {
@@ -2463,6 +2851,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788789773255": {
@@ -2527,6 +2922,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "linkedin-professional-39rd": {
@@ -2591,6 +2993,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788789893722": {
@@ -2655,6 +3064,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "aleena-nawab-po4w": {
@@ -2719,6 +3135,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788789976653": {
@@ -2783,6 +3206,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "aleena-nawab-7zst": {
@@ -2847,6 +3277,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1788799714788": {
@@ -2913,6 +3350,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "new-user-1788799712532-21dw": {
@@ -2979,6 +3423,13 @@
         "languages",
         "recommendations",
         "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
       ]
     },
     "prof-1789368780163-6d4zi": {
@@ -3068,7 +3519,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:53:00.163Z",
-      "updatedAt": "2026-09-14T06:53:00.163Z"
+      "updatedAt": "2026-09-14T06:53:00.163Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "test-multi-user-developer-profile-h9x8": {
       "id": "prof-1789368780163-6d4zi",
@@ -3157,7 +3615,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:53:00.163Z",
-      "updatedAt": "2026-09-14T06:53:00.163Z"
+      "updatedAt": "2026-09-14T06:53:00.163Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789368780168-bwau8": {
       "id": "prof-1789368780168-bwau8",
@@ -3239,7 +3704,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:53:00.168Z",
-      "updatedAt": "2026-09-14T06:53:00.168Z"
+      "updatedAt": "2026-09-14T06:53:00.168Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "test-multi-user-hr-profile-j6bx": {
       "id": "prof-1789368780168-bwau8",
@@ -3321,7 +3793,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:53:00.168Z",
-      "updatedAt": "2026-09-14T06:53:00.168Z"
+      "updatedAt": "2026-09-14T06:53:00.168Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789368780178-005bm": {
       "id": "prof-1789368780178-005bm",
@@ -3403,7 +3882,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:53:00.178Z",
-      "updatedAt": "2026-09-14T06:53:00.178Z"
+      "updatedAt": "2026-09-14T06:53:00.178Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "test-multi-user-uiux-designer-profile-nxu0": {
       "id": "prof-1789368780178-005bm",
@@ -3485,7 +3971,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:53:00.178Z",
-      "updatedAt": "2026-09-14T06:53:00.178Z"
+      "updatedAt": "2026-09-14T06:53:00.178Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789369113412-dk7it": {
       "id": "prof-1789369113412-dk7it",
@@ -3560,7 +4053,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:58:33.412Z",
-      "updatedAt": "2026-09-14T06:58:33.412Z"
+      "updatedAt": "2026-09-14T06:58:33.412Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "dashboard-tester-developer-profile-s60g": {
       "id": "prof-1789369113412-dk7it",
@@ -3635,7 +4135,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:58:33.412Z",
-      "updatedAt": "2026-09-14T06:58:33.412Z"
+      "updatedAt": "2026-09-14T06:58:33.412Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789369113415-szet1": {
       "id": "prof-1789369113415-szet1",
@@ -3710,7 +4217,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:58:33.415Z",
-      "updatedAt": "2026-09-14T06:58:33.415Z"
+      "updatedAt": "2026-09-14T06:58:33.415Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "dashboard-tester-hr-professional-zi0z": {
       "id": "prof-1789369113415-szet1",
@@ -3785,7 +4299,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:58:33.415Z",
-      "updatedAt": "2026-09-14T06:58:33.415Z"
+      "updatedAt": "2026-09-14T06:58:33.415Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789369113418-t1y9e": {
       "id": "prof-1789369113418-t1y9e",
@@ -3860,7 +4381,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:58:33.418Z",
-      "updatedAt": "2026-09-14T06:58:33.418Z"
+      "updatedAt": "2026-09-14T06:58:33.418Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "dashboard-tester-uiux-designer-l5gy": {
       "id": "prof-1789369113418-t1y9e",
@@ -3935,7 +4463,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T06:58:33.418Z",
-      "updatedAt": "2026-09-14T06:58:33.418Z"
+      "updatedAt": "2026-09-14T06:58:33.418Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789369346101-he0tw": {
       "id": "prof-1789369346101-he0tw",
@@ -4017,7 +4552,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:02:26.101Z",
-      "updatedAt": "2026-09-14T07:02:26.114Z"
+      "updatedAt": "2026-09-14T07:02:26.114Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "aleena-test-developer-profile-57rt": {
       "id": "prof-1789369346101-he0tw",
@@ -4099,7 +4641,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:02:26.101Z",
-      "updatedAt": "2026-09-14T07:02:26.114Z"
+      "updatedAt": "2026-09-14T07:02:26.114Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789369346105-cxzr5": {
       "id": "prof-1789369346105-cxzr5",
@@ -4181,7 +4730,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:02:26.105Z",
-      "updatedAt": "2026-09-14T07:02:26.105Z"
+      "updatedAt": "2026-09-14T07:02:26.105Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "aleena-test-hr-profile-54iy": {
       "id": "prof-1789369346105-cxzr5",
@@ -4263,7 +4819,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:02:26.105Z",
-      "updatedAt": "2026-09-14T07:02:26.105Z"
+      "updatedAt": "2026-09-14T07:02:26.105Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789369346108-6ukzz": {
       "id": "prof-1789369346108-6ukzz",
@@ -4345,7 +4908,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:02:26.108Z",
-      "updatedAt": "2026-09-14T07:02:26.108Z"
+      "updatedAt": "2026-09-14T07:02:26.108Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "aleena-test-uiux-designer-profile-nujz": {
       "id": "prof-1789369346108-6ukzz",
@@ -4427,7 +4997,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:02:26.108Z",
-      "updatedAt": "2026-09-14T07:02:26.108Z"
+      "updatedAt": "2026-09-14T07:02:26.108Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789369981200-fucjf": {
       "id": "prof-1789369981200-fucjf",
@@ -4555,7 +5132,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:13:01.200Z",
-      "updatedAt": "2026-09-14T07:13:01.200Z"
+      "updatedAt": "2026-09-14T07:13:01.200Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "security-test-profile-privacy-sharing-pass-6txs": {
       "id": "prof-1789369981200-fucjf",
@@ -4683,7 +5267,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:13:01.200Z",
-      "updatedAt": "2026-09-14T07:13:01.200Z"
+      "updatedAt": "2026-09-14T07:13:01.200Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789370051354-1eulx": {
       "id": "prof-1789370051354-1eulx",
@@ -4775,7 +5366,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:11.354Z",
-      "updatedAt": "2026-09-14T07:14:11.354Z"
+      "updatedAt": "2026-09-14T07:14:11.354Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "test-multi-user-developer-profile-yeea": {
       "id": "prof-1789370051354-1eulx",
@@ -4867,7 +5465,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:11.354Z",
-      "updatedAt": "2026-09-14T07:14:11.354Z"
+      "updatedAt": "2026-09-14T07:14:11.354Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789370051358-d1qca": {
       "id": "prof-1789370051358-d1qca",
@@ -4952,7 +5557,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:11.358Z",
-      "updatedAt": "2026-09-14T07:14:11.358Z"
+      "updatedAt": "2026-09-14T07:14:11.358Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "test-multi-user-hr-profile-013v": {
       "id": "prof-1789370051358-d1qca",
@@ -5037,7 +5649,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:11.358Z",
-      "updatedAt": "2026-09-14T07:14:11.358Z"
+      "updatedAt": "2026-09-14T07:14:11.358Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789370051361-9ocyl": {
       "id": "prof-1789370051361-9ocyl",
@@ -5122,7 +5741,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:11.361Z",
-      "updatedAt": "2026-09-14T07:14:11.361Z"
+      "updatedAt": "2026-09-14T07:14:11.361Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "test-multi-user-uiux-designer-profile-z2qy": {
       "id": "prof-1789370051361-9ocyl",
@@ -5207,7 +5833,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:11.361Z",
-      "updatedAt": "2026-09-14T07:14:11.361Z"
+      "updatedAt": "2026-09-14T07:14:11.361Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789370076011-tbgwb": {
       "id": "prof-1789370076011-tbgwb",
@@ -5285,7 +5918,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:36.011Z",
-      "updatedAt": "2026-09-14T07:14:36.011Z"
+      "updatedAt": "2026-09-14T07:14:36.011Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "dashboard-tester-developer-profile-wqu1": {
       "id": "prof-1789370076011-tbgwb",
@@ -5363,7 +6003,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:36.011Z",
-      "updatedAt": "2026-09-14T07:14:36.011Z"
+      "updatedAt": "2026-09-14T07:14:36.011Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789370076015-hknh8": {
       "id": "prof-1789370076015-hknh8",
@@ -5441,7 +6088,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:36.015Z",
-      "updatedAt": "2026-09-14T07:14:36.015Z"
+      "updatedAt": "2026-09-14T07:14:36.015Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "dashboard-tester-hr-professional-y4wv": {
       "id": "prof-1789370076015-hknh8",
@@ -5519,7 +6173,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:36.015Z",
-      "updatedAt": "2026-09-14T07:14:36.015Z"
+      "updatedAt": "2026-09-14T07:14:36.015Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789370076019-ir8l1": {
       "id": "prof-1789370076019-ir8l1",
@@ -5597,7 +6258,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:36.019Z",
-      "updatedAt": "2026-09-14T07:14:36.019Z"
+      "updatedAt": "2026-09-14T07:14:36.019Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "dashboard-tester-uiux-designer-v6eo": {
       "id": "prof-1789370076019-ir8l1",
@@ -5675,7 +6343,14 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T07:14:36.019Z",
-      "updatedAt": "2026-09-14T07:14:36.019Z"
+      "updatedAt": "2026-09-14T07:14:36.019Z",
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1789381785980-rpal9": {
       "id": "prof-1789381785980-rpal9",
@@ -5737,7 +6412,8 @@
         "education"
       ],
       "createdAt": "2026-09-14T10:29:45.980Z",
-      "updatedAt": "2026-09-14T11:33:44.254Z"
+      "updatedAt": "2026-09-14T11:33:44.254Z",
+      "socialLinks": []
     },
     "aleena-nawab-mern-developer-uu41": {
       "id": "prof-1789381785980-rpal9",
@@ -5799,7 +6475,8 @@
         "education"
       ],
       "createdAt": "2026-09-14T10:29:45.980Z",
-      "updatedAt": "2026-09-14T11:33:44.254Z"
+      "updatedAt": "2026-09-14T11:33:44.254Z",
+      "socialLinks": []
     },
     "aleena-mern": {
       "id": "aleena-mern",
@@ -5942,7 +6619,29 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T10:55:37.856Z",
-      "updatedAt": "2026-09-14T10:55:37.856Z"
+      "updatedAt": "2026-09-14T10:55:37.856Z",
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "twitter",
+          "url": "https://x.com",
+          "label": "X (Twitter)"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "aleena-dev": {
       "id": "aleena-mern",
@@ -6085,7 +6784,29 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T10:55:37.856Z",
-      "updatedAt": "2026-09-14T10:55:37.856Z"
+      "updatedAt": "2026-09-14T10:55:37.856Z",
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "twitter",
+          "url": "https://x.com",
+          "label": "X (Twitter)"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "aleenanawab": {
       "id": "aleena-mern",
@@ -6228,7 +6949,29 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T10:55:37.856Z",
-      "updatedAt": "2026-09-14T10:55:37.856Z"
+      "updatedAt": "2026-09-14T10:55:37.856Z",
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "twitter",
+          "url": "https://x.com",
+          "label": "X (Twitter)"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ]
     },
     "aleena-hr": {
       "id": "aleena-hr",
@@ -6319,7 +7062,19 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T10:55:37.856Z",
-      "updatedAt": "2026-09-14T10:55:37.856Z"
+      "updatedAt": "2026-09-14T10:55:37.856Z",
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive People"
+        }
+      ]
     },
     "aleena-designer": {
       "id": "aleena-designer",
@@ -6418,7 +7173,24 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T10:55:37.856Z",
-      "updatedAt": "2026-09-14T10:55:37.856Z"
+      "updatedAt": "2026-09-14T10:55:37.856Z",
+      "socialLinks": [
+        {
+          "platform": "dribbble",
+          "url": "https://dribbble.com",
+          "label": "Dribbble"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Portfolio"
+        }
+      ]
     },
     "prof-1789394487293-u2ef4": {
       "id": "prof-1789394487293-u2ef4",
@@ -6489,7 +7261,8 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T14:01:27.293Z",
-      "updatedAt": "2026-09-14T14:01:27.293Z"
+      "updatedAt": "2026-09-14T14:01:27.293Z",
+      "socialLinks": []
     },
     "test-new-user-full-stack-engineer-b12d": {
       "id": "prof-1789394487293-u2ef4",
@@ -6560,7 +7333,8 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T14:01:27.293Z",
-      "updatedAt": "2026-09-14T14:01:27.293Z"
+      "updatedAt": "2026-09-14T14:01:27.293Z",
+      "socialLinks": []
     },
     "prof-1789394601727-qjz4r": {
       "id": "prof-1789394601727-qjz4r",
@@ -6627,7 +7401,8 @@
         "projects"
       ],
       "createdAt": "2026-09-14T14:03:21.727Z",
-      "updatedAt": "2026-09-14T14:03:24.627Z"
+      "updatedAt": "2026-09-14T14:03:24.627Z",
+      "socialLinks": []
     },
     "zara-qureshi-uiux-designer-ymfl": {
       "id": "prof-1789394601727-qjz4r",
@@ -6694,7 +7469,8 @@
         "projects"
       ],
       "createdAt": "2026-09-14T14:03:21.727Z",
-      "updatedAt": "2026-09-14T14:03:24.627Z"
+      "updatedAt": "2026-09-14T14:03:24.627Z",
+      "socialLinks": []
     },
     "prof-1789398279154-dcc9i": {
       "id": "prof-1789398279154-dcc9i",
@@ -6765,7 +7541,8 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T15:04:39.154Z",
-      "updatedAt": "2026-09-14T15:04:39.154Z"
+      "updatedAt": "2026-09-14T15:04:39.154Z",
+      "socialLinks": []
     },
     "test-new-user-full-stack-engineer-k47r": {
       "id": "prof-1789398279154-dcc9i",
@@ -6836,7 +7613,8 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T15:04:39.154Z",
-      "updatedAt": "2026-09-14T15:04:39.154Z"
+      "updatedAt": "2026-09-14T15:04:39.154Z",
+      "socialLinks": []
     },
     "prof-1789398839296-b03z5": {
       "id": "prof-1789398839296-b03z5",
@@ -6903,7 +7681,8 @@
         "projects"
       ],
       "createdAt": "2026-09-14T15:13:59.296Z",
-      "updatedAt": "2026-09-14T15:13:59.400Z"
+      "updatedAt": "2026-09-14T15:13:59.400Z",
+      "socialLinks": []
     },
     "zara-qureshi-uiux-designer-jncf": {
       "id": "prof-1789398839296-b03z5",
@@ -6970,7 +7749,8 @@
         "projects"
       ],
       "createdAt": "2026-09-14T15:13:59.296Z",
-      "updatedAt": "2026-09-14T15:13:59.400Z"
+      "updatedAt": "2026-09-14T15:13:59.400Z",
+      "socialLinks": []
     },
     "prof-1789399114037-fpuou": {
       "id": "prof-1789399114037-fpuou",
@@ -7058,7 +7838,8 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T15:18:34.037Z",
-      "updatedAt": "2026-09-14T15:18:34.037Z"
+      "updatedAt": "2026-09-14T15:18:34.037Z",
+      "socialLinks": []
     },
     "aleeza-team-member-profile-cguf": {
       "id": "prof-1789399114037-fpuou",
@@ -7146,7 +7927,1986 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-14T15:18:34.037Z",
-      "updatedAt": "2026-09-14T15:18:34.037Z"
+      "updatedAt": "2026-09-14T15:18:34.037Z",
+      "socialLinks": []
+    },
+    "prof-1789452450780-utm87": {
+      "id": "prof-1789452450780-utm87",
+      "userId": "user-1789452450592-bu4zd",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Architect",
+      "slug": "taylor-reed-professional-profile-pmhe",
+      "type": "owner",
+      "name": "Taylor Reed",
+      "email": "schema_user_1789452450298@example.com",
+      "firstName": "Taylor",
+      "secondName": "Reed",
+      "lastName": "Reed",
+      "professionalTitle": "Lead Product Architect",
+      "designation": "Lead Product Architect",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Pioneering next-generation reactive architectures and web systems.",
+      "about": "Updated executive biography for Taylor Reed.",
+      "shortBio": "Pioneering next-generation reactive architectures and web systems.",
+      "fullBio": "Passionate software architect with 10+ years designing enterprise-grade platforms, distributed systems, and modern interactive web experiences.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [
+        {
+          "platform": "github",
+          "url": "https://github.com/taylorreed"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/taylorreed"
+        }
+      ],
+      "skills": [
+        "TypeScript",
+        "Next.js",
+        "Tailwind CSS",
+        "GraphQL",
+        "Distributed Systems",
+        "Rust",
+        "WebAssembly"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [
+        {
+          "id": "edu-1",
+          "degree": "B.S. in Computer Science",
+          "institution": "Stanford University",
+          "period": "2015 - 2019"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Reactive Platform Engine v2",
+          "description": "A distributed event platform.",
+          "tags": [
+            "Rust",
+            "Wasm",
+            "Next.js"
+          ],
+          "link": "https://github.com/taylorreed/reactive-v2",
+          "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80"
+        },
+        {
+          "id": "proj-2",
+          "title": "Neural Web Interface",
+          "description": "AI-assisted design synthesis canvas.",
+          "tags": [
+            "AI",
+            "Canvas",
+            "WebGL"
+          ],
+          "link": "https://taylorreed.dev/neural",
+          "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:07:30.780Z",
+      "updatedAt": "2026-09-15T06:07:31.128Z"
+    },
+    "taylor-reed-professional-profile-pmhe": {
+      "id": "prof-1789452450780-utm87",
+      "userId": "user-1789452450592-bu4zd",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Architect",
+      "slug": "taylor-reed-professional-profile-pmhe",
+      "type": "owner",
+      "name": "Taylor Reed",
+      "email": "schema_user_1789452450298@example.com",
+      "firstName": "Taylor",
+      "secondName": "Reed",
+      "lastName": "Reed",
+      "professionalTitle": "Lead Product Architect",
+      "designation": "Lead Product Architect",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Pioneering next-generation reactive architectures and web systems.",
+      "about": "Updated executive biography for Taylor Reed.",
+      "shortBio": "Pioneering next-generation reactive architectures and web systems.",
+      "fullBio": "Passionate software architect with 10+ years designing enterprise-grade platforms, distributed systems, and modern interactive web experiences.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [
+        {
+          "platform": "github",
+          "url": "https://github.com/taylorreed"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/taylorreed"
+        }
+      ],
+      "skills": [
+        "TypeScript",
+        "Next.js",
+        "Tailwind CSS",
+        "GraphQL",
+        "Distributed Systems",
+        "Rust",
+        "WebAssembly"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [
+        {
+          "id": "edu-1",
+          "degree": "B.S. in Computer Science",
+          "institution": "Stanford University",
+          "period": "2015 - 2019"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Reactive Platform Engine v2",
+          "description": "A distributed event platform.",
+          "tags": [
+            "Rust",
+            "Wasm",
+            "Next.js"
+          ],
+          "link": "https://github.com/taylorreed/reactive-v2",
+          "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80"
+        },
+        {
+          "id": "proj-2",
+          "title": "Neural Web Interface",
+          "description": "AI-assisted design synthesis canvas.",
+          "tags": [
+            "AI",
+            "Canvas",
+            "WebGL"
+          ],
+          "link": "https://taylorreed.dev/neural",
+          "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:07:30.780Z",
+      "updatedAt": "2026-09-15T06:07:31.128Z"
+    },
+    "prof-1789452522045-l5up6": {
+      "id": "prof-1789452522045-l5up6",
+      "userId": "user-1789452521694-2gfxq",
+      "profileName": "UI/UX Designer",
+      "profession": "Senior Product Designer",
+      "slug": "zara-qureshi-uiux-designer-9ojm",
+      "type": "owner",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789452521492@example.com",
+      "firstName": "Zara",
+      "secondName": "Qureshi",
+      "lastName": "Qureshi",
+      "professionalTitle": "Senior Product Designer",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Design Lab",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Designing futuristic interfaces and design systems.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Designing futuristic interfaces and design systems.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Tailwind CSS",
+        "Design Systems"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-zara-1",
+          "title": "Avtive Mobile Experience",
+          "description": "Design system tokens and responsive layouts."
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "skills": true,
+        "projects": false,
+        "experience": true,
+        "education": false,
+        "contactInfo": true,
+        "socialLinks": true
+      },
+      "sectionOrder": [
+        "hero",
+        "skills",
+        "about",
+        "experience",
+        "projects"
+      ],
+      "createdAt": "2026-09-15T06:08:42.045Z",
+      "updatedAt": "2026-09-15T06:08:42.181Z"
+    },
+    "zara-qureshi-uiux-designer-9ojm": {
+      "id": "prof-1789452522045-l5up6",
+      "userId": "user-1789452521694-2gfxq",
+      "profileName": "UI/UX Designer",
+      "profession": "Senior Product Designer",
+      "slug": "zara-qureshi-uiux-designer-9ojm",
+      "type": "owner",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789452521492@example.com",
+      "firstName": "Zara",
+      "secondName": "Qureshi",
+      "lastName": "Qureshi",
+      "professionalTitle": "Senior Product Designer",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Design Lab",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Designing futuristic interfaces and design systems.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Designing futuristic interfaces and design systems.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Tailwind CSS",
+        "Design Systems"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-zara-1",
+          "title": "Avtive Mobile Experience",
+          "description": "Design system tokens and responsive layouts."
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "skills": true,
+        "projects": false,
+        "experience": true,
+        "education": false,
+        "contactInfo": true,
+        "socialLinks": true
+      },
+      "sectionOrder": [
+        "hero",
+        "skills",
+        "about",
+        "experience",
+        "projects"
+      ],
+      "createdAt": "2026-09-15T06:08:42.045Z",
+      "updatedAt": "2026-09-15T06:08:42.181Z"
+    },
+    "prof-1789452664034-v4pry": {
+      "id": "prof-1789452664034-v4pry",
+      "userId": "user-1789452663636-lhurg",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-ooba",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452663146@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:11:04.034Z",
+      "updatedAt": "2026-09-15T06:11:04.034Z"
+    },
+    "eman-tariq-professional-profile-ooba": {
+      "id": "prof-1789452664034-v4pry",
+      "userId": "user-1789452663636-lhurg",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-ooba",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452663146@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:11:04.034Z",
+      "updatedAt": "2026-09-15T06:11:04.034Z"
+    },
+    "prof-1789452690277-k5xup": {
+      "id": "prof-1789452690277-k5xup",
+      "userId": "user-1789452690036-vspzd",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-ju2q",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452689911@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:11:30.277Z",
+      "updatedAt": "2026-09-15T06:11:30.277Z"
+    },
+    "eman-tariq-professional-profile-ju2q": {
+      "id": "prof-1789452690277-k5xup",
+      "userId": "user-1789452690036-vspzd",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-ju2q",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452689911@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:11:30.277Z",
+      "updatedAt": "2026-09-15T06:11:30.277Z"
+    },
+    "prof-1789452710168-kes4c": {
+      "id": "prof-1789452710168-kes4c",
+      "userId": "user-1789452709936-r4plm",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-6cx5",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452709806@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:11:50.168Z",
+      "updatedAt": "2026-09-15T06:11:50.168Z"
+    },
+    "eman-tariq-professional-profile-6cx5": {
+      "id": "prof-1789452710168-kes4c",
+      "userId": "user-1789452709936-r4plm",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-6cx5",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452709806@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:11:50.168Z",
+      "updatedAt": "2026-09-15T06:11:50.168Z"
+    },
+    "prof-1789452726854-mfhqi": {
+      "id": "prof-1789452726854-mfhqi",
+      "userId": "user-1789452726608-35j5v",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-h7mv",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452726374@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:12:06.854Z",
+      "updatedAt": "2026-09-15T06:12:06.854Z"
+    },
+    "eman-tariq-professional-profile-h7mv": {
+      "id": "prof-1789452726854-mfhqi",
+      "userId": "user-1789452726608-35j5v",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-h7mv",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452726374@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:12:06.854Z",
+      "updatedAt": "2026-09-15T06:12:06.854Z"
+    },
+    "prof-1789452975855-spz9v": {
+      "id": "prof-1789452975855-spz9v",
+      "userId": "user-1789452974784-kou5r",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-7pnf",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452974441@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:16:15.855Z",
+      "updatedAt": "2026-09-15T06:16:15.855Z"
+    },
+    "eman-tariq-professional-profile-7pnf": {
+      "id": "prof-1789452975855-spz9v",
+      "userId": "user-1789452974784-kou5r",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Designer",
+      "slug": "eman-tariq-professional-profile-7pnf",
+      "type": "owner",
+      "name": "Eman Tariq",
+      "email": "onboarding_test_1789452974441@example.com",
+      "firstName": "Eman",
+      "secondName": "Tariq",
+      "lastName": "Tariq",
+      "professionalTitle": "Lead Product Designer",
+      "designation": "Lead Product Designer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Crafting premium digital experiences & user interfaces.",
+      "about": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "shortBio": "Crafting premium digital experiences & user interfaces.",
+      "fullBio": "Passionate designer with 8+ years experience designing web and mobile products.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/1234567890",
+          "label": "whatsapp"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/emantariq",
+          "label": "linkedin"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/emantariq",
+          "label": "github"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX Design",
+        "Design Systems",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Fintech Mobile Design",
+          "description": "Next-generation financial banking mobile application.",
+          "tags": [
+            "Mobile",
+            "Figma"
+          ],
+          "link": "https://github.com/fintech-app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:16:15.855Z",
+      "updatedAt": "2026-09-15T06:16:15.855Z"
+    },
+    "prof-1789452982890-l4bkz": {
+      "id": "prof-1789452982890-l4bkz",
+      "userId": "user-1789452982690-lv3g7",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Architect",
+      "slug": "taylor-reed-professional-profile-0y2u",
+      "type": "owner",
+      "name": "Taylor Reed",
+      "email": "schema_user_1789452982484@example.com",
+      "firstName": "Taylor",
+      "secondName": "Reed",
+      "lastName": "Reed",
+      "professionalTitle": "Lead Product Architect",
+      "designation": "Lead Product Architect",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Pioneering next-generation reactive architectures and web systems.",
+      "about": "Updated executive biography for Taylor Reed.",
+      "shortBio": "Pioneering next-generation reactive architectures and web systems.",
+      "fullBio": "Passionate software architect with 10+ years designing enterprise-grade platforms, distributed systems, and modern interactive web experiences.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [
+        {
+          "platform": "github",
+          "url": "https://github.com/taylorreed"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/taylorreed"
+        }
+      ],
+      "skills": [
+        "TypeScript",
+        "Next.js",
+        "Tailwind CSS",
+        "GraphQL",
+        "Distributed Systems",
+        "Rust",
+        "WebAssembly"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [
+        {
+          "id": "edu-1",
+          "degree": "B.S. in Computer Science",
+          "institution": "Stanford University",
+          "period": "2015 - 2019"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Reactive Platform Engine v2",
+          "description": "A distributed event platform.",
+          "tags": [
+            "Rust",
+            "Wasm",
+            "Next.js"
+          ],
+          "link": "https://github.com/taylorreed/reactive-v2",
+          "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80"
+        },
+        {
+          "id": "proj-2",
+          "title": "Neural Web Interface",
+          "description": "AI-assisted design synthesis canvas.",
+          "tags": [
+            "AI",
+            "Canvas",
+            "WebGL"
+          ],
+          "link": "https://taylorreed.dev/neural",
+          "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:16:22.890Z",
+      "updatedAt": "2026-09-15T06:16:23.134Z"
+    },
+    "taylor-reed-professional-profile-0y2u": {
+      "id": "prof-1789452982890-l4bkz",
+      "userId": "user-1789452982690-lv3g7",
+      "profileName": "Professional Profile",
+      "profession": "Lead Product Architect",
+      "slug": "taylor-reed-professional-profile-0y2u",
+      "type": "owner",
+      "name": "Taylor Reed",
+      "email": "schema_user_1789452982484@example.com",
+      "firstName": "Taylor",
+      "secondName": "Reed",
+      "lastName": "Reed",
+      "professionalTitle": "Lead Product Architect",
+      "designation": "Lead Product Architect",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Pioneering next-generation reactive architectures and web systems.",
+      "about": "Updated executive biography for Taylor Reed.",
+      "shortBio": "Pioneering next-generation reactive architectures and web systems.",
+      "fullBio": "Passionate software architect with 10+ years designing enterprise-grade platforms, distributed systems, and modern interactive web experiences.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [
+        {
+          "platform": "github",
+          "url": "https://github.com/taylorreed"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com/in/taylorreed"
+        }
+      ],
+      "skills": [
+        "TypeScript",
+        "Next.js",
+        "Tailwind CSS",
+        "GraphQL",
+        "Distributed Systems",
+        "Rust",
+        "WebAssembly"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [
+        {
+          "id": "edu-1",
+          "degree": "B.S. in Computer Science",
+          "institution": "Stanford University",
+          "period": "2015 - 2019"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Reactive Platform Engine v2",
+          "description": "A distributed event platform.",
+          "tags": [
+            "Rust",
+            "Wasm",
+            "Next.js"
+          ],
+          "link": "https://github.com/taylorreed/reactive-v2",
+          "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80"
+        },
+        {
+          "id": "proj-2",
+          "title": "Neural Web Interface",
+          "description": "AI-assisted design synthesis canvas.",
+          "tags": [
+            "AI",
+            "Canvas",
+            "WebGL"
+          ],
+          "link": "https://taylorreed.dev/neural",
+          "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T06:16:22.890Z",
+      "updatedAt": "2026-09-15T06:16:23.134Z"
+    },
+    "prof-1789452991738-pf4aw": {
+      "id": "prof-1789452991738-pf4aw",
+      "userId": "user-1789452991178-cd5g1",
+      "profileName": "UI/UX Designer",
+      "profession": "Senior Product Designer",
+      "slug": "zara-qureshi-uiux-designer-s9v6",
+      "type": "owner",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789452990845@example.com",
+      "firstName": "Zara",
+      "secondName": "Qureshi",
+      "lastName": "Qureshi",
+      "professionalTitle": "Senior Product Designer",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Design Lab",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Designing futuristic interfaces and design systems.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Designing futuristic interfaces and design systems.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Tailwind CSS",
+        "Design Systems"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-zara-1",
+          "title": "Avtive Mobile Experience",
+          "description": "Design system tokens and responsive layouts."
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "skills": true,
+        "projects": false,
+        "experience": true,
+        "education": false,
+        "contactInfo": true,
+        "socialLinks": true
+      },
+      "sectionOrder": [
+        "hero",
+        "skills",
+        "about",
+        "experience",
+        "projects"
+      ],
+      "createdAt": "2026-09-15T06:16:31.738Z",
+      "updatedAt": "2026-09-15T06:16:31.827Z"
+    },
+    "zara-qureshi-uiux-designer-s9v6": {
+      "id": "prof-1789452991738-pf4aw",
+      "userId": "user-1789452991178-cd5g1",
+      "profileName": "UI/UX Designer",
+      "profession": "Senior Product Designer",
+      "slug": "zara-qureshi-uiux-designer-s9v6",
+      "type": "owner",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789452990845@example.com",
+      "firstName": "Zara",
+      "secondName": "Qureshi",
+      "lastName": "Qureshi",
+      "professionalTitle": "Senior Product Designer",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Design Lab",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Designing futuristic interfaces and design systems.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Designing futuristic interfaces and design systems.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Tailwind CSS",
+        "Design Systems"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-zara-1",
+          "title": "Avtive Mobile Experience",
+          "description": "Design system tokens and responsive layouts."
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "skills": true,
+        "projects": false,
+        "experience": true,
+        "education": false,
+        "contactInfo": true,
+        "socialLinks": true
+      },
+      "sectionOrder": [
+        "hero",
+        "skills",
+        "about",
+        "experience",
+        "projects"
+      ],
+      "createdAt": "2026-09-15T06:16:31.738Z",
+      "updatedAt": "2026-09-15T06:16:31.827Z"
     }
   },
   "connections": [
