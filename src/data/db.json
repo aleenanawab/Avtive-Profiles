@@ -557,22 +557,24 @@
       ],
       "socials": [
         {
+          "platform": "twitter",
+          "url": "https://twitter.com/avtivetech",
+          "label": "Twitter / X"
+        },
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/123456789",
+          "label": "WhatsApp Direct"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/avtivedev",
+          "label": "GitHub Code"
+        },
+        {
           "platform": "linkedin",
-          "url": "https://www.linkedin.com/in/syedmesumraza/",
-          "label": "LinkedIn",
-          "handle": "in/syedmesumraza"
-        },
-        {
-          "platform": "behance",
-          "url": "https://www.behance.net/thisissyedbadshah",
-          "label": "Behance",
-          "handle": "thisissyedbadshah"
-        },
-        {
-          "platform": "website",
-          "url": "https://www.avtive.app",
-          "label": "Avtive.app",
-          "handle": "avtive.app"
+          "url": "https://linkedin.com/company/avtive",
+          "label": "LinkedIn Enterprise"
         }
       ],
       "userId": "user-mesum",
@@ -580,7 +582,7 @@
       "profileName": "Strategy-based Artist & Creative Director",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-15T11:05:23.887Z",
+      "updatedAt": "2026-09-15T12:12:07.707Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -605,19 +607,24 @@
       ],
       "socialLinks": [
         {
+          "platform": "twitter",
+          "url": "https://twitter.com/avtivetech",
+          "label": "Twitter / X"
+        },
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/123456789",
+          "label": "WhatsApp Direct"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/avtivedev",
+          "label": "GitHub Code"
+        },
+        {
           "platform": "linkedin",
-          "url": "https://www.linkedin.com/in/syedmesumraza/",
-          "label": "LinkedIn"
-        },
-        {
-          "platform": "behance",
-          "url": "https://www.behance.net/thisissyedbadshah",
-          "label": "Behance"
-        },
-        {
-          "platform": "website",
-          "url": "https://www.avtive.app",
-          "label": "Avtive.app"
+          "url": "https://linkedin.com/company/avtive",
+          "label": "LinkedIn Enterprise"
         }
       ],
       "profileType": "team",
@@ -827,22 +834,24 @@
       ],
       "socials": [
         {
+          "platform": "twitter",
+          "url": "https://twitter.com/avtivetech",
+          "label": "Twitter / X"
+        },
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/123456789",
+          "label": "WhatsApp Direct"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/avtivedev",
+          "label": "GitHub Code"
+        },
+        {
           "platform": "linkedin",
-          "url": "https://www.linkedin.com/in/syedmesumraza/",
-          "label": "LinkedIn",
-          "handle": "in/syedmesumraza"
-        },
-        {
-          "platform": "behance",
-          "url": "https://www.behance.net/thisissyedbadshah",
-          "label": "Behance",
-          "handle": "thisissyedbadshah"
-        },
-        {
-          "platform": "website",
-          "url": "https://www.avtive.app",
-          "label": "Avtive.app",
-          "handle": "avtive.app"
+          "url": "https://linkedin.com/company/avtive",
+          "label": "LinkedIn Enterprise"
         }
       ],
       "userId": "user-mesum",
@@ -850,7 +859,7 @@
       "profileName": "Strategy-based Artist & Creative Director",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-15T11:05:23.887Z",
+      "updatedAt": "2026-09-15T12:12:07.707Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -875,19 +884,24 @@
       ],
       "socialLinks": [
         {
+          "platform": "twitter",
+          "url": "https://twitter.com/avtivetech",
+          "label": "Twitter / X"
+        },
+        {
+          "platform": "whatsapp",
+          "url": "https://wa.me/123456789",
+          "label": "WhatsApp Direct"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com/avtivedev",
+          "label": "GitHub Code"
+        },
+        {
           "platform": "linkedin",
-          "url": "https://www.linkedin.com/in/syedmesumraza/",
-          "label": "LinkedIn"
-        },
-        {
-          "platform": "behance",
-          "url": "https://www.behance.net/thisissyedbadshah",
-          "label": "Behance"
-        },
-        {
-          "platform": "website",
-          "url": "https://www.avtive.app",
-          "label": "Avtive.app"
+          "url": "https://linkedin.com/company/avtive",
+          "label": "LinkedIn Enterprise"
         }
       ],
       "profileType": "team",
@@ -1619,7 +1633,7 @@
       "profileName": "Professional",
       "profession": "Professional",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-15T04:30:22.058Z",
+      "updatedAt": "2026-09-15T12:19:52.265Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1724,7 +1738,7 @@
       "profileName": "Professional",
       "profession": "Professional",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-15T04:30:22.058Z",
+      "updatedAt": "2026-09-15T12:19:52.265Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -11098,6 +11112,170 @@
           "label": "Avtive.app"
         }
       ]
+    },
+    "prof-1789474327781-jw7on": {
+      "id": "prof-1789474327781-jw7on",
+      "userId": "user-mesum",
+      "profileName": "Senior Portfolio 7764",
+      "profession": "Principal Engineer",
+      "slug": "senior-portfolio-7764-senior-portfolio-7764-zysr",
+      "type": "owner",
+      "name": "Senior Portfolio 7764",
+      "email": "mesum@avtive.app",
+      "firstName": "Senior",
+      "secondName": "Portfolio 7764",
+      "lastName": "Portfolio 7764",
+      "professionalTitle": "Principal Engineer",
+      "designation": "Principal Engineer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T12:12:07.781Z",
+      "updatedAt": "2026-09-15T12:12:07.781Z"
+    },
+    "senior-portfolio-7764-senior-portfolio-7764-zysr": {
+      "id": "prof-1789474327781-jw7on",
+      "userId": "user-mesum",
+      "profileName": "Senior Portfolio 7764",
+      "profession": "Principal Engineer",
+      "slug": "senior-portfolio-7764-senior-portfolio-7764-zysr",
+      "type": "owner",
+      "name": "Senior Portfolio 7764",
+      "email": "mesum@avtive.app",
+      "firstName": "Senior",
+      "secondName": "Portfolio 7764",
+      "lastName": "Portfolio 7764",
+      "professionalTitle": "Principal Engineer",
+      "designation": "Principal Engineer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "createdAt": "2026-09-15T12:12:07.781Z",
+      "updatedAt": "2026-09-15T12:12:07.781Z"
     }
   },
   "connections": [

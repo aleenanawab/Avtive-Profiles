@@ -82,7 +82,7 @@ export type UserRole = 'owner' | 'team_member' | 'company_admin' | 'visitor';
 export type NavigationOrigin = 'company' | 'my_card' | 'direct' | 'team';
 
 export interface SocialLink {
-  platform: 'linkedin' | 'instagram' | 'twitter' | 'github' | 'website' | 'email' | 'facebook' | 'dribbble' | 'behance' | 'youtube';
+  platform: 'linkedin' | 'instagram' | 'twitter' | 'github' | 'website' | 'email' | 'facebook' | 'dribbble' | 'behance' | 'youtube' | 'whatsapp' | 'phone' | 'other';
   url: string;
   label?: string;
   handle?: string;
