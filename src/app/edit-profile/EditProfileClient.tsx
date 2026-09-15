@@ -39,6 +39,7 @@ import {
 } from '@/types/profile';
 import { ShareModal } from '@/components/share/ShareModal';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
+import { LinkedInIcon, GithubIcon } from '@/components/BrandIcons';
 
 interface EditProfileClientProps {
   initialProfile: ProfileData;
@@ -375,6 +376,9 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           profileId: initialProfile.id,
+          profileSlug: initialProfile.slug,
+          slug: initialProfile.slug,
+          userId: initialProfile.userId,
           updatedData
         })
       });
@@ -387,13 +391,12 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         return;
       }
 
-      const savedSlug = data.updatedProfile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
-      setProfile(data.updatedProfile || { ...profile, ...updatedData });
-      setStatusMessage({ type: 'success', text: '✓ Changes saved successfully!' });
+      const savedSlug = data.updatedProfile?.slug || data.profile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
+      setProfile(data.updatedProfile || data.profile || { ...profile, ...updatedData });
+      setStatusMessage({ type: 'success', text: '✓ Changes saved successfully! Returning to profile...' });
       setTimeout(() => {
-        router.push(`/profile/${savedSlug}`);
-        router.refresh();
-      }, 500);
+        window.location.href = `/profile/${savedSlug}`;
+      }, 400);
     } catch (err: any) {
       console.error('Save changes error:', err);
       setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
@@ -403,16 +406,16 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   };
 
   return (
-    <div className="w-full max-w-[430px] mx-auto bg-[#111319] border border-white/10 rounded-3xl overflow-hidden shadow-2xl text-white font-sans transition-all pb-12 relative">
+    <div className="w-full max-w-[430px] mx-auto bg-white dark:bg-[#111319] border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-2xl text-slate-900 dark:text-white font-sans transition-all pb-12 relative">
       
       {/* 1. Header / Cover Area */}
-      <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-900">
+      <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
         <img
           src={coverImage}
           alt="Cover Banner"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#111319] via-black/30 to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#111319] via-transparent to-black/30" />
 
         {/* Top Status Bar: 9:41 */}
         <div className="absolute top-2 left-0 right-0 z-30 px-5 py-1 flex items-center justify-between text-xs font-semibold text-white/90 font-mono drop-shadow">
@@ -474,9 +477,9 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         />
       </div>
 
-      {/* 2. Avatar & Direct Action Buttons (Screen 5) */}
+      {/* 2. Avatar & Direct Action Buttons */}
       <div className="px-6 relative -mt-12 text-center flex flex-col items-center">
-        <div className="relative w-22 h-22 rounded-full border-3 border-[#111319] shadow-xl overflow-hidden bg-slate-800 shrink-0">
+        <div className="relative w-22 h-22 rounded-full border-3 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
           <img
             src={avatar}
             alt={fullName}
@@ -508,10 +511,10 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
           }}
         />
 
-        <h2 className="mt-2 text-xl font-bold tracking-tight text-white">
+        <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
           {fullName || 'Aleena Nawab'}
         </h2>
-        <p className="text-xs text-white/60 font-medium pb-2">
+        <p className="text-xs text-slate-500 dark:text-white/60 font-medium pb-2">
           {professionalTitle || 'Full Stack Engineer'}
         </p>
       </div>
@@ -536,24 +539,24 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       <div className="p-6 space-y-4">
         
         {/* SECTION 1: BASIC INFO */}
-        <div className="rounded-2xl bg-[#1B1E28] border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
           <button
             type="button"
             onClick={() => toggleSection('basicInfo')}
-            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-100/80 dark:hover:bg-white/5 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-white/70" />
+              <FileText className="w-4 h-4 text-slate-600 dark:text-white/70" />
               <span>1. Basic Info</span>
             </div>
-            {expandedSections.basicInfo ? <ChevronUp className="w-4 h-4 text-white/50" /> : <ChevronDown className="w-4 h-4 text-white/50" />}
+            {expandedSections.basicInfo ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
           </button>
 
           {expandedSections.basicInfo && (
-            <div className="p-4 pt-1 space-y-3.5 border-t border-white/5">
+            <div className="p-4 pt-1 space-y-3.5 border-t border-slate-200 dark:border-white/5">
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-medium text-white/70 ml-1">
+                  <label className="text-[11px] font-medium text-slate-600 dark:text-white/70 ml-1">
                     First Name
                   </label>
                   <input
@@ -561,12 +564,12 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="First Name"
-                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-medium text-white/70 ml-1">
+                  <label className="text-[11px] font-medium text-slate-600 dark:text-white/70 ml-1">
                     Second Name
                   </label>
                   <input
@@ -574,13 +577,13 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                     value={secondName}
                     onChange={(e) => setSecondName(e.target.value)}
                     placeholder="Second Name"
-                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70 ml-1">
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70 ml-1">
                   Professional Title
                 </label>
                 <input
@@ -588,13 +591,13 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                   value={professionalTitle}
                   onChange={(e) => setProfessionalTitle(e.target.value)}
                   placeholder="e.g. Senior MERN Developer"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-medium text-white/70 ml-1">
+                  <label className="text-[11px] font-medium text-slate-600 dark:text-white/70 ml-1">
                     Company
                   </label>
                   <input
@@ -602,12 +605,12 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="e.g. Avtive Inc."
-                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-medium text-white/70 ml-1">
+                  <label className="text-[11px] font-medium text-slate-600 dark:text-white/70 ml-1">
                     Location
                   </label>
                   <input
@@ -615,13 +618,13 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g. San Francisco / Remote"
-                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                    className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70 ml-1">
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70 ml-1">
                   Short Bio (Headline Summary)
                 </label>
                 <textarea
@@ -629,13 +632,13 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Short elevator pitch for cards"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40 resize-none"
+                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 resize-none"
                 />
               </div>
 
               {/* Theme Picker */}
               <div className="space-y-1.5 pt-1">
-                <label className="text-[11px] font-medium text-white/70 ml-1">
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70 ml-1">
                   Theme Preset
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -648,8 +651,8 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                         onClick={() => setActiveTheme(t.id)}
                         className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-white/10 border-white ring-1 ring-white/30 text-white'
-                            : 'bg-white/5 border-white/10 hover:border-white/20 text-white/60'
+                            ? 'bg-slate-900 text-white dark:bg-white/15 dark:text-white border-slate-900 dark:border-white ring-1 ring-slate-900/30 dark:ring-white/30 font-bold'
+                            : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 text-slate-600 dark:text-white/60'
                         }`}
                       >
                         <div className="text-[10px] font-bold truncate">{t.name}</div>
@@ -663,21 +666,21 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         </div>
 
         {/* SECTION 2: SKILLS (Tag Input with Add/Remove Chips) */}
-        <div className="rounded-2xl bg-[#1B1E28] border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
           <button
             type="button"
             onClick={() => toggleSection('skills')}
-            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-100/80 dark:hover:bg-white/5 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2">
-              <Code className="w-4 h-4 text-white/70" />
+              <Code className="w-4 h-4 text-slate-600 dark:text-white/70" />
               <span>2. Skills ({skills.length})</span>
             </div>
-            {expandedSections.skills ? <ChevronUp className="w-4 h-4 text-white/50" /> : <ChevronDown className="w-4 h-4 text-white/50" />}
+            {expandedSections.skills ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
           </button>
 
           {expandedSections.skills && (
-            <div className="p-4 pt-1 space-y-3 border-t border-white/5">
+            <div className="p-4 pt-1 space-y-3 border-t border-slate-200 dark:border-white/5">
               {/* Add Skill Input Form */}
               <form onSubmit={handleAddSkill} className="flex gap-2">
                 <input
@@ -685,7 +688,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                   value={newSkillInput}
                   onChange={(e) => setNewSkillInput(e.target.value)}
                   placeholder="e.g. Next.js, Figma, Python"
-                  className="figma-input flex-1 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input flex-1 px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
                 <button
                   type="submit"
@@ -700,13 +703,13 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 {skills.map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white border border-white/15"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-200/80 dark:bg-white/10 text-slate-800 dark:text-white border border-slate-300 dark:border-white/15"
                   >
                     <span>{skill}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveSkill(skill)}
-                      className="hover:text-rose-400 transition-colors cursor-pointer p-0.5"
+                      className="hover:text-rose-500 transition-colors cursor-pointer p-0.5"
                       title={`Remove ${skill}`}
                     >
                       <X className="w-3 h-3" />
@@ -719,29 +722,29 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         </div>
 
         {/* SECTION 3: ABOUT (Rich / Multiline Text) */}
-        <div className="rounded-2xl bg-[#1B1E28] border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
           <button
             type="button"
             onClick={() => toggleSection('about')}
-            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-100/80 dark:hover:bg-white/5 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-white/70" />
+              <FileText className="w-4 h-4 text-slate-600 dark:text-white/70" />
               <span>3. About (Long-form Story)</span>
             </div>
-            {expandedSections.about ? <ChevronUp className="w-4 h-4 text-white/50" /> : <ChevronDown className="w-4 h-4 text-white/50" />}
+            {expandedSections.about ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
           </button>
 
           {expandedSections.about && (
-            <div className="p-4 pt-1 space-y-2 border-t border-white/5">
+            <div className="p-4 pt-1 space-y-2 border-t border-slate-200 dark:border-white/5">
               <textarea
                 rows={5}
                 value={about}
                 onChange={(e) => setAbout(e.target.value)}
                 placeholder="Share your detailed career journey, philosophy, achievements, or project specialties..."
-                className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40 leading-relaxed resize-none"
+                className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 leading-relaxed resize-none"
               />
-              <div className="text-right text-[10px] text-white/40">
+              <div className="text-right text-[10px] text-slate-400 dark:text-white/40">
                 {about.length} characters
               </div>
             </div>
@@ -749,16 +752,16 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         </div>
 
         {/* SECTION 4: PROJECTS (Card List with Add/Edit Modal) */}
-        <div className="rounded-2xl bg-[#1B1E28] border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
           <div className="w-full p-4 flex items-center justify-between">
             <button
               type="button"
               onClick={() => toggleSection('projects')}
-              className="flex items-center gap-2 font-bold text-sm text-white hover:text-white/80 transition-colors cursor-pointer"
+              className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-white/80 transition-colors cursor-pointer"
             >
-              <FolderGit2 className="w-4 h-4 text-white/70" />
+              <FolderGit2 className="w-4 h-4 text-slate-600 dark:text-white/70" />
               <span>4. Projects ({projects.length})</span>
-              {expandedSections.projects ? <ChevronUp className="w-4 h-4 text-white/50 ml-1" /> : <ChevronDown className="w-4 h-4 text-white/50 ml-1" />}
+              {expandedSections.projects ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50 ml-1" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50 ml-1" />}
             </button>
 
             <button
@@ -772,30 +775,30 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
           </div>
 
           {expandedSections.projects && (
-            <div className="p-4 pt-0 space-y-2.5 border-t border-white/5">
+            <div className="p-4 pt-0 space-y-2.5 border-t border-slate-200 dark:border-white/5">
               {projects.length === 0 ? (
-                <div className="text-center py-4 text-xs text-white/40">
+                <div className="text-center py-4 text-xs text-slate-400 dark:text-white/40">
                   No projects added yet. Click &quot;Add Project&quot; above.
                 </div>
               ) : (
                 projects.map((proj) => (
                   <div
                     key={proj.id}
-                    className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between gap-3 hover:bg-white/[0.08] transition-colors"
+                    className="p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 hover:bg-slate-100/80 dark:hover:bg-white/[0.08] transition-colors shadow-2xs"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <img
                         src={proj.image || proj.coverImage || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop'}
                         alt={proj.title}
-                        className="w-12 h-12 rounded-lg object-cover border border-white/10 shrink-0 bg-slate-900"
+                        className="w-12 h-12 rounded-lg object-cover border border-slate-200 dark:border-white/10 shrink-0 bg-slate-100 dark:bg-slate-900"
                       />
                       <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-white truncate">{proj.title}</h4>
-                        <p className="text-[11px] text-white/60 line-clamp-1">{proj.description}</p>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{proj.title}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-white/60 line-clamp-1">{proj.description}</p>
                         {Array.isArray(proj.tags) && proj.tags.length > 0 && (
                           <div className="flex gap-1 mt-1 overflow-hidden">
                             {proj.tags.slice(0, 3).map((t) => (
-                              <span key={t} className="text-[9px] px-1.5 py-0.2 rounded bg-white/10 text-white/80 font-mono">
+                              <span key={t} className="text-[9px] px-1.5 py-0.2 rounded bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/80 font-mono">
                                 {t}
                               </span>
                             ))}
@@ -808,7 +811,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                       <button
                         type="button"
                         onClick={() => handleOpenEditProject(proj)}
-                        className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 hover:text-white cursor-pointer"
+                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 hover:text-slate-900 dark:text-white/80 dark:hover:text-white cursor-pointer"
                         title="Edit Project"
                       >
                         <Pencil className="w-3.5 h-3.5" />
@@ -816,7 +819,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                       <button
                         type="button"
                         onClick={() => handleDeleteProject(proj.id)}
-                        className="p-1.5 rounded-lg bg-white/10 hover:bg-rose-500/20 text-white/80 hover:text-rose-400 cursor-pointer"
+                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-500/15 dark:bg-white/10 dark:hover:bg-rose-500/20 text-slate-700 hover:text-rose-600 dark:text-white/80 dark:hover:text-rose-400 cursor-pointer"
                         title="Delete Project"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -830,51 +833,57 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         </div>
 
         {/* SECTION 5: SOCIAL LINKS */}
-        <div className="rounded-2xl bg-[#1B1E28] border border-white/10 overflow-hidden">
+        <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
           <button
             type="button"
             onClick={() => toggleSection('socials')}
-            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-white hover:bg-white/5 transition-colors cursor-pointer"
+            className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-100/80 dark:hover:bg-white/5 transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2">
-              <Link2 className="w-4 h-4 text-white/70" />
+              <Link2 className="w-4 h-4 text-slate-600 dark:text-white/70" />
               <span>5. Social Links</span>
             </div>
-            {expandedSections.socials ? <ChevronUp className="w-4 h-4 text-white/50" /> : <ChevronDown className="w-4 h-4 text-white/50" />}
+            {expandedSections.socials ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
           </button>
 
           {expandedSections.socials && (
-            <div className="p-4 pt-1 space-y-2.5 border-t border-white/5">
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70 ml-1">GitHub URL</label>
+            <div className="p-4 pt-1 space-y-2.5 border-t border-slate-200 dark:border-white/5">
+              <div className="relative flex items-center">
+                <div className="absolute left-3 text-slate-500 dark:text-white/60 pointer-events-none">
+                  <GithubIcon className="w-4 h-4" />
+                </div>
                 <input
                   type="url"
                   value={githubUrl}
                   onChange={(e) => setGithubUrl(e.target.value)}
                   placeholder="https://github.com/username"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70 ml-1">LinkedIn URL</label>
+              <div className="relative flex items-center">
+                <div className="absolute left-3 text-slate-500 dark:text-white/60 pointer-events-none">
+                  <LinkedInIcon className="w-4 h-4" />
+                </div>
                 <input
                   type="url"
                   value={linkedinUrl}
                   onChange={(e) => setLinkedinUrl(e.target.value)}
                   placeholder="https://linkedin.com/in/username"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70 ml-1">Website URL</label>
+              <div className="relative flex items-center">
+                <div className="absolute left-3 text-slate-500 dark:text-white/60 pointer-events-none">
+                  <Globe className="w-4 h-4" />
+                </div>
                 <input
                   type="url"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   placeholder="https://yourwebsite.com"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
             </div>
@@ -884,7 +893,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       </div>
 
       {/* 4. Sticky Bottom Save Changes Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 p-3 sm:p-4 bg-[#0B0F17]/90 backdrop-blur-lg border-t border-white/10 flex items-center justify-center">
+      <div className="fixed bottom-0 left-0 right-0 z-40 p-3 sm:p-4 bg-white/90 dark:bg-[#0B0F17]/90 backdrop-blur-lg border-t border-slate-200 dark:border-white/10 flex items-center justify-center">
         <div className="w-full max-w-[430px] flex items-center gap-3">
           <Link
             href={`/profile/${initialProfile.slug || initialProfile.id}`}
@@ -917,16 +926,16 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
       {/* 5. ADD / EDIT PROJECT MODAL */}
       {isProjectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-sm rounded-3xl bg-[#181B24] border border-white/10 p-5 shadow-2xl space-y-4 text-white">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-sm font-bold text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="relative w-full max-w-sm rounded-3xl bg-white dark:bg-[#181B24] border border-slate-200 dark:border-white/10 p-5 shadow-2xl space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 {editingProject ? 'Edit Project' : 'Add New Project'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsProjectModalOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white cursor-pointer"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 flex items-center justify-center text-slate-600 hover:text-slate-900 dark:text-white/70 dark:hover:text-white cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -934,59 +943,59 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
             <form onSubmit={handleSaveProject} className="space-y-3">
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70">Project Title *</label>
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70">Project Title *</label>
                 <input
                   type="text"
                   required
                   value={projectForm.title}
                   onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
                   placeholder="e.g. AI Portfolio Dashboard"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70">Description *</label>
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70">Description *</label>
                 <textarea
                   rows={3}
                   required
                   value={projectForm.description}
                   onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
                   placeholder="What problem did it solve? Key technical achievements..."
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40 resize-none"
+                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 resize-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70">Technologies / Tags (comma separated)</label>
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70">Technologies / Tags (comma separated)</label>
                 <input
                   type="text"
                   value={projectForm.tags}
                   onChange={(e) => setProjectForm({ ...projectForm, tags: e.target.value })}
                   placeholder="React, Next.js, Node.js"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70">Project URL / Link</label>
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70">Project URL / Link</label>
                 <input
                   type="url"
                   value={projectForm.link}
                   onChange={(e) => setProjectForm({ ...projectForm, link: e.target.value })}
                   placeholder="https://myproject.com"
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-white/70">Image / Screenshot URL</label>
+                <label className="text-[11px] font-medium text-slate-600 dark:text-white/70">Image / Screenshot URL</label>
                 <input
                   type="url"
                   value={projectForm.image}
                   onChange={(e) => setProjectForm({ ...projectForm, image: e.target.value })}
                   placeholder="https://images.unsplash.com/..."
-                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-white/40"
+                  className="figma-input w-full px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                 />
               </div>
 

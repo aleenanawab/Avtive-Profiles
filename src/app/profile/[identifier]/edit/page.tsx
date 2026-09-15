@@ -56,8 +56,8 @@ export default async function ProfileIdentifierEditPage({ params }: ProfileIdent
   const allUserProfiles = await getProfilesByUserId(session.id);
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center p-3 sm:p-6 bg-[#0B0F17] text-white transition-colors font-sans">
-      <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-white/60">Loading profile editor...</div>}>
+    <main className="min-h-screen w-full flex items-center justify-center p-3 sm:p-6 bg-[#FAFAF9] dark:bg-[#0B0F17] text-slate-900 dark:text-white transition-colors font-sans">
+      <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-slate-500 dark:text-white/60">Loading profile editor...</div>}>
         <EditProfileClient 
           initialProfile={targetProfile} 
           userProfiles={allUserProfiles}

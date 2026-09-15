@@ -59,15 +59,24 @@ html:not(.dark) .figma-phone-frame {
 
 .figma-input {
   background: #1B1E26;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
   border-radius: 14px;
+  transition: all 0.15s ease;
+}
+
+.figma-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 html:not(.dark) .figma-input {
-  background: #F8FAFC;
+  background: #FFFFFF;
   border: 1px solid #CBD5E1;
   color: #0F172A;
+}
+
+html:not(.dark) .figma-input::placeholder {
+  color: #94A3B8;
 }
 
 .figma-pill-primary {
