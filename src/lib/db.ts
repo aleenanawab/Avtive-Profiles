@@ -427,6 +427,47 @@ export async function createProfileForUser(
   return newProfile;
 }
 
+export function setProfileResponseCookies(response: any, profile: ProfileData) {
+  try {
+    const raw = JSON.stringify(profile);
+    const encoded = encodeURIComponent(raw);
+    const CHUNK_SIZE = 2000;
+    const totalChunks = Math.ceil(encoded.length / CHUNK_SIZE);
+
+    response.cookies.set('avtive_prof_count', String(totalChunks), {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30
+    });
+
+    for (let i = 0; i < totalChunks; i++) {
+      const chunk = encoded.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+      response.cookies.set(`avtive_prof_${i}`, chunk, {
+        path: '/',
+        httpOnly: false,
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 30
+      });
+    }
+
+    const mini = {
+      id: profile.id,
+      slug: profile.slug,
+      userId: profile.userId,
+      name: profile.name
+    };
+    response.cookies.set('avtive_last_profile', encodeURIComponent(JSON.stringify(mini)), {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30
+    });
+  } catch (err) {
+    console.error('Failed to set chunked profile cookies:', err);
+  }
+}
+
 export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileData | null> {
   const db = loadDb();
   if (db.profiles[idOrSlug]) {
@@ -443,17 +484,43 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
   const byUser = Object.values(db.profiles).find((p) => p.userId === idOrSlug);
   if (byUser) return byUser;
 
-  // Cookie fallback for newly created profiles across serverless lambdas
+  // Cookie fallback for newly created/updated profiles across serverless lambdas
   try {
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
+    const countStr = cookieStore.get('avtive_prof_count')?.value;
+    if (countStr) {
+      const count = parseInt(countStr, 10);
+      let combined = '';
+      for (let i = 0; i < count; i++) {
+        const chunk = cookieStore.get(`avtive_prof_${i}`)?.value;
+        if (chunk) {
+          combined += chunk;
+        }
+      }
+      if (combined) {
+        const p = JSON.parse(decodeURIComponent(combined));
+        if (
+          p &&
+          (p.id?.toLowerCase() === idOrSlug.toLowerCase() ||
+            p.slug?.toLowerCase() === idOrSlug.toLowerCase() ||
+            p.userId === idOrSlug ||
+            idOrSlug.toLowerCase().includes(p.slug?.toLowerCase()) ||
+            p.slug?.toLowerCase().includes(idOrSlug.toLowerCase()))
+        ) {
+          db.profiles[p.id] = p;
+          db.profiles[p.slug] = p;
+          return p;
+        }
+      }
+    }
+
     const lastProfileRaw = cookieStore.get('avtive_last_profile')?.value;
     if (lastProfileRaw) {
       const p = JSON.parse(decodeURIComponent(lastProfileRaw));
       if (p && (p.id === idOrSlug || p.slug === idOrSlug || p.userId === idOrSlug)) {
-        db.profiles[p.id] = p;
-        db.profiles[p.slug] = p;
-        return p;
+        if (db.profiles[p.id]) return db.profiles[p.id];
+        if (db.profiles[p.slug]) return db.profiles[p.slug];
       }
     }
   } catch {}

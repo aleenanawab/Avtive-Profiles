@@ -392,11 +392,24 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       }
 
       const savedSlug = data.updatedProfile?.slug || data.profile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
-      setProfile(data.updatedProfile || data.profile || { ...profile, ...updatedData });
+      const finalProfile = data.updatedProfile || data.profile || { ...profile, ...updatedData, slug: savedSlug };
+      setProfile(finalProfile);
+
+      // Cache locally so client can hydrate immediately even if server lambda cold boots
+      try {
+        localStorage.setItem(`avtive_profile_${savedSlug}`, JSON.stringify(finalProfile));
+        if (initialProfile.slug) {
+          localStorage.setItem(`avtive_profile_${initialProfile.slug}`, JSON.stringify(finalProfile));
+        }
+        localStorage.setItem('avtive_last_saved_profile', JSON.stringify(finalProfile));
+      } catch (e) {
+        console.error('Failed to cache profile in localStorage:', e);
+      }
+
       setStatusMessage({ type: 'success', text: '✓ Changes saved successfully! Returning to profile...' });
       setTimeout(() => {
         window.location.href = `/profile/${savedSlug}`;
-      }, 400);
+      }, 350);
     } catch (err: any) {
       console.error('Save changes error:', err);
       setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
