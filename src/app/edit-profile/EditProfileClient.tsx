@@ -89,6 +89,51 @@ const THEME_OPTIONS: { id: ProfileTheme; name: string; thumbnailBg: string; bord
   }
 ];
 
+function buildSocialLinksFromProfile(p: ProfileData): DraggableLinkItem[] {
+  const safeSocials = (Array.isArray(p.socials) && p.socials.length > 0)
+    ? p.socials
+    : (Array.isArray(p.socialLinks) && p.socialLinks.length > 0)
+    ? p.socialLinks
+    : null;
+
+  if (safeSocials && safeSocials.length > 0) {
+    return safeSocials.map((s: any, idx: number) => {
+      const platform = (s.platform || 'website') as DraggableLinkItem['platform'];
+      return {
+        id: `link-${platform}-${idx}`,
+        platform,
+        title: s.label || (platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : 'Link'),
+        url: s.url || '',
+        visible: s.visible !== false
+      };
+    });
+  }
+
+  return [
+    {
+      id: 'link-li-0',
+      platform: 'linkedin',
+      title: 'LinkedIn',
+      url: 'https://linkedin.com',
+      visible: true
+    },
+    {
+      id: 'link-gh-1',
+      platform: 'github',
+      title: 'GitHub',
+      url: 'https://github.com',
+      visible: true
+    },
+    {
+      id: 'link-web-2',
+      platform: 'website',
+      title: 'Website / Portfolio',
+      url: p.website || 'https://avtive.app',
+      visible: true
+    }
+  ];
+}
+
 function DraggableLinkCard({
   link,
   index,
@@ -298,31 +343,9 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   const [education, setEducation] = useState<EducationItem[]>(initialEduList);
 
   // 7. Draggable Social Links (Framer Motion Reorder)
-  const safeSocials = Array.isArray(initialProfile.socials) ? initialProfile.socials : [];
-  const initialLinks: DraggableLinkItem[] = [
-    {
-      id: 'link-li',
-      platform: 'linkedin',
-      title: 'LinkedIn',
-      url: safeSocials.find((s) => s.platform === 'linkedin')?.url || 'https://linkedin.com',
-      visible: true
-    },
-    {
-      id: 'link-gh',
-      platform: 'github',
-      title: 'GitHub',
-      url: safeSocials.find((s) => s.platform === 'github')?.url || 'https://github.com',
-      visible: true
-    },
-    {
-      id: 'link-web',
-      platform: 'website',
-      title: 'Website / Portfolio',
-      url: safeSocials.find((s) => s.platform === 'website')?.url || initialProfile.website || 'https://avtive.app',
-      visible: true
-    }
-  ];
-  const [socialLinks, setSocialLinks] = useState<DraggableLinkItem[]>(initialLinks);
+  const [socialLinks, setSocialLinks] = useState<DraggableLinkItem[]>(() =>
+    buildSocialLinksFromProfile(initialProfile)
+  );
 
   // 8. In-Page Sharing & Visibility Controls (No Popups)
   const [sharingSettings, setSharingSettings] = useState<SharingSettings>(
@@ -544,9 +567,10 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   };
 
   // 1-Click Copy Public URL
+  const currentActiveIdentifier = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
   const publicProfileUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/profile/${initialProfile.slug || initialProfile.id}`
-    : `https://avtive.app/profile/${initialProfile.slug || initialProfile.id}`;
+    ? `${window.location.origin}/profile/${currentActiveIdentifier}`
+    : `https://avtive.app/profile/${currentActiveIdentifier}`;
 
   const handleCopyLink = async () => {
     try {
@@ -592,6 +616,63 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     sharingSettings: sharingSettings
   };
 
+  // Switch to another profile in-place (ZERO POPUPS / ZERO REDIRECTS)
+  const handleSwitchToProfile = (newProf: ProfileData) => {
+    setProfile(newProf);
+    setActiveTheme(newProf.theme === 'default' ? 'editorial' : (newProf.theme || 'editorial'));
+    
+    // Basic Info
+    const fName = newProf.firstName || (newProf.name ? newProf.name.split(' ')[0] : '');
+    const lName = newProf.secondName || newProf.lastName || (newProf.name ? newProf.name.split(' ').slice(1).join(' ') : '');
+    setFirstName(fName);
+    setSecondName(lName);
+    setProfessionalTitle(newProf.professionalTitle || newProf.designation || newProf.profession || '');
+    setBio(newProf.bio || newProf.shortBio || '');
+    setCompany(newProf.company || '');
+    setLocation(newProf.location || '');
+    setAvatar(newProf.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
+    setCoverImage(newProf.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
+    
+    // Skills
+    const skillsList = Array.isArray(newProf.skills)
+      ? newProf.skills.map((s) => (typeof s === 'string' ? s : s.name))
+      : ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'];
+    setSkills(skillsList);
+
+    // About
+    setAbout(newProf.about || newProf.fullBio || '');
+
+    // Projects
+    const projectsList = Array.isArray(newProf.projects) ? newProf.projects : [];
+    setProjects(projectsList);
+
+    // Experience
+    const expList = Array.isArray(newProf.experiences || newProf.experience)
+      ? (newProf.experiences || newProf.experience || [])
+      : [];
+    setExperiences(expList);
+
+    // Education
+    const eduList = Array.isArray(newProf.education) ? newProf.education : [];
+    setEducation(eduList);
+
+    // Social Links strictly preserving saved order
+    setSocialLinks(buildSocialLinksFromProfile(newProf));
+
+    // Sharing Settings
+    if (newProf.sharingSettings) {
+      setSharingSettings(newProf.sharingSettings);
+    }
+
+    setStatusMessage({
+      type: 'success',
+      text: `✓ Switched to profile: ${newProf.profileName || newProf.name}`
+    });
+    setTimeout(() => {
+      setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
+    }, 3500);
+  };
+
   // Save All Changes to Server
   const handleSaveChanges = async () => {
     setIsSaving(true);
@@ -629,10 +710,10 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profileId: initialProfile.id,
-          profileSlug: initialProfile.slug,
-          slug: initialProfile.slug,
-          userId: initialProfile.userId,
+          profileId: profile.id || initialProfile.id,
+          profileSlug: profile.slug || initialProfile.slug,
+          slug: profile.slug || initialProfile.slug,
+          userId: profile.userId || initialProfile.userId,
           updatedData
         })
       });
@@ -646,7 +727,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       }
 
       const savedSlug = data.updatedProfile?.slug || data.profile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
-      const finalProfile = data.updatedProfile || data.profile || { ...profile, ...updatedData, slug: savedSlug };
+      const finalProfile: ProfileData = data.updatedProfile || data.profile || { ...profile, ...updatedData, slug: savedSlug };
       setProfile(finalProfile);
 
       // Cache locally
@@ -660,10 +741,14 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         console.error('Failed to cache profile in localStorage:', e);
       }
 
-      setStatusMessage({ type: 'success', text: '✓ Changes saved successfully! Returning to profile...' });
+      // STRICT ZERO REDIRECT: Keep editor and live mobile preview active on the same screen!
+      setStatusMessage({ 
+        type: 'success', 
+        text: '✓ Profile saved successfully! Live mobile preview updated.' 
+      });
       setTimeout(() => {
-        window.location.href = `/profile/${savedSlug}`;
-      }, 350);
+        setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
+      }, 4000);
     } catch (err: any) {
       console.error('Save changes error:', err);
       setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
@@ -739,7 +824,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
               {/* Top Left Navigation Back */}
               <div className="absolute top-8 left-4 z-20">
                 <Link
-                  href={`/profile/${initialProfile.slug || initialProfile.id}`}
+                  href={`/profile/${currentActiveIdentifier}`}
                   className="w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
                   title="Back to Public Profile"
                 >
@@ -750,8 +835,9 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
               {/* Top Right: Persona Switcher & Cover Edit Icon */}
               <div className="absolute top-8 right-4 z-20 flex items-center gap-2">
                 <ProfileSwitcher 
-                  currentProfileIdOrSlug={initialProfile.slug || initialProfile.id} 
+                  currentProfileIdOrSlug={profile.slug || profile.id || initialProfile.slug || initialProfile.id} 
                   initialProfiles={userProfiles}
+                  onSelectProfile={handleSwitchToProfile}
                 />
 
                 <button
@@ -781,10 +867,9 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
               />
             </div>
 
-            {/* 2. Avatar & Theme Selector Row */}
-            <div className="px-5 pt-0 pb-4 relative z-20 -mt-12 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-              {/* Avatar with Camera Overlay */}
-              <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-white dark:border-[#111319] shadow-xl bg-slate-100 dark:bg-slate-800 shrink-0">
+            {/* 2. Profile Avatar & Identity Header (Original Clean Layout, Zero Clutter) */}
+            <div className="px-6 relative -mt-12 text-center flex flex-col items-center">
+              <div className="relative w-24 h-24 rounded-full border-4 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
                 <img
                   src={avatar}
                   alt={fullName}
@@ -794,45 +879,34 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
                   disabled={isUploadingAvatar}
-                  className="absolute inset-0 bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-90 hover:opacity-100 transition-all cursor-pointer"
-                  title="Change Avatar"
+                  className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center text-white transition-colors cursor-pointer"
+                  title="Change Profile Photo"
                 >
                   {isUploadingAvatar ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <Camera className="w-5 h-5" />
+                    <Camera className="w-4 h-4" />
                   )}
                 </button>
-
-                <input
-                  ref={avatarInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleAvatarUpload(file);
-                  }}
-                />
               </div>
 
-              {/* Theme Selector Pills */}
-              <div className="flex items-center gap-1.5 p-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 self-start sm:self-auto overflow-x-auto">
-                {THEME_OPTIONS.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setActiveTheme(t.id)}
-                    className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                      activeTheme === t.id
-                        ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-xs'
-                        : 'text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    {t.name}
-                  </button>
-                ))}
-              </div>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleAvatarUpload(file);
+                }}
+              />
+
+              <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {fullName || 'Aleena Nawab'}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-white/60 font-medium pb-2">
+                {professionalTitle || 'Full Stack Engineer'}
+              </p>
             </div>
 
             {/* Status Messages */}
@@ -951,6 +1025,32 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                           placeholder="Location"
                           className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                         />
+                      </div>
+                    </div>
+
+                    {/* Card Theme Preset Picker */}
+                    <div className="pt-2 border-t border-slate-200 dark:border-white/5">
+                      <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1.5">
+                        Card Theme Preset
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {THEME_OPTIONS.map((t) => {
+                          const isSelected = activeTheme === t.id;
+                          return (
+                            <button
+                              key={t.id}
+                              type="button"
+                              onClick={() => setActiveTheme(t.id)}
+                              className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-slate-900 dark:border-white shadow-xs font-bold'
+                                  : 'bg-white dark:bg-white/5 text-slate-700 dark:text-white/70 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30'
+                              }`}
+                            >
+                              <div className="text-xs truncate">{t.name}</div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -1337,8 +1437,11 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
             {/* Save Changes Action Bar */}
             <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/10 px-5 flex items-center justify-between gap-3">
               <Link
-                href={`/profile/${initialProfile.slug || initialProfile.id}`}
+                href={`/profile/${profile.slug || profile.id || initialProfile.slug || initialProfile.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="figma-pill-secondary py-2 px-4 text-xs font-bold flex items-center gap-1.5 shrink-0"
+                title="Open public profile view in a new tab"
               >
                 <Eye className="w-3.5 h-3.5" />
                 <span>View Profile</span>

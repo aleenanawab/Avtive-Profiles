@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare } from 'lucide-react';
 import { ProfileData, normalizeProfileType, SocialLink } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
-import { GithubIcon, LinkedInIcon, TwitterXIcon } from './BrandIcons';
+import { GithubIcon, LinkedInIcon, TwitterXIcon, WhatsAppIcon } from './BrandIcons';
 import { StatsRow } from './profiles/StatsRow';
 import { ProfileSwitcher } from './profiles/ProfileSwitcher';
 
@@ -61,17 +61,38 @@ export function HeroSection({
         { value: profile.highlights?.[2]?.value || '4+', label: profile.highlights?.[2]?.label || 'Years' }
       ];
 
-  // Social Links matching Screen 9
-  const rawSocials = profile.socials;
-  const socials: SocialLink[] = Array.isArray(rawSocials)
-    ? rawSocials
-    : rawSocials && typeof rawSocials === 'object'
-    ? Object.entries(rawSocials).map(([platform, url]) => ({ platform: platform as any, url: String(url) }))
+  // Dynamic Social Links strictly preserving user dragged & saved order
+  const rawSocials = (Array.isArray(profile.socials) && profile.socials.length > 0)
+    ? profile.socials
+    : (Array.isArray(profile.socialLinks) && profile.socialLinks.length > 0)
+    ? profile.socialLinks
+    : (profile.socials && typeof profile.socials === 'object')
+    ? Object.entries(profile.socials).map(([platform, url]) => ({ platform: platform as any, url: String(url) }))
     : [];
-  const githubLink = socials.find((s) => s.platform === 'github')?.url;
-  const linkedinLink = socials.find((s) => s.platform === 'linkedin')?.url;
-  const twitterLink = socials.find((s) => s.platform === 'twitter')?.url;
-  const websiteLink = socials.find((s) => s.platform === 'website')?.url || profile.website;
+
+  const socials: SocialLink[] = rawSocials.filter((s: any) => s && s.url && typeof s.url === 'string' && s.url.trim() !== '');
+
+  const renderSocialIcon = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case 'github':
+        return <GithubIcon className="w-4 h-4 text-zinc-900 dark:text-white" />;
+      case 'linkedin':
+        return <LinkedInIcon className="w-4 h-4 text-blue-500" />;
+      case 'twitter':
+      case 'x':
+        return <TwitterXIcon className="w-4 h-4 text-zinc-900 dark:text-white" />;
+      case 'whatsapp':
+        return <WhatsAppIcon className="w-4 h-4 text-emerald-500" />;
+      case 'email':
+      case 'mail':
+        return <Mail className="w-4 h-4 text-rose-500" />;
+      case 'phone':
+        return <Phone className="w-4 h-4 text-emerald-500" />;
+      case 'website':
+      default:
+        return <Globe className="w-4 h-4 text-amber-500" />;
+    }
+  };
 
   return (
     <div className="relative w-full text-left font-sans">
@@ -140,7 +161,7 @@ export function HeroSection({
           </p>
         )}
 
-        {/* Action Buttons Below Avatar: Edit Profile for Owner (like Instagram/LinkedIn) vs Connect for Visitors */}
+        {/* Action Buttons Below Avatar: Edit Profile for Owner vs Connect for Visitors */}
         <div className="flex items-center gap-3 pt-2 max-w-md w-full">
           {canEdit ? (
             <>
@@ -185,10 +206,11 @@ export function HeroSection({
           )}
         </div>
 
-        {/* Direct Social Icon Bar: WhatsApp, Gmail, GitHub, Twitter/X, LinkedIn, Portfolio */}
+        {/* Direct Social Icon Bar: Respects exact drag-and-drop order from socials */}
         {sharing.socialLinks !== false && (
-          <div className="flex items-center gap-2.5 pt-2 text-slate-600 dark:text-zinc-300">
-            {profile.whatsapp && (
+          <div className="flex items-center gap-2.5 pt-2 text-slate-600 dark:text-zinc-300 flex-wrap">
+            {/* Direct WhatsApp (if sharing enabled and not duplicate) */}
+            {profile.whatsapp && sharing.phone !== false && !socials.some((s) => s.platform === 'whatsapp') && (
               <a
                 href={`https://wa.me/${profile.whatsapp.replace(/[^0-9]/g, '')}`}
                 target="_blank"
@@ -197,11 +219,12 @@ export function HeroSection({
                 title="WhatsApp"
                 aria-label="WhatsApp"
               >
-                <Phone className="w-4 h-4 text-emerald-500" />
+                <WhatsAppIcon className="w-4 h-4 text-emerald-500" />
               </a>
             )}
 
-            {profile.email && (
+            {/* Direct Email (if sharing enabled and not duplicate) */}
+            {profile.email && sharing.email !== false && !socials.some((s) => s.platform === 'email') && (
               <a
                 href={`mailto:${profile.email}`}
                 target="_blank"
@@ -214,57 +237,28 @@ export function HeroSection({
               </a>
             )}
 
-            {githubLink && (
-              <a
-                href={githubLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
-                title="GitHub"
-                aria-label="GitHub"
-              >
-                <GithubIcon className="w-4 h-4 text-zinc-900 dark:text-white" />
-              </a>
-            )}
+            {/* Dynamic Social Links In Dragged Order */}
+            {socials.map((s, idx) => {
+              const url = s.url?.trim() || '';
+              if (!url) return null;
+              const formattedUrl = url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:') || url.startsWith('tel:')
+                ? url
+                : `https://${url}`;
 
-            {linkedinLink && (
-              <a
-                href={linkedinLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
-                title="LinkedIn"
-                aria-label="LinkedIn"
-              >
-                <LinkedInIcon className="w-4 h-4 text-blue-500" />
-              </a>
-            )}
-
-            {twitterLink && (
-              <a
-                href={twitterLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
-                title="Twitter / X"
-                aria-label="Twitter / X"
-              >
-                <TwitterXIcon className="w-4 h-4 text-zinc-900 dark:text-white" />
-              </a>
-            )}
-
-            {websiteLink && (
-              <a
-                href={websiteLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
-                title="Portfolio"
-                aria-label="Portfolio"
-              >
-                <Globe className="w-4 h-4 text-amber-500" />
-              </a>
-            )}
+              return (
+                <a
+                  key={`${s.platform}-${idx}-${url}`}
+                  href={formattedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 flex items-center justify-center transition-all hover:scale-105"
+                  title={s.label || s.platform}
+                  aria-label={s.label || s.platform}
+                >
+                  {renderSocialIcon(s.platform)}
+                </a>
+              );
+            })}
           </div>
         )}
       </div>
