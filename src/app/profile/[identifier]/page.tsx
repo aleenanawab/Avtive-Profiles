@@ -82,7 +82,12 @@ export default async function ProfilePage({ params }: PageProps) {
 
   // 2. Strict Owner Verification: Caller's session ID === targetProfile.userId
   const isOwner = Boolean(
-    session?.id && profile.userId && session.id === profile.userId
+    session?.id && (
+      (profile.userId && session.id === profile.userId) ||
+      (profile.email && session.email && profile.email.toLowerCase().trim() === session.email.toLowerCase().trim()) ||
+      (profile.id === session.id) ||
+      (profile.slug === session.id)
+    )
   );
 
   // 3. ZERO TOLERANCE SERVER-SIDE FILTERING:

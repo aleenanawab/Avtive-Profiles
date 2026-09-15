@@ -387,9 +387,13 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         return;
       }
 
+      const savedSlug = data.updatedProfile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
       setProfile(data.updatedProfile || { ...profile, ...updatedData });
       setStatusMessage({ type: 'success', text: '✓ Changes saved successfully!' });
-      setTimeout(() => setStatusMessage(null), 3500);
+      setTimeout(() => {
+        router.push(`/profile/${savedSlug}`);
+        router.refresh();
+      }, 500);
     } catch (err: any) {
       console.error('Save changes error:', err);
       setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
@@ -507,38 +511,9 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         <h2 className="mt-2 text-xl font-bold tracking-tight text-white">
           {fullName || 'Aleena Nawab'}
         </h2>
-        <p className="text-xs text-white/60 font-medium">
+        <p className="text-xs text-white/60 font-medium pb-2">
           {professionalTitle || 'Full Stack Engineer'}
         </p>
-
-        {/* Direct Action Buttons: [ Share ] [ Connect ] */}
-        <div className="w-full grid grid-cols-2 gap-3 mt-4">
-          <button
-            type="button"
-            onClick={() => setIsShareModalOpen(true)}
-            className="figma-pill-primary py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Share</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setStatusMessage({ type: 'success', text: '✓ Connect pass link copied to clipboard!' });
-              navigator.clipboard.writeText(
-                typeof window !== 'undefined'
-                  ? `${window.location.origin}/profile/${initialProfile.slug || initialProfile.id}`
-                  : ''
-              );
-              setTimeout(() => setStatusMessage(null), 3000);
-            }}
-            className="figma-pill-secondary py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Connect</span>
-          </button>
-        </div>
       </div>
 
       {/* Alert / Feedback Toast */}
