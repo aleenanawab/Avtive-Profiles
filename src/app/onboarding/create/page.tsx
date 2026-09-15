@@ -226,8 +226,13 @@ function CreateProfileContent() {
         return;
       }
 
-      // Step 5: Route directly to My Profiles dashboard per specification
-      router.push('/dashboard?created=true');
+      // Direct immediately to the editing profile page
+      const targetSlug = data.profile?.slug || data.profile?.id;
+      if (targetSlug) {
+        router.push(`/profile/${targetSlug}/edit`);
+      } else {
+        router.push('/profile/edit');
+      }
       router.refresh();
     } catch (err) {
       console.error('Profile creation error:', err);

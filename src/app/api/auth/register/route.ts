@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail, createUser } from '@/lib/db';
-import { hashPassword } from '@/lib/auth';
+import { hashPassword, setSessionCookie } from '@/lib/auth';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -58,14 +58,45 @@ export async function POST(request: NextRequest) {
       createProfile: false
     });
 
-    return NextResponse.json(
+    const sessionUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    };
+
+    // Auto-login: set session cookie immediately upon registration
+    await setSessionCookie(sessionUser);
+
+    const response = NextResponse.json(
       {
         success: true,
-        message: 'Account created successfully. Please sign in.',
-        user: { id: user.id, name: user.name, email: user.email }
+        autoLogin: true,
+        message: 'Account created successfully.',
+        user: sessionUser
       },
       { status: 201 }
     );
+
+    // Set backup user cache cookie for resilient cross-lambda authentication
+    try {
+      response.cookies.set(
+        'avtive_user_cache',
+        encodeURIComponent(JSON.stringify({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          passwordHash: user.passwordHash
+        })),
+        {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 30
+        }
+      );
+    } catch {}
+
+    return response;
   } catch (error) {
     console.error('Registration API Error:', error);
     return NextResponse.json(

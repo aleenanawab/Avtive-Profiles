@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfileByIdOrSlug, getProfilesByUserId } from '@/lib/db';
+import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser } from '@/lib/db';
 import { EditProfileClient } from './EditProfileClient';
 import type { Metadata } from 'next';
 
@@ -30,10 +30,19 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
   // Fallback to user's first profile if no id specified or not found
   if (!targetProfile || targetProfile.userId !== session.id) {
     const userProfiles = await getProfilesByUserId(session.id);
-    if (userProfiles.length === 0) {
-      redirect('/create-profile');
+    if (userProfiles.length > 0) {
+      targetProfile = userProfiles[0];
+    } else if (targetProfile) {
+      targetProfile.userId = session.id;
+    } else {
+      targetProfile = await createProfileForUser(session.id, {
+        name: session.name,
+        email: session.email,
+        profileName: 'Primary Profile',
+        designation: 'Professional',
+        type: 'owner'
+      });
     }
-    targetProfile = userProfiles[0];
   }
 
   return (

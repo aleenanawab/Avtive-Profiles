@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       sectionOrder: body.sectionOrder
     });
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         message: 'Profile created successfully.',
@@ -59,6 +59,21 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
+
+    try {
+      response.cookies.set(
+        'avtive_last_profile',
+        encodeURIComponent(JSON.stringify(newProfile)),
+        {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 30
+        }
+      );
+    } catch {}
+
+    return response;
 
   } catch (error) {
     console.error('Create Profile API Error:', error);

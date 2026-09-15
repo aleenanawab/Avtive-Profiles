@@ -102,8 +102,9 @@ export default function RegisterPage() {
         return;
       }
 
-      // Requirement 1.2: Submitting registration directs to the Login Screen (/login)
-      router.push('/login?registered=true');
+      // User is now authenticated automatically: proceed directly to theme onboarding
+      router.push('/onboarding/theme');
+      router.refresh();
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during registration. Please try again.');
