@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { updateProfile, getProfileByIdOrSlug } from '@/lib/db';
+import { updateProfile, getProfileByIdOrSlug, getProfileByUserId } from '@/lib/db';
 import { ProfileData } from '@/types/profile';
-
-interface UpdateProfileBody {
-  profileId: string;
-  updatedData: Partial<ProfileData>;
-}
 
 async function handleProfileUpdate(request: NextRequest) {
   try {
@@ -22,8 +17,8 @@ async function handleProfileUpdate(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    const profileId = body.profileId || body.id;
+    const body = await request.json().catch(() => ({}));
+    const profileId = body.profileId || body.id || body.slug || body.profileSlug;
     const rawUpdatedData = body.updatedData || { ...body };
     if (!body.updatedData) {
       delete rawUpdatedData.profileId;
@@ -31,50 +26,57 @@ async function handleProfileUpdate(request: NextRequest) {
     }
     const updatedData = rawUpdatedData;
 
-    if (!profileId || !updatedData) {
+    const identifier = profileId || body.profileSlug || body.slug;
+    if (!identifier && !updatedData) {
       return NextResponse.json(
-        { error: 'Invalid request: profileId and updatedData are required.' },
+        { error: 'Invalid request: profile identifier and updatedData are required.' },
         { status: 400 }
       );
     }
 
-    // 2. Fetch target profile
-    const targetProfile = await getProfileByIdOrSlug(profileId);
-    if (!targetProfile) {
-      return NextResponse.json(
-        { error: 'Profile not found.' },
-        { status: 404 }
-      );
-    }
+    // 2. Perform update with automatic upsert fallback for serverless persistence
+    const effectiveSlug = body.profileSlug || body.slug || updatedData.slug;
+    const result = await updateProfile(
+      identifier || `prof-${Date.now()}`,
+      {
+        ...updatedData,
+        ...(effectiveSlug ? { slug: effectiveSlug } : {})
+      },
+      session.id
+    );
 
-    // 3. Strict Ownership Verification: session.userId === targetProfile.userId
-    // NEVER trust user IDs provided solely in client payloads or query parameters.
-    if (!targetProfile.userId || targetProfile.userId !== session.id) {
-      return NextResponse.json(
-        { 
-          error: 'Forbidden: You do not own this profile. Only the verified profile owner can perform edits.',
-          authorized: false 
-        },
-        { status: 403 }
-      );
-    }
-
-    // 4. Perform update
-    const result = await updateProfile(profileId, updatedData, session.id);
-    if (!result.success) {
+    if (!result.success || !result.profile) {
       return NextResponse.json(
         { error: result.error || 'Failed to update profile.' },
-        { status: result.status }
+        { status: result.status || 500 }
       );
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       authorized: true,
       message: 'Profile updated successfully.',
       profile: result.profile,
       updatedProfile: result.profile
     }, { status: 200 });
+
+    // 3. Set cookie for serverless cross-lambda persistence
+    try {
+      response.cookies.set(
+        'avtive_last_profile',
+        encodeURIComponent(JSON.stringify(result.profile)),
+        {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 30
+        }
+      );
+    } catch (cookieErr) {
+      console.error('Failed to set profile cookie in update API:', cookieErr);
+    }
+
+    return response;
 
   } catch (error) {
     console.error('Error updating profile in API:', error);
