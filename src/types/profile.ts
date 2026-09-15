@@ -16,7 +16,18 @@ export type ProfileTheme =
   | 'minimal' 
   | 'professional' 
   | 'elegant' 
-  | 'modern';
+  | 'modern'
+  | 'gradient'
+  | 'soft';
+
+export interface ProfileLink {
+  id: string;
+  title: string;
+  url: string;
+  icon?: string;
+  visible?: boolean;
+  order?: number;
+}
 
 export interface SharingSettings {
   photo?: boolean;
@@ -25,6 +36,7 @@ export interface SharingSettings {
   contactInfo?: boolean;
   email?: boolean;
   phone?: boolean;
+  links?: boolean;
   socialLinks?: boolean;
   skills?: boolean;
   experience?: boolean;
@@ -220,9 +232,21 @@ export interface ProfileData {
   userId?: string;
   theme?: ProfileTheme;
   type: ProfileType;
+  profileType?: 'individual' | 'team';
   slug: string;
   companyId?: string;
   companyName?: string;
+  
+  // Linktree-Style Links and Button Styling
+  links?: ProfileLink[];
+  buttonRadius?: 'square' | 'rounded' | 'pill';
+  buttonStyle?: 'solid' | 'outline' | 'soft';
+  customThemeColors?: {
+    background?: string;
+    textColor?: string;
+    buttonColor?: string;
+    buttonTextColor?: string;
+  };
   
   // Identity
   name: string;
@@ -302,4 +326,79 @@ export interface ProfileData {
   sharingSettings?: SharingSettings;
   sectionOrder?: string[];
 }
+
+export function ensureProfileLinks(profile?: Partial<ProfileData> | null): ProfileLink[] {
+  if (profile?.links && Array.isArray(profile.links) && profile.links.length > 0) {
+    return profile.links.map((link, idx) => ({
+      ...link,
+      id: link.id || `link-${idx + 1}`,
+      order: typeof link.order === 'number' ? link.order : idx + 1,
+      visible: link.visible !== false
+    }));
+  }
+
+  // Derive initial links gracefully from projects and website if links not yet populated
+  const derived: ProfileLink[] = [];
+  let order = 1;
+
+  if (profile?.website) {
+    derived.push({
+      id: 'link-website',
+      title: 'Official Website / Portfolio',
+      url: profile.website,
+      icon: 'website',
+      visible: true,
+      order: order++
+    });
+  }
+
+  if (profile?.projects && Array.isArray(profile.projects)) {
+    profile.projects.forEach((proj, idx) => {
+      const url = proj.liveUrl || proj.link;
+      if (url) {
+        derived.push({
+          id: proj.id || `link-proj-${idx + 1}`,
+          title: proj.title || `Project ${idx + 1}`,
+          url: url,
+          icon: 'portfolio',
+          visible: true,
+          order: order++
+        });
+      }
+    });
+  }
+
+  // If still empty, provide clean default showcase links
+  if (derived.length === 0) {
+    derived.push(
+      {
+        id: 'link-portfolio',
+        title: 'Portfolio & Case Studies',
+        url: 'https://github.com',
+        icon: 'portfolio',
+        visible: true,
+        order: 1
+      },
+      {
+        id: 'link-github',
+        title: 'GitHub Repositories & Code',
+        url: 'https://github.com',
+        icon: 'github',
+        visible: true,
+        order: 2
+      },
+      {
+        id: 'link-linkedin',
+        title: 'Connect on LinkedIn',
+        url: 'https://linkedin.com',
+        icon: 'linkedin',
+        visible: true,
+        order: 3
+      }
+    );
+  }
+
+  return derived;
+}
+
 

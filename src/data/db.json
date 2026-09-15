@@ -576,15 +576,19 @@
         }
       ],
       "userId": "user-mesum",
-      "theme": "elegant",
+      "theme": "gradient",
       "profileName": "Strategy-based Artist & Creative Director",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "updatedAt": "2026-09-15T10:38:58.467Z",
       "sharingSettings": {
-        "email": true,
-        "phone": true,
-        "contactInfo": true
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "links": true,
+        "socialLinks": true,
+        "email": false,
+        "phone": false
       },
       "sectionOrder": [
         "hero",
@@ -614,6 +618,35 @@
           "platform": "website",
           "url": "https://www.avtive.app",
           "label": "Avtive.app"
+        }
+      ],
+      "profileType": "team",
+      "buttonRadius": "pill",
+      "buttonStyle": "solid",
+      "links": [
+        {
+          "id": "link-li",
+          "title": "LinkedIn Network",
+          "url": "https://linkedin.com/in/avtive",
+          "icon": "linkedin",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "link-gh",
+          "title": "GitHub Repositories",
+          "url": "https://github.com/avtive",
+          "icon": "github",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "link-port",
+          "title": "Official Portfolio",
+          "url": "https://avtive.app",
+          "icon": "website",
+          "visible": true,
+          "order": 3
         }
       ]
     },
@@ -813,15 +846,19 @@
         }
       ],
       "userId": "user-mesum",
-      "theme": "elegant",
+      "theme": "gradient",
       "profileName": "Strategy-based Artist & Creative Director",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "updatedAt": "2026-09-15T10:38:58.467Z",
       "sharingSettings": {
-        "email": true,
-        "phone": true,
-        "contactInfo": true
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "links": true,
+        "socialLinks": true,
+        "email": false,
+        "phone": false
       },
       "sectionOrder": [
         "hero",
@@ -851,6 +888,35 @@
           "platform": "website",
           "url": "https://www.avtive.app",
           "label": "Avtive.app"
+        }
+      ],
+      "profileType": "team",
+      "buttonRadius": "pill",
+      "buttonStyle": "solid",
+      "links": [
+        {
+          "id": "link-li",
+          "title": "LinkedIn Network",
+          "url": "https://linkedin.com/in/avtive",
+          "icon": "linkedin",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "link-gh",
+          "title": "GitHub Repositories",
+          "url": "https://github.com/avtive",
+          "icon": "github",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "link-port",
+          "title": "Official Portfolio",
+          "url": "https://avtive.app",
+          "icon": "website",
+          "visible": true,
+          "order": 3
         }
       ]
     },

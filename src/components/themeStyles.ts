@@ -281,6 +281,62 @@ export const PROFILE_THEMES: Record<ProfileTheme, ThemeConfig> = {
     pillTheme: 'bg-rose-100 dark:bg-[#4C1D38] text-[#BE123C] dark:text-[#FB7185]',
     coverFallback: 'bg-[#FAF5F0] dark:bg-[#1A0C14]',
     accentRim: 'bg-gradient-to-r from-transparent via-[#BE123C] to-transparent'
+  },
+  gradient: {
+    id: 'gradient',
+    name: 'Vibrant Gradient',
+    tag: 'Gradient',
+    description: 'Modern fluid purple-to-indigo gradient with high-contrast glowing cards',
+    previewClass: 'bg-gradient-to-br from-violet-600 to-indigo-900 border-violet-400 text-white',
+    pageBg: 'bg-gradient-to-br from-violet-950 via-slate-900 to-indigo-950 text-white',
+    headerBg: 'bg-violet-950/90 dark:bg-violet-950/90 border-white/10',
+    container: 'bg-slate-900/90 dark:bg-slate-900/90 text-white border border-violet-500/30 shadow-2xl shadow-violet-500/10 rounded-2xl',
+    cardBg: 'bg-slate-900/80 dark:bg-slate-900/80 backdrop-blur-md',
+    cardBorder: 'border-violet-500/30 dark:border-violet-500/30',
+    subCardBg: 'bg-violet-950/40 dark:bg-violet-950/40',
+    subCardBorder: 'border-violet-500/20 dark:border-violet-500/20',
+    hoverBorder: 'hover:border-violet-400 dark:hover:border-violet-300',
+    textPrimary: 'text-white font-sans',
+    textSecondary: 'text-violet-200/80',
+    textMuted: 'text-violet-300/60',
+    accentText: 'text-violet-400',
+    badgeBg: 'bg-violet-500/20',
+    badgeText: 'text-violet-300 border border-violet-500/30',
+    btnPrimary: 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold rounded-xl shadow-md',
+    btnSecondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl',
+    divider: 'border-violet-500/20',
+    fontFamily: 'font-sans',
+    pillTheme: 'bg-violet-900/60 text-violet-200',
+    coverFallback: 'bg-gradient-to-r from-violet-800 to-indigo-900',
+    accentRim: 'bg-gradient-to-r from-transparent via-violet-400 to-transparent'
+  },
+  soft: {
+    id: 'soft',
+    name: 'Soft Pastel',
+    tag: 'Soft',
+    description: 'Light, friendly aesthetic with soft sky and lavender tones and rounded pill cards',
+    previewClass: 'bg-[#F0F4F8] border-sky-300 text-sky-950',
+    pageBg: 'bg-[#F0F4F8] dark:bg-[#0E1520]',
+    headerBg: 'bg-[#F0F4F8]/95 dark:bg-[#0E1520]/95 border-sky-200 dark:border-sky-900/40',
+    container: 'bg-white dark:bg-[#141E2D] text-slate-900 dark:text-slate-100 border border-sky-100 dark:border-sky-900/40 shadow-sm rounded-2xl',
+    cardBg: 'bg-white dark:bg-[#141E2D]',
+    cardBorder: 'border-sky-100 dark:border-sky-900/40',
+    subCardBg: 'bg-sky-50/50 dark:bg-[#192435]',
+    subCardBorder: 'border-sky-100 dark:border-sky-900/30',
+    hoverBorder: 'hover:border-sky-400 dark:hover:border-sky-500',
+    textPrimary: 'text-slate-900 dark:text-slate-100 font-sans',
+    textSecondary: 'text-slate-600 dark:text-slate-400',
+    textMuted: 'text-slate-400 dark:text-slate-500',
+    accentText: 'text-sky-600 dark:text-sky-400',
+    badgeBg: 'bg-sky-100 dark:bg-sky-950/70',
+    badgeText: 'text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800',
+    btnPrimary: 'bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl shadow-xs',
+    btnSecondary: 'bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-900 dark:text-sky-200 border border-sky-200 dark:border-sky-800 rounded-xl',
+    divider: 'border-sky-100 dark:border-sky-900/40',
+    fontFamily: 'font-sans',
+    pillTheme: 'bg-sky-100 dark:bg-sky-900/50 text-sky-800 dark:text-sky-200',
+    coverFallback: 'bg-sky-100 dark:bg-[#141E2D]',
+    accentRim: 'bg-gradient-to-r from-transparent via-sky-400 to-transparent'
   }
 };
 
@@ -294,5 +350,37 @@ export function getThemeConfig(theme?: ProfileTheme | string): ThemeConfig {
   if (theme === 'luxe') {
     return PROFILE_THEMES.luxe;
   }
+  if (theme === 'gradient') {
+    return PROFILE_THEMES.gradient;
+  }
+  if (theme === 'soft') {
+    return PROFILE_THEMES.soft;
+  }
   return PROFILE_THEMES[theme as ProfileTheme] || PROFILE_THEMES.editorial;
 }
+
+export function getButtonRadiusClass(radius?: 'square' | 'rounded' | 'pill'): string {
+  switch (radius) {
+    case 'square':
+      return 'rounded-none';
+    case 'pill':
+      return 'rounded-full';
+    case 'rounded':
+    default:
+      return 'rounded-2xl';
+  }
+}
+
+export function getButtonStyleClass(style?: 'solid' | 'outline' | 'soft', theme?: ProfileTheme): string {
+  const t = getThemeConfig(theme);
+  switch (style) {
+    case 'outline':
+      return `bg-transparent border-2 ${t.cardBorder} ${t.textPrimary} hover:${t.badgeBg} shadow-xs`;
+    case 'soft':
+      return `${t.badgeBg} ${t.accentText} border ${t.subCardBorder} hover:opacity-90`;
+    case 'solid':
+    default:
+      return `${t.btnPrimary}`;
+  }
+}
+

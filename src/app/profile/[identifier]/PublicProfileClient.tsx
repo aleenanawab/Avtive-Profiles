@@ -11,6 +11,7 @@ import {
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { getThemeConfig } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
+import { ProfileBuilderClient } from '@/components/builder/ProfileBuilderClient';
 import { 
   Share2, 
   Home, 
@@ -78,6 +79,15 @@ export function PublicProfileClient({
 
   const identifier = profile.slug || profile.id;
 
+  // In-Place Profile Builder: Transforms view directly without popups or page navigation
+  if (isEditing) {
+    return (
+      <div className="min-h-screen w-full relative">
+        <ProfileBuilderClient initialProfile={profile} />
+      </div>
+    );
+  }
+
   return (
     <div 
       data-theme={activeTheme}
@@ -90,8 +100,6 @@ export function PublicProfileClient({
         </div>
       )}
 
-
-
       {/* Main Profile Content Viewport - Responsive Desktop Width (NOT a phone mockup) */}
       <main className={`flex-1 w-full mx-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-8 flex justify-center transition-all duration-300 ${
         viewMode === 'web' ? 'max-w-6xl xl:max-w-7xl' : 'max-w-4xl lg:max-w-5xl'
@@ -102,7 +110,7 @@ export function PublicProfileClient({
             canEdit={isOwner}
             isEditing={isEditing}
             isConnected={false}
-            onOpenEdit={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
+            onOpenEdit={() => setIsEditing(true)}
             onCancelEdit={() => setIsEditing(false)}
             onSaveEdits={handleSaveEdits}
             onSaveContact={() => showToast('Contact information saved!')}

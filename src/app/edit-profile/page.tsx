@@ -46,7 +46,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
   }
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 bg-[#FAFAF9] dark:bg-[#09090B] text-slate-900 dark:text-white transition-colors font-sans">
+    <main className="min-h-screen w-full bg-[#FAFAF9] dark:bg-[#09090B] text-slate-900 dark:text-white transition-colors font-sans">
       <Suspense fallback={<div className="p-8 text-center text-sm font-semibold">Loading profile editor...</div>}>
         <EditProfileClient initialProfile={targetProfile} />
       </Suspense>

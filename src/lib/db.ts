@@ -11,6 +11,7 @@ export const DEFAULT_SHARING_SETTINGS: SharingSettings = {
   contactInfo: true,
   email: true,
   phone: true,
+  links: true,
   socialLinks: true,
   skills: true,
   experience: true,
