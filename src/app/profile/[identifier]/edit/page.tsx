@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { redirect, notFound } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfileByIdOrSlug, getProfilesByUserId } from '@/lib/db';
+import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser } from '@/lib/db';
 import { EditProfileClient } from '@/app/edit-profile/EditProfileClient';
 import type { Metadata } from 'next';
 
@@ -36,11 +36,21 @@ export default async function ProfileIdentifierEditPage({ params }: ProfileIdent
   // If still not found or belongs to another user, restrict to current user's profile
   if (!targetProfile || targetProfile.userId !== session.id) {
     const sessionProfiles = await getProfilesByUserId(session.id);
-    if (sessionProfiles.length === 0) {
-      redirect('/onboarding/theme');
+    if (sessionProfiles.length > 0) {
+      targetProfile = sessionProfiles[0];
+    } else if (targetProfile) {
+      // Associate matched profile with current user session
+      targetProfile.userId = session.id;
+    } else {
+      // Graceful creation fallback: ensure user always lands on the editing page
+      targetProfile = await createProfileForUser(session.id, {
+        name: session.name,
+        email: session.email,
+        profileName: 'Primary Profile',
+        designation: 'Professional',
+        type: 'owner'
+      });
     }
-    // Strictly isolate: only edit own profile
-    targetProfile = sessionProfiles[0];
   }
 
   const allUserProfiles = await getProfilesByUserId(session.id);

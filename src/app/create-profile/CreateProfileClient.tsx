@@ -157,8 +157,13 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
         return;
       }
 
-      // Success: redirect directly to the new profile or dashboard
-      router.push('/dashboard');
+      // Success: redirect directly to the editing profile page
+      const targetSlug = data.profile?.slug || data.profile?.id;
+      if (targetSlug) {
+        router.push(`/profile/${targetSlug}/edit`);
+      } else {
+        router.push('/profile/edit');
+      }
       router.refresh();
     } catch (err: any) {
       console.error(err);
