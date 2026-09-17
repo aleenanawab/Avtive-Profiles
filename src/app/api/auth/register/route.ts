@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail, createUser } from '@/lib/db';
-import { hashPassword, setSessionCookie } from '@/lib/auth';
+import { hashPassword, setSessionCookie, setReturningUserCookie } from '@/lib/auth';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -38,22 +38,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Reject duplicate email with a clean error message
-    const existingUser = await getUserByEmail(email);
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // 2. Check existing user
+    const existingUser = await getUserByEmail(normalizedEmail);
+
+    // 3. Constant-time defense against timing-based email enumeration:
+    // Always compute password hash to eliminate timing differences between existing and new emails
+    const passwordHash = await hashPassword(password);
+
+    // 4. Anti-enumeration defense:
+    // Return generic error without exposing whether this specific email exists in the system.
+    // Do not set cookies on error to prevent cookie-based account existence enumeration.
     if (existingUser) {
       return NextResponse.json(
-        { error: 'An account with this email address already exists. Please log in.' },
-        { status: 409 }
+        { error: 'Unable to process registration with the provided credentials. Please try signing in or use different details.' },
+        { status: 400 }
       );
     }
 
-    // 3. Securely hash password before saving
-    const passwordHash = await hashPassword(password);
-
-    // 4. Save account (profile will be created in profile-creation step)
+    // 5. Save account (profile will be created in profile-creation step)
     const { user } = await createUser({
       name: name.trim(),
-      email: email.trim(),
+      email: normalizedEmail,
       passwordHash,
       createProfile: false
     });

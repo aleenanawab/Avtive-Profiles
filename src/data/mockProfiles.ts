@@ -188,7 +188,7 @@ export const founderProfile: ProfileData = {
 export const teamMemberProfile: ProfileData = {
   id: 'hamza-malik',
   slug: 'hamza-malik',
-  type: 'team-member',
+  type: 'individual',
   theme: 'elegant',
   companyId: 'avtive-company',
   companyName: 'Avtive',
@@ -265,7 +265,7 @@ export const teamMemberProfile: ProfileData = {
 export const companyProfile: ProfileData = {
   id: 'avtive-company',
   slug: 'avtive',
-  type: 'company',
+  type: 'team',
   theme: 'elegant',
   
   name: 'Avtive',

@@ -92,10 +92,10 @@ async function runWorkflowVerification() {
   });
   assert(rolePage.statusCode === 200, '/onboarding/role responds 200 OK');
   assert(rolePage.body.includes('Select Profile Type'), 'Renders role selection');
-  assert(rolePage.body.includes('Owner'), 'Renders Owner option');
-  assert(rolePage.body.includes('Employee'), 'Renders Employee option');
+  assert(rolePage.body.includes('Individual'), 'Renders Individual option');
+  assert(rolePage.body.includes('Team'), 'Renders Team option');
 
-  const createPage = await request('/onboarding/create?theme=editorial&role=owner', {
+  const createPage = await request('/onboarding/create?theme=editorial&role=individual', {
     headers: { Cookie: cookie }
   });
   assert(createPage.statusCode === 200, '/onboarding/create responds 200 OK');
@@ -137,7 +137,7 @@ async function runWorkflowVerification() {
         github: 'https://github.com/emantariq'
       },
       theme: 'editorial',
-      type: 'owner'
+      type: 'individual'
     })
   });
   assert(createProfileRes.statusCode === 201, 'Profile created via API (201 Created)');
@@ -168,7 +168,7 @@ async function runWorkflowVerification() {
   assert(editRes.statusCode === 200, `/profile/${profileSlug}/edit responds 200 OK (no redirect to theme!)`);
   assert(editRes.body.includes('Edit Profile') || editRes.body.includes('Eman Tariq'), 'Edit page renders profile editing dashboard');
 
-  // Test 7: Public Profile Layout Verification
+  // Test 7: Public Profile Layout Verification (Owner vs Visitor)
   console.log('\n[7. Public Profile Rendering & Element Ordering]');
   const publicRes = await request(`/profile/${profileSlug}`, {
     headers: { Cookie: cookie }
@@ -179,8 +179,21 @@ async function runWorkflowVerification() {
   assert(publicRes.statusCode === 200, `/profile/${profileSlug} responds 200 OK`);
   assert(publicRes.body.includes('Eman Tariq'), 'Renders profile name');
   assert(publicRes.body.includes('Lead Product Designer'), 'Renders professional title');
-  assert(publicRes.body.includes('Connect'), 'Renders Connect action button');
-  assert(publicRes.body.includes('Share'), 'Renders Share action button');
+  assert(publicRes.body.includes('Edit Profile'), 'Owner view renders Edit Profile action button');
+
+  // Visitor View (authenticated as another user, non-owner)
+  const visitorLoginRes = await request('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'abcd@gmail.com', password: '12345678' })
+  });
+  const visitorCookie = visitorLoginRes.headers['set-cookie']?.[0]?.split(';')[0];
+  const visitorRes = await request(`/profile/${profileSlug}`, {
+    headers: { Cookie: visitorCookie }
+  });
+  assert(visitorRes.statusCode === 200, `/profile/${profileSlug} visitor view responds 200 OK`);
+  assert(visitorRes.body.includes('Connect'), 'Visitor view renders Connect action button');
+  assert(visitorRes.body.includes('Share'), 'Renders Share action button');
   assert(publicRes.body.includes('Virtual Card Preview'), 'Renders Virtual Card Preview section');
   assert(publicRes.body.includes('Download Virtual Card'), 'Renders Download Virtual Card button');
   assert(publicRes.body.includes('Share Card'), 'Renders Share Card button');

@@ -1,58 +1,31 @@
-import React from 'react';
-import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth';
-import { getProfilesByUserId } from '@/lib/db';
-import LoginClient from './LoginClient';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export const metadata = {
-  title: 'Login | Avtive',
-  description: 'Sign in to your Avtive digital profile account.'
-};
+export default function RegisterClient() {
+  const router = useRouter();
 
-interface LoginPageProps {
-  searchParams: Promise<{ returnUrl?: string; registered?: string }>;
-}
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
-export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const session = await getSession();
-  const { returnUrl } = await searchParams;
-
-  // Existing authenticated users should not see login form again
-  if (session) {
-    const profiles = await getProfilesByUserId(session.id);
-    if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-      redirect(returnUrl);
-    } else if (profiles && profiles.length > 0) {
-      redirect(`/profile/${profiles[0].slug || profiles[0].id}`);
-    } else {
-      redirect('/onboarding/theme');
-    }
-  }, []);
-
-  const getReturnUrl = () => {
-    if (typeof window === 'undefined') return null;
-    return new URLSearchParams(window.location.search).get('returnUrl');
-  };
-
-  // 1. Session check: if already authenticated, redirect to Profile or Onboarding
+  // Client-side session check: Existing authenticated users must not stay on registration
   useEffect(() => {
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
         if (data.user) {
-          const returnUrl = getReturnUrl();
           const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
           if (hasProfiles) {
-            const targetId = data.user?.id || data.profiles?.[0]?.slug || data.profile?.slug;
-            if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-              router.replace(returnUrl);
-            } else if (targetId) {
-              router.replace(`/profile/${targetId}/edit`);
-            } else {
-              router.replace('/onboarding/theme');
-            }
+            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug || data.user.id;
+            router.replace(`/profile/${targetSlug}`);
           } else {
             router.replace('/onboarding/theme');
           }
@@ -76,14 +49,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         setIsLoading(false);
         return;
       }
-      if (data.hasProfile) {
-        const returnUrl = getReturnUrl();
-        const targetId = data.user?.id || data.profileSlug;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-          router.push(returnUrl);
-        } else {
-          router.push(`/profile/${targetId}/edit`);
-        }
+      try {
+        localStorage.setItem('avtive_returning_user', 'true');
+      } catch {}
+
+      if (data.hasProfile && data.profileSlug) {
+        router.push(`/profile/${data.profileSlug}`);
       } else {
         router.push('/onboarding/theme');
       }
@@ -95,60 +66,64 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setSuccessMessage(null);
 
-    if (!email.trim() || !password) {
-      setErrorMessage('Please enter both email and password.');
+    if (!name.trim() || name.trim().length < 2) {
+      setErrorMessage('Please enter your full name (at least 2 characters).');
+      return;
+    }
+
+    if (!email.trim() || !email.includes('@')) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
+    if (!password || password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long.');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password })
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          password,
+          confirmPassword: password
+        })
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMessage(data.error || 'Invalid credentials. Please check email and password.');
+        setErrorMessage(data.error || 'Registration failed. Please check your details.');
         setIsLoading(false);
         return;
       }
 
-      const returnUrl = getReturnUrl();
-      if (data.hasProfile) {
-        const targetId = data.user?.id || data.profileSlug;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-          router.push(returnUrl);
-        } else {
-          // Dynamic isolated profile edit route
-          router.push(`/profile/${targetId}/edit`);
-        }
-      } else {
-        // Unconfigured user: sequential onboarding
-        router.push('/onboarding/theme');
-      }
+      try {
+        localStorage.setItem('avtive_returning_user', 'true');
+      } catch {}
 
+      // User is now authenticated automatically: proceed directly to theme onboarding
+      router.push('/onboarding/theme');
       router.refresh();
     } catch (err) {
       console.error(err);
-      setErrorMessage('Network error during login. Please try again.');
+      setErrorMessage('Network error during registration. Please try again.');
       setIsLoading(false);
     }
   };
 
-  const [showPassword, setShowPassword] = useState(false);
-
   return (
     <div className="min-h-[calc(100vh-65px)] w-full flex items-center justify-center p-3 sm:p-6 py-8 font-sans transition-colors">
-      {/* Figma Mobile Screen Card (Screen 2. Login) */}
+      {/* Figma Mobile Screen Card (Screen 1. Register / Signup) */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -174,24 +149,16 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <div className="w-9 h-9 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-lg shadow-sm font-sans">
               A
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               Avtive
-            </h1>
+            </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Welcome Back · Sign in to your account
+            Create Your Account
           </p>
         </div>
 
-        {/* Success / Info Alert */}
-        {successMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>{successMessage}</span>
-          </div>
-        )}
-
-        {/* Error Alert */}
+        {/* Error Notification Alert */}
         {errorMessage && (
           <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -199,8 +166,22 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
         )}
 
-        {/* Form Fields: Email & Password */}
-        <form onSubmit={handleLogin} className="space-y-4">
+        {/* Form Fields: Name, Email, Password */}
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div className="space-y-1.5 text-left">
+            <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
+              Name
+            </label>
+            <input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Aleena Nawab"
+              className="figma-input w-full px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
+            />
+          </div>
+
           <div className="space-y-1.5 text-left">
             <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
               Email
@@ -243,7 +224,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
           </div>
 
-          {/* Primary Action Button: White Pill Button */}
+          {/* Primary Action Button */}
           <div className="pt-2">
             <button
               type="submit"
@@ -253,10 +234,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Signing In...</span>
+                  <span>Creating Account...</span>
                 </>
               ) : (
-                <span>Login</span>
+                <span>Create Account</span>
               )}
             </button>
           </div>
@@ -280,52 +261,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </button>
         </div>
 
-        {/* Demo Account Quick Access */}
-        <div className="pt-4 mt-2 text-center space-y-1.5 border-t border-slate-200 dark:border-white/10">
-          <div className="text-[11px] text-slate-500 dark:text-zinc-400">Quick Demo Accounts:</div>
-          <div className="flex flex-wrap items-center justify-center gap-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                setEmail('abcd@gmail.com');
-                setPassword('12345678');
-              }}
-              className="text-[10px] text-slate-700 dark:text-zinc-200 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 border border-slate-300 dark:border-white/15 transition-colors cursor-pointer font-medium"
-            >
-              Demo (abcd@gmail.com)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEmail('aleenaknawab@gmail.com');
-                setPassword('Avtive@123');
-              }}
-              className="text-[10px] text-slate-700 dark:text-zinc-200 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 border border-slate-300 dark:border-white/15 transition-colors cursor-pointer"
-            >
-              Aleena (Full Profile)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEmail('mesum@avtive.app');
-                setPassword('Avtive@123');
-              }}
-              className="text-[10px] text-slate-700 dark:text-zinc-200 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 border border-slate-300 dark:border-white/15 transition-colors cursor-pointer"
-            >
-              Mesum (Owner)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEmail('hamza@avtive.app');
-                setPassword('Avtive@123');
-              }}
-              className="text-[10px] text-slate-700 dark:text-zinc-200 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 border border-slate-300 dark:border-white/15 transition-colors cursor-pointer"
-            >
-              Hamza (Employee)
-            </button>
-          </div>
+        {/* Footer Link: Already have an account? Log in */}
+        <div className="pt-6 pb-2 text-center text-xs text-slate-500 dark:text-zinc-400">
+          <span>Already have an account? </span>
+          <Link
+            href="/login"
+            className="font-bold text-slate-900 dark:text-white hover:underline ml-1"
+          >
+            Log in
+          </Link>
         </div>
-
-  return <LoginClient />;
+      </motion.div>
+    </div>
+  );
 }

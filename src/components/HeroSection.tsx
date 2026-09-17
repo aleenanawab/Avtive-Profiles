@@ -41,24 +41,18 @@ export function HeroSection({
   const sharing = profile.sharingSettings || {};
 
   const normalizedType = normalizeProfileType(profile.type);
-  const typeBadgeLabel = normalizedType === 'owner' ? 'Owner' : normalizedType === 'employee' ? 'Employee' : 'Company';
+  const typeBadgeLabel = normalizedType === 'team' ? 'Team' : 'Individual';
 
-  const defaultStats = normalizedType === 'owner'
+  const defaultStats = normalizedType === 'team'
     ? [
-        { value: profile.highlights?.[0]?.value || '5', label: profile.highlights?.[0]?.label || 'Team Members' },
-        { value: profile.highlights?.[1]?.value || '3', label: profile.highlights?.[1]?.label || 'Company Projects' },
-        { value: profile.highlights?.[2]?.value || '2', label: profile.highlights?.[2]?.label || 'Years' }
-      ]
-    : normalizedType === 'employee'
-    ? [
-        { value: profile.highlights?.[0]?.value || '12', label: profile.highlights?.[0]?.label || 'Team Members' },
-        { value: profile.highlights?.[1]?.value || '8', label: profile.highlights?.[1]?.label || 'Projects' },
-        { value: profile.highlights?.[2]?.value || '5', label: profile.highlights?.[2]?.label || 'Years' }
-      ]
-    : [
         { value: profile.highlights?.[0]?.value || '15+', label: profile.highlights?.[0]?.label || 'Team' },
         { value: profile.highlights?.[1]?.value || '25+', label: profile.highlights?.[1]?.label || 'Projects' },
         { value: profile.highlights?.[2]?.value || '4+', label: profile.highlights?.[2]?.label || 'Years' }
+      ]
+    : [
+        { value: profile.highlights?.[0]?.value || '5', label: profile.highlights?.[0]?.label || 'Projects' },
+        { value: profile.highlights?.[1]?.value || '3', label: profile.highlights?.[1]?.label || 'Credentials' },
+        { value: profile.highlights?.[2]?.value || '2+', label: profile.highlights?.[2]?.label || 'Years' }
       ];
 
   // Dynamic Social Links strictly preserving user dragged & saved order
@@ -162,25 +156,25 @@ export function HeroSection({
         )}
 
         {/* Action Buttons Below Avatar: Edit Profile for Owner vs Connect for Visitors */}
-        <div className="flex items-center gap-3 pt-2 max-w-md w-full">
+        <div className="flex items-center gap-2 sm:gap-3 pt-2 max-w-md w-full">
           {canEdit ? (
             <>
               <button
                 type="button"
                 onClick={onOpenEdit || (() => router.push(`/profile/${profile.slug || profile.id}/edit`))}
-                className="flex-1 py-2.5 px-5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-slate-700 dark:border-white/20"
+                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-700 dark:border-white/20"
               >
-                <Pencil className="w-4 h-4" />
-                <span>Edit Profile</span>
+                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">Edit Profile</span>
               </button>
 
               <button
                 type="button"
                 onClick={onOpenShare}
-                className="flex-1 py-2.5 px-5 rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-slate-200 dark:border-white/10"
+                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-200 dark:border-white/10"
               >
-                <Share2 className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                <span>Share Profile</span>
+                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 dark:text-amber-400 shrink-0" />
+                <span className="truncate">Share Profile</span>
               </button>
             </>
           ) : (
@@ -188,19 +182,19 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={onOpenConnect}
-                className="flex-1 py-2.5 px-5 rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-slate-200 dark:border-white/20"
+                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-200 dark:border-white/20"
               >
-                <UserPlus className="w-4 h-4" />
-                <span>Connect</span>
+                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="truncate">Connect</span>
               </button>
 
               <button
                 type="button"
                 onClick={onOpenShare}
-                className="flex-1 py-2.5 px-5 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 border border-slate-700 dark:border-white/10"
+                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-700 dark:border-white/10"
               >
-                <Share2 className="w-4 h-4 text-amber-400" />
-                <span>Share</span>
+                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
+                <span className="truncate">Share</span>
               </button>
             </>
           )}
