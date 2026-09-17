@@ -920,7 +920,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       </div>
 
       {/* Main Responsive Split: Left Original Editor + Right Sticky Live Mobile Preview */}
-      <div className="w-full flex flex-col lg:flex-row items-start justify-center gap-8 xl:gap-12">
+      <div className="w-full flex flex-col lg:flex-row items-start justify-center gap-6 lg:gap-8 xl:gap-12 px-2 sm:px-4">
         
         {/* LEFT SIDE: Original Editor UI */}
         <div className={`w-full lg:flex-1 lg:max-w-[580px] xl:max-w-[620px] transition-all ${
@@ -1074,7 +1074,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
                 {expandedSections.basicInfo && (
                   <div className="p-4 pt-1 space-y-3 border-t border-slate-200 dark:border-white/5">
-                    <div className="grid grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
                         <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
                           First Name
@@ -1148,7 +1148,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
                         <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
                           Company
@@ -1348,7 +1348,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <input
                             type="url"
                             value={projectForm.link}
@@ -1762,7 +1762,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                         What do you want to show on your public profile?
                       </label>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {[
                           { key: 'photo' as const, label: 'Profile Photo' },
                           { key: 'nameAndTitle' as const, label: 'Name & Title' },
@@ -1808,12 +1808,12 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
             </div>
 
             {/* Save Changes Action Bar */}
-            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/10 px-5 flex items-center justify-between gap-3">
+            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/10 px-4 sm:px-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
               <Link
                 href={`/profile/${profile.slug || profile.id || initialProfile.slug || initialProfile.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="figma-pill-secondary py-2 px-4 text-xs font-bold flex items-center gap-1.5 shrink-0"
+                className="figma-pill-secondary py-2 px-4 text-xs font-bold flex items-center justify-center gap-1.5 shrink-0"
                 title="Open public profile view in a new tab"
               >
                 <Eye className="w-3.5 h-3.5" />
@@ -1824,7 +1824,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 type="button"
                 onClick={handleSaveChanges}
                 disabled={isSaving}
-                className="figma-pill-primary py-2.5 px-6 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-md"
+                className="figma-pill-primary py-2.5 px-6 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-md w-full sm:w-auto"
               >
                 {isSaving ? (
                   <>

@@ -102,44 +102,46 @@ export function PublicProfileClient({
       )}
 
       {/* Sticky View Mode Toolbar: Switch between Desktop View & Mobile View */}
-      <div className="sticky top-[53px] z-30 w-full bg-white/85 dark:bg-[#0B0D13]/85 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 transition-colors py-2 px-4 shadow-2xs">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+      <div className="sticky top-[53px] z-30 w-full bg-white/85 dark:bg-[#0B0D13]/85 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 transition-colors py-2 px-2.5 sm:px-4 shadow-2xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-3">
           
           {/* Left: Device View Switcher */}
-          <div className="inline-flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-zinc-800/90 border border-slate-200 dark:border-zinc-700/80 shadow-2xs">
+          <div className="inline-flex items-center p-0.5 sm:p-1 rounded-2xl bg-slate-100 dark:bg-zinc-800/90 border border-slate-200 dark:border-zinc-700/80 shadow-2xs shrink-0">
             <button
               type="button"
               onClick={() => setDeviceView('desktop')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 deviceView === 'desktop'
                   ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
                   : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
               }`}
               title="Desktop View"
             >
-              <Monitor className="w-3.5 h-3.5" />
-              <span>Desktop View</span>
+              <Monitor className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Desktop View</span>
+              <span className="sm:hidden">Desktop</span>
             </button>
 
             <button
               type="button"
               onClick={() => setDeviceView('mobile')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 deviceView === 'mobile'
                   ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
                   : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
               }`}
               title="Mobile View"
             >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span>Mobile View</span>
+              <Smartphone className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Mobile View</span>
+              <span className="sm:hidden">Mobile</span>
             </button>
           </div>
 
           {/* Right: Quick Action Buttons & Status */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {deviceView === 'mobile' && (
-              <span className="hidden sm:flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1">
+              <span className="hidden md:flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live Mobile View
               </span>
@@ -149,10 +151,10 @@ export function PublicProfileClient({
               <button
                 type="button"
                 onClick={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer"
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer shrink-0"
                 title="Edit Profile"
               >
-                <Edit3 className="w-3.5 h-3.5" />
+                <Edit3 className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden sm:inline">Edit Profile</span>
               </button>
             )}
@@ -160,10 +162,10 @@ export function PublicProfileClient({
             <button
               type="button"
               onClick={() => setIsShareModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer shrink-0"
               title="Share Profile"
             >
-              <Share2 className="w-3.5 h-3.5 text-amber-500" />
+              <Share2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
               <span className="hidden sm:inline">Share</span>
             </button>
           </div>

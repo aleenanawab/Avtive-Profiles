@@ -105,41 +105,42 @@ export function HeaderNav({
         </div>
 
         {/* Center: Navigation Options (Individual + Team) */}
-        <div className={`flex items-center p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs`}>
+        <div className={`flex items-center p-0.5 sm:p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
           {/* 1. Individual */}
           <button
             onClick={onOpenMyCard}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
+            className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all ${
               profileType === 'individual'
                 ? `${theme.btnPrimary} shadow-xs`
                 : `${theme.textMuted} hover:${theme.textPrimary}`
             }`}
           >
-            <CreditCard className="w-3.5 h-3.5" />
-            <span>Individual</span>
+            <CreditCard className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden xs:inline sm:inline">Individual</span>
+            <span className="xs:hidden sm:hidden">Me</span>
           </button>
           
           {/* 2. Team */}
           <button
             onClick={() => onSelectProfileType('team', 'team')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
+            className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all ${
               profileType === 'team'
                 ? `${theme.btnPrimary} shadow-xs`
                 : `${theme.textMuted} hover:${theme.textPrimary}`
             }`}
           >
-            <Users className="w-3.5 h-3.5" />
+            <Users className="w-3.5 h-3.5 shrink-0" />
             <span>Team</span>
           </button>
         </div>
 
         {/* Right Controls: Permissions Switcher, Edit Button, Theme & Share */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Permissions / Role Switcher */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs`}
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs`}
               title="Switch user permission role"
             >
               <span>{getRoleLabel(userRole).icon}</span>
@@ -208,7 +209,7 @@ export function HeaderNav({
           {canEdit && !isEditing && (
             <button
               onClick={onOpenEdit}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs`}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0`}
             >
               <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
               <span className="hidden sm:inline">Edit ✎</span>
@@ -216,7 +217,7 @@ export function HeaderNav({
           )}
 
           {/* View Mode (Desktop vs Mobile Preview) */}
-          <div className={`hidden lg:flex items-center p-0.5 rounded-xl ${theme.cardBg} border ${theme.cardBorder}`}>
+          <div className={`hidden lg:flex items-center p-0.5 rounded-xl ${theme.cardBg} border ${theme.cardBorder} shrink-0`}>
             <button
               onClick={() => onToggleViewMode('desktop')}
               className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -242,7 +243,7 @@ export function HeaderNav({
             onClick={onToggleTheme}
             aria-label="Toggle Theme"
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className={`p-2 sm:px-3 sm:py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1`}
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1 shrink-0`}
           >
             {isDark ? (
               <>
@@ -260,7 +261,7 @@ export function HeaderNav({
           {/* Share Button */}
           <button
             onClick={onOpenShare}
-            className={`flex items-center gap-1 p-2 sm:px-3 sm:py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95`}
+            className={`flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0`}
           >
             <Share2 className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Share</span>
@@ -268,17 +269,17 @@ export function HeaderNav({
 
           {/* Auth State Button (Sign In or Logout) */}
           {session ? (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               <Link
                 href="/my-profile"
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.badgeBg} ${theme.badgeText} text-xs font-bold transition-colors shadow-2xs hover:opacity-90`}
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.badgeBg} ${theme.badgeText} text-xs font-bold transition-colors shadow-2xs hover:opacity-90 shrink-0`}
                 title="View My Profile"
               >
                 <span>My Profile</span>
               </Link>
               <button
                 onClick={onLogout}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors`}
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors shrink-0`}
                 title="Sign Out"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -288,7 +289,7 @@ export function HeaderNav({
           ) : (
             <Link
               href="/login"
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs`}
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0`}
               title="Sign In"
             >
               <LogIn className="w-3.5 h-3.5" />
