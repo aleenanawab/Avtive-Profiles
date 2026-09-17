@@ -1,4 +1,8 @@
-'use client';
+import React from 'react';
+import { redirect } from 'next/navigation';
+import { getSession } from '@/lib/auth';
+import { getProfilesByUserId } from '@/lib/db';
+import RegisterClient from './RegisterClient';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,8 +10,10 @@ import Link from 'next/link';
 import { Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function RegisterPage() {
-  const router = useRouter();
+export const metadata = {
+  title: 'Register | Avtive',
+  description: 'Create your digital identity profile on Avtive.'
+};
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -67,7 +73,7 @@ export default function RegisterPage() {
       setErrorMessage('Network error during Google authentication.');
       setIsLoading(false);
     }
-  };
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

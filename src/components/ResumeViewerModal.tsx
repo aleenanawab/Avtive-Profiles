@@ -63,8 +63,8 @@ Profile URL: https://www.avtive.app/profile/${profile.slug || profile.id}
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left">
-      <div className={`relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-6 space-y-5 transition-colors`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left overflow-y-auto">
+      <div className={`relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-4 sm:p-6 space-y-4 sm:space-y-5 transition-colors`}>
         {/* Header */}
         <div className={`flex items-center justify-between pb-3 border-b ${theme.divider}`}>
           <div className="flex items-center gap-2.5">

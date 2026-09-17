@@ -75,7 +75,7 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
 
   // Form State
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>('editorial');
-  const [profileType, setProfileType] = useState<ProfileType>('owner');
+  const [profileType, setProfileType] = useState<ProfileType>('individual');
   const [profileName, setProfileName] = useState('MERN Developer');
   const [fullName, setFullName] = useState(user.name || 'Aleena Nawab');
   const [professionalTitle, setProfessionalTitle] = useState('Full Stack Developer');

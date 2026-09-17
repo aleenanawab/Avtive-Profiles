@@ -1,33 +1,27 @@
-import React from 'react';
-import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth';
-import { getProfilesByUserId } from '@/lib/db';
-import LoginClient from './LoginClient';
+'use client';
 
-export const dynamic = 'force-dynamic';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export const metadata = {
-  title: 'Login | Avtive',
-  description: 'Sign in to your Avtive digital profile account.'
-};
+export default function LoginClient() {
+  const router = useRouter();
 
-interface LoginPageProps {
-  searchParams: Promise<{ returnUrl?: string; registered?: string }>;
-}
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
-export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const session = await getSession();
-  const { returnUrl } = await searchParams;
-
-  // Existing authenticated users should not see login form again
-  if (session) {
-    const profiles = await getProfilesByUserId(session.id);
-    if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-      redirect(returnUrl);
-    } else if (profiles && profiles.length > 0) {
-      redirect(`/profile/${profiles[0].slug || profiles[0].id}`);
-    } else {
-      redirect('/onboarding/theme');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get('registered') === 'true') {
+        setSuccessMessage('Account created successfully! Please sign in below.');
+      }
     }
   }, []);
 
@@ -36,7 +30,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     return new URLSearchParams(window.location.search).get('returnUrl');
   };
 
-  // 1. Session check: if already authenticated, redirect to Profile or Onboarding
+  // Session check: if already authenticated, redirect to Profile or Onboarding
   useEffect(() => {
     fetch('/api/auth/me')
       .then((res) => res.json())
@@ -45,11 +39,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           const returnUrl = getReturnUrl();
           const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
           if (hasProfiles) {
-            const targetId = data.user?.id || data.profiles?.[0]?.slug || data.profile?.slug;
+            const targetId = data.profiles?.[0]?.slug || data.profile?.slug || data.user?.id;
             if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
               router.replace(returnUrl);
             } else if (targetId) {
-              router.replace(`/profile/${targetId}/edit`);
+              router.replace(`/profile/${targetId}`);
             } else {
               router.replace('/onboarding/theme');
             }
@@ -76,13 +70,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         setIsLoading(false);
         return;
       }
+      try {
+        localStorage.setItem('avtive_returning_user', 'true');
+      } catch {}
+
       if (data.hasProfile) {
         const returnUrl = getReturnUrl();
-        const targetId = data.user?.id || data.profileSlug;
+        const targetId = data.profileSlug || data.user?.id;
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
           router.push(returnUrl);
         } else {
-          router.push(`/profile/${targetId}/edit`);
+          router.push(`/profile/${targetId}`);
         }
       } else {
         router.push('/onboarding/theme');
@@ -122,17 +120,19 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         return;
       }
 
+      try {
+        localStorage.setItem('avtive_returning_user', 'true');
+      } catch {}
+
       const returnUrl = getReturnUrl();
       if (data.hasProfile) {
-        const targetId = data.user?.id || data.profileSlug;
+        const targetId = data.profileSlug || data.user?.id;
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
           router.push(returnUrl);
         } else {
-          // Dynamic isolated profile edit route
-          router.push(`/profile/${targetId}/edit`);
+          router.push(`/profile/${targetId}`);
         }
       } else {
-        // Unconfigured user: sequential onboarding
         router.push('/onboarding/theme');
       }
 
@@ -143,8 +143,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       setIsLoading(false);
     }
   };
-
-  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="min-h-[calc(100vh-65px)] w-full flex items-center justify-center p-3 sm:p-6 py-8 font-sans transition-colors">
@@ -243,7 +241,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
           </div>
 
-          {/* Primary Action Button: White Pill Button */}
+          {/* Primary Action Button */}
           <div className="pt-2">
             <button
               type="submit"
@@ -327,5 +325,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
         </div>
 
-  return <LoginClient />;
+        {/* Footer Link: Don't have an account? Sign up */}
+        <div className="pt-4 pb-2 text-center text-xs text-slate-500 dark:text-zinc-400">
+          <span>Don&apos;t have an account? </span>
+          <Link
+            href="/register"
+            className="font-bold text-slate-900 dark:text-white hover:underline ml-1"
+          >
+            Sign up
+          </Link>
+        </div>
+      </motion.div>
+    </div>
+  );
 }

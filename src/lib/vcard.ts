@@ -1,10 +1,10 @@
-import { ProfileData } from '../types/profile';
+import { ProfileData, normalizeProfileType } from '../types/profile';
 
 /**
  * Formats and generates a standard vCard (VCF) 3.0 string from profile data.
  */
 export function generateVCardString(profile: ProfileData): string {
-  const isCompany = profile.type === 'company';
+  const isTeam = normalizeProfileType(profile.type) === 'team';
   const nameParts = profile.name.trim().split(' ');
   const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
   const firstName = nameParts[0] || profile.name;
@@ -12,12 +12,12 @@ export function generateVCardString(profile: ProfileData): string {
   const lines = [
     'BEGIN:VCARD',
     'VERSION:3.0',
-    isCompany
+    isTeam
       ? `FN:${profile.name}`
       : `N:${lastName};${firstName};;;`,
     `FN:${profile.name}`,
     profile.designation ? `TITLE:${profile.designation}` : '',
-    profile.company ? `ORG:${profile.company}` : isCompany ? `ORG:${profile.name}` : '',
+    profile.company ? `ORG:${profile.company}` : isTeam ? `ORG:${profile.name}` : '',
     profile.phone ? `TEL;TYPE=CELL,VOICE:${profile.phone}` : '',
     profile.email ? `EMAIL;TYPE=INTERNET,WORK:${profile.email}` : '',
     profile.website ? `URL:${profile.website}` : '',

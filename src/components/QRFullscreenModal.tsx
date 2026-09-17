@@ -45,8 +45,8 @@ export function QRFullscreenModal({ isOpen, onClose, profile }: QRFullscreenModa
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left">
-      <div className={`relative w-full max-w-sm rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-6 text-center space-y-5 transition-colors`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left overflow-y-auto">
+      <div className={`relative w-full max-w-sm max-h-[92vh] overflow-y-auto rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-4 sm:p-6 text-center space-y-4 sm:space-y-5 transition-colors`}>
         <button
           onClick={onClose}
           className={`absolute top-4 right-4 p-2 rounded-full ${theme.textMuted} hover:${theme.textPrimary} ${theme.subCardBg} transition-colors`}
@@ -59,7 +59,7 @@ export function QRFullscreenModal({ isOpen, onClose, profile }: QRFullscreenModa
           <img
             src={profile.avatar}
             alt={profile.name}
-            className={`w-16 h-16 rounded-full object-cover border-2 ${theme.cardBorder} shadow-md`}
+            className="w-16 h-16 rounded-full object-cover border-2 border-white/20 shadow-md"
           />
           <div>
             <h3 className={`text-base font-bold ${theme.textPrimary}`}>
@@ -72,11 +72,11 @@ export function QRFullscreenModal({ isOpen, onClose, profile }: QRFullscreenModa
         </div>
 
         {/* QR Code Box */}
-        <div className={`p-4 rounded-2xl ${theme.subCardBg} border ${theme.subCardBorder} inline-block shadow-inner`}>
+        <div className={`p-3 sm:p-4 rounded-2xl ${theme.subCardBg} border ${theme.subCardBorder} inline-block shadow-inner`}>
           {qrUrl ? (
-            <img src={qrUrl} alt="QR Code" className="w-52 h-52 mx-auto rounded-xl" />
+            <img src={qrUrl} alt="QR Code" className="w-44 h-44 sm:w-52 sm:h-52 mx-auto rounded-xl max-w-full" />
           ) : (
-            <div className="w-52 h-52 mx-auto flex items-center justify-center text-xs text-[#94A3B8]">
+            <div className="w-44 h-44 sm:w-52 sm:h-52 mx-auto flex items-center justify-center text-xs text-[#94A3B8]">
               <QrCode className="w-10 h-10 animate-pulse text-[#94A3B8]" />
             </div>
           )}

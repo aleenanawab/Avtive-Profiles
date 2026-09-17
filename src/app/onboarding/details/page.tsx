@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Check, Camera, Loader2, AlertCircle, Sparkles, User, Briefcase, Building, FileText } from 'lucide-react';
-import { ProfileType, ProfileTheme } from '@/types/profile';
+import { ProfileType, ProfileTheme, normalizeProfileType } from '@/types/profile';
 import { motion } from 'framer-motion';
 
 const PRESET_AVATARS = [
@@ -17,18 +17,18 @@ function DetailsStepContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
-  const role = (searchParams.get('role') as ProfileType) || 'owner';
+  const role = normalizeProfileType(searchParams.get('role') || 'individual');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileName, setProfileName] = useState(
-    role === 'company' ? 'Company Headquarters' : role === 'employee' ? 'Team Member Profile' : 'MERN Developer'
+    role === 'team' ? 'Team Profile' : 'Personal Profile'
   );
   const [fullName, setFullName] = useState('');
   const [professionalTitle, setProfessionalTitle] = useState(
-    role === 'company' ? 'Technology Company' : 'Full Stack Developer'
+    role === 'team' ? 'Team / Organization' : 'Full Stack Developer'
   );
-  const [company, setCompany] = useState(role === 'company' ? 'Avtive Inc.' : 'Avtive');
+  const [company, setCompany] = useState(role === 'team' ? 'Avtive Inc.' : 'Avtive');
   const [bio, setBio] = useState(
     'Passionate professional focused on delivering intuitive digital experiences with modern technology and clean architecture.'
   );

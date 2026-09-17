@@ -1,33 +1,27 @@
 'use client';
 
 import React from 'react';
-import { User, Briefcase, Building2 } from 'lucide-react';
+import { User, Users } from 'lucide-react';
 import { ProfileType, normalizeProfileType } from '@/types/profile';
 
 interface ProfileTypeSelectorProps {
   selectedType: ProfileType;
-  onChange: (type: 'owner' | 'employee' | 'company') => void;
+  onChange: (type: ProfileType) => void;
   className?: string;
 }
 
 export const PROFILE_TYPES_CONFIG = [
   {
-    type: 'owner' as const,
-    title: 'Owner',
-    description: 'Full control of the profile',
+    type: 'individual' as const,
+    title: 'Individual',
+    description: 'Personal professional identity & portfolio',
     icon: User
   },
   {
-    type: 'employee' as const,
-    title: 'Employee',
-    description: 'Work at a company',
-    icon: Briefcase
-  },
-  {
-    type: 'company' as const,
-    title: 'Company',
-    description: 'Business / Organization',
-    icon: Building2
+    type: 'team' as const,
+    title: 'Team',
+    description: 'Organization, agency, or group presence',
+    icon: Users
   }
 ];
 

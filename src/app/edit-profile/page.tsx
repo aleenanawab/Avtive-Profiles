@@ -43,7 +43,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
         email: session.email,
         profileName: 'Primary Profile',
         designation: 'Professional',
-        type: 'owner'
+        type: 'individual'
       });
     }
   }
