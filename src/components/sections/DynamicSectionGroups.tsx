@@ -23,6 +23,7 @@ import {
   CreditCard,
   Layers,
   CheckCircle2,
+  Tag,
   Info
 } from 'lucide-react';
 import { SharingSettings } from '@/types/profile';
@@ -42,6 +43,13 @@ export const ALL_PROFILE_SECTIONS: ProfileSectionMeta[] = [
     label: 'About & Bio',
     description: 'Personal summary, introduction & career philosophy',
     icon: FileText
+  },
+  {
+    id: 'custom-fields',
+    key: 'customFields',
+    label: 'Custom Fields',
+    description: 'Custom key-value attributes, details & public links',
+    icon: Tag
   },
   {
     id: 'skills',
