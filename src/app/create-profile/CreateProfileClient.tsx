@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -85,6 +85,45 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Guard: Active session check on mount, focus, visibilitychange, and pageshow (to prevent stale state after logout)
+  useEffect(() => {
+    const verifyActiveSession = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { cache: 'no-store' });
+        const data = await res.json();
+        if (!data.user) {
+          window.location.replace('/login');
+        }
+      } catch {
+        window.location.replace('/login');
+      }
+    };
+
+    verifyActiveSession();
+
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        verifyActiveSession();
+      }
+    };
+
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        verifyActiveSession();
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleVisibilityOrFocus);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('focus', handleVisibilityOrFocus);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('focus', handleVisibilityOrFocus);
+    };
+  }, []);
 
   // Handle Photo Upload
   const handlePhotoUpload = async (file: File) => {

@@ -30,29 +30,13 @@ import {
 import { ProfileData, SharingSettings } from '@/types/profile';
 import { GithubIcon, LinkedInIcon, TwitterXIcon } from '@/components/BrandIcons';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DynamicSectionGroups, ALL_PROFILE_SECTIONS } from '@/components/sections/DynamicSectionGroups';
 
 interface ShareFlowClientProps {
   initialProfile: ProfileData;
 }
 
-interface SectionItem {
-  id: string;
-  key: keyof SharingSettings;
-  label: string;
-  icon: React.ElementType;
-}
-
-const SECTION_DEFINITIONS: SectionItem[] = [
-  { id: 'photo', key: 'photo', label: 'Profile Photo', icon: User },
-  { id: 'nameAndTitle', key: 'nameAndTitle', label: 'Name & Title', icon: User },
-  { id: 'bio', key: 'bio', label: 'Bio', icon: FileText },
-  { id: 'skills', key: 'skills', label: 'Skills', icon: Code },
-  { id: 'projects', key: 'projects', label: 'Projects', icon: FolderGit2 },
-  { id: 'experience', key: 'experience', label: 'Experience', icon: Briefcase },
-  { id: 'education', key: 'education', label: 'Education', icon: GraduationCap },
-  { id: 'contactInfo', key: 'contactInfo', label: 'Contact Information', icon: Phone },
-  { id: 'socialLinks', key: 'socialLinks', label: 'Social Links', icon: Link2 }
-];
+const SECTION_DEFINITIONS = ALL_PROFILE_SECTIONS;
 
 export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
   const router = useRouter();
@@ -440,85 +424,32 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                 Reorder Sections
               </h1>
               <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Drag to rearrange your sections.
+                Drag to rearrange your sections in both groups.
               </p>
             </div>
 
-            {/* Visible Sections */}
-            <div className="space-y-2">
-              <div className="text-[11px] font-bold text-slate-700 dark:text-zinc-300">
-                Visible Sections
-              </div>
-              <div className="space-y-1.5">
-                {activeSections.map((id, index) => {
-                  const def = SECTION_DEFINITIONS.find((s) => s.id === id);
-                  if (!def) return null;
-                  const Icon = def.icon;
-
-                  return (
-                    <div
-                      key={id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, index)}
-                      onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, index)}
-                      className="p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#151821] flex items-center justify-between gap-2 shadow-2xs cursor-grab active:cursor-grabbing"
-                    >
-                      <div className="flex items-center gap-2">
-                        <GripVertical className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500 shrink-0" />
-                        <span className="text-xs font-medium text-slate-900 dark:text-white">
-                          {def.label}
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => handleMoveToHidden(id)}
-                        className="text-xs text-slate-400 hover:text-rose-500 p-1 rounded-md transition-colors"
-                        title="Hide Section"
-                      >
-                        <EyeOff className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+            {/* Dynamic Section Groups: Visible & Hidden */}
+            <div className="pt-2">
+              <DynamicSectionGroups
+                sectionOrder={visibleOrder}
+                sharingSettings={sharingSettings}
+                onSectionOrderChange={setVisibleOrder}
+                onSharingSettingsChange={setSharingSettings}
+                onInstantToggle={(sectionId, makeVisible) => {
+                  const def = ALL_PROFILE_SECTIONS.find((s) => s.id === sectionId);
+                  if (def) {
+                    setSharingSettings((prev) => ({ ...prev, [def.key]: makeVisible }));
+                    setVisibleOrder((prev) => {
+                      const without = prev.filter((id) => id !== sectionId);
+                      return [...without, sectionId];
+                    });
+                  }
+                }}
+              />
             </div>
 
-            {/* Hidden Sections */}
-            {hiddenSections.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10">
-                <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400">
-                  Hidden Sections
-                </div>
-                <div className="space-y-1.5">
-                  {hiddenSections.map((id) => {
-                    const def = SECTION_DEFINITIONS.find((s) => s.id === id);
-                    if (!def) return null;
-
-                    return (
-                      <div
-                        key={id}
-                        className="p-2.5 rounded-xl border border-slate-200/60 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] flex items-center justify-between text-slate-400 dark:text-zinc-500 text-xs"
-                      >
-                        <span>{def.label}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleMoveToVisible(id)}
-                          className="text-xs text-emerald-600 hover:text-emerald-700 font-medium p-1 transition-colors flex items-center gap-1"
-                        >
-                          <Eye className="w-3 h-3" />
-                          <span>Show</span>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
             {/* Action Buttons matching Screen 9 */}
-            <div className="grid grid-cols-2 gap-2.5 pt-2">
+            <div className="grid grid-cols-2 gap-2.5 pt-4">
               <button
                 type="button"
                 onClick={() => setCurrentStep(2)}
@@ -533,7 +464,7 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                 disabled={isSaving}
                 className="figma-pill-primary py-3 px-4 text-xs font-bold shadow-md cursor-pointer disabled:opacity-50 text-center"
               >
-                {isSaving ? 'Saving...' : 'Save & Sections'}
+                {isSaving ? 'Saving...' : 'Save & Continue'}
               </button>
             </div>
           </motion.div>

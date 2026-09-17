@@ -39,17 +39,20 @@ export async function POST(request: NextRequest) {
       name: user.name,
       email: user.email
     };
-    await setSessionCookie(sessionUser);
 
     const userProfile = await getProfileByUserId(user.id);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Login successful.',
       user: sessionUser,
       hasProfile: Boolean(userProfile),
       profileSlug: userProfile?.slug || userProfile?.id || null
     });
+
+    await setSessionCookie(sessionUser, response);
+
+    return response;
   } catch (error) {
     console.error('Login API Error:', error);
     return NextResponse.json(

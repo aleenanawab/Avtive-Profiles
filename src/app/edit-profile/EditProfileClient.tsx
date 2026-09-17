@@ -51,6 +51,7 @@ import {
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { LinkedInIcon, GithubIcon, TwitterIcon, WhatsAppIcon } from '@/components/BrandIcons';
 import { PhonePreview } from '@/components/PhonePreview';
+import { DynamicSectionGroups, ALL_PROFILE_SECTIONS } from '@/components/sections/DynamicSectionGroups';
 
 interface EditProfileClientProps {
   initialProfile: ProfileData;
@@ -269,6 +270,45 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   const [isDark, setIsDark] = useState(false);
   const [mobileViewTab, setMobileViewTab] = useState<'editor' | 'preview'>('editor');
 
+  // Guard: Active session check on mount, focus, visibilitychange, and pageshow (to prevent stale state after logout)
+  useEffect(() => {
+    const verifyActiveSession = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { cache: 'no-store' });
+        const data = await res.json();
+        if (!data.user) {
+          window.location.replace('/login');
+        }
+      } catch {
+        window.location.replace('/login');
+      }
+    };
+
+    verifyActiveSession();
+
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        verifyActiveSession();
+      }
+    };
+
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        verifyActiveSession();
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleVisibilityOrFocus);
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('focus', handleVisibilityOrFocus);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('focus', handleVisibilityOrFocus);
+    };
+  }, []);
+
   // 1. Basic Info
   const [firstName, setFirstName] = useState(
     initialProfile.firstName || (initialProfile.name ? initialProfile.name.split(' ')[0] : 'Aleena')
@@ -362,6 +402,14 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       phone: false
     }
   );
+
+  // 9. Dynamic Section Order for Visible and Hidden Groups
+  const [sectionOrder, setSectionOrder] = useState<string[]>(() => {
+    if (initialProfile.sectionOrder && Array.isArray(initialProfile.sectionOrder) && initialProfile.sectionOrder.length > 0) {
+      return initialProfile.sectionOrder;
+    }
+    return ALL_PROFILE_SECTIONS.map((s) => s.id);
+  });
   const [copySuccess, setCopySuccess] = useState(false);
 
   // UI / Upload States
@@ -558,12 +606,22 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     setSocialLinks((prev) => [...prev, newLink]);
   };
 
-  // Toggle Visibility in Share Section
-  const toggleVisibilityField = (field: keyof SharingSettings) => {
+  // Instant Eye Toggle between Visible & Hidden Section Groups
+  const handleInstantToggleSection = (sectionId: string, makeVisible: boolean) => {
+    const def = ALL_PROFILE_SECTIONS.find((s) => s.id === sectionId);
+    if (!def) return;
+
+    // 1. Immediately update sharingSettings for instant Live Preview
     setSharingSettings((prev) => ({
       ...prev,
-      [field]: prev[field] === false ? true : false
+      [def.key]: makeVisible
     }));
+
+    // 2. Immediately update sectionOrder to place newly visible at the end of visible or vice versa
+    setSectionOrder((prev) => {
+      const without = prev.filter((id) => id !== sectionId);
+      return [...without, sectionId];
+    });
   };
 
   // 1-Click Copy Public URL
@@ -613,7 +671,8 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     education,
     socials: activeSocialsPayload,
     socialLinks: activeSocialsPayload,
-    sharingSettings: sharingSettings
+    sharingSettings: sharingSettings,
+    sectionOrder: sectionOrder
   };
 
   // Switch to another profile in-place (ZERO POPUPS / ZERO REDIRECTS)
@@ -659,9 +718,14 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     // Social Links strictly preserving saved order
     setSocialLinks(buildSocialLinksFromProfile(newProf));
 
-    // Sharing Settings
+    // Sharing Settings & Section Order
     if (newProf.sharingSettings) {
       setSharingSettings(newProf.sharingSettings);
+    }
+    if (newProf.sectionOrder && Array.isArray(newProf.sectionOrder) && newProf.sectionOrder.length > 0) {
+      setSectionOrder(newProf.sectionOrder);
+    } else {
+      setSectionOrder(ALL_PROFILE_SECTIONS.map((s) => s.id));
     }
 
     setStatusMessage({
@@ -702,7 +766,8 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       education,
       socials: activeSocialsPayload,
       socialLinks: activeSocialsPayload,
-      sharingSettings: sharingSettings
+      sharingSettings: sharingSettings,
+      sectionOrder: sectionOrder
     };
 
     try {
@@ -1347,7 +1412,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 )}
               </div>
 
-              {/* SECTION 6: IN-PAGE SHARE & VISIBILITY CONTROLS (NO POPUPS) */}
+              {/* SECTION 6: SECTION LAYOUT & DYNAMIC VISIBILITY GROUPS */}
               <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
                 <button
                   type="button"
@@ -1356,19 +1421,24 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 >
                   <div className="flex items-center gap-2">
                     <Share2 className="w-4 h-4 text-amber-500" />
-                    <span>6. Share Profile & Visibility Controls</span>
+                    <span>6. Section Layout &amp; Dynamic Visibility Groups</span>
                   </div>
                   {expandedSections.share ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
                 </button>
 
                 {expandedSections.share && (
-                  <div className="p-4 pt-1 space-y-4 border-t border-slate-200 dark:border-white/5">
+                  <div className="p-4 pt-1 space-y-5 border-t border-slate-200 dark:border-white/5">
                     
                     {/* Share Link Box */}
                     <div className="p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-2">
-                      <span className="text-xs font-mono text-slate-700 dark:text-white/80 truncate">
-                        {publicProfileUrl}
-                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="block text-[10px] uppercase font-bold text-slate-400 dark:text-white/40 mb-0.5 font-mono">
+                          Public Profile Pass Link
+                        </span>
+                        <span className="text-xs font-mono text-slate-700 dark:text-white/80 truncate block">
+                          {publicProfileUrl}
+                        </span>
+                      </div>
                       <button
                         type="button"
                         onClick={handleCopyLink}
@@ -1383,50 +1453,14 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                       </button>
                     </div>
 
-                    {/* What do you want to show? */}
-                    <div className="space-y-2">
-                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-white/40">
-                        What do you want to show on your public profile?
-                      </label>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        {[
-                          { key: 'photo' as const, label: 'Profile Photo' },
-                          { key: 'nameAndTitle' as const, label: 'Name & Title' },
-                          { key: 'bio' as const, label: 'Bio & About' },
-                          { key: 'skills' as const, label: 'Skills Badges' },
-                          { key: 'projects' as const, label: 'Projects' },
-                          { key: 'socialLinks' as const, label: 'Social Links' },
-                          { key: 'experience' as const, label: 'Experience' },
-                          { key: 'education' as const, label: 'Education' },
-                          { key: 'email' as const, label: 'Direct Email' },
-                          { key: 'phone' as const, label: 'Phone Number' }
-                        ].map((field) => {
-                          const isChecked = sharingSettings[field.key] !== false;
-                          return (
-                            <button
-                              key={field.key}
-                              type="button"
-                              onClick={() => toggleVisibilityField(field.key)}
-                              className={`p-2.5 rounded-xl border flex items-center justify-between text-xs font-medium transition-all text-left cursor-pointer ${
-                                isChecked
-                                  ? 'bg-white dark:bg-white/10 border-slate-300 dark:border-white/20 text-slate-900 dark:text-white shadow-2xs'
-                                  : 'bg-slate-100/50 dark:bg-black/20 border-slate-200/60 dark:border-white/5 text-slate-400 dark:text-white/40 opacity-70'
-                              }`}
-                            >
-                              <span>{field.label}</span>
-                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                                isChecked
-                                  ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
-                                  : 'bg-slate-200 dark:bg-white/10 text-slate-500'
-                              }`}>
-                                {isChecked ? 'ON' : 'OFF'}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+                    {/* Dynamic Section Groups: Visible & Hidden with Dual Drag-and-Drop & Instant Eye-Toggle */}
+                    <DynamicSectionGroups
+                      sectionOrder={sectionOrder}
+                      sharingSettings={sharingSettings}
+                      onSectionOrderChange={setSectionOrder}
+                      onSharingSettingsChange={setSharingSettings}
+                      onInstantToggle={handleInstantToggleSection}
+                    />
 
                   </div>
                 )}

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, User, Loader2, AlertCircle, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function RegisterPage() {
@@ -12,10 +12,33 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-
+  // 1. Session check: if already authenticated, redirect to Profile Editor or Onboarding
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
+          if (hasProfiles) {
+            const targetId = data.user?.id || data.profiles?.[0]?.slug || data.profile?.slug;
+            if (targetId) {
+              router.replace(`/profile/${targetId}/edit`);
+            } else {
+              router.replace('/onboarding/theme');
+            }
+          } else {
+            router.replace('/onboarding/theme');
+          }
+        }
+      })
+      .catch(() => {});
+  }, [router]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -32,8 +55,9 @@ export default function RegisterPage() {
         setIsLoading(false);
         return;
       }
-      if (data.hasProfile && data.profileSlug) {
-        router.push(`/profile/${data.profileSlug}`);
+      if (data.hasProfile && (data.profileSlug || data.user?.id)) {
+        const targetId = data.profileSlug || data.user?.id;
+        router.push(`/profile/${targetId}/edit`);
       } else {
         router.push('/onboarding/theme');
       }
@@ -49,18 +73,25 @@ export default function RegisterPage() {
     e.preventDefault();
     setErrorMessage(null);
 
+    // Client-side validation
     if (!name.trim() || name.trim().length < 2) {
       setErrorMessage('Please enter your full name (at least 2 characters).');
       return;
     }
 
-    if (!email.trim() || !email.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email.trim())) {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
 
     if (!password || password.length < 8) {
       setErrorMessage('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match. Please verify both passwords.');
       return;
     }
 
@@ -72,9 +103,9 @@ export default function RegisterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
-          email: email.trim(),
+          email: email.trim().toLowerCase(),
           password,
-          confirmPassword: password
+          confirmPassword
         })
       });
 
@@ -86,7 +117,7 @@ export default function RegisterPage() {
         return;
       }
 
-      // User is now authenticated automatically: proceed directly to theme onboarding
+      // User session is now confirmed on server: proceed directly to theme onboarding
       router.push('/onboarding/theme');
       router.refresh();
     } catch (err) {
@@ -96,11 +127,9 @@ export default function RegisterPage() {
     }
   };
 
-  const [showPassword, setShowPassword] = useState(false);
-
   return (
     <div className="min-h-[calc(100vh-65px)] w-full flex items-center justify-center p-3 sm:p-6 py-8 font-sans transition-colors">
-      {/* Figma Mobile Screen Card (Screen 1. Register / Signup) */}
+      {/* Figma Mobile Screen Card (Register / Signup) */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -131,7 +160,7 @@ export default function RegisterPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Create Your Account
+            Create Your Account · New User Setup
           </p>
         </div>
 
@@ -143,11 +172,11 @@ export default function RegisterPage() {
           </div>
         )}
 
-        {/* Form Fields: Name, Email, Password */}
-        <form onSubmit={handleRegister} className="space-y-4">
-          <div className="space-y-1.5 text-left">
+        {/* Form Fields: Name, Email, Password, Confirm Password */}
+        <form onSubmit={handleRegister} className="space-y-3.5">
+          <div className="space-y-1 text-left">
             <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
-              Name
+              Full Name
             </label>
             <input
               type="text"
@@ -155,13 +184,13 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Aleena Nawab"
-              className="figma-input w-full px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
+              className="figma-input w-full px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
             />
           </div>
 
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1 text-left">
             <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
-              Email
+              Email Address
             </label>
             <input
               type="email"
@@ -169,13 +198,13 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="e.g. aleena@example.com"
-              className="figma-input w-full px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
+              className="figma-input w-full px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
             />
           </div>
 
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1 text-left">
             <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
-              Password
+              Password (min. 8 characters)
             </label>
             <div className="relative">
               <input
@@ -184,7 +213,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="figma-input w-full pl-4 pr-11 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
+                className="figma-input w-full pl-4 pr-11 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
               />
               <button
                 type="button"
@@ -193,6 +222,34 @@ export default function RegisterPage() {
                 aria-label="Toggle password visibility"
               >
                 {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-1 text-left">
+            <label className="text-xs font-medium text-slate-600 dark:text-zinc-300 ml-1">
+              Confirm Password
+            </label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className="figma-input w-full pl-4 pr-11 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500 hover:text-slate-600 dark:hover:text-zinc-300 cursor-pointer p-1"
+                aria-label="Toggle confirm password visibility"
+              >
+                {showConfirmPassword ? (
                   <EyeOff className="w-4 h-4" />
                 ) : (
                   <Eye className="w-4 h-4" />
@@ -226,7 +283,7 @@ export default function RegisterPage() {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="figma-pill-secondary w-full py-3 px-6 text-sm font-medium flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
+            className="figma-pill-secondary w-full py-2.5 px-6 text-sm font-medium flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -239,7 +296,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Footer Link: Already have an account? Log in */}
-        <div className="pt-6 pb-2 text-center text-xs text-slate-500 dark:text-zinc-400">
+        <div className="pt-5 pb-1 text-center text-xs text-slate-500 dark:text-zinc-400">
           <span>Already have an account? </span>
           <Link
             href="/login"
@@ -252,3 +309,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+

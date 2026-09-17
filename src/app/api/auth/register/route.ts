@@ -64,9 +64,6 @@ export async function POST(request: NextRequest) {
       email: user.email
     };
 
-    // Auto-login: set session cookie immediately upon registration
-    await setSessionCookie(sessionUser);
-
     const response = NextResponse.json(
       {
         success: true,
@@ -76,6 +73,9 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
+
+    // Auto-login: set session cookie immediately upon registration
+    await setSessionCookie(sessionUser, response);
 
     // Set backup user cache cookie for resilient cross-lambda authentication
     try {

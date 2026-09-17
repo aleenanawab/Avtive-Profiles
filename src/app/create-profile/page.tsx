@@ -3,6 +3,9 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { CreateProfileClient } from './CreateProfileClient';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   title: 'Create Your Profile | Avtive',
   description: 'Create your digital identity profile and pass card on Avtive.'

@@ -290,7 +290,16 @@ export function HeaderNav({
                 <span>My Profile</span>
               </Link>
               <button
-                onClick={onLogout}
+                onClick={async () => {
+                  if (onLogout) {
+                    onLogout();
+                  } else {
+                    try {
+                      await fetch('/api/auth/logout', { method: 'POST' });
+                    } catch {}
+                    window.location.replace('/login');
+                  }
+                }}
                 className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors`}
                 title="Sign Out"
               >
