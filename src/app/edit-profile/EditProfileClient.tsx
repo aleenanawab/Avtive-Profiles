@@ -37,7 +37,9 @@ import {
   Mail,
   User,
   CheckCircle2,
-  Smartphone
+  Smartphone,
+  Layers,
+  Tag
 } from 'lucide-react';
 import { 
   ProfileData, 
@@ -46,7 +48,11 @@ import {
   ProjectItem, 
   ExperienceItem, 
   EducationItem,
-  SharingSettings
+  SharingSettings,
+  CustomFieldItem,
+  DynamicSection,
+  DEFAULT_SECTION_ORDER,
+  DEFAULT_SECTION_VISIBILITY
 } from '@/types/profile';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { LinkedInIcon, GithubIcon, TwitterIcon, WhatsAppIcon } from '@/components/BrandIcons';
@@ -64,6 +70,24 @@ interface DraggableLinkItem {
   url: string;
   visible: boolean;
 }
+
+const SECTION_LABELS: Record<string, string> = {
+  hero: 'Hero & Identity Header',
+  about: 'Bio & About Section',
+  contact: 'Contact & Quick Actions',
+  'custom-fields': 'Custom Fields',
+  services: 'Services & Offerings',
+  skills: 'Skills Badges',
+  projects: 'Projects & Portfolio',
+  experience: 'Work Experience',
+  education: 'Education & Credentials',
+  certifications: 'Certifications',
+  volunteer: 'Volunteer Experience',
+  languages: 'Languages Spoken',
+  recommendations: 'Endorsements & Recommendations',
+  'virtual-card': 'Digital Identity Card',
+  company: 'Company / Team Overview'
+};
 
 const THEME_OPTIONS: { id: ProfileTheme; name: string; thumbnailBg: string; border: string; accent: string }[] = [
   {
@@ -276,6 +300,9 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   const [secondName, setSecondName] = useState(
     initialProfile.secondName || initialProfile.lastName || (initialProfile.name ? initialProfile.name.split(' ').slice(1).join(' ') : 'Nawab')
   );
+  const [username, setUsername] = useState(
+    initialProfile.username || initialProfile.slug || ''
+  );
   const [professionalTitle, setProfessionalTitle] = useState(
     initialProfile.professionalTitle || initialProfile.designation || initialProfile.profession || 'Full Stack Engineer'
   );
@@ -347,7 +374,30 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     buildSocialLinksFromProfile(initialProfile)
   );
 
-  // 8. In-Page Sharing & Visibility Controls (No Popups)
+  // 8. Dynamic Custom Fields (Unlimited, completely dynamic)
+  const [customFields, setCustomFields] = useState<CustomFieldItem[]>(() =>
+    Array.isArray(initialProfile.customFields) ? initialProfile.customFields : []
+  );
+
+  // 9. Dynamic Sections
+  const [dynamicSections, setDynamicSections] = useState<DynamicSection[]>(() =>
+    Array.isArray(initialProfile.dynamicSections) ? initialProfile.dynamicSections : []
+  );
+
+  // 10. Section Ordering & Independent Section Visibility (Stored Separately!)
+  const [sectionOrder, setSectionOrder] = useState<string[]>(() =>
+    Array.isArray(initialProfile.sectionOrder) && initialProfile.sectionOrder.length > 0
+      ? initialProfile.sectionOrder
+      : DEFAULT_SECTION_ORDER
+  );
+
+  const [sectionVisibility, setSectionVisibility] = useState<Record<string, boolean>>(() =>
+    initialProfile.sectionVisibility && Object.keys(initialProfile.sectionVisibility).length > 0
+      ? initialProfile.sectionVisibility
+      : DEFAULT_SECTION_VISIBILITY
+  );
+
+  // 11. In-Page Sharing & Visibility Controls (No Popups)
   const [sharingSettings, setSharingSettings] = useState<SharingSettings>(
     initialProfile.sharingSettings || {
       photo: true,
@@ -379,11 +429,62 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     experience: false,
     education: false,
     socials: true,
+    customFields: true,
+    sectionsLayout: true,
     share: true
   });
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // Custom Fields Handlers (Completely dynamic, unlimited fields)
+  const handleAddCustomField = () => {
+    const newField: CustomFieldItem = {
+      id: `cf-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      label: 'New Custom Field',
+      value: '',
+      type: 'text',
+      visible: true,
+      order: customFields.length
+    };
+    setCustomFields((prev) => [...prev, newField]);
+  };
+
+  const handleUpdateCustomField = (id: string, patch: Partial<CustomFieldItem>) => {
+    setCustomFields((prev) =>
+      prev.map((f) => (f.id === id ? { ...f, ...patch } : f))
+    );
+  };
+
+  const handleDeleteCustomField = (id: string) => {
+    setCustomFields((prev) => prev.filter((f) => f.id !== id));
+  };
+
+  const handleMoveCustomField = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= customFields.length) return;
+    const copy = [...customFields];
+    const [moved] = copy.splice(index, 1);
+    copy.splice(targetIndex, 0, moved);
+    setCustomFields(copy);
+  };
+
+  // Section Reorder and Independent Visibility Handlers
+  const handleMoveSection = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= sectionOrder.length) return;
+    const copy = [...sectionOrder];
+    const [moved] = copy.splice(index, 1);
+    copy.splice(targetIndex, 0, moved);
+    setSectionOrder(copy);
+  };
+
+  const handleToggleSectionVisibility = (sectionKey: string) => {
+    setSectionVisibility((prev) => ({
+      ...prev,
+      [sectionKey]: prev[sectionKey] === false ? true : false
+    }));
   };
 
   useEffect(() => {
@@ -590,6 +691,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
   const liveProfile: ProfileData = {
     ...profile,
+    username: username.trim(),
     name: fullName,
     firstName: firstName.trim(),
     secondName: secondName.trim(),
@@ -613,6 +715,10 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     education,
     socials: activeSocialsPayload,
     socialLinks: activeSocialsPayload,
+    customFields,
+    dynamicSections,
+    sectionOrder,
+    sectionVisibility,
     sharingSettings: sharingSettings
   };
 
@@ -626,6 +732,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     const lName = newProf.secondName || newProf.lastName || (newProf.name ? newProf.name.split(' ').slice(1).join(' ') : '');
     setFirstName(fName);
     setSecondName(lName);
+    setUsername(newProf.username || newProf.slug || '');
     setProfessionalTitle(newProf.professionalTitle || newProf.designation || newProf.profession || '');
     setBio(newProf.bio || newProf.shortBio || '');
     setCompany(newProf.company || '');
@@ -659,6 +766,20 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     // Social Links strictly preserving saved order
     setSocialLinks(buildSocialLinksFromProfile(newProf));
 
+    // Custom Fields
+    setCustomFields(Array.isArray(newProf.customFields) ? newProf.customFields : []);
+
+    // Dynamic Sections
+    setDynamicSections(Array.isArray(newProf.dynamicSections) ? newProf.dynamicSections : []);
+
+    // Section Order & Visibility
+    if (Array.isArray(newProf.sectionOrder) && newProf.sectionOrder.length > 0) {
+      setSectionOrder(newProf.sectionOrder);
+    }
+    if (newProf.sectionVisibility && Object.keys(newProf.sectionVisibility).length > 0) {
+      setSectionVisibility(newProf.sectionVisibility);
+    }
+
     // Sharing Settings
     if (newProf.sharingSettings) {
       setSharingSettings(newProf.sharingSettings);
@@ -683,6 +804,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       firstName: firstName.trim(),
       secondName: secondName.trim(),
       lastName: secondName.trim(),
+      username: username.trim().replace(/^@/, ''),
       professionalTitle: professionalTitle.trim(),
       designation: professionalTitle.trim(),
       profession: professionalTitle.trim(),
@@ -702,6 +824,10 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
       education,
       socials: activeSocialsPayload,
       socialLinks: activeSocialsPayload,
+      customFields,
+      dynamicSections,
+      sectionOrder,
+      sectionVisibility,
       sharingSettings: sharingSettings
     };
 
@@ -973,6 +1099,27 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                           className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                         />
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
+                        Username / URL Handle
+                      </label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-3 text-xs font-semibold text-slate-400 dark:text-white/40 select-none">
+                          @
+                        </span>
+                        <input
+                          type="text"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value.replace(/^@/, ''))}
+                          placeholder="username"
+                          className="figma-input w-full pl-7 pr-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 font-mono"
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-400 dark:text-white/40 mt-1">
+                        Your direct card URL: <span className="font-mono text-slate-600 dark:text-white/60">avtive.app/profile/{username || 'username'}</span>
+                      </p>
                     </div>
 
                     <div>
@@ -1347,7 +1494,233 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 )}
               </div>
 
-              {/* SECTION 6: IN-PAGE SHARE & VISIBILITY CONTROLS (NO POPUPS) */}
+              {/* SECTION 6: CUSTOM FIELDS (Unlimited & Dynamic) */}
+              <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
+                <div className="w-full p-4 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => toggleSection('customFields')}
+                    className="flex items-center gap-2 font-bold text-sm text-slate-900 dark:text-white hover:text-slate-700 dark:hover:text-white/80 transition-colors cursor-pointer"
+                  >
+                    <Tag className="w-4 h-4 text-purple-500" />
+                    <span>6. Custom Fields ({customFields.length})</span>
+                    {expandedSections.customFields ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50 ml-1" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50 ml-1" />}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleAddCustomField}
+                    className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white inline-flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Field</span>
+                  </button>
+                </div>
+
+                {expandedSections.customFields && (
+                  <div className="p-4 pt-0 space-y-3 border-t border-slate-200 dark:border-white/5">
+                    <p className="text-[11px] text-slate-500 dark:text-white/50 mb-2">
+                      Add any custom data, contact channels, IDs, or portfolio links to your card. No fixed limit.
+                    </p>
+
+                    {customFields.length === 0 ? (
+                      <div className="text-center py-5 border border-dashed border-slate-200 dark:border-white/10 rounded-xl">
+                        <Tag className="w-6 h-6 text-slate-400 dark:text-white/30 mx-auto mb-1.5" />
+                        <p className="text-xs text-slate-500 dark:text-white/50 mb-2">No custom fields yet</p>
+                        <button
+                          type="button"
+                          onClick={handleAddCustomField}
+                          className="px-3 py-1 rounded-md text-xs font-semibold bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-white/20 transition-colors cursor-pointer"
+                        >
+                          + Create First Field
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2.5">
+                        {customFields.map((field, idx) => (
+                          <div
+                            key={field.id}
+                            className={`p-3 rounded-xl bg-white dark:bg-white/5 border transition-all flex flex-col gap-2 shadow-2xs ${
+                              field.visible !== false
+                                ? 'border-slate-200 dark:border-white/10'
+                                : 'border-slate-200/50 dark:border-white/5 opacity-60 bg-slate-50/50 dark:bg-black/20'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveCustomField(idx, 'up')}
+                                  disabled={idx === 0}
+                                  className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+                                  title="Move Up"
+                                >
+                                  <ArrowUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveCustomField(idx, 'down')}
+                                  disabled={idx === customFields.length - 1}
+                                  className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+                                  title="Move Down"
+                                >
+                                  <ArrowDown className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <input
+                                  type="text"
+                                  value={field.label}
+                                  onChange={(e) => handleUpdateCustomField(field.id, { label: e.target.value })}
+                                  placeholder="Field Label (e.g. Discord, Calendly)"
+                                  className="figma-input w-full px-2.5 py-1.5 text-xs font-semibold focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                                />
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'}
+                                    value={field.value}
+                                    onChange={(e) => handleUpdateCustomField(field.id, { value: e.target.value })}
+                                    placeholder="Value or Link..."
+                                    className="figma-input flex-1 px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                                  />
+                                  <select
+                                    value={field.type || 'text'}
+                                    onChange={(e) => handleUpdateCustomField(field.id, { type: e.target.value as any })}
+                                    className="figma-input px-2 py-1.5 text-[11px] bg-slate-50 dark:bg-[#191c25] focus:outline-hidden"
+                                    title="Field Type"
+                                  >
+                                    <option value="text">Text</option>
+                                    <option value="link">Link</option>
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="number">Number</option>
+                                    <option value="date">Date</option>
+                                  </select>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleUpdateCustomField(field.id, { visible: field.visible === false ? true : false })}
+                                  className={`px-2 py-1 rounded-md text-[10px] font-bold transition-colors cursor-pointer ${
+                                    field.visible !== false
+                                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                                      : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/40'
+                                  }`}
+                                  title={field.visible !== false ? 'Visible on profile' : 'Hidden from profile'}
+                                >
+                                  {field.visible !== false ? 'ON' : 'OFF'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteCustomField(field.id)}
+                                  className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
+                                  title="Delete Field"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* SECTION 7: SECTIONS ORDERING & LAYOUT (Order and Visibility Stored Separately!) */}
+              <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => toggleSection('sectionsLayout')}
+                  className="w-full p-4 flex items-center justify-between text-left font-bold text-sm text-slate-900 dark:text-white hover:bg-slate-100/80 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-indigo-500" />
+                    <span>7. Sections & Drag/Drop Layout ({sectionOrder.length})</span>
+                  </div>
+                  {expandedSections.sectionsLayout ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
+                </button>
+
+                {expandedSections.sectionsLayout && (
+                  <div className="p-4 pt-0 space-y-2 border-t border-slate-200 dark:border-white/5">
+                    <div className="p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40 text-[11px] text-indigo-900 dark:text-indigo-300">
+                      <strong>Independent Persistence:</strong> Section ordering and visibility are saved separately. Reordering sections will not alter their visibility, and toggling visibility preserves the custom order after reload.
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      {sectionOrder.map((sectionKey, idx) => {
+                        const isVisible = sectionVisibility[sectionKey] !== false;
+                        const label = SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1));
+
+                        return (
+                          <div
+                            key={sectionKey}
+                            className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 transition-all ${
+                              isVisible
+                                ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 shadow-2xs'
+                                : 'bg-slate-100/50 dark:bg-black/20 border-slate-200/50 dark:border-white/5 opacity-60'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-white/40 w-4 text-center">
+                                {idx + 1}
+                              </span>
+                              <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+                                {label}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {/* Reorder Up / Down */}
+                              <div className="flex items-center gap-0.5">
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveSection(idx, 'up')}
+                                  disabled={idx === 0}
+                                  className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer"
+                                  title="Move section up"
+                                >
+                                  <ArrowUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleMoveSection(idx, 'down')}
+                                  disabled={idx === sectionOrder.length - 1}
+                                  className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer"
+                                  title="Move section down"
+                                >
+                                  <ArrowDown className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              {/* Visibility Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleSectionVisibility(sectionKey)}
+                                className={`px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
+                                  isVisible
+                                    ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                                    : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/40'
+                                }`}
+                                title={isVisible ? 'Visible on profile' : 'Hidden from profile'}
+                              >
+                                {isVisible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                                <span>{isVisible ? 'SHOWN' : 'HIDDEN'}</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* SECTION 8: IN-PAGE SHARE & VISIBILITY CONTROLS (NO POPUPS) */}
               <div className="rounded-2xl bg-slate-50 dark:bg-[#1B1E28] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
                 <button
                   type="button"
@@ -1356,7 +1729,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 >
                   <div className="flex items-center gap-2">
                     <Share2 className="w-4 h-4 text-amber-500" />
-                    <span>6. Share Profile & Visibility Controls</span>
+                    <span>8. Share Profile & Visibility Controls</span>
                   </div>
                   {expandedSections.share ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
                 </button>

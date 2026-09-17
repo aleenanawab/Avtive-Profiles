@@ -109,12 +109,12 @@ async function runComprehensiveVerification() {
   });
   assert(rolePage.statusCode === 200, '/onboarding/role responds with 200 OK');
   assert(rolePage.body.includes('Select Profile Type'), 'Step 2 renders "Select Profile Type"');
-  assert(rolePage.body.includes('Owner'), 'Step 2 contains "Owner" option');
-  assert(rolePage.body.includes('Employee'), 'Step 2 contains "Employee" option');
-  assert(rolePage.body.includes('Company'), 'Step 2 contains "Company" option');
+  assert(rolePage.body.includes('Individual'), 'Step 2 contains "Individual" option');
+  assert(rolePage.body.includes('Team'), 'Step 2 contains "Team" option');
+  assert(!rolePage.body.includes('Full Control') && !rolePage.body.includes('Work at a Company'), 'Step 2 does not contain obsolete roles');
 
   // Step 3: /onboarding/details
-  const detailsPage = await request('/onboarding/details?theme=cyber&role=owner', {
+  const detailsPage = await request('/onboarding/details?theme=cyber&role=individual', {
     headers: { 'Cookie': sessionCookie }
   });
   assert(detailsPage.statusCode === 200, '/onboarding/details responds with 200 OK');
@@ -132,7 +132,7 @@ async function runComprehensiveVerification() {
     body: JSON.stringify({
       name: 'Zara Qureshi',
       profileName: 'UI/UX Designer',
-      type: 'owner',
+      type: 'individual',
       theme: 'cyber',
       profession: 'Senior Product Designer',
       designation: 'Senior Product Designer',
@@ -151,7 +151,7 @@ async function runComprehensiveVerification() {
   assert(createProfileRes.statusCode === 201, 'Profile creation returns 201 Created');
   const createdProfile = JSON.parse(createProfileRes.body).profile;
   assert(Boolean(createdProfile?.slug), `Dynamic profile created with unique slug: ${createdProfile?.slug}`);
-  assert(createdProfile?.type === 'owner', 'Profile type is correctly stored as "owner"');
+  assert(createdProfile?.type === 'individual', 'Profile type is correctly stored as "individual"');
 
   // 6. Verifying Authenticated User Lands on Own Profile
   console.log('\n[6. Post-Authentication Own Profile Routing]');

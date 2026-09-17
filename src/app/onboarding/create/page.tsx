@@ -17,7 +17,7 @@ import {
   Trash2,
   Check
 } from 'lucide-react';
-import { ProfileType, ProfileTheme, ProjectItem } from '@/types/profile';
+import { ProfileType, ProfileTheme, ProjectItem, normalizeProfileType } from '@/types/profile';
 import { GithubIcon, LinkedInIcon, TwitterXIcon } from '@/components/BrandIcons';
 import { getThemeConfig } from '@/components/themeStyles';
 import { motion } from 'framer-motion';
@@ -39,7 +39,7 @@ function CreateProfileContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
-  const role = (searchParams.get('role') as ProfileType) || 'owner';
+  const role = normalizeProfileType(searchParams.get('role') || 'individual');
 
   const themeConfig = getThemeConfig(theme);
   const themeIconColor = themeConfig.accentText || 'text-slate-800 dark:text-zinc-200';
@@ -49,7 +49,7 @@ function CreateProfileContent() {
 
   // Identity state
   const [profileName, setProfileName] = useState(
-    role === 'company' ? 'Company Headquarters' : role === 'employee' ? 'Team Member Profile' : 'MERN Developer'
+    role === 'team' ? 'Team Profile' : 'Personal Profile'
   );
   const [firstName, setFirstName] = useState('');
   const [secondName, setSecondName] = useState('');
@@ -101,10 +101,10 @@ function CreateProfileContent() {
           if (!firstName) setFirstName(names[0] || 'My');
           if (!secondName) setSecondName(names.slice(1).join(' ') || 'Profile');
           if (!professionalTitle) {
-            setProfessionalTitle(role === 'company' ? 'Organization Headquarters' : 'Full Stack Developer');
+            setProfessionalTitle(role === 'team' ? 'Team / Organization' : 'Full Stack Developer');
           }
           if (!company) {
-            setCompany(role === 'company' ? data.user.name : 'Avtive');
+            setCompany(role === 'team' ? data.user.name : 'Avtive');
           }
         }
       })

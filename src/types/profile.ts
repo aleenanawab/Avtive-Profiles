@@ -1,10 +1,10 @@
-export type ProfileType = 'owner' | 'employee' | 'company' | 'individual' | 'team-member';
+export type ProfileType = 'individual' | 'team';
 
-export function normalizeProfileType(type?: string): 'owner' | 'employee' | 'company' {
-  if (!type || type === 'individual' || type === 'owner') return 'owner';
-  if (type === 'team-member' || type === 'employee') return 'employee';
-  if (type === 'company') return 'company';
-  return 'owner';
+export function normalizeProfileType(type?: string): ProfileType {
+  if (!type) return 'individual';
+  const clean = type.toLowerCase().trim();
+  if (clean === 'team' || clean === 'company') return 'team';
+  return 'individual';
 }
 
 export type ProfileTheme = 
@@ -50,6 +50,64 @@ export interface SharingSettings {
   companySection?: boolean;
   nfcCard?: boolean;
 }
+
+export const DEFAULT_SHARING_SETTINGS: SharingSettings = {
+  photo: true,
+  nameAndTitle: true,
+  bio: true,
+  contactInfo: true,
+  email: true,
+  phone: true,
+  links: true,
+  socialLinks: true,
+  skills: true,
+  experience: true,
+  education: true,
+  certifications: true,
+  projects: true,
+  services: true,
+  volunteer: true,
+  languages: true,
+  recommendations: true,
+  companySection: true,
+  nfcCard: true
+};
+
+export const DEFAULT_SECTION_VISIBILITY: Record<string, boolean> = {
+  hero: true,
+  about: true,
+  contact: true,
+  services: true,
+  skills: true,
+  projects: true,
+  'custom-fields': true,
+  experience: true,
+  education: true,
+  certifications: true,
+  volunteer: true,
+  languages: true,
+  recommendations: true,
+  'virtual-card': true,
+  company: true
+};
+
+export const DEFAULT_SECTION_ORDER: string[] = [
+  'hero',
+  'about',
+  'contact',
+  'services',
+  'skills',
+  'projects',
+  'custom-fields',
+  'experience',
+  'education',
+  'certifications',
+  'volunteer',
+  'languages',
+  'recommendations',
+  'virtual-card',
+  'company'
+];
 
 
 export interface UserSession {
@@ -227,6 +285,27 @@ export interface DirectContactItem {
   active?: boolean;
 }
 
+export interface CustomFieldItem {
+  id: string;
+  label: string;
+  value: string;
+  type?: 'text' | 'link' | 'email' | 'phone' | 'date' | 'number' | 'markdown';
+  icon?: string;
+  visible?: boolean;
+  order?: number;
+}
+
+export interface DynamicSection<T = any> {
+  id: string;
+  key: string;
+  title: string;
+  type: string;
+  visible: boolean;
+  order: number;
+  data?: T;
+  customFields?: CustomFieldItem[];
+}
+
 export interface ProfileData {
   id: string;
   userId?: string;
@@ -234,6 +313,7 @@ export interface ProfileData {
   type: ProfileType;
   profileType?: 'individual' | 'team';
   slug: string;
+  username?: string;
   companyId?: string;
   companyName?: string;
   
@@ -309,6 +389,12 @@ export interface ProfileData {
   resumeUrl?: string;
   resumeFileName?: string;
   
+  // Dynamic Custom Fields (Unlimited & Flexible)
+  customFields?: CustomFieldItem[];
+
+  // Dynamic Sections (Modular Extensible Sections)
+  dynamicSections?: DynamicSection[];
+
   // For Company Profiles
   teamMembers?: TeamMemberItem[];
 
@@ -322,9 +408,10 @@ export interface ProfileData {
   createdAt?: string;
   updatedAt?: string;
 
-  // Sharing Configuration & Order
+  // Sharing Configuration & Layout Order / Visibility
   sharingSettings?: SharingSettings;
   sectionOrder?: string[];
+  sectionVisibility?: Record<string, boolean>;
 }
 
 export function ensureProfileLinks(profile?: Partial<ProfileData> | null): ProfileLink[] {

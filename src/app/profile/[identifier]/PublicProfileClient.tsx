@@ -9,13 +9,16 @@ import {
   UserSession 
 } from '@/types/profile';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
+import { PhonePreview } from '@/components/PhonePreview';
 import { getThemeConfig } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
 import { 
   Share2, 
   Home, 
   Users, 
-  Edit3 
+  Edit3,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
 interface PublicProfileClientProps {
   initialProfile: ProfileData;
@@ -35,6 +38,7 @@ export function PublicProfileClient({
   );
   const [isDark, setIsDark] = useState(false);
   const [viewMode, setViewMode] = useState<'standard' | 'web'>('standard');
+  const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop');
   const [isEditing, setIsEditing] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -49,6 +53,13 @@ export function PublicProfileClient({
   useEffect(() => {
     const hasDark = document.documentElement.classList.contains('dark');
     setIsDark(hasDark);
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('view') === 'mobile') {
+        setDeviceView('mobile');
+      }
+    }
   }, []);
 
 
@@ -90,41 +101,167 @@ export function PublicProfileClient({
         </div>
       )}
 
+      {/* Sticky View Mode Toolbar: Switch between Desktop View & Mobile View */}
+      <div className="sticky top-[53px] z-30 w-full bg-white/85 dark:bg-[#0B0D13]/85 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 transition-colors py-2 px-4 shadow-2xs">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+          
+          {/* Left: Device View Switcher */}
+          <div className="inline-flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-zinc-800/90 border border-slate-200 dark:border-zinc-700/80 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setDeviceView('desktop')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                deviceView === 'desktop'
+                  ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
+                  : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Desktop View"
+            >
+              <Monitor className="w-3.5 h-3.5" />
+              <span>Desktop View</span>
+            </button>
 
+            <button
+              type="button"
+              onClick={() => setDeviceView('mobile')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                deviceView === 'mobile'
+                  ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
+                  : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Mobile View"
+            >
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Mobile View</span>
+            </button>
+          </div>
 
-      {/* Main Profile Content Viewport - Responsive Desktop Width (NOT a phone mockup) */}
-      <main className={`flex-1 w-full mx-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-8 flex justify-center transition-all duration-300 ${
-        viewMode === 'web' ? 'max-w-6xl xl:max-w-7xl' : 'max-w-4xl lg:max-w-5xl'
-      }`}>
-        <div className="w-full bg-white dark:bg-[#18181B] sm:rounded-3xl sm:border border-slate-200/80 dark:border-zinc-800/80 shadow-xs overflow-hidden">
-          <AvtiveDigitalCard
-            profile={{ ...profile, theme: activeTheme }}
-            canEdit={isOwner}
-            isEditing={isEditing}
-            isConnected={false}
-            onOpenEdit={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
-            onCancelEdit={() => setIsEditing(false)}
-            onSaveEdits={handleSaveEdits}
-            onSaveContact={() => showToast('Contact information saved!')}
-            onOpenShare={() => setIsShareModalOpen(true)}
-            onOpenConnect={() => showToast('Connected!')}
-            onOpenQRModal={() => {}}
-            onOpenResumeModal={() => {}}
-            onSelectProject={() => {}}
-            onSelectTeamMember={(member) => {
-              const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
-              router.push(`/profile/${slug}`);
-            }}
-            onViewCompany={() => {
-              if (profile.companyId) {
-                router.push(`/profile/${profile.companyId}`);
-              }
-            }}
-            isDark={isDark}
-            viewMode={viewMode}
-          />
+          {/* Right: Quick Action Buttons & Status */}
+          <div className="flex items-center gap-2">
+            {deviceView === 'mobile' && (
+              <span className="hidden sm:flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Mobile View
+              </span>
+            )}
+
+            {isOwner && (
+              <button
+                type="button"
+                onClick={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer"
+                title="Edit Profile"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Edit Profile</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setIsShareModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer"
+              title="Share Profile"
+            >
+              <Share2 className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden sm:inline">Share</span>
+            </button>
+          </div>
+
         </div>
-      </main>
+      </div>
+
+      {deviceView === 'mobile' ? (
+        <main className="flex-1 w-full mx-auto px-4 py-6 sm:py-8 flex justify-center items-start transition-all duration-300">
+          {/* On Desktop & Tablet: Realistic Smartphone Chassis */}
+          <div className="hidden sm:block">
+            <PhonePreview
+              profile={{ ...profile, theme: activeTheme }}
+              isDark={isDark}
+              canEdit={isOwner}
+              onOpenEdit={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
+              onOpenShare={() => setIsShareModalOpen(true)}
+              onOpenConnect={() => showToast('Connected!')}
+              onSaveContact={() => showToast('Contact information saved!')}
+              onSaveEdits={handleSaveEdits}
+              onSelectTeamMember={(member) => {
+                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                router.push(`/profile/${slug}`);
+              }}
+              onViewCompany={() => {
+                if (profile.companyId) {
+                  router.push(`/profile/${profile.companyId}`);
+                }
+              }}
+              hideHeaderLabel={true}
+            />
+          </div>
+
+          {/* On Physical Small Mobile Viewports (< sm): Full-Width Responsive Mobile View */}
+          <div className="sm:hidden w-full max-w-md bg-white dark:bg-[#18181B] rounded-3xl border border-slate-200/80 dark:border-zinc-800/80 shadow-xs overflow-hidden">
+            <AvtiveDigitalCard
+              profile={{ ...profile, theme: activeTheme }}
+              canEdit={isOwner}
+              isEditing={isEditing}
+              isConnected={false}
+              onOpenEdit={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
+              onCancelEdit={() => setIsEditing(false)}
+              onSaveEdits={handleSaveEdits}
+              onSaveContact={() => showToast('Contact information saved!')}
+              onOpenShare={() => setIsShareModalOpen(true)}
+              onOpenConnect={() => showToast('Connected!')}
+              onOpenQRModal={() => {}}
+              onOpenResumeModal={() => {}}
+              onSelectProject={() => {}}
+              onSelectTeamMember={(member) => {
+                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                router.push(`/profile/${slug}`);
+              }}
+              onViewCompany={() => {
+                if (profile.companyId) {
+                  router.push(`/profile/${profile.companyId}`);
+                }
+              }}
+              isDark={isDark}
+              viewMode="standard"
+            />
+          </div>
+        </main>
+      ) : (
+        /* Main Profile Content Viewport - Responsive Desktop Width (NOT a phone mockup) */
+        <main className={`flex-1 w-full mx-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-8 flex justify-center transition-all duration-300 ${
+          viewMode === 'web' ? 'max-w-6xl xl:max-w-7xl' : 'max-w-4xl lg:max-w-5xl'
+        }`}>
+          <div className="w-full bg-white dark:bg-[#18181B] sm:rounded-3xl sm:border border-slate-200/80 dark:border-zinc-800/80 shadow-xs overflow-hidden">
+            <AvtiveDigitalCard
+              profile={{ ...profile, theme: activeTheme }}
+              canEdit={isOwner}
+              isEditing={isEditing}
+              isConnected={false}
+              onOpenEdit={() => router.push(`/profile/${profile.userId || profile.slug}/edit`)}
+              onCancelEdit={() => setIsEditing(false)}
+              onSaveEdits={handleSaveEdits}
+              onSaveContact={() => showToast('Contact information saved!')}
+              onOpenShare={() => setIsShareModalOpen(true)}
+              onOpenConnect={() => showToast('Connected!')}
+              onOpenQRModal={() => {}}
+              onOpenResumeModal={() => {}}
+              onSelectProject={() => {}}
+              onSelectTeamMember={(member) => {
+                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                router.push(`/profile/${slug}`);
+              }}
+              onViewCompany={() => {
+                if (profile.companyId) {
+                  router.push(`/profile/${profile.companyId}`);
+                }
+              }}
+              isDark={isDark}
+              viewMode={viewMode}
+            />
+          </div>
+        </main>
+      )}
 
       {/* Mobile Bottom Navigation Bar - STRICTLY HIDDEN ON TABLET & DESKTOP (sm:hidden) */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-[#18181B]/90 backdrop-blur-md border-t border-slate-200 dark:border-zinc-800 transition-colors shadow-lg">

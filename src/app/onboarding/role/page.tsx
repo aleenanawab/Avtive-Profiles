@@ -2,9 +2,9 @@
 
 import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, ArrowRight, ArrowLeft, Crown, User, Building2 } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, User, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ProfileType, ProfileTheme } from '@/types/profile';
+import { ProfileType, ProfileTheme, normalizeProfileType } from '@/types/profile';
 
 interface RoleCardData {
   id: ProfileType;
@@ -17,28 +17,20 @@ interface RoleCardData {
 
 const ROLE_OPTIONS: RoleCardData[] = [
   {
-    id: 'owner',
-    title: 'Owner',
-    badge: 'Full Control',
-    icon: Crown,
-    description: 'Full administrative control over your digital identity, permissions, and persona passes.',
-    features: ['Direct granular privacy controls', 'Create custom multi-personas', 'Verified owner badge']
-  },
-  {
-    id: 'employee',
-    title: 'Employee',
-    badge: 'Work at a Company',
+    id: 'individual',
+    title: 'Individual',
+    badge: 'Personal Profile',
     icon: User,
-    description: 'Showcase your role, department, credentials, and achievements within an organization.',
-    features: ['Company affiliation link', 'Professional skills showcase', 'Work experience timeline']
+    description: 'Personal digital identity, showcase projects, skills, and private sharing.',
+    features: ['Personal portfolio & projects', 'Direct contact & social links', 'Granular privacy controls']
   },
   {
-    id: 'company',
-    title: 'Company',
-    badge: 'Business / Organization',
-    icon: Building2,
-    description: 'Centralized company presence, services directory, team showcase, and brand identity.',
-    features: ['Team member roster', 'Products & services showcase', 'Company contact channels']
+    id: 'team',
+    title: 'Team',
+    badge: 'Group / Organization',
+    icon: Users,
+    description: 'Collaborative team presence, organization roster, services showcase, and company identity.',
+    features: ['Team roster & collaborative showcase', 'Products, services & credentials', 'Unified team contact channels']
   }
 ];
 
@@ -46,7 +38,7 @@ function RoleStepContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
-  const initialRole = (searchParams.get('role') as ProfileType) || 'owner';
+  const initialRole = normalizeProfileType(searchParams.get('role') || 'individual');
 
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
 
@@ -129,11 +121,7 @@ function RoleStepContent() {
                     {role.title}
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
-                    {role.title === 'Owner' 
-                      ? 'Full control of the profile' 
-                      : role.title === 'Employee' 
-                      ? 'Work at a company' 
-                      : 'Business / Organization'}
+                    {role.badge}
                   </p>
                 </div>
               </div>

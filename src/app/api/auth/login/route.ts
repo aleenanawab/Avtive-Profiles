@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail, getProfileByUserId } from '@/lib/db';
-import { verifyPassword, setSessionCookie } from '@/lib/auth';
+import { verifyPassword, setSessionCookie, DUMMY_BCRYPT_HASH, setReturningUserCookie } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,8 +14,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await getUserByEmail(email);
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await getUserByEmail(normalizedEmail);
+
+    // ANTI-ENUMERATION TIMING DEFENSE:
+    // If user does not exist, run verifyPassword against constant dummy hash
+    // so response time is identical to the path where user exists
     if (!user) {
+      await verifyPassword(password, DUMMY_BCRYPT_HASH);
       return NextResponse.json(
         { error: 'Invalid email or password.' },
         { status: 401 }
@@ -40,6 +46,7 @@ export async function POST(request: NextRequest) {
       email: user.email
     };
     await setSessionCookie(sessionUser);
+    await setReturningUserCookie();
 
     const userProfile = await getProfileByUserId(user.id);
 

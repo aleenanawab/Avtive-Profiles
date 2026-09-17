@@ -17,9 +17,10 @@ import {
   Loader2,
   AlertCircle,
   Building2,
-  User
+  User,
+  Users
 } from 'lucide-react';
-import { ProfileData, ProfileTheme } from '@/types/profile';
+import { ProfileData, ProfileTheme, ProfileType } from '@/types/profile';
 
 interface ProfileSwitcherProps {
   currentProfileIdOrSlug?: string;
@@ -44,7 +45,7 @@ export function ProfileSwitcher({
   const [isCreatingInline, setIsCreatingInline] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileTitle, setNewProfileTitle] = useState('');
-  const [newProfileType, setNewProfileType] = useState<'owner' | 'company'>('owner');
+  const [newProfileType, setNewProfileType] = useState<ProfileType>('individual');
   const [isSubmittingNew, setIsSubmittingNew] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -323,9 +324,9 @@ export function ProfileSwitcher({
                 <div className="grid grid-cols-2 gap-1 p-0.5 rounded-lg bg-slate-200/70 dark:bg-zinc-800 border border-slate-300/60 dark:border-zinc-700">
                   <button
                     type="button"
-                    onClick={() => setNewProfileType('owner')}
+                    onClick={() => setNewProfileType('individual')}
                     className={`py-1 text-[10px] font-bold rounded-md flex items-center justify-center gap-1 transition-all ${
-                      newProfileType === 'owner'
+                      newProfileType === 'individual'
                         ? 'bg-white dark:bg-zinc-700 text-slate-900 dark:text-white shadow-2xs'
                         : 'text-slate-600 dark:text-zinc-400'
                     }`}
@@ -335,15 +336,15 @@ export function ProfileSwitcher({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setNewProfileType('company')}
+                    onClick={() => setNewProfileType('team')}
                     className={`py-1 text-[10px] font-bold rounded-md flex items-center justify-center gap-1 transition-all ${
-                      newProfileType === 'company'
+                      newProfileType === 'team'
                         ? 'bg-white dark:bg-zinc-700 text-slate-900 dark:text-white shadow-2xs'
                         : 'text-slate-600 dark:text-zinc-400'
                     }`}
                   >
-                    <Building2 className="w-3 h-3" />
-                    <span>Company</span>
+                    <Users className="w-3 h-3" />
+                    <span>Team</span>
                   </button>
                 </div>
 

@@ -20,7 +20,8 @@ import {
   ServiceItem, 
   TeamMemberItem, 
   NavigationOrigin, 
-  ProfileTheme 
+  ProfileTheme,
+  normalizeProfileType
 } from '../types/profile';
 import { HeroSection } from './HeroSection';
 import { AboutSection } from './AboutSection';
@@ -35,6 +36,7 @@ import { ProfileContactSection } from './ProfileContactSection';
 import { CompanyCard } from './CompanyCard';
 import { TeamSection } from './TeamSection';
 import { NFCCardPreview } from './NFCCardPreview';
+import { CustomFieldsSection } from './CustomFieldsSection';
 import { getThemeConfig, PROFILE_THEMES, ThemeConfig } from './themeStyles';
 
 export { getThemeConfig };
@@ -126,7 +128,7 @@ export function AvtiveDigitalCard({
   const activeThemeKey = draftProfile.theme || 'elegant';
   const theme = getThemeConfig(activeThemeKey);
 
-  const isCompany = draftProfile.type === 'company';
+  const isCompany = normalizeProfileType(draftProfile.type) === 'team';
   const companyName = draftProfile.company || draftProfile.companyInfo?.name || 'Avtive';
 
   const handleFieldUpdate = (field: keyof ProfileData, value: any) => {
@@ -302,13 +304,14 @@ export function AvtiveDigitalCard({
         />
 
         {/* ========================================================================= */}
-        {/* DYNAMIC PROFILE SECTIONS RENDERED ACCORDING TO sectionOrder & sharingSettings */}
+        {/* DYNAMIC PROFILE SECTIONS RENDERED ACCORDING TO sectionOrder & sectionVisibility */}
         {/* ========================================================================= */}
         {(() => {
           const defaultCardSectionOrder = [
             'company',
             'about',
             'contact',
+            'custom-fields',
             'skills',
             'services',
             'projects',
@@ -320,28 +323,60 @@ export function AvtiveDigitalCard({
             'virtual-card'
           ];
 
+          // Dynamic sections registered by the user
+          const dynamicSectionKeys = (draftProfile.dynamicSections || []).map(s => s.key || s.id);
+
+          const allKnownSections = [...defaultCardSectionOrder, ...dynamicSectionKeys];
+
           const userOrder = (draftProfile.sectionOrder || []).filter((s) => s !== 'hero');
           const effectiveOrder: string[] = [];
           
           for (const s of userOrder) {
             const normalized = s === 'skills' ? 'services' : s;
-            if (!effectiveOrder.includes(normalized) && defaultCardSectionOrder.includes(normalized)) {
+            if (!effectiveOrder.includes(normalized) && allKnownSections.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
           }
           
-          for (const s of defaultCardSectionOrder) {
-            if (!effectiveOrder.includes(s)) {
-              effectiveOrder.push(s);
+          for (const s of allKnownSections) {
+            const normalized = s === 'skills' ? 'services' : s;
+            if (!effectiveOrder.includes(normalized)) {
+              effectiveOrder.push(normalized);
             }
           }
 
           const sharing = draftProfile.sharingSettings || {};
+          const visibility = draftProfile.sectionVisibility || {};
+
+          const isSectionVisible = (key: string): boolean => {
+            if (isEditing) return true;
+            // 1. Direct sectionVisibility dictionary check if explicitly defined
+            if (typeof visibility[key] === 'boolean') {
+              return visibility[key];
+            }
+            // 2. Fallback to sharingSettings for legacy profiles
+            switch (key) {
+              case 'company': return sharing.companySection !== false;
+              case 'about': return sharing.bio !== false;
+              case 'contact': return true;
+              case 'custom-fields': return true;
+              case 'services':
+              case 'skills': return sharing.services !== false || sharing.skills !== false;
+              case 'experience': return sharing.experience !== false;
+              case 'projects': return sharing.projects !== false;
+              case 'certifications': return sharing.certifications !== false;
+              case 'volunteer': return sharing.volunteer !== false;
+              case 'languages': return sharing.languages !== false;
+              case 'recommendations': return sharing.recommendations !== false;
+              case 'virtual-card': return sharing.nfcCard !== false;
+              default: return true;
+            }
+          };
 
           const renderSection = (sectionKey: string) => {
             switch (sectionKey) {
               case 'company':
-                if (!isEditing && sharing.companySection === false) return null;
+                if (!isSectionVisible('company')) return null;
                 if (!isCompany && draftProfile.companyInfo && onViewCompany) {
                   return (
                     <CompanyCard
@@ -365,7 +400,7 @@ export function AvtiveDigitalCard({
                 return null;
 
               case 'about':
-                if (!isEditing && sharing.bio === false) return null;
+                if (!isSectionVisible('about')) return null;
                 return (
                   <AboutSection 
                     key="about"
@@ -377,6 +412,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'contact':
+                if (!isSectionVisible('contact')) return null;
                 return (
                   <ProfileContactSection
                     key="contact"
@@ -387,9 +423,20 @@ export function AvtiveDigitalCard({
                   />
                 );
 
+              case 'custom-fields':
+                if (!isSectionVisible('custom-fields')) return null;
+                return (
+                  <CustomFieldsSection
+                    key="custom-fields"
+                    profile={draftProfile}
+                    isEditing={isEditing}
+                    theme={theme}
+                  />
+                );
+
               case 'services':
               case 'skills':
-                if (!isEditing && sharing.services === false && sharing.skills === false) return null;
+                if (!isSectionVisible('services') && !isSectionVisible('skills')) return null;
                 return (
                   <SkillsServicesSection
                     key="services"
@@ -402,14 +449,14 @@ export function AvtiveDigitalCard({
                 );
 
               case 'experience':
-                if (!isEditing && sharing.experience === false) return null;
+                if (!isSectionVisible('experience')) return null;
                 if (!isEditing && (!draftProfile.experiences || draftProfile.experiences.length === 0)) return null;
                 return (
                   <ExperienceSection key="experience" profile={draftProfile} theme={theme} />
                 );
 
               case 'projects':
-                if (!isEditing && sharing.projects === false) return null;
+                if (!isSectionVisible('projects')) return null;
                 if (!isEditing && (!draftProfile.projects || draftProfile.projects.length === 0)) return null;
                 return (
                   <PortfolioSection
@@ -421,34 +468,34 @@ export function AvtiveDigitalCard({
                 );
 
               case 'certifications':
-                if (!isEditing && sharing.certifications === false) return null;
+                if (!isSectionVisible('certifications')) return null;
                 if (!isEditing && (!draftProfile.certifications || draftProfile.certifications.length === 0)) return null;
                 return (
                   <CertificationsSection key="certifications" profile={draftProfile} theme={theme} />
                 );
 
               case 'volunteer':
-                if (!isEditing && sharing.volunteer === false) return null;
+                if (!isSectionVisible('volunteer')) return null;
                 if (!isEditing && (!draftProfile.volunteerExperiences || draftProfile.volunteerExperiences.length === 0)) return null;
                 return (
                   <VolunteerSection key="volunteer" profile={draftProfile} theme={theme} />
                 );
 
               case 'languages':
-                if (!isEditing && sharing.languages === false) return null;
+                if (!isSectionVisible('languages')) return null;
                 if (!isEditing && (!draftProfile.languages || draftProfile.languages.length === 0)) return null;
                 return (
                   <LanguagesSection key="languages" profile={draftProfile} theme={theme} />
                 );
 
               case 'recommendations':
-                if (!isEditing && sharing.recommendations === false) return null;
+                if (!isSectionVisible('recommendations')) return null;
                 return (
                   <RecommendationsSection key="recommendations" profile={draftProfile} theme={theme} />
                 );
 
               case 'virtual-card':
-                if (!isEditing && sharing.nfcCard === false) return null;
+                if (!isSectionVisible('virtual-card')) return null;
                 return (
                   <div key="virtual-card" id="virtual-card-section" className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
                     <div className="flex items-center justify-between mb-4">
@@ -471,13 +518,40 @@ export function AvtiveDigitalCard({
                   </div>
                 );
 
-              default:
+              default: {
+                const dynamicSection = (draftProfile.dynamicSections || []).find((s) => s.key === sectionKey || s.id === sectionKey);
+                if (dynamicSection) {
+                  if (!isSectionVisible(sectionKey) || dynamicSection.visible === false) return null;
+                  return (
+                    <div key={dynamicSection.id || dynamicSection.key} className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+                          {dynamicSection.title}
+                        </h2>
+                      </div>
+                      {dynamicSection.data && (
+                        <p className={`text-sm ${theme.textSecondary} mb-3`}>{dynamicSection.data}</p>
+                      )}
+                      {dynamicSection.customFields && dynamicSection.customFields.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {dynamicSection.customFields.map((field) => (
+                            <div key={field.id} className={`p-3 rounded-lg border ${theme.divider} ${theme.subCardBg}`}>
+                              <div className={`text-xs font-medium ${theme.textSecondary}`}>{field.label}</div>
+                              <div className={`text-sm font-semibold ${theme.textPrimary}`}>{field.value}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
                 return null;
+              }
             }
           };
 
           if (viewMode === 'web') {
-            const leftKeys = ['company', 'about', 'contact', 'virtual-card'];
+            const leftKeys = ['company', 'about', 'contact', 'custom-fields', 'virtual-card'];
             const leftSections = effectiveOrder.filter((k) => leftKeys.includes(k));
             const rightSections = effectiveOrder.filter((k) => !leftKeys.includes(k));
 
