@@ -33,6 +33,7 @@ import {
   Users
 } from 'lucide-react';
 import { ProfileData, ProfileTheme, ProfileType, normalizeProfileType } from '@/types/profile';
+import { InlineAvatarPicker } from './InlineAvatarPicker';
 
 export interface ProfileSectionEditorProps {
   /** Initial mode for the editor */
@@ -158,8 +159,14 @@ export function ProfileSectionEditor({
   // UI / Action status
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [statusFeedback, setStatusFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleSelectAvatar = (newAvatarUrl: string) => {
+    setAvatar(newAvatarUrl);
+    onLiveUpdate?.({ avatar: newAvatarUrl });
+  };
 
   // Subsections toggle inside the expandable editor
   const [activeTab, setActiveTab] = useState<'basic' | 'bio' | 'contact' | 'theme'>('basic');
@@ -622,10 +629,10 @@ export function ProfileSectionEditor({
                       />
                       <button
                         type="button"
-                        onClick={() => avatarInputRef.current?.click()}
+                        onClick={() => setIsAvatarPickerOpen((prev) => !prev)}
                         disabled={isUploadingAvatar}
                         className="absolute inset-0 bg-black/40 group-hover:bg-black/60 flex items-center justify-center text-white transition-colors cursor-pointer"
-                        title="Upload Profile Photo"
+                        title="Choose avatar or upload photo inline"
                       >
                         {isUploadingAvatar ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -633,22 +640,27 @@ export function ProfileSectionEditor({
                           <Camera className="w-4 h-4" />
                         )}
                       </button>
-                      <input
-                        ref={avatarInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleAvatarUpload(file);
-                        }}
-                      />
                     </div>
 
                     <div className="min-w-0 pb-0.5">
-                      <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                        {fullName || (mode === 'add' ? 'New Profile' : 'Your Name')}
-                      </h4>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                          {fullName || (mode === 'add' ? 'New Profile' : 'Your Name')}
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => setIsAvatarPickerOpen((prev) => !prev)}
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-md transition-colors cursor-pointer flex items-center gap-1 shrink-0 ${
+                            isAvatarPickerOpen
+                              ? 'bg-indigo-600 text-white shadow-xs'
+                              : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900'
+                          }`}
+                          title="Toggle inline avatar choices & upload"
+                        >
+                          <Camera className="w-2.5 h-2.5" />
+                          <span>{isAvatarPickerOpen ? 'Hide Choices' : 'Change Photo'}</span>
+                        </button>
+                      </div>
                       <p className="text-xs text-slate-500 dark:text-white/60 truncate">
                         {profession || 'Professional Title'}
                       </p>
@@ -661,6 +673,18 @@ export function ProfileSectionEditor({
                     </span>
                   </div>
                 </div>
+
+                {/* Inline Profile Photo Picker Tray */}
+                <InlineAvatarPicker
+                  currentAvatar={avatar}
+                  onSelectAvatar={handleSelectAvatar}
+                  isOpen={isAvatarPickerOpen}
+                  onToggleOpen={() => setIsAvatarPickerOpen((prev) => !prev)}
+                  onClose={() => setIsAvatarPickerOpen(false)}
+                  isUploading={isUploadingAvatar}
+                  onUploadFile={handleAvatarUpload}
+                  className="px-4 pb-2"
+                />
               </div>
 
               {/* Sub-Tab Navigation for Clear Ergonomics */}
