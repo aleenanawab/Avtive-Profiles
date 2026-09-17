@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail, getProfileByUserId, createUser } from '@/lib/db';
-import { setSessionCookie } from '@/lib/auth';
+import { setSessionCookie, RETURNING_USER_COOKIE_NAME } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       const userProfile = await getProfileByUserId(user.id);
       const profileSlug = userProfile?.slug || userProfile?.id || null;
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         isNewUser: false,
         message: `Successfully signed in with ${provider.charAt(0).toUpperCase() + provider.slice(1)}.`,
@@ -56,6 +56,15 @@ export async function POST(request: NextRequest) {
         hasProfile: Boolean(userProfile),
         profileSlug
       });
+
+      response.cookies.set(RETURNING_USER_COOKIE_NAME, 'true', {
+        path: '/',
+        httpOnly: false,
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 365
+      });
+
+      return response;
     } else {
       // New user: register account (without profile, so they can complete profile creation)
       const result = await createUser({
@@ -74,7 +83,7 @@ export async function POST(request: NextRequest) {
       };
       await setSessionCookie(sessionUser);
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         isNewUser: true,
         message: `Account created and verified with ${provider.charAt(0).toUpperCase() + provider.slice(1)}.`,
@@ -82,6 +91,15 @@ export async function POST(request: NextRequest) {
         hasProfile: false,
         profileSlug: null
       }, { status: 201 });
+
+      response.cookies.set(RETURNING_USER_COOKIE_NAME, 'true', {
+        path: '/',
+        httpOnly: false,
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 365
+      });
+
+      return response;
     }
   } catch (error) {
     console.error('Social Auth Error:', error);

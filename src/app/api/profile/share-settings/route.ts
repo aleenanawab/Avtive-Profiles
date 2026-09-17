@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { profileId, sharingSettings, sectionOrder } = body;
+    const { profileId, sharingSettings, sectionOrder, sectionVisibility } = body;
 
     if (!profileId) {
       return NextResponse.json(
@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
       profileId,
       {
         ...(sharingSettings ? { sharingSettings: sharingSettings as SharingSettings } : {}),
-        ...(sectionOrder ? { sectionOrder: sectionOrder as string[] } : {})
+        ...(sectionOrder ? { sectionOrder: sectionOrder as string[] } : {}),
+        ...(sectionVisibility ? { sectionVisibility: sectionVisibility as Record<string, boolean> } : {})
       },
       session.id
     );

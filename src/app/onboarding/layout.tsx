@@ -4,6 +4,8 @@ import { getSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Setup Your Avtive Profile | Onboarding',
   description: 'Sequential onboarding flow to set up your verified Avtive digital identity profile.'

@@ -1,44 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
-import { ProfileData, UserRecord, ProfileTheme, UserConnection, SharingSettings } from '@/types/profile';
+import { ProfileData, UserRecord, ProfileTheme, UserConnection, SharingSettings, normalizeProfileType } from '@/types/profile';
 import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
 
-export const DEFAULT_SHARING_SETTINGS: SharingSettings = {
-  photo: true,
-  nameAndTitle: true,
-  bio: true,
-  contactInfo: true,
-  email: true,
-  phone: true,
-  links: true,
-  socialLinks: true,
-  skills: true,
-  experience: true,
-  education: true,
-  certifications: true,
-  projects: true,
-  services: true,
-  volunteer: true,
-  languages: true,
-  recommendations: true,
-  companySection: true,
-  nfcCard: true
-};
-
-export const DEFAULT_SECTION_ORDER: string[] = [
-  'hero',
-  'about',
-  'services',
-  'skills',
-  'experience',
-  'projects',
-  'certifications',
-  'volunteer',
-  'languages',
-  'recommendations',
-  'virtual-card'
-];
+export {
+  DEFAULT_SHARING_SETTINGS,
+  DEFAULT_SECTION_VISIBILITY,
+  DEFAULT_SECTION_ORDER
+} from '@/types/profile';
+import {
+  DEFAULT_SHARING_SETTINGS,
+  DEFAULT_SECTION_VISIBILITY,
+  DEFAULT_SECTION_ORDER
+} from '@/types/profile';
 
 interface DatabaseSchema {
   users: UserRecord[];
@@ -145,9 +120,10 @@ function getInitialSeedData(): DatabaseSchema {
 
 function normalizeProfiles(profiles: Record<string, ProfileData>) {
   Object.values(profiles).forEach((p) => {
+    p.type = normalizeProfileType(p.type);
     if (!p.theme || p.theme === 'default') p.theme = 'editorial';
     if (!p.profileName) {
-      p.profileName = p.designation || (p.type === 'company' ? 'Company Profile' : 'Primary Profile');
+      p.profileName = p.designation || (p.type === 'team' ? 'Team Profile' : 'Primary Profile');
     }
     if (!p.profession) {
       p.profession = p.designation || 'Professional';
@@ -158,11 +134,42 @@ function normalizeProfiles(profiles: Record<string, ProfileData>) {
     if (!p.updatedAt) {
       p.updatedAt = p.createdAt || new Date().toISOString();
     }
+    if (!p.username) {
+      p.username = p.slug ? p.slug.replace(/^@/, '') : slugify(p.name);
+    }
+    if (!p.customFields) {
+      p.customFields = [];
+    }
+    if (!p.dynamicSections) {
+      p.dynamicSections = [];
+    }
     if (!p.sharingSettings) {
       p.sharingSettings = { ...DEFAULT_SHARING_SETTINGS };
     }
     if (!p.sectionOrder || !p.sectionOrder.length) {
       p.sectionOrder = [...DEFAULT_SECTION_ORDER];
+    }
+    if (!p.sectionVisibility) {
+      p.sectionVisibility = {
+        ...DEFAULT_SECTION_VISIBILITY,
+        ...(p.sharingSettings
+          ? {
+              about: p.sharingSettings.bio !== false,
+              skills: p.sharingSettings.skills !== false,
+              services: p.sharingSettings.services !== false,
+              projects: p.sharingSettings.projects !== false,
+              experience: p.sharingSettings.experience !== false,
+              education: p.sharingSettings.education !== false,
+              certifications: p.sharingSettings.certifications !== false,
+              volunteer: p.sharingSettings.volunteer !== false,
+              languages: p.sharingSettings.languages !== false,
+              recommendations: p.sharingSettings.recommendations !== false,
+              contact: p.sharingSettings.contactInfo !== false,
+              'virtual-card': p.sharingSettings.nfcCard !== false,
+              company: p.sharingSettings.companySection !== false
+            }
+          : {})
+      };
     }
     if (!Array.isArray(p.socials)) {
       if (p.socials && typeof p.socials === 'object') {
@@ -361,7 +368,7 @@ export async function createProfileForUser(
     profileName: profileName,
     profession: profession,
     slug: slug,
-    type: (data.type as any) || 'owner',
+    type: normalizeProfileType(data.type),
     name: name,
     email: (data.email || user?.email || '').toLowerCase().trim(),
     firstName: data.firstName || (name.split(' ')[0] || ''),
@@ -417,12 +424,19 @@ export async function createProfileForUser(
     nfcCard: data.nfcCard,
     sharingSettings: data.sharingSettings ? { ...DEFAULT_SHARING_SETTINGS, ...data.sharingSettings } : { ...DEFAULT_SHARING_SETTINGS },
     sectionOrder: (data.sectionOrder && data.sectionOrder.length) ? data.sectionOrder : [...DEFAULT_SECTION_ORDER],
+    sectionVisibility: data.sectionVisibility ? { ...DEFAULT_SECTION_VISIBILITY, ...data.sectionVisibility } : { ...DEFAULT_SECTION_VISIBILITY },
+    username: (data.username || (data.slug ? data.slug.replace(/^@/, '') : slugBase)).toLowerCase().replace(/[^a-z0-9_-]/g, ''),
+    customFields: Array.isArray(data.customFields) ? data.customFields : [],
+    dynamicSections: Array.isArray(data.dynamicSections) ? data.dynamicSections : [],
     createdAt: now,
     updatedAt: now
   };
 
   db.profiles[newProfile.id] = newProfile;
   db.profiles[newProfile.slug] = newProfile;
+  if (newProfile.username) {
+    db.profiles[newProfile.username] = newProfile;
+  }
   saveDb(db);
 
   return newProfile;
@@ -471,13 +485,22 @@ export function setProfileResponseCookies(response: any, profile: ProfileData) {
 
 export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileData | null> {
   const db = loadDb();
+  const clean = idOrSlug.toLowerCase().replace(/^@/, '').trim();
   if (db.profiles[idOrSlug]) {
     return db.profiles[idOrSlug];
   }
+  if (db.profiles[clean]) {
+    return db.profiles[clean];
+  }
 
-  // Linear search in case of lowercase/trim difference
+  // Linear search in case of lowercase/trim difference or username match
   const found = Object.values(db.profiles).find(
-    (p) => p.id.toLowerCase() === idOrSlug.toLowerCase() || p.slug.toLowerCase() === idOrSlug.toLowerCase()
+    (p) =>
+      p.id.toLowerCase() === idOrSlug.toLowerCase() ||
+      p.slug.toLowerCase() === idOrSlug.toLowerCase() ||
+      p.slug.toLowerCase() === clean ||
+      (p.username && p.username.toLowerCase() === clean) ||
+      (p.username && p.username.toLowerCase() === idOrSlug.toLowerCase())
   );
   if (found) return found;
 
@@ -531,11 +554,11 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
 
 export async function getProfileByUserId(userId: string): Promise<ProfileData | null> {
   const db = loadDb();
-  // Prioritize owner or individual profile if user has multiple (e.g. founder with personal + company)
-  const ownerOrIndiv = Object.values(db.profiles).find(
-    (p) => p.userId === userId && (p.type === 'owner' || p.type === 'individual')
+  // Prioritize individual profile if user has multiple (e.g. personal + team)
+  const individualProfile = Object.values(db.profiles).find(
+    (p) => p.userId === userId && normalizeProfileType(p.type) === 'individual'
   );
-  if (ownerOrIndiv) return ownerOrIndiv;
+  if (individualProfile) return individualProfile;
 
   const profile = Object.values(db.profiles).find((p) => p.userId === userId);
   if (profile) return profile;
@@ -625,20 +648,34 @@ export async function updateProfile(
         : slugify(updatedData.name || 'user')) ||
       profileId;
 
+    const effectiveUsername = updatedData.username
+      ? updatedData.username.toLowerCase().replace(/[^a-z0-9_-]/g, '')
+      : slug;
+
     const newProfile: ProfileData = {
       id: profileId || `prof-${Date.now()}`,
       userId: sessionUserId,
       slug: slug,
-      type: (updatedData.type as any) || 'owner',
+      username: effectiveUsername,
+      type: normalizeProfileType(updatedData.type),
       name: updatedData.name || 'Professional',
       email: updatedData.email || '',
       ...updatedData,
+      customFields: Array.isArray(updatedData.customFields) ? updatedData.customFields : [],
+      dynamicSections: Array.isArray(updatedData.dynamicSections) ? updatedData.dynamicSections : [],
+      sectionOrder: (updatedData.sectionOrder && updatedData.sectionOrder.length) ? updatedData.sectionOrder : [...DEFAULT_SECTION_ORDER],
+      sectionVisibility: updatedData.sectionVisibility
+        ? { ...DEFAULT_SECTION_VISIBILITY, ...updatedData.sectionVisibility }
+        : { ...DEFAULT_SECTION_VISIBILITY },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     } as ProfileData;
 
     db.profiles[newProfile.id] = newProfile;
     db.profiles[newProfile.slug] = newProfile;
+    if (newProfile.username) {
+      db.profiles[newProfile.username] = newProfile;
+    }
     saveDb(db);
     return { success: true, profile: newProfile, status: 200 };
   }
@@ -657,19 +694,79 @@ export async function updateProfile(
     }
   }
 
+  // Handle username update if provided
+  const effectiveUsername = updatedData.username !== undefined
+    ? (updatedData.username ? updatedData.username.toLowerCase().replace(/[^a-z0-9_-]/g, '') : undefined)
+    : (target.username || (target.slug ? target.slug.replace(/^@/, '') : undefined));
+
+  // Handle separated sectionVisibility and bidirectional sync with sharingSettings
+  const mergedSectionVisibility: Record<string, boolean> = updatedData.sectionVisibility
+    ? { ...(target.sectionVisibility || DEFAULT_SECTION_VISIBILITY), ...updatedData.sectionVisibility }
+    : (target.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY });
+
+  const mergedSharingSettings = updatedData.sharingSettings
+    ? { ...(target.sharingSettings || DEFAULT_SHARING_SETTINGS), ...updatedData.sharingSettings }
+    : { ...(target.sharingSettings || DEFAULT_SHARING_SETTINGS) };
+
+  if (updatedData.sectionVisibility) {
+    if (updatedData.sectionVisibility.about !== undefined) mergedSharingSettings.bio = updatedData.sectionVisibility.about;
+    if (updatedData.sectionVisibility.skills !== undefined) mergedSharingSettings.skills = updatedData.sectionVisibility.skills;
+    if (updatedData.sectionVisibility.services !== undefined) mergedSharingSettings.services = updatedData.sectionVisibility.services;
+    if (updatedData.sectionVisibility.projects !== undefined) mergedSharingSettings.projects = updatedData.sectionVisibility.projects;
+    if (updatedData.sectionVisibility.experience !== undefined) mergedSharingSettings.experience = updatedData.sectionVisibility.experience;
+    if (updatedData.sectionVisibility.education !== undefined) mergedSharingSettings.education = updatedData.sectionVisibility.education;
+    if (updatedData.sectionVisibility.certifications !== undefined) mergedSharingSettings.certifications = updatedData.sectionVisibility.certifications;
+    if (updatedData.sectionVisibility.volunteer !== undefined) mergedSharingSettings.volunteer = updatedData.sectionVisibility.volunteer;
+    if (updatedData.sectionVisibility.languages !== undefined) mergedSharingSettings.languages = updatedData.sectionVisibility.languages;
+    if (updatedData.sectionVisibility.recommendations !== undefined) mergedSharingSettings.recommendations = updatedData.sectionVisibility.recommendations;
+    if (updatedData.sectionVisibility.contact !== undefined) mergedSharingSettings.contactInfo = updatedData.sectionVisibility.contact;
+    if (updatedData.sectionVisibility['virtual-card'] !== undefined) mergedSharingSettings.nfcCard = updatedData.sectionVisibility['virtual-card'];
+    if (updatedData.sectionVisibility.company !== undefined) mergedSharingSettings.companySection = updatedData.sectionVisibility.company;
+  } else if (updatedData.sharingSettings) {
+    if (updatedData.sharingSettings.bio !== undefined) mergedSectionVisibility.about = updatedData.sharingSettings.bio;
+    if (updatedData.sharingSettings.skills !== undefined) mergedSectionVisibility.skills = updatedData.sharingSettings.skills;
+    if (updatedData.sharingSettings.services !== undefined) mergedSectionVisibility.services = updatedData.sharingSettings.services;
+    if (updatedData.sharingSettings.projects !== undefined) mergedSectionVisibility.projects = updatedData.sharingSettings.projects;
+    if (updatedData.sharingSettings.experience !== undefined) mergedSectionVisibility.experience = updatedData.sharingSettings.experience;
+    if (updatedData.sharingSettings.education !== undefined) mergedSectionVisibility.education = updatedData.sharingSettings.education;
+    if (updatedData.sharingSettings.certifications !== undefined) mergedSectionVisibility.certifications = updatedData.sharingSettings.certifications;
+    if (updatedData.sharingSettings.volunteer !== undefined) mergedSectionVisibility.volunteer = updatedData.sharingSettings.volunteer;
+    if (updatedData.sharingSettings.languages !== undefined) mergedSectionVisibility.languages = updatedData.sharingSettings.languages;
+    if (updatedData.sharingSettings.recommendations !== undefined) mergedSectionVisibility.recommendations = updatedData.sharingSettings.recommendations;
+    if (updatedData.sharingSettings.contactInfo !== undefined) mergedSectionVisibility.contact = updatedData.sharingSettings.contactInfo;
+    if (updatedData.sharingSettings.nfcCard !== undefined) mergedSectionVisibility['virtual-card'] = updatedData.sharingSettings.nfcCard;
+    if (updatedData.sharingSettings.companySection !== undefined) mergedSectionVisibility.company = updatedData.sharingSettings.companySection;
+  }
+
   // Merge safe updates
   const merged: ProfileData = {
     ...target,
     ...updatedData,
+    username: effectiveUsername,
+    customFields: Array.isArray(updatedData.customFields)
+      ? updatedData.customFields
+      : (target.customFields || []),
+    dynamicSections: Array.isArray(updatedData.dynamicSections)
+      ? updatedData.dynamicSections
+      : (target.dynamicSections || []),
+    sectionOrder: (updatedData.sectionOrder && updatedData.sectionOrder.length)
+      ? updatedData.sectionOrder
+      : (target.sectionOrder || [...DEFAULT_SECTION_ORDER]),
+    sectionVisibility: mergedSectionVisibility,
+    sharingSettings: mergedSharingSettings,
+    type: updatedData.type ? normalizeProfileType(updatedData.type) : normalizeProfileType(target.type),
     id: target.id, // Prevent tampering with immutable ID
     userId: sessionUserId, // Ensure bound to active session user
     slug: target.slug || (updatedData as any)?.slug || profileId,
     updatedAt: new Date().toISOString()
   };
 
-  // Persist to both id and slug keys
+  // Persist to id, slug, and username keys
   db.profiles[merged.id] = merged;
   db.profiles[merged.slug] = merged;
+  if (merged.username) {
+    db.profiles[merged.username] = merged;
+  }
   saveDb(db);
 
   return { success: true, profile: merged, status: 200 };
@@ -835,6 +932,18 @@ export function sanitizeProfileForPublic(profile: ProfileData, isOwner: boolean 
   if (settings.nfcCard === false) {
     sanitized.nfcCard = undefined;
   }
+
+  // Handle custom fields visibility
+  if (profile.sectionVisibility?.['custom-fields'] === false) {
+    sanitized.customFields = [];
+  } else if (Array.isArray(sanitized.customFields)) {
+    sanitized.customFields = sanitized.customFields.filter(f => f.visible !== false);
+  }
+
+  sanitized.username = profile.username || profile.slug;
+  sanitized.sectionOrder = profile.sectionOrder || DEFAULT_SECTION_ORDER;
+  sanitized.sectionVisibility = profile.sectionVisibility || DEFAULT_SECTION_VISIBILITY;
+  sanitized.dynamicSections = profile.dynamicSections || [];
 
   return sanitized;
 }

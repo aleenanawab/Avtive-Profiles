@@ -78,9 +78,9 @@ export function HeaderNav({
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 sm:gap-3">
         {/* Left: Avtive Brand */}
         <div 
-          onClick={() => onSelectProfileType('company', 'direct')}
+          onClick={() => onSelectProfileType('team', 'direct')}
           className="flex items-center gap-2 cursor-pointer group"
-          title="Go to Avtive Company Profile"
+          title="Go to Avtive Team Profile"
         >
           <div className="h-8 flex items-center">
             <img 
@@ -104,9 +104,9 @@ export function HeaderNav({
           </div>
         </div>
 
-        {/* Center: Navigation Options (My Card + Company Directory) */}
+        {/* Center: Navigation Options (Individual + Team) */}
         <div className={`flex items-center p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs`}>
-          {/* 1. My Card */}
+          {/* 1. Individual */}
           <button
             onClick={onOpenMyCard}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
@@ -116,33 +116,20 @@ export function HeaderNav({
             }`}
           >
             <CreditCard className="w-3.5 h-3.5" />
-            <span>My Card</span>
+            <span>Individual</span>
           </button>
           
-          {/* 2. Team Member */}
+          {/* 2. Team */}
           <button
-            onClick={() => onSelectProfileType('team-member', 'team')}
-            className={`hidden md:flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
-              profileType === 'team-member'
+            onClick={() => onSelectProfileType('team', 'team')}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
+              profileType === 'team'
                 ? `${theme.btnPrimary} shadow-xs`
                 : `${theme.textMuted} hover:${theme.textPrimary}`
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>Team Member</span>
-          </button>
-
-          {/* 3. Company Profile */}
-          <button
-            onClick={() => onSelectProfileType('company', 'company')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold transition-all ${
-              profileType === 'company'
-                ? `${theme.btnPrimary} shadow-xs`
-                : `${theme.textMuted} hover:${theme.textPrimary}`
-            }`}
-          >
-            <Building2 className="w-3.5 h-3.5" />
-            <span>Company</span>
+            <span>Team</span>
           </button>
         </div>
 

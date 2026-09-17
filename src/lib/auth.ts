@@ -121,3 +121,48 @@ export async function clearSessionCookie(): Promise<void> {
     maxAge: 0
   });
 }
+
+export const RETURNING_USER_COOKIE_NAME = 'avtive_returning_user';
+
+/**
+ * Valid dummy bcrypt hash used for constant-time comparisons when a user record is not found.
+ * Prevents timing attacks for email enumeration during login attempts.
+ */
+export const DUMMY_BCRYPT_HASH = '$2a$10$wT8vM9hN2sL5qE3yU7kI.OFmC5nN7mE3gA1fJ8lP0kQ5rT2vW4xYa';
+
+/**
+ * Server-side helper to record that a user has previously created or logged into an account.
+ */
+export async function setReturningUserCookie(): Promise<void> {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(RETURNING_USER_COOKIE_NAME, 'true', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365 // 1 year
+    });
+  } catch {}
+}
+
+/**
+ * Server-side helper to check if this client is a returning user.
+ */
+export async function isReturningUser(): Promise<boolean> {
+  try {
+    const cookieStore = await cookies();
+    const returningCookie = cookieStore.get(RETURNING_USER_COOKIE_NAME);
+    if (returningCookie?.value === 'true') {
+      return true;
+    }
+    // Also consider legacy user_cache as indicator of returning user
+    const cacheCookie = cookieStore.get('avtive_user_cache');
+    if (cacheCookie?.value) {
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}

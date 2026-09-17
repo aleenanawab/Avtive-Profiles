@@ -41,24 +41,18 @@ export function HeroSection({
   const sharing = profile.sharingSettings || {};
 
   const normalizedType = normalizeProfileType(profile.type);
-  const typeBadgeLabel = normalizedType === 'owner' ? 'Owner' : normalizedType === 'employee' ? 'Employee' : 'Company';
+  const typeBadgeLabel = normalizedType === 'team' ? 'Team' : 'Individual';
 
-  const defaultStats = normalizedType === 'owner'
+  const defaultStats = normalizedType === 'team'
     ? [
-        { value: profile.highlights?.[0]?.value || '5', label: profile.highlights?.[0]?.label || 'Team Members' },
-        { value: profile.highlights?.[1]?.value || '3', label: profile.highlights?.[1]?.label || 'Company Projects' },
-        { value: profile.highlights?.[2]?.value || '2', label: profile.highlights?.[2]?.label || 'Years' }
-      ]
-    : normalizedType === 'employee'
-    ? [
-        { value: profile.highlights?.[0]?.value || '12', label: profile.highlights?.[0]?.label || 'Team Members' },
-        { value: profile.highlights?.[1]?.value || '8', label: profile.highlights?.[1]?.label || 'Projects' },
-        { value: profile.highlights?.[2]?.value || '5', label: profile.highlights?.[2]?.label || 'Years' }
-      ]
-    : [
         { value: profile.highlights?.[0]?.value || '15+', label: profile.highlights?.[0]?.label || 'Team' },
         { value: profile.highlights?.[1]?.value || '25+', label: profile.highlights?.[1]?.label || 'Projects' },
         { value: profile.highlights?.[2]?.value || '4+', label: profile.highlights?.[2]?.label || 'Years' }
+      ]
+    : [
+        { value: profile.highlights?.[0]?.value || '5', label: profile.highlights?.[0]?.label || 'Projects' },
+        { value: profile.highlights?.[1]?.value || '3', label: profile.highlights?.[1]?.label || 'Credentials' },
+        { value: profile.highlights?.[2]?.value || '2+', label: profile.highlights?.[2]?.label || 'Years' }
       ];
 
   // Dynamic Social Links strictly preserving user dragged & saved order

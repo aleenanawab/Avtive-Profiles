@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { getProfileByUserId, createProfileForUser, setProfileResponseCookies } from '@/lib/db';
+import { normalizeProfileType } from '@/types/profile';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
       firstName: body.firstName,
       secondName: body.secondName || body.lastName,
       lastName: body.lastName || body.secondName,
-      type: body.type || 'owner',
+      type: normalizeProfileType(body.type || 'individual'),
       profileName,
       profession: body.profession?.trim() || body.professionalTitle?.trim() || body.designation?.trim() || 'Professional',
       professionalTitle: body.professionalTitle?.trim() || body.designation?.trim() || body.profession?.trim() || 'Professional',
@@ -48,7 +49,11 @@ export async function POST(request: NextRequest) {
       socials: body.socials || [],
       socialLinks: body.socialLinks || [],
       sharingSettings: body.sharingSettings,
-      sectionOrder: body.sectionOrder
+      sectionOrder: body.sectionOrder,
+      sectionVisibility: body.sectionVisibility,
+      username: body.username,
+      customFields: body.customFields,
+      dynamicSections: body.dynamicSections
     });
 
     const response = NextResponse.json(

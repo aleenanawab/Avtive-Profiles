@@ -27,7 +27,7 @@ import {
   Sparkles,
   Download
 } from 'lucide-react';
-import { ProfileData, SharingSettings } from '@/types/profile';
+import { ProfileData, SharingSettings, normalizeProfileType } from '@/types/profile';
 import { GithubIcon, LinkedInIcon, TwitterXIcon } from '@/components/BrandIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -295,7 +295,7 @@ export function ShareFlowClient({ initialProfile }: ShareFlowClientProps) {
                           </h4>
                         </div>
                         <p className="text-[11px] truncate text-slate-500 dark:text-zinc-400">
-                          {r.type === 'owner' ? 'Full control of the profile' : r.type === 'employee' ? 'Work at a company' : 'Business / Organization'}
+                          {normalizeProfileType(r.type) === 'team' ? 'Group / Organization' : 'Personal Profile'}
                         </p>
                       </div>
                     </div>

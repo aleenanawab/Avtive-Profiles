@@ -48,7 +48,7 @@ export default async function ProfileIdentifierEditPage({ params }: ProfileIdent
         email: session.email,
         profileName: 'Primary Profile',
         designation: 'Professional',
-        type: 'owner'
+        type: 'individual'
       });
     }
   }
