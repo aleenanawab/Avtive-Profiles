@@ -15,8 +15,8 @@ export function ProjectDetailModal({ isOpen, onClose, project, profile }: Projec
   const theme = getThemeConfig(profile?.theme || 'elegant');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left">
-      <div className={`relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-6 space-y-5 transition-colors`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left overflow-y-auto">
+      <div className={`relative w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-4 sm:p-6 space-y-4 sm:space-y-5 transition-colors`}>
         <div className="flex items-center justify-between">
           <span className={`px-3 py-1 rounded-full text-xs font-bold ${theme.badgeBg} ${theme.badgeText} border ${theme.subCardBorder} font-mono`}>
             {project.category}
@@ -32,7 +32,7 @@ export function ProjectDetailModal({ isOpen, onClose, project, profile }: Projec
 
         {/* Project Cover Image */}
         {project.coverImage && (
-          <div className={`relative h-56 w-full rounded-2xl overflow-hidden shadow-md ${theme.coverFallback}`}>
+          <div className={`relative h-44 sm:h-56 w-full rounded-2xl overflow-hidden shadow-md ${theme.coverFallback}`}>
             <img
               src={project.coverImage}
               alt={project.title}
