@@ -37,7 +37,11 @@ import {
   Share2,
   Palette,
   Sparkles,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Building2,
+  Phone,
+  Mail,
+  RotateCcw
 } from 'lucide-react';
 import {
   ProfileData,
@@ -70,6 +74,24 @@ interface DraggableLinkItem {
   url: string;
   visible: boolean;
 }
+
+const SECTION_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string }> = {
+  hero: { label: 'Hero & Identity Header', icon: User, color: 'text-blue-500' },
+  about: { label: 'Bio & About Section', icon: FileText, color: 'text-amber-500' },
+  contact: { label: 'Contact & Quick Actions', icon: Phone, color: 'text-emerald-500' },
+  'custom-fields': { label: 'Custom Fields', icon: Tag, color: 'text-purple-500' },
+  services: { label: 'Services & Offerings', icon: Briefcase, color: 'text-indigo-500' },
+  skills: { label: 'Skills Badges', icon: Code, color: 'text-cyan-500' },
+  projects: { label: 'Projects & Portfolio', icon: FolderGit2, color: 'text-rose-500' },
+  experience: { label: 'Work Experience', icon: Briefcase, color: 'text-orange-500' },
+  education: { label: 'Education & Credentials', icon: GraduationCap, color: 'text-violet-500' },
+  certifications: { label: 'Certifications', icon: CheckCircle2, color: 'text-teal-500' },
+  volunteer: { label: 'Volunteer Experience', icon: Sparkles, color: 'text-pink-500' },
+  languages: { label: 'Languages Spoken', icon: Globe, color: 'text-blue-400' },
+  recommendations: { label: 'Endorsements & Recommendations', icon: Sparkles, color: 'text-yellow-500' },
+  'virtual-card': { label: 'Digital Identity Card', icon: Smartphone, color: 'text-sky-500' },
+  company: { label: 'Company / Team Overview', icon: Building2, color: 'text-slate-500' }
+};
 
 const SECTION_LABELS: Record<string, string> = {
   hero: 'Hero & Identity Header',
@@ -276,6 +298,125 @@ function DraggableLinkCard({
       >
         <Trash2 className="w-3.5 h-3.5" />
       </button>
+    </Reorder.Item>
+  );
+}
+
+function DraggableSectionItem({
+  sectionKey,
+  label,
+  icon: Icon,
+  iconColor,
+  isVisible,
+  onToggleVisibility,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast
+}: {
+  sectionKey: string;
+  label: string;
+  icon: React.ElementType;
+  iconColor: string;
+  isVisible: boolean;
+  onToggleVisibility: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={sectionKey}
+      id={sectionKey}
+      dragListener={false}
+      dragControls={dragControls}
+      className={`group px-2.5 py-2 rounded-xl border flex items-center justify-between gap-2 transition-all select-none ${
+        isVisible
+          ? 'bg-white dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-2xs hover:border-slate-300 dark:hover:border-white/20'
+          : 'bg-slate-100/50 dark:bg-black/25 border-dashed border-slate-200/60 dark:border-white/5 opacity-60'
+      }`}
+    >
+      {/* Left: Drag Handle + Section Icon + Section Name */}
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        {/* Drag Handle */}
+        <button
+          type="button"
+          onPointerDown={(e) => dragControls.start(e)}
+          className="p-1 -ml-1 text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-grab active:cursor-grabbing shrink-0 transition-colors"
+          title="Drag to rearrange section"
+        >
+          <GripVertical className="w-3.5 h-3.5" />
+        </button>
+
+        {/* Small Section Icon */}
+        <div
+          className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+            isVisible
+              ? 'bg-slate-100 dark:bg-white/10'
+              : 'bg-slate-200/50 dark:bg-white/5'
+          }`}
+        >
+          <Icon className={`w-3.5 h-3.5 ${isVisible ? iconColor : 'text-slate-400 dark:text-zinc-500'}`} />
+        </div>
+
+        {/* Section Name */}
+        <span
+          className={`text-xs font-medium truncate transition-colors ${
+            isVisible
+              ? 'text-slate-900 dark:text-zinc-100 font-semibold'
+              : 'text-slate-400 dark:text-zinc-500'
+          }`}
+        >
+          {label}
+        </span>
+      </div>
+
+      {/* Right Controls: Micro Up/Down Arrows + Eye Visibility Control */}
+      <div className="flex items-center gap-1 shrink-0">
+        {/* Subtle Up/Down arrows for non-mouse or keyboard accessibility */}
+        <div className="hidden sm:flex items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+          <button
+            type="button"
+            onClick={onMoveUp}
+            disabled={isFirst}
+            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 disabled:hover:text-slate-400 cursor-pointer"
+            title="Move up"
+          >
+            <ArrowUp className="w-3 h-3" />
+          </button>
+          <button
+            type="button"
+            onClick={onMoveDown}
+            disabled={isLast}
+            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 disabled:hover:text-slate-400 cursor-pointer"
+            title="Move down"
+          >
+            <ArrowDown className="w-3 h-3" />
+          </button>
+        </div>
+
+        {/* Eye Visibility Control (Replaces the old hide/text button with an eye toggle) */}
+        <button
+          type="button"
+          onClick={onToggleVisibility}
+          className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+            isVisible
+              ? 'text-slate-700 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
+              : 'text-slate-400 hover:text-slate-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-slate-200/50 dark:hover:bg-white/5'
+          }`}
+          title={isVisible ? 'Visible (Click to hide)' : 'Hidden (Click to show)'}
+          aria-label={isVisible ? `Hide ${label}` : `Show ${label}`}
+        >
+          {isVisible ? (
+            <Eye className="w-4 h-4 text-emerald-500 hover:text-emerald-600 dark:text-emerald-400" />
+          ) : (
+            <EyeOff className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+          )}
+        </button>
+      </div>
     </Reorder.Item>
   );
 }
@@ -949,7 +1090,7 @@ export function SlidingEditorPanel({
               { key: 'projects' as const, label: 'Projects', icon: FolderGit2 },
               { key: 'socials' as const, label: 'Socials', icon: Link2 },
               { key: 'customFields' as const, label: 'Custom Fields', icon: Tag },
-              { key: 'sectionsLayout' as const, label: 'Layout', icon: Layers },
+              { key: 'sectionsLayout' as const, label: 'Section Editor', icon: Layers },
               { key: 'share' as const, label: 'Share & Privacy', icon: Share2 }
             ].map((item) => {
               const Icon = item.icon;
@@ -1659,7 +1800,7 @@ export function SlidingEditorPanel({
               )}
             </div>
 
-            {/* SECTION 7: SECTIONS & DRAG/DROP LAYOUT */}
+            {/* SECTION 7: SECTION EDITOR & REORDERING (Based on Figma Screen #8) */}
             <div id="section-sectionsLayout" className="rounded-2xl bg-white/70 dark:bg-[#1B1E28]/70 border border-slate-200/80 dark:border-white/10 overflow-hidden shadow-xs backdrop-blur-sm">
               <button
                 type="button"
@@ -1668,80 +1809,84 @@ export function SlidingEditorPanel({
               >
                 <div className="flex items-center gap-2">
                   <Layers className="w-4 h-4 text-indigo-500" />
-                  <span>7. Sections Ordering & Layout ({sectionOrder.length})</span>
+                  <span>7. Section Editor ({sectionOrder.length})</span>
                 </div>
-                {expandedSections.sectionsLayout ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/70 font-mono">
+                    {sectionOrder.filter((k) => sectionVisibility[k] !== false).length} visible
+                  </span>
+                  {expandedSections.sectionsLayout ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
+                </div>
               </button>
 
               {expandedSections.sectionsLayout && (
-                <div className="p-4 pt-0 space-y-2 border-t border-slate-200/60 dark:border-white/5">
-                  <div className="p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40 text-[11px] text-indigo-900 dark:text-indigo-300">
-                    <strong>Independent Persistence:</strong> Section ordering and visibility are saved separately and dynamically applied to the live preview.
+                <div className="p-3.5 pt-0 space-y-2.5 border-t border-slate-200/60 dark:border-white/5">
+                  {/* Compact Header Bar */}
+                  <div className="flex items-center justify-between gap-2 pt-2 pb-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                      Drag handle to rearrange. Click eye icon to show or hide.
+                    </p>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {sectionOrder.some((k) => sectionVisibility[k] === false) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const allShown: Record<string, boolean> = {};
+                            sectionOrder.forEach((k) => { allShown[k] = true; });
+                            setSectionVisibility(allShown);
+                          }}
+                          className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                        >
+                          Show All
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSectionOrder(DEFAULT_SECTION_ORDER);
+                          setSectionVisibility(DEFAULT_SECTION_VISIBILITY);
+                        }}
+                        className="text-[10px] font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300 transition-colors cursor-pointer flex items-center gap-0.5"
+                        title="Reset to default order and visibility"
+                      >
+                        <RotateCcw className="w-2.5 h-2.5" />
+                        <span>Reset</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="space-y-1.5 pt-1">
+                  {/* Compact Reorderable Section Items List */}
+                  <Reorder.Group
+                    axis="y"
+                    values={sectionOrder}
+                    onReorder={setSectionOrder}
+                    className="space-y-1.5"
+                  >
                     {sectionOrder.map((sectionKey, idx) => {
+                      const cfg = SECTION_CONFIG[sectionKey] || {
+                        label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
+                        icon: Layers,
+                        color: 'text-slate-500'
+                      };
                       const isVisible = sectionVisibility[sectionKey] !== false;
-                      const label = SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1));
 
                       return (
-                        <div
+                        <DraggableSectionItem
                           key={sectionKey}
-                          className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 transition-all ${
-                            isVisible
-                              ? 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 shadow-2xs'
-                              : 'bg-slate-100/50 dark:bg-black/20 border-slate-200/50 dark:border-white/5 opacity-60'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-white/40 w-4 text-center">
-                              {idx + 1}
-                            </span>
-                            <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">
-                              {label}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <div className="flex items-center gap-0.5">
-                              <button
-                                type="button"
-                                onClick={() => handleMoveSection(idx, 'up')}
-                                disabled={idx === 0}
-                                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
-                                title="Move up"
-                              >
-                                <ArrowUp className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleMoveSection(idx, 'down')}
-                                disabled={idx === sectionOrder.length - 1}
-                                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
-                                title="Move down"
-                              >
-                                <ArrowDown className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => handleToggleSectionVisibility(sectionKey)}
-                              className={`px-2 py-1 rounded-md text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
-                                isVisible
-                                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
-                                  : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/40'
-                              }`}
-                              title={isVisible ? 'Visible on profile' : 'Hidden from profile'}
-                            >
-                              {isVisible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
-                              <span>{isVisible ? 'SHOWN' : 'HIDDEN'}</span>
-                            </button>
-                          </div>
-                        </div>
+                          sectionKey={sectionKey}
+                          label={cfg.label}
+                          icon={cfg.icon}
+                          iconColor={cfg.color}
+                          isVisible={isVisible}
+                          onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
+                          onMoveUp={() => handleMoveSection(idx, 'up')}
+                          onMoveDown={() => handleMoveSection(idx, 'down')}
+                          isFirst={idx === 0}
+                          isLast={idx === sectionOrder.length - 1}
+                        />
                       );
                     })}
-                  </div>
+                  </Reorder.Group>
                 </div>
               )}
             </div>
