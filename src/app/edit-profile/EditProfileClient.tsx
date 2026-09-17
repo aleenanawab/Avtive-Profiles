@@ -44,6 +44,7 @@ import { PhonePreview } from '@/components/PhonePreview';
 import { DynamicSectionGroups, ALL_PROFILE_SECTIONS } from '@/components/sections/DynamicSectionGroups';
 import { SlidingEditorPanel } from '@/components/profiles/SlidingEditorPanel';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
+import { InlineAvatarPicker } from '@/components/profiles/InlineAvatarPicker';
 import { getThemeConfig } from '@/components/themeStyles';
 
 interface DraggableLinkItem {
@@ -224,6 +225,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
   const activeThemeConfig = getThemeConfig(activeTheme);
   const identifier = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
+  const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -950,7 +952,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
             {/* 2. Profile Avatar & Identity Header (Original Clean Layout, Zero Clutter) */}
             <div className="px-6 relative -mt-12 text-center flex flex-col items-center">
-              <div className="relative w-24 h-24 rounded-full border-4 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
+              <div className="relative w-24 h-24 rounded-full border-4 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0 group">
                 <img
                   src={avatar}
                   alt={fullName}
@@ -958,36 +960,53 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 />
                 <button
                   type="button"
-                  onClick={() => avatarInputRef.current?.click()}
+                  onClick={() => setIsAvatarPickerOpen((prev) => !prev)}
                   disabled={isUploadingAvatar}
-                  className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center text-white transition-colors cursor-pointer"
-                  title="Change Profile Photo"
+                  className="absolute inset-0 bg-black/40 group-hover:bg-black/60 flex items-center justify-center text-white transition-colors cursor-pointer"
+                  title="Choose avatar or upload photo inline"
                 >
                   {isUploadingAvatar ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <Camera className="w-4 h-4" />
+                    <Camera className="w-5 h-5" />
                   )}
                 </button>
               </div>
 
-              <input
-                ref={avatarInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleAvatarUpload(file);
-                }}
-              />
+              <div className="mt-2 flex items-center gap-2">
+                <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  {fullName || 'Aleena Nawab'}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setIsAvatarPickerOpen((prev) => !prev)}
+                  className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    isAvatarPickerOpen
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900'
+                  }`}
+                  title="Toggle inline avatar choices & upload"
+                >
+                  <Camera className="w-3 h-3" />
+                  <span>{isAvatarPickerOpen ? 'Hide Choices' : 'Change Photo'}</span>
+                </button>
+              </div>
 
-              <h2 className="mt-2 text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {fullName || 'Aleena Nawab'}
-              </h2>
               <p className="text-xs text-slate-500 dark:text-white/60 font-medium pb-2">
                 {professionalTitle || 'Full Stack Engineer'}
               </p>
+
+              {/* Inline Photo Picker Tray */}
+              <InlineAvatarPicker
+                currentAvatar={avatar}
+                onSelectAvatar={(url) => setAvatar(url)}
+                isOpen={isAvatarPickerOpen}
+                onToggleOpen={() => setIsAvatarPickerOpen((prev) => !prev)}
+                onClose={() => setIsAvatarPickerOpen(false)}
+                isUploading={isUploadingAvatar}
+                onUploadFile={handleAvatarUpload}
+                className="w-full max-w-lg mb-4 text-left"
+              />
             </div>
 
             {/* Status Messages */}
