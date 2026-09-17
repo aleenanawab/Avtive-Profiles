@@ -23,6 +23,8 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  ArrowUp,
+  ArrowDown,
   RotateCcw,
   CheckCircle2,
   Layers,
@@ -32,7 +34,7 @@ import {
   Calendar,
   Users
 } from 'lucide-react';
-import { ProfileData, ProfileTheme, ProfileType, normalizeProfileType } from '@/types/profile';
+import { ProfileData, ProfileTheme, ProfileType, CustomFieldItem, normalizeProfileType } from '@/types/profile';
 import { InlineAvatarPicker } from './InlineAvatarPicker';
 
 export interface ProfileSectionEditorProps {
