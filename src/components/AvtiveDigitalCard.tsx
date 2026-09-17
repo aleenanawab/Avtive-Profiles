@@ -38,6 +38,7 @@ import { TeamSection } from './TeamSection';
 import { NFCCardPreview } from './NFCCardPreview';
 import { EducationSection } from './EducationSection';
 import { SocialLinksSection } from './SocialLinksSection';
+import { CustomFieldsSection } from './CustomFieldsSection';
 import { getThemeConfig, PROFILE_THEMES, ThemeConfig } from './themeStyles';
 
 export { getThemeConfig };

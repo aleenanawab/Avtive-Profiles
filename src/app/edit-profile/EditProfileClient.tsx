@@ -1,15 +1,204 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
+  ArrowLeft, 
+  ArrowUp,
+  ArrowDown,
+  Edit3, 
+  ExternalLink, 
+  Monitor, 
+  Smartphone, 
+  Camera, 
+  Loader2, 
+  Check, 
+  AlertCircle, 
+  User, 
+  ChevronUp, 
+  ChevronDown, 
+  Code, 
+  Plus, 
+  X, 
+  FileText, 
+  FolderGit2, 
+  Pencil, 
+  Trash2, 
+  Link2, 
+  GripVertical, 
+  Share2, 
+  Copy 
+} from 'lucide-react';
+import { Reorder, useDragControls } from 'framer-motion';
+import { 
   ProfileData, 
-  ProfileTheme 
+  ProfileTheme,
+  ProjectItem,
+  ExperienceItem,
+  EducationItem,
+  SharingSettings
 } from '@/types/profile';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { PhonePreview } from '@/components/PhonePreview';
 import { DynamicSectionGroups, ALL_PROFILE_SECTIONS } from '@/components/sections/DynamicSectionGroups';
+import { SlidingEditorPanel } from '@/components/profiles/SlidingEditorPanel';
+import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
+import { getThemeConfig } from '@/components/themeStyles';
+
+interface DraggableLinkItem {
+  id: string;
+  platform: 'github' | 'linkedin' | 'website' | 'twitter' | 'whatsapp' | 'other';
+  title: string;
+  url: string;
+  visible: boolean;
+}
+
+const THEME_OPTIONS: { id: ProfileTheme; name: string; thumbnailBg: string; border: string; accent: string }[] = [
+  {
+    id: 'editorial',
+    name: 'Editorial Minimal',
+    thumbnailBg: 'bg-[#FAFAF9]',
+    border: 'border-stone-200',
+    accent: 'text-amber-500'
+  },
+  {
+    id: 'cyber',
+    name: 'Developer Terminal',
+    thumbnailBg: 'bg-[#09090B]',
+    border: 'border-zinc-800',
+    accent: 'text-emerald-400'
+  },
+  {
+    id: 'luxe',
+    name: 'Luxe Velvet',
+    thumbnailBg: 'bg-[#180D15]',
+    border: 'border-rose-900/40',
+    accent: 'text-rose-400'
+  }
+];
+
+function buildSocialLinksFromProfile(p: ProfileData): DraggableLinkItem[] {
+  const safeSocials = (Array.isArray(p.socials) && p.socials.length > 0)
+    ? p.socials
+    : (Array.isArray(p.socialLinks) && p.socialLinks.length > 0)
+    ? p.socialLinks
+    : null;
+
+  if (safeSocials && safeSocials.length > 0) {
+    return safeSocials.map((s: any, idx: number) => {
+      const platform = (s.platform || 'website') as DraggableLinkItem['platform'];
+      return {
+        id: `link-${platform}-${idx}`,
+        platform,
+        title: s.label || platform.charAt(0).toUpperCase() + platform.slice(1),
+        url: s.url || '',
+        visible: true
+      };
+    });
+  }
+
+  return [
+    { id: 'link-1', platform: 'github', title: 'GitHub', url: 'https://github.com', visible: true },
+    { id: 'link-2', platform: 'linkedin', title: 'LinkedIn', url: 'https://linkedin.com', visible: true }
+  ];
+}
+
+function DraggableLinkCard({
+  link,
+  index,
+  total,
+  onUpdate,
+  onDelete,
+  onMoveUp,
+  onMoveDown
+}: {
+  link: DraggableLinkItem;
+  index: number;
+  total: number;
+  onUpdate: (updated: Partial<DraggableLinkItem>) => void;
+  onDelete: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={link}
+      id={link.id}
+      dragListener={false}
+      dragControls={dragControls}
+      className={`p-3 rounded-xl bg-white dark:bg-white/5 border transition-all flex items-center gap-2.5 shadow-2xs ${
+        link.visible
+          ? 'border-slate-200 dark:border-white/10'
+          : 'border-slate-200/50 dark:border-white/5 opacity-60 bg-slate-50/50 dark:bg-black/20'
+      }`}
+    >
+      <button
+        type="button"
+        onPointerDown={(e) => dragControls.start(e)}
+        className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-grab active:cursor-grabbing shrink-0"
+        title="Drag to reorder"
+      >
+        <GripVertical className="w-4 h-4" />
+      </button>
+
+      <div className="flex flex-col gap-0.5 shrink-0">
+        <button
+          type="button"
+          onClick={onMoveUp}
+          disabled={index === 0}
+          className="text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+          title="Move up"
+        >
+          <ArrowUp className="w-3 h-3" />
+        </button>
+        <button
+          type="button"
+          onClick={onMoveDown}
+          disabled={index === total - 1}
+          className="text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+          title="Move down"
+        >
+          <ArrowDown className="w-3 h-3" />
+        </button>
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <input
+          type="url"
+          value={link.url}
+          onChange={(e) => onUpdate({ url: e.target.value })}
+          placeholder={`https://${link.platform}.com/...`}
+          className="figma-input w-full px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+        />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onUpdate({ visible: !link.visible })}
+        className={`px-2 py-1 rounded-md text-[10px] font-bold shrink-0 transition-colors cursor-pointer ${
+          link.visible
+            ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+            : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/40'
+        }`}
+        title={link.visible ? 'Visible on profile' : 'Hidden from profile'}
+      >
+        {link.visible ? 'ON' : 'OFF'}
+      </button>
+
+      <button
+        type="button"
+        onClick={onDelete}
+        className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 shrink-0 cursor-pointer"
+        title="Remove link"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
+    </Reorder.Item>
+  );
+}
 
 interface EditProfileClientProps {
   initialProfile: ProfileData;
@@ -24,8 +213,19 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   );
   const [isDark, setIsDark] = useState(false);
   const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop');
-  const [isEditorOpen, setIsEditorOpen] = useState(true); // Open by default for Linktree sliding editing experience
+  const [isEditorOpen, setIsEditorOpen] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [mobileViewTab, setMobileViewTab] = useState<'editor' | 'preview'>('preview');
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const activeThemeConfig = getThemeConfig(activeTheme);
+  const identifier = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   // Guard: Active session check on mount, focus, visibilitychange, and pageshow (to prevent stale state after logout)
   useEffect(() => {
@@ -605,6 +805,74 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
               <ArrowLeft className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Public Profile</span>
             </Link>
+
+            {/* Desktop / Mobile view toggle */}
+            <div className="flex items-center bg-slate-100 dark:bg-zinc-800 p-0.5 rounded-xl border border-slate-200 dark:border-zinc-700">
+              <button
+                type="button"
+                onClick={() => setDeviceView('desktop')}
+                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  deviceView === 'desktop'
+                    ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Desktop View"
+              >
+                <Monitor className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Desktop</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setDeviceView('mobile')}
+                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  deviceView === 'mobile'
+                    ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title="Mobile View"
+              >
+                <Smartphone className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Mobile</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right: Studio Status & Toggle Button */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <span className="hidden md:flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Live Interactive Canvas
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setIsEditorOpen(!isEditorOpen)}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-2xs cursor-pointer shrink-0 ${
+                isEditorOpen
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm'
+                  : 'border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700'
+              }`}
+              title={isEditorOpen ? 'Collapse Editor Panel' : 'Open Sliding Editor'}
+            >
+              <Edit3 className="w-3.5 h-3.5 shrink-0" />
+              <span>{isEditorOpen ? 'Editor Open' : 'Edit Profile'}</span>
+            </button>
+
+            <Link
+              href={`/profile/${identifier}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs shrink-0"
+              title="Open public profile in new tab"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="hidden sm:inline">View Live</span>
+            </Link>
+          </div>
+
+        </div>
+      </header>
 
       {/* Main Responsive Split: Left Original Editor + Right Sticky Live Mobile Preview */}
       <div className="w-full flex flex-col lg:flex-row items-start justify-center gap-8 xl:gap-12">
@@ -1216,70 +1484,8 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
             </div>
 
-            {/* Save Changes Action Bar */}
-            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/10 px-5 flex items-center justify-between gap-3">
-              <Link
-                href={`/profile/${profile.slug || profile.id || initialProfile.slug || initialProfile.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="figma-pill-secondary py-2 px-4 text-xs font-bold flex items-center gap-1.5 shrink-0"
-                title="Open public profile view in a new tab"
-              >
-                <Monitor className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline">Desktop</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setDeviceView('mobile')}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  deviceView === 'mobile'
-                    ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
-                    : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title="Mobile View"
-              >
-                <Smartphone className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline">Mobile</span>
-              </button>
-            </div>
           </div>
-
-          {/* Right: Studio Status & Toggle Button */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <span className="hidden md:flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live Interactive Canvas
-            </span>
-
-            <button
-              type="button"
-              onClick={() => setIsEditorOpen(!isEditorOpen)}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-2xs cursor-pointer shrink-0 ${
-                isEditorOpen
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm'
-                  : 'border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700'
-              }`}
-              title={isEditorOpen ? 'Collapse Editor Panel' : 'Open Sliding Editor'}
-            >
-              <Edit3 className="w-3.5 h-3.5 shrink-0" />
-              <span>{isEditorOpen ? 'Editor Open' : 'Edit Profile'}</span>
-            </button>
-
-            <Link
-              href={`/profile/${identifier}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs shrink-0"
-              title="Open public profile in new tab"
-            >
-              <ExternalLink className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-              <span className="hidden sm:inline">View Live</span>
-            </Link>
-          </div>
-
         </div>
-      </header>
 
       {/* Main Live Preview Canvas */}
       {deviceView === 'mobile' ? (
@@ -1380,6 +1586,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
           </div>
         </main>
       )}
+      </div>
 
       {/* Floating Action Pill to Reopen Editor when Collapsed */}
       {!isEditorOpen && (

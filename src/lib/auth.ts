@@ -4,8 +4,24 @@ import { cookies } from 'next/headers';
 import { UserSession } from '@/types/profile';
 
 const SESSION_COOKIE_NAME = 'avtive_session';
+export const RETURNING_USER_COOKIE_NAME = 'avtive_returning_user';
+export const DUMMY_BCRYPT_HASH = '$2a$10$wN1Q/X8Oa6xG/G9x0.GzOuq8Z9y2j4yJz/uVl3IqNfO1.tJ5bI5Ki';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'avtive-super-secret-key-prod-2026-secure-session-auth';
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+export function setReturningUserCookie(response?: any): void {
+  if (response && response.cookies) {
+    try {
+      response.cookies.set(RETURNING_USER_COOKIE_NAME, 'true', {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365
+      });
+    } catch {}
+  }
+}
 
 /**
  * Hash plain-text password using bcryptjs
