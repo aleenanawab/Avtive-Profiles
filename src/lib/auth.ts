@@ -96,28 +96,79 @@ export async function getSession(): Promise<UserSession | null> {
 /**
  * Server-side helper to set session cookie on response
  */
-export async function setSessionCookie(user: UserSession): Promise<void> {
+export async function setSessionCookie(user: UserSession, response?: any): Promise<string> {
   const token = createSessionToken(user);
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: SESSION_DURATION_SECONDS
-  });
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(SESSION_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: SESSION_DURATION_SECONDS
+    });
+  } catch {}
+
+  if (response && response.cookies) {
+    try {
+      response.cookies.set(SESSION_COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: SESSION_DURATION_SECONDS
+      });
+    } catch {}
+  }
+
+  return token;
 }
 
 /**
- * Server-side helper to clear session cookie on logout
+ * Server-side helper to clear session cookie and all profile cached cookies on logout
  */
-export async function clearSessionCookie(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 0
-  });
+export async function clearSessionCookie(response?: any): Promise<void> {
+  const cookiesToClear = [
+    SESSION_COOKIE_NAME,
+    'avtive_user_cache',
+    'avtive_last_profile',
+    'avtive_prof_count'
+  ];
+
+  for (let i = 0; i <= 20; i++) {
+    cookiesToClear.push(`avtive_prof_${i}`);
+  }
+
+  try {
+    const cookieStore = await cookies();
+    for (const cookieName of cookiesToClear) {
+      cookieStore.set(cookieName, '', {
+        httpOnly: cookieName === SESSION_COOKIE_NAME || cookieName === 'avtive_user_cache',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 0,
+        expires: new Date(0)
+      });
+      cookieStore.delete(cookieName);
+    }
+  } catch {}
+
+  if (response && response.cookies) {
+    try {
+      for (const cookieName of cookiesToClear) {
+        response.cookies.set(cookieName, '', {
+          httpOnly: cookieName === SESSION_COOKIE_NAME || cookieName === 'avtive_user_cache',
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 0,
+          expires: new Date(0)
+        });
+        response.cookies.delete(cookieName);
+      }
+    } catch {}
+  }
 }
+
+

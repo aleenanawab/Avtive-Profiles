@@ -3,11 +3,18 @@ import { clearSessionCookie } from '@/lib/auth';
 
 export async function POST() {
   try {
-    await clearSessionCookie();
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Logged out successfully.'
     });
+
+    await clearSessionCookie(response);
+
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+
+    return response;
   } catch (error) {
     console.error('Logout API Error:', error);
     return NextResponse.json(
@@ -16,3 +23,4 @@ export async function POST() {
     );
   }
 }
+

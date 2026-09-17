@@ -172,7 +172,7 @@ export default function LoginPage() {
             </h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400">
-            Welcome Back · The secondary landing screen
+            Welcome Back · Sign in to your account
           </p>
         </div>
 

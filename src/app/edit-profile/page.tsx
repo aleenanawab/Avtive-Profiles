@@ -5,6 +5,9 @@ import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser } from 
 import { EditProfileClient } from './EditProfileClient';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Edit Profile | Avtive',
   description: 'Update your professional digital profile and identity on Avtive.'

@@ -35,6 +35,8 @@ import { ProfileContactSection } from './ProfileContactSection';
 import { CompanyCard } from './CompanyCard';
 import { TeamSection } from './TeamSection';
 import { NFCCardPreview } from './NFCCardPreview';
+import { EducationSection } from './EducationSection';
+import { SocialLinksSection } from './SocialLinksSection';
 import { getThemeConfig, PROFILE_THEMES, ThemeConfig } from './themeStyles';
 
 export { getThemeConfig };
@@ -198,44 +200,38 @@ export function AvtiveDigitalCard({
               </div>
 
               <div className="flex items-center gap-2">
-                {/* Discard / Cancel */}
                 <button
                   type="button"
                   onClick={handleCancel}
                   disabled={isSaving}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.subCardBg} text-xs font-bold ${theme.textPrimary} border ${theme.subCardBorder} hover:opacity-80 transition-all active:scale-95 disabled:opacity-50`}
+                  className={`py-1.5 px-3 rounded-full text-xs font-semibold border transition-all ${theme.cardBorder} ${theme.textSecondary} hover:opacity-80 disabled:opacity-50`}
                 >
-                  <X className="w-3.5 h-3.5" />
-                  <span>Cancel</span>
+                  <X className="w-3.5 h-3.5 sm:mr-1 inline" />
+                  <span className="hidden sm:inline">Cancel</span>
                 </button>
-
-                {/* Save Changes */}
                 <button
                   type="button"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl ${theme.btnPrimary} text-xs font-bold shadow-md transition-all active:scale-95 disabled:opacity-50`}
+                  className={`py-1.5 px-4 rounded-full text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 ${theme.btnPrimary} disabled:opacity-50`}
                 >
                   {isSaving ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Saving...</span>
-                    </>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    <>
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Save</span>
-                    </>
+                    <Save className="w-3.5 h-3.5" />
                   )}
+                  <span>{isSaving ? 'Saving...' : 'Save'}</span>
                 </button>
               </div>
             </div>
 
-            {/* Validation / Error banner */}
+            {/* Error banner if save fails */}
             {errorMessage && (
-              <div className="mx-4 sm:mx-6 mb-2 p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
+              <div className="px-4 sm:px-6 pb-2">
+                <div className="p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
               </div>
             )}
 
@@ -313,10 +309,12 @@ export function AvtiveDigitalCard({
             'services',
             'projects',
             'experience',
+            'education',
             'certifications',
             'volunteer',
             'languages',
             'recommendations',
+            'socialLinks',
             'virtual-card'
           ];
 
@@ -324,7 +322,7 @@ export function AvtiveDigitalCard({
           const effectiveOrder: string[] = [];
           
           for (const s of userOrder) {
-            const normalized = s === 'skills' ? 'services' : s;
+            const normalized = s === 'services' ? 'skills' : s;
             if (!effectiveOrder.includes(normalized) && defaultCardSectionOrder.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
@@ -377,6 +375,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'contact':
+                if (!isEditing && sharing.contactInfo === false && sharing.email === false && sharing.phone === false) return null;
                 return (
                   <ProfileContactSection
                     key="contact"
@@ -406,6 +405,13 @@ export function AvtiveDigitalCard({
                 if (!isEditing && (!draftProfile.experiences || draftProfile.experiences.length === 0)) return null;
                 return (
                   <ExperienceSection key="experience" profile={draftProfile} theme={theme} />
+                );
+
+              case 'education':
+                if (!isEditing && sharing.education === false) return null;
+                if (!isEditing && (!draftProfile.education || draftProfile.education.length === 0)) return null;
+                return (
+                  <EducationSection key="education" profile={draftProfile} theme={theme} />
                 );
 
               case 'projects':
@@ -445,6 +451,13 @@ export function AvtiveDigitalCard({
                 if (!isEditing && sharing.recommendations === false) return null;
                 return (
                   <RecommendationsSection key="recommendations" profile={draftProfile} theme={theme} />
+                );
+
+              case 'socialLinks':
+              case 'socials':
+                if (!isEditing && sharing.socialLinks === false) return null;
+                return (
+                  <SocialLinksSection key="socials" profile={draftProfile} />
                 );
 
               case 'virtual-card':
