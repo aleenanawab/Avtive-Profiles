@@ -430,6 +430,187 @@ function DraggableSectionItem({
   );
 }
 
+function DraggableCustomFieldItem({
+  field,
+  index,
+  total,
+  onUpdate,
+  onDelete,
+  onMoveUp,
+  onMoveDown
+}: {
+  field: CustomFieldItem;
+  index: number;
+  total: number;
+  onUpdate: (patch: Partial<CustomFieldItem>) => void;
+  onDelete: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+}) {
+  const dragControls = useDragControls();
+  const isVisible = field.visible !== false;
+  const isMultiLine = field.type === 'markdown' || (field.value && field.value.includes('\n'));
+
+  return (
+    <Reorder.Item
+      value={field}
+      id={field.id}
+      dragListener={false}
+      dragControls={dragControls}
+      layout
+      layoutId={`custom-field-item-${field.id}`}
+      className={`p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-white/5 border transition-all flex flex-col gap-2.5 shadow-2xs ${
+        isVisible
+          ? 'border-slate-200 dark:border-white/10'
+          : 'border-slate-200/50 dark:border-white/5 opacity-60 bg-slate-50/50 dark:bg-black/20'
+      }`}
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+        zIndex: 50,
+        background: isVisible ? 'rgba(255,255,255,0.98)' : 'rgba(0,0,0,0.5)'
+      }}
+    >
+      {/* Top row: Drag Handle + Move Arrows + Field # + Eye Toggle + Delete */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          {/* Drag Handle */}
+          <button
+            type="button"
+            onPointerDown={(e) => dragControls.start(e)}
+            className="p-1 -ml-1 rounded-md text-slate-300 dark:text-zinc-600 hover:text-slate-600 dark:hover:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10 cursor-grab active:cursor-grabbing shrink-0 transition-all group/handle"
+            title="Drag to rearrange custom field order"
+            aria-label="Drag handle"
+          >
+            <GripVertical className="w-4 h-4 group-hover/handle:text-purple-500 transition-colors" />
+          </button>
+
+          {/* Micro Up/Down Arrows */}
+          <div className="flex items-center gap-0.5">
+            <button
+              type="button"
+              onClick={onMoveUp}
+              disabled={index === 0}
+              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+              title="Move Up"
+            >
+              <ArrowUp className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={onMoveDown}
+              disabled={index === total - 1}
+              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+              title="Move Down"
+            >
+              <ArrowDown className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <span className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 font-mono">
+            #{index + 1}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0">
+          {/* Eye Visibility Control */}
+          <button
+            type="button"
+            onClick={() => onUpdate({ visible: !isVisible })}
+            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+              isVisible
+                ? 'text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
+                : 'text-slate-400 hover:text-slate-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-slate-200/50 dark:hover:bg-white/5'
+            }`}
+            title={isVisible ? 'Visible on profile (click to hide)' : 'Hidden from profile (click to show)'}
+            aria-label={isVisible ? 'Hide custom field' : 'Show custom field'}
+          >
+            {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          </button>
+
+          {/* Delete Button */}
+          <button
+            type="button"
+            onClick={onDelete}
+            className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+            title="Delete custom field"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Inputs: Field Title & Format */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="sm:col-span-2">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 mb-1">
+            Field Title
+          </label>
+          <input
+            type="text"
+            value={field.label || (field as any).title || ''}
+            onChange={(e) => onUpdate({ label: e.target.value, title: e.target.value } as any)}
+            placeholder="e.g. Publications, Office Hours, Discord"
+            className="figma-input w-full px-2.5 py-1.5 text-xs font-semibold focus:outline-hidden focus:ring-1 focus:ring-purple-400 dark:focus:ring-purple-400"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 mb-1">
+            Format / Type
+          </label>
+          <select
+            value={field.type || 'text'}
+            onChange={(e) => onUpdate({ type: e.target.value as any })}
+            className="figma-input w-full px-2 py-1.5 text-[11px] bg-slate-50 dark:bg-[#191c25] focus:outline-hidden cursor-pointer"
+            title="Field Format"
+          >
+            <option value="text">Text</option>
+            <option value="markdown">Paragraph / Note</option>
+            <option value="link">Link (URL)</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+            <option value="number">Number</option>
+            <option value="date">Date</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Field Content */}
+      <div>
+        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 mb-1">
+          Field Content
+        </label>
+        {field.type === 'markdown' || isMultiLine ? (
+          <textarea
+            rows={3}
+            value={field.value || (field as any).content || ''}
+            onChange={(e) => onUpdate({ value: e.target.value, content: e.target.value } as any)}
+            placeholder="Enter field content, description, details, or multiline text..."
+            className="figma-input w-full px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-purple-400 dark:focus:ring-purple-400 resize-y leading-relaxed"
+          />
+        ) : (
+          <input
+            type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
+            value={field.value || (field as any).content || ''}
+            onChange={(e) => onUpdate({ value: e.target.value, content: e.target.value } as any)}
+            placeholder={
+              field.type === 'link'
+                ? 'https://...'
+                : field.type === 'email'
+                ? 'contact@domain.com'
+                : field.type === 'phone'
+                ? '+1 (555) 000-0000'
+                : 'Enter field content, value, or link...'
+            }
+            className="figma-input w-full px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-purple-400 dark:focus:ring-purple-400"
+          />
+        )}
+      </div>
+    </Reorder.Item>
+  );
+}
+
 export function SlidingEditorPanel({
   isOpen,
   onClose,
@@ -838,6 +1019,18 @@ export function SlidingEditorPanel({
       order: customFields.length
     };
     setCustomFields((prev) => [...prev, newField]);
+
+    // Ensure 'custom-fields' is in sectionOrder and visible so changes immediately reflect in the preview
+    setSectionOrder((prev) => {
+      if (!prev.includes('custom-fields')) {
+        return [...prev, 'custom-fields'];
+      }
+      return prev;
+    });
+    setSectionVisibility((prev) => ({
+      ...prev,
+      'custom-fields': true
+    }));
   };
 
   const handleUpdateCustomField = (id: string, patch: Partial<CustomFieldItem>) => {
@@ -1740,113 +1933,67 @@ export function SlidingEditorPanel({
               </div>
 
               {expandedSections.customFields && (
-                <div className="p-4 pt-0 space-y-3 border-t border-slate-200/60 dark:border-white/5">
-                  <p className="text-[11px] text-slate-500 dark:text-white/50 mb-2">
-                    Add custom contact channels, calendar links, or public identifiers.
-                  </p>
+                <div className="p-4 pt-0 space-y-3.5 border-t border-slate-200/60 dark:border-white/5">
+                  <div className="flex items-center justify-between gap-2 pt-2">
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1">
+                      <GripVertical className="w-3 h-3 text-purple-400" />
+                      Editable · Draggable · Eye icon toggles preview
+                    </p>
+                    {customFields.length > 0 && (
+                      <span className="text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 px-2 py-0.5 rounded-full">
+                        {customFields.filter(f => f.visible !== false).length} visible
+                      </span>
+                    )}
+                  </div>
 
                   {customFields.length === 0 ? (
-                    <div className="text-center py-4 border border-dashed border-slate-200 dark:border-white/10 rounded-xl">
-                      <Tag className="w-5 h-5 text-slate-400 dark:text-white/30 mx-auto mb-1" />
-                      <p className="text-xs text-slate-500 dark:text-white/50 mb-2">No custom fields yet</p>
+                    <div className="text-center py-6 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02]">
+                      <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-2">
+                        <Tag className="w-5 h-5" />
+                      </div>
+                      <p className="text-xs font-semibold text-slate-700 dark:text-zinc-200 mb-1">No custom fields added yet</p>
+                      <p className="text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs mx-auto mb-3">
+                        Create custom fields for publications, office hours, calendar links, or public identifiers.
+                      </p>
                       <button
                         type="button"
                         onClick={handleAddCustomField}
-                        className="px-3 py-1 rounded-md text-xs font-semibold bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-white/20 transition-colors cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white shadow-xs inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
-                        + Create Field
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Your First Field</span>
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-2.5">
-                      {customFields.map((field, idx) => (
-                        <div
-                          key={field.id}
-                          className={`p-3 rounded-xl bg-white dark:bg-white/5 border transition-all flex flex-col gap-2 shadow-2xs ${
-                            field.visible !== false
-                              ? 'border-slate-200 dark:border-white/10'
-                              : 'border-slate-200/50 dark:border-white/5 opacity-60 bg-slate-50/50 dark:bg-black/20'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button
-                                type="button"
-                                onClick={() => handleMoveCustomField(idx, 'up')}
-                                disabled={idx === 0}
-                                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
-                                title="Move Up"
-                              >
-                                <ArrowUp className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleMoveCustomField(idx, 'down')}
-                                disabled={idx === customFields.length - 1}
-                                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
-                                title="Move Down"
-                              >
-                                <ArrowDown className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
+                    <div className="space-y-3">
+                      <Reorder.Group
+                        axis="y"
+                        values={customFields}
+                        onReorder={setCustomFields}
+                        className="space-y-2.5"
+                      >
+                        {customFields.map((field, idx) => (
+                          <DraggableCustomFieldItem
+                            key={field.id}
+                            field={field}
+                            index={idx}
+                            total={customFields.length}
+                            onUpdate={(patch) => handleUpdateCustomField(field.id, patch)}
+                            onDelete={() => handleDeleteCustomField(field.id)}
+                            onMoveUp={() => handleMoveCustomField(idx, 'up')}
+                            onMoveDown={() => handleMoveCustomField(idx, 'down')}
+                          />
+                        ))}
+                      </Reorder.Group>
 
-                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              <input
-                                type="text"
-                                value={field.label}
-                                onChange={(e) => handleUpdateCustomField(field.id, { label: e.target.value })}
-                                placeholder="Field Label (e.g. Calendly, Discord)"
-                                className="figma-input w-full px-2.5 py-1.5 text-xs font-semibold focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
-                              />
-                              <div className="flex items-center gap-1.5">
-                                <input
-                                  type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'}
-                                  value={field.value}
-                                  onChange={(e) => handleUpdateCustomField(field.id, { value: e.target.value })}
-                                  placeholder="Value or Link..."
-                                  className="figma-input flex-1 px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
-                                />
-                                <select
-                                  value={field.type || 'text'}
-                                  onChange={(e) => handleUpdateCustomField(field.id, { type: e.target.value as any })}
-                                  className="figma-input px-2 py-1.5 text-[11px] bg-slate-50 dark:bg-[#191c25] focus:outline-hidden cursor-pointer"
-                                  title="Field Type"
-                                >
-                                  <option value="text">Text</option>
-                                  <option value="link">Link</option>
-                                  <option value="email">Email</option>
-                                  <option value="phone">Phone</option>
-                                  <option value="number">Number</option>
-                                  <option value="date">Date</option>
-                                </select>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button
-                                type="button"
-                                onClick={() => handleUpdateCustomField(field.id, { visible: field.visible === false ? true : false })}
-                                className={`px-2 py-1 rounded-md text-[10px] font-bold transition-colors cursor-pointer ${
-                                  field.visible !== false
-                                    ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
-                                    : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/40'
-                                }`}
-                                title={field.visible !== false ? 'Visible on profile' : 'Hidden from profile'}
-                              >
-                                {field.visible !== false ? 'ON' : 'OFF'}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteCustomField(field.id)}
-                                className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
-                                title="Delete Field"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                      <button
+                        type="button"
+                        onClick={handleAddCustomField}
+                        className="w-full py-2.5 rounded-xl border border-dashed border-purple-300 dark:border-purple-500/30 hover:border-purple-500 dark:hover:border-purple-400 bg-purple-50/50 dark:bg-purple-950/20 hover:bg-purple-100/60 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Another Custom Field</span>
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1915,95 +2062,119 @@ export function SlidingEditorPanel({
                   </div>
 
                   {/* ── VISIBLE SECTIONS GROUP ── */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 px-0.5">
-                      <Eye className="w-3 h-3 text-emerald-500" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                        Visible ({visibleSections.length})
-                      </span>
-                    </div>
+                  {(() => {
+                    const getSectionLayoutConfig = (sectionKey: string) => {
+                      if (sectionKey === 'custom-fields') {
+                        return {
+                          label: `Custom Fields (${customFields.length})`,
+                          icon: Tag,
+                          color: 'text-purple-500'
+                        };
+                      }
+                      if (sectionKey.startsWith('custom-field-')) {
+                        const fieldId = sectionKey.replace('custom-field-', '');
+                        const cf = customFields.find((f) => f.id === fieldId || `custom-field-${f.id}` === sectionKey);
+                        return {
+                          label: cf ? `Field: ${cf.label || (cf as any).title || 'Custom Field'}` : 'Custom Field',
+                          icon: Tag,
+                          color: 'text-purple-500'
+                        };
+                      }
+                      return (
+                        SECTION_CONFIG[sectionKey] || {
+                          label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
+                          icon: Layers,
+                          color: 'text-slate-500'
+                        }
+                      );
+                    };
 
-                    {visibleSections.length === 0 ? (
-                      <div className="py-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center gap-1">
-                        <EyeOff className="w-4 h-4 text-slate-300 dark:text-zinc-600" />
-                        <p className="text-[11px] text-slate-400 dark:text-zinc-500">All sections are hidden</p>
-                      </div>
-                    ) : (
-                      <Reorder.Group
-                        axis="y"
-                        values={visibleSections}
-                        onReorder={handleReorderVisible}
-                        className="space-y-1.5"
-                      >
-                        {visibleSections.map((sectionKey, idx) => {
-                          const cfg = SECTION_CONFIG[sectionKey] || {
-                            label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
-                            icon: Layers,
-                            color: 'text-slate-500'
-                          };
+                    return (
+                      <>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 px-0.5">
+                            <Eye className="w-3 h-3 text-emerald-500" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                              Visible ({visibleSections.length})
+                            </span>
+                          </div>
 
-                          return (
-                            <DraggableSectionItem
-                              key={sectionKey}
-                              sectionKey={sectionKey}
-                              label={cfg.label}
-                              icon={cfg.icon}
-                              iconColor={cfg.color}
-                              isVisible={true}
-                              onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
-                              onMoveUp={() => handleMoveSection(idx, 'up', 'visible')}
-                              onMoveDown={() => handleMoveSection(idx, 'down', 'visible')}
-                              isFirst={idx === 0}
-                              isLast={idx === visibleSections.length - 1}
-                            />
-                          );
-                        })}
-                      </Reorder.Group>
-                    )}
-                  </div>
+                          {visibleSections.length === 0 ? (
+                            <div className="py-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center gap-1">
+                              <EyeOff className="w-4 h-4 text-slate-300 dark:text-zinc-600" />
+                              <p className="text-[11px] text-slate-400 dark:text-zinc-500">All sections are hidden</p>
+                            </div>
+                          ) : (
+                            <Reorder.Group
+                              axis="y"
+                              values={visibleSections}
+                              onReorder={handleReorderVisible}
+                              className="space-y-1.5"
+                            >
+                              {visibleSections.map((sectionKey, idx) => {
+                                const cfg = getSectionLayoutConfig(sectionKey);
 
-                  {/* ── HIDDEN SECTIONS GROUP ── */}
-                  {hiddenSections.length > 0 && (
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-1.5 px-0.5 pt-1">
-                        <EyeOff className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                          Hidden ({hiddenSections.length})
-                        </span>
-                      </div>
+                                return (
+                                  <DraggableSectionItem
+                                    key={sectionKey}
+                                    sectionKey={sectionKey}
+                                    label={cfg.label}
+                                    icon={cfg.icon}
+                                    iconColor={cfg.color}
+                                    isVisible={true}
+                                    onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
+                                    onMoveUp={() => handleMoveSection(idx, 'up', 'visible')}
+                                    onMoveDown={() => handleMoveSection(idx, 'down', 'visible')}
+                                    isFirst={idx === 0}
+                                    isLast={idx === visibleSections.length - 1}
+                                  />
+                                );
+                              })}
+                            </Reorder.Group>
+                          )}
+                        </div>
 
-                      <Reorder.Group
-                        axis="y"
-                        values={hiddenSections}
-                        onReorder={handleReorderHidden}
-                        className="space-y-1.5"
-                      >
-                        {hiddenSections.map((sectionKey, idx) => {
-                          const cfg = SECTION_CONFIG[sectionKey] || {
-                            label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
-                            icon: Layers,
-                            color: 'text-slate-500'
-                          };
+                        {/* ── HIDDEN SECTIONS GROUP ── */}
+                        {hiddenSections.length > 0 && (
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 px-0.5 pt-1">
+                              <EyeOff className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                Hidden ({hiddenSections.length})
+                              </span>
+                            </div>
 
-                          return (
-                            <DraggableSectionItem
-                              key={sectionKey}
-                              sectionKey={sectionKey}
-                              label={cfg.label}
-                              icon={cfg.icon}
-                              iconColor={cfg.color}
-                              isVisible={false}
-                              onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
-                              onMoveUp={() => handleMoveSection(idx, 'up', 'hidden')}
-                              onMoveDown={() => handleMoveSection(idx, 'down', 'hidden')}
-                              isFirst={idx === 0}
-                              isLast={idx === hiddenSections.length - 1}
-                            />
-                          );
-                        })}
-                      </Reorder.Group>
-                    </div>
-                  )}
+                            <Reorder.Group
+                              axis="y"
+                              values={hiddenSections}
+                              onReorder={handleReorderHidden}
+                              className="space-y-1.5"
+                            >
+                              {hiddenSections.map((sectionKey, idx) => {
+                                const cfg = getSectionLayoutConfig(sectionKey);
+
+                                return (
+                                  <DraggableSectionItem
+                                    key={sectionKey}
+                                    sectionKey={sectionKey}
+                                    label={cfg.label}
+                                    icon={cfg.icon}
+                                    iconColor={cfg.color}
+                                    isVisible={false}
+                                    onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
+                                    onMoveUp={() => handleMoveSection(idx, 'up', 'hidden')}
+                                    onMoveDown={() => handleMoveSection(idx, 'down', 'hidden')}
+                                    isFirst={idx === 0}
+                                    isLast={idx === hiddenSections.length - 1}
+                                  />
+                                );
+                              })}
+                            </Reorder.Group>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </div>

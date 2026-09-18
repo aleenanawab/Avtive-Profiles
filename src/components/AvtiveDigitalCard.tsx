@@ -12,7 +12,8 @@ import {
   Loader2, 
   Palette, 
   Check, 
-  AlertCircle 
+  AlertCircle,
+  Tag 
 } from 'lucide-react';
 import { 
   ProfileData, 
@@ -325,8 +326,9 @@ export function AvtiveDigitalCard({
 
           // Dynamic sections registered by the user
           const dynamicSectionKeys = (draftProfile.dynamicSections || []).map(s => s.key || s.id);
+          const customFieldKeys = (draftProfile.customFields || []).map(f => `custom-field-${f.id}`);
 
-          const allKnownSections = [...defaultCardSectionOrder, ...dynamicSectionKeys];
+          const allKnownSections = [...defaultCardSectionOrder, ...dynamicSectionKeys, ...customFieldKeys];
 
           const userOrder = (draftProfile.sectionOrder || []).filter((s) => s !== 'hero');
           const effectiveOrder: string[] = [];
@@ -353,6 +355,12 @@ export function AvtiveDigitalCard({
             // 1. Direct sectionVisibility dictionary check if explicitly defined
             if (typeof visibility[key] === 'boolean') {
               return visibility[key];
+            }
+            // Check individual custom fields
+            if (key.startsWith('custom-field-')) {
+              const fieldId = key.replace('custom-field-', '');
+              const cf = (draftProfile.customFields || []).find(f => f.id === fieldId || `custom-field-${f.id}` === key);
+              return cf ? cf.visible !== false : true;
             }
             // 2. Fallback to sharingSettings for legacy profiles
             switch (key) {
@@ -519,6 +527,61 @@ export function AvtiveDigitalCard({
                 );
 
               default: {
+                if (sectionKey.startsWith('custom-field-')) {
+                  const fieldId = sectionKey.replace('custom-field-', '');
+                  const customField = (draftProfile.customFields || []).find((f) => f.id === fieldId || `custom-field-${f.id}` === sectionKey);
+                  if (customField) {
+                    if (!isSectionVisible(sectionKey) || customField.visible === false) return null;
+                    const val = customField.value || (customField as any).content || '';
+                    const title = customField.label || (customField as any).title || 'Custom Field';
+                    const isLink = customField.type === 'link' || val.startsWith('http://') || val.startsWith('https://');
+                    const isEmail = customField.type === 'email' || (val.includes('@') && !val.includes(' '));
+                    const isPhone = customField.type === 'phone';
+
+                    return (
+                      <div key={sectionKey} className={`px-6 sm:px-8 py-5 ${theme.cardBg} border-t ${theme.divider} transition-colors space-y-2.5`}>
+                        <div className="flex items-center justify-between">
+                          <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono flex items-center gap-1.5`}>
+                            <Tag className="w-3.5 h-3.5 text-purple-500" />
+                            <span>{title}</span>
+                          </h2>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-mono font-semibold`}>
+                            Custom Field
+                          </span>
+                        </div>
+                        <div className={`text-xs sm:text-sm ${theme.textSecondary} whitespace-pre-line leading-relaxed`}>
+                          {isLink ? (
+                            <a
+                              href={val.startsWith('http://') || val.startsWith('https://') ? val : `https://${val}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`inline-flex items-center gap-1 font-semibold hover:underline break-all ${theme.accentText}`}
+                            >
+                              <span>{val}</span>
+                            </a>
+                          ) : isEmail ? (
+                            <a
+                              href={`mailto:${val.replace(/^mailto:/, '')}`}
+                              className={`inline-flex items-center gap-1 font-semibold hover:underline break-all ${theme.accentText}`}
+                            >
+                              <span>{val}</span>
+                            </a>
+                          ) : isPhone ? (
+                            <a
+                              href={`tel:${val.replace(/[^0-9+]/g, '')}`}
+                              className={`inline-flex items-center gap-1 font-semibold hover:underline ${theme.accentText}`}
+                            >
+                              <span>{val}</span>
+                            </a>
+                          ) : (
+                            val
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                }
+
                 const dynamicSection = (draftProfile.dynamicSections || []).find((s) => s.key === sectionKey || s.id === sectionKey);
                 if (dynamicSection) {
                   if (!isSectionVisible(sectionKey) || dynamicSection.visible === false) return null;

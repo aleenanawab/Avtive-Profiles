@@ -289,6 +289,8 @@ export interface CustomFieldItem {
   id: string;
   label: string;
   value: string;
+  title?: string;
+  content?: string;
   type?: 'text' | 'link' | 'email' | 'phone' | 'date' | 'number' | 'markdown';
   icon?: string;
   visible?: boolean;
