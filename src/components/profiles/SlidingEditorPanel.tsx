@@ -65,6 +65,7 @@ export interface SlidingEditorPanelProps {
   userProfiles?: ProfileData[];
   onLiveUpdate?: (updatedProfile: ProfileData) => void;
   onSaveSuccess?: (savedProfile: ProfileData) => void;
+  activeSectionTarget?: { sectionKey: string; fieldKey?: string; timestamp: number } | null;
 }
 
 interface DraggableLinkItem {
@@ -437,7 +438,8 @@ function DraggableCustomFieldItem({
   onUpdate,
   onDelete,
   onMoveUp,
-  onMoveDown
+  onMoveDown,
+  isHighlighted = false
 }: {
   field: CustomFieldItem;
   index: number;
@@ -446,6 +448,7 @@ function DraggableCustomFieldItem({
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  isHighlighted?: boolean;
 }) {
   const dragControls = useDragControls();
   const isVisible = field.visible !== false;
@@ -454,13 +457,15 @@ function DraggableCustomFieldItem({
   return (
     <Reorder.Item
       value={field}
-      id={field.id}
+      id={`cf-item-${field.id}`}
       dragListener={false}
       dragControls={dragControls}
       layout
       layoutId={`custom-field-item-${field.id}`}
       className={`p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-white/5 border transition-all flex flex-col gap-2.5 shadow-2xs ${
-        isVisible
+        isHighlighted
+          ? 'ring-2 ring-purple-500 shadow-lg border-purple-400 bg-purple-50/20'
+          : isVisible
           ? 'border-slate-200 dark:border-white/10'
           : 'border-slate-200/50 dark:border-white/5 opacity-60 bg-slate-50/50 dark:bg-black/20'
       }`}
@@ -617,7 +622,8 @@ export function SlidingEditorPanel({
   initialProfile,
   userProfiles,
   onLiveUpdate,
-  onSaveSuccess
+  onSaveSuccess,
+  activeSectionTarget
 }: SlidingEditorPanelProps) {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -628,6 +634,7 @@ export function SlidingEditorPanel({
   const [activeTheme, setActiveTheme] = useState<ProfileTheme>(
     initialProfile.theme === 'default' ? 'editorial' : (initialProfile.theme || 'editorial')
   );
+  const [highlightedField, setHighlightedField] = useState<string | null>(null);
 
   // 1. Basic Info
   const [firstName, setFirstName] = useState(
@@ -778,6 +785,72 @@ export function SlidingEditorPanel({
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  // Sync with initialProfile if changed externally
+  useEffect(() => {
+    if (initialProfile) {
+      setProfile(initialProfile);
+    }
+  }, [initialProfile.id, initialProfile.slug]);
+
+  // Handle activeSectionTarget from Live Preview interactions
+  useEffect(() => {
+    if (!activeSectionTarget) return;
+    const { sectionKey, fieldKey } = activeSectionTarget;
+
+    const validSectionKeys: Record<string, keyof typeof expandedSections> = {
+      basicInfo: 'basicInfo',
+      skills: 'skills',
+      about: 'about',
+      projects: 'projects',
+      socials: 'socials',
+      customFields: 'customFields',
+      'custom-fields': 'customFields',
+      sectionsLayout: 'sectionsLayout',
+      share: 'share'
+    };
+
+    const targetSection = validSectionKeys[sectionKey] || 'basicInfo';
+
+    // 1. Expand the target section
+    setExpandedSections((prev) => ({
+      ...prev,
+      [targetSection]: true
+    }));
+
+    // 2. Set active highlight effect (2.5s pulse)
+    const highlightKey = fieldKey || targetSection;
+    setHighlightedField(highlightKey);
+    const timer = setTimeout(() => {
+      setHighlightedField(null);
+    }, 2500);
+
+    // 3. Scroll to the element smoothly & focus if input
+    setTimeout(() => {
+      let targetEl: HTMLElement | null = null;
+      if (fieldKey) {
+        targetEl = document.getElementById(`input-${fieldKey}`) ||
+                   document.getElementById(`btn-${fieldKey}`) ||
+                   document.getElementById(`cf-item-${fieldKey}`) ||
+                   document.getElementById(fieldKey);
+      }
+      if (!targetEl) {
+        targetEl = document.getElementById(`section-${targetSection}`);
+      }
+
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (targetEl instanceof HTMLInputElement || targetEl instanceof HTMLTextAreaElement) {
+          targetEl.focus();
+        } else {
+          const inner = targetEl.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
+          if (inner) inner.focus();
+        }
+      }
+    }, 180);
+
+    return () => clearTimeout(timer);
+  }, [activeSectionTarget]);
 
   // Full Name
   const fullName = `${firstName} ${secondName}`.trim();
@@ -1284,7 +1357,7 @@ export function SlidingEditorPanel({
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: '-100%', opacity: 0.7 }}
           transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-          className="fixed top-0 bottom-0 left-0 z-40 h-full w-full sm:w-[500px] md:w-[540px] lg:w-[580px] xl:w-[620px] backdrop-blur-2xl bg-white/90 dark:bg-[#111319]/90 border-r border-slate-200/80 dark:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden"
+          className="fixed top-0 bottom-0 left-0 z-40 h-full w-full md:w-[460px] lg:w-[500px] xl:w-[540px] backdrop-blur-2xl bg-white/90 dark:bg-[#111319]/90 border-r border-slate-200/80 dark:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden"
           style={{ willChange: 'transform' }}
         >
           {/* Top Panel Navigation Bar */}
@@ -1372,9 +1445,12 @@ export function SlidingEditorPanel({
                 {/* Cover Change Button */}
                 <button
                   type="button"
+                  id="btn-cover"
                   onClick={() => coverInputRef.current?.click()}
                   disabled={isUploadingCover}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md"
+                  className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md ${
+                    highlightedField === 'cover' ? 'ring-4 ring-primary ring-offset-2 scale-110' : ''
+                  }`}
                   title="Change Cover Banner"
                 >
                   {isUploadingCover ? (
@@ -1398,7 +1474,12 @@ export function SlidingEditorPanel({
               {/* Avatar & Realtime Title */}
               <div className="px-4 pb-4 pt-0 relative -mt-10 flex items-end justify-between gap-3">
                 <div className="flex items-end gap-3 min-w-0">
-                  <div className="relative w-20 h-20 rounded-full border-3 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0">
+                  <div 
+                    id="btn-avatar"
+                    className={`relative w-20 h-20 rounded-full border-3 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 transition-all ${
+                      highlightedField === 'avatar' ? 'ring-4 ring-primary ring-offset-2 animate-pulse' : ''
+                    }`}
+                  >
                     <img
                       src={avatar}
                       alt={fullName}
@@ -1487,11 +1568,14 @@ export function SlidingEditorPanel({
                         First Name
                       </label>
                       <input
+                        id="input-firstName"
                         type="text"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         placeholder="First Name"
-                        className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                        className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all ${
+                          highlightedField === 'name' || highlightedField === 'firstName' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
+                        }`}
                       />
                     </div>
                     <div>
@@ -1499,6 +1583,7 @@ export function SlidingEditorPanel({
                         Last Name
                       </label>
                       <input
+                        id="input-secondName"
                         type="text"
                         value={secondName}
                         onChange={(e) => setSecondName(e.target.value)}
@@ -1517,6 +1602,7 @@ export function SlidingEditorPanel({
                         @
                       </span>
                       <input
+                        id="input-username"
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value.replace(/^@/, ''))}
@@ -1534,11 +1620,14 @@ export function SlidingEditorPanel({
                       Professional Title
                     </label>
                     <input
+                      id="input-professionalTitle"
                       type="text"
                       value={professionalTitle}
                       onChange={(e) => setProfessionalTitle(e.target.value)}
                       placeholder="e.g. Full Stack Engineer"
-                      className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                      className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all ${
+                        highlightedField === 'title' || highlightedField === 'professionalTitle' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
+                      }`}
                     />
                   </div>
 
@@ -1547,11 +1636,14 @@ export function SlidingEditorPanel({
                       Short Bio
                     </label>
                     <textarea
+                      id="input-bio"
                       rows={2}
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
                       placeholder="A concise overview of your focus..."
-                      className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 resize-none"
+                      className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 resize-none transition-all ${
+                        highlightedField === 'bio' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
+                      }`}
                     />
                   </div>
 
@@ -1561,6 +1653,7 @@ export function SlidingEditorPanel({
                         Company / Organization
                       </label>
                       <input
+                        id="input-company"
                         type="text"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
@@ -1573,6 +1666,7 @@ export function SlidingEditorPanel({
                         Location
                       </label>
                       <input
+                        id="input-location"
                         type="text"
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
@@ -1630,11 +1724,14 @@ export function SlidingEditorPanel({
                 <div className="p-4 pt-1 space-y-3 border-t border-slate-200/60 dark:border-white/5">
                   <form onSubmit={handleAddSkill} className="flex gap-2">
                     <input
+                      id="input-newSkill"
                       type="text"
                       value={newSkillInput}
                       onChange={(e) => setNewSkillInput(e.target.value)}
                       placeholder="Add skill (e.g. Next.js, GraphQL, Figma)..."
-                      className="figma-input flex-1 px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                      className={`figma-input flex-1 px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all ${
+                        highlightedField === 'skills' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
+                      }`}
                     />
                     <button
                       type="submit"
@@ -1683,11 +1780,14 @@ export function SlidingEditorPanel({
               {expandedSections.about && (
                 <div className="p-4 pt-1 space-y-2 border-t border-slate-200/60 dark:border-white/5">
                   <textarea
+                    id="input-about"
                     rows={4}
                     value={about}
                     onChange={(e) => setAbout(e.target.value)}
                     placeholder="Share your detailed career journey, achievements, or project specialties..."
-                    className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 leading-relaxed resize-none"
+                    className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 leading-relaxed resize-none transition-all ${
+                      highlightedField === 'about' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
+                    }`}
                   />
                 </div>
               )}
@@ -1982,6 +2082,7 @@ export function SlidingEditorPanel({
                             onDelete={() => handleDeleteCustomField(field.id)}
                             onMoveUp={() => handleMoveCustomField(idx, 'up')}
                             onMoveDown={() => handleMoveCustomField(idx, 'down')}
+                            isHighlighted={highlightedField === field.id || highlightedField === `customFields-${field.id}`}
                           />
                         ))}
                       </Reorder.Group>

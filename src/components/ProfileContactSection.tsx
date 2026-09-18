@@ -1,13 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Mail, Phone, MessageSquare, MapPin, Globe } from 'lucide-react';
+import { Mail, Phone, MessageSquare, MapPin, Globe, Pencil } from 'lucide-react';
 import { ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface ProfileContactSectionProps {
   profile: ProfileData;
   isEditing?: boolean;
+  canEdit?: boolean;
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
   theme?: ThemeConfig;
 }
@@ -15,6 +17,8 @@ interface ProfileContactSectionProps {
 export function ProfileContactSection({
   profile,
   isEditing = false,
+  canEdit = false,
+  onSelectSection,
   onUpdateField,
   theme = getThemeConfig(profile.theme || 'editorial')
 }: ProfileContactSectionProps) {
@@ -37,10 +41,38 @@ export function ProfileContactSection({
   }
 
   return (
-    <section className={`px-6 sm:px-8 py-5 space-y-3 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors`}>
-      <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
-        Contact
-      </h2>
+    <section className={`relative group/contact px-6 sm:px-8 py-5 space-y-3 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors ${
+      canEdit && onSelectSection ? 'hover:bg-accent/5' : ''
+    }`}>
+      {/* Interactive edit badge */}
+      {canEdit && onSelectSection && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectSection('basicInfo', 'email');
+          }}
+          className="absolute top-4 right-6 opacity-0 group-hover/contact:opacity-100 transition-opacity bg-primary text-primary-foreground text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 hover:scale-105 z-10 cursor-pointer"
+          title="Edit Contact in Sliding Editor"
+        >
+          <Pencil className="w-3 h-3" />
+          <span>Edit Contact</span>
+        </button>
+      )}
+
+      <div 
+        className={`flex items-center justify-between ${canEdit && onSelectSection ? 'cursor-pointer' : ''}`}
+        onClick={() => canEdit && onSelectSection?.('basicInfo', 'email')}
+      >
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+          Contact
+        </h2>
+        {canEdit && onSelectSection && (
+          <span className="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded font-medium">
+            Click to edit
+          </span>
+        )}
+      </div>
 
       {isEditing ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">

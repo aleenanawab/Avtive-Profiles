@@ -20,6 +20,7 @@ interface PhonePreviewProps {
   onSelectProject?: (project: any) => void;
   hideHeaderLabel?: boolean;
   headerTitle?: string;
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
 export function PhonePreview({ 
@@ -36,7 +37,8 @@ export function PhonePreview({
   onViewCompany,
   onSelectProject,
   hideHeaderLabel = false,
-  headerTitle = 'Live Mobile Preview'
+  headerTitle = 'Live Mobile Preview',
+  onSelectSection
 }: PhonePreviewProps) {
   const responsiveChassisWidth = 'min(375px, calc(100vw - 2rem), calc((82vh - 2.5rem) * (375 / 760)))';
 
@@ -106,6 +108,7 @@ export function PhonePreview({
               onViewCompany={onViewCompany || (() => {})}
               isDark={isDark}
               viewMode="standard"
+              onSelectSection={onSelectSection}
             />
           </div>
 
