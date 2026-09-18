@@ -221,7 +221,7 @@ export const PROFILE_THEMES: Record<ProfileTheme, ThemeConfig> = {
     btnPrimary: 'bg-[#C2410C] hover:bg-[#9A3412] dark:bg-[#EA580C] dark:hover:bg-[#C2410C] text-white font-medium rounded-lg shadow-xs',
     btnSecondary: 'bg-[#FAFAF9] hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-[#E5E5E5] dark:border-stone-700 rounded-lg',
     divider: 'border-[#E5E5E5] dark:border-white/10',
-    fontFamily: 'font-sans',
+    fontFamily: 'font-serif',
     pillTheme: 'bg-stone-100 dark:bg-stone-800 text-[#C2410C] dark:text-[#EA580C]',
     coverFallback: 'bg-[#FAFAF9] dark:bg-[#1C1917]',
     accentRim: 'bg-gradient-to-r from-transparent via-[#C2410C] to-transparent'
@@ -240,7 +240,7 @@ export const PROFILE_THEMES: Record<ProfileTheme, ThemeConfig> = {
     subCardBg: 'bg-[#F4F4F5] dark:bg-[#121215]',
     subCardBorder: 'border-[#E4E4E7] dark:border-[#27272A]',
     hoverBorder: 'hover:border-[#059669]/60 dark:hover:border-[#10B981]/70',
-    textPrimary: 'text-slate-900 dark:text-zinc-100 font-sans',
+    textPrimary: 'text-slate-900 dark:text-zinc-100 font-mono',
     textSecondary: 'text-slate-600 dark:text-zinc-400',
     textMuted: 'text-slate-400 dark:text-zinc-500',
     accentText: 'text-[#059669] dark:text-[#10B981]',
@@ -249,7 +249,7 @@ export const PROFILE_THEMES: Record<ProfileTheme, ThemeConfig> = {
     btnPrimary: 'bg-[#059669] hover:bg-[#047857] dark:bg-[#10B981] dark:hover:bg-[#059669] text-white dark:text-black font-semibold rounded-lg shadow-xs',
     btnSecondary: 'bg-[#F4F4F5] hover:bg-slate-200 dark:bg-[#27272A] dark:hover:bg-zinc-700 text-slate-900 dark:text-zinc-100 border border-[#E4E4E7] dark:border-[#3F3F46] rounded-lg',
     divider: 'border-[#E4E4E7] dark:border-[#27272A]',
-    fontFamily: 'font-sans',
+    fontFamily: 'font-mono',
     pillTheme: 'bg-emerald-50 dark:bg-zinc-800 text-[#059669] dark:text-[#10B981]',
     coverFallback: 'bg-[#F4F4F5] dark:bg-[#18181B]',
     accentRim: 'bg-gradient-to-r from-transparent via-[#10B981] to-transparent'

@@ -333,22 +333,31 @@ function DraggableSectionItem({
       id={sectionKey}
       dragListener={false}
       dragControls={dragControls}
-      className={`group px-2.5 py-2 rounded-xl border flex items-center justify-between gap-2 transition-all select-none ${
+      layout
+      layoutId={`section-item-${sectionKey}`}
+      className={`group px-2.5 py-2 rounded-xl border flex items-center justify-between gap-2 transition-all select-none cursor-default ${
         isVisible
           ? 'bg-white dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-2xs hover:border-slate-300 dark:hover:border-white/20'
-          : 'bg-slate-100/50 dark:bg-black/25 border-dashed border-slate-200/60 dark:border-white/5 opacity-60'
+          : 'bg-slate-100/50 dark:bg-black/25 border-dashed border-slate-200/60 dark:border-white/5 opacity-70'
       }`}
+      whileDrag={{
+        scale: 1.02,
+        boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+        zIndex: 50,
+        background: isVisible ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.4)'
+      }}
     >
       {/* Left: Drag Handle + Section Icon + Section Name */}
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        {/* Drag Handle */}
+        {/* Drag Handle – clearly styled so users know it's draggable */}
         <button
           type="button"
           onPointerDown={(e) => dragControls.start(e)}
-          className="p-1 -ml-1 text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-grab active:cursor-grabbing shrink-0 transition-colors"
-          title="Drag to rearrange section"
+          className="p-1 -ml-1 rounded-md text-slate-300 dark:text-zinc-600 hover:text-slate-600 dark:hover:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10 cursor-grab active:cursor-grabbing shrink-0 transition-all group/handle"
+          title="Drag to rearrange section order"
+          aria-label="Drag handle"
         >
-          <GripVertical className="w-3.5 h-3.5" />
+          <GripVertical className="w-4 h-4 group-hover/handle:text-indigo-500 dark:group-hover/handle:text-indigo-400 transition-colors" />
         </button>
 
         {/* Small Section Icon */}
@@ -398,22 +407,22 @@ function DraggableSectionItem({
           </button>
         </div>
 
-        {/* Eye Visibility Control (Replaces the old hide/text button with an eye toggle) */}
+        {/* Eye Visibility Control */}
         <button
           type="button"
           onClick={onToggleVisibility}
           className={`p-1.5 rounded-lg transition-all cursor-pointer ${
             isVisible
-              ? 'text-slate-700 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
+              ? 'text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
               : 'text-slate-400 hover:text-slate-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-slate-200/50 dark:hover:bg-white/5'
           }`}
-          title={isVisible ? 'Visible (Click to hide)' : 'Hidden (Click to show)'}
+          title={isVisible ? 'Visible – click to hide' : 'Hidden – click to show'}
           aria-label={isVisible ? `Hide ${label}` : `Show ${label}`}
         >
           {isVisible ? (
-            <Eye className="w-4 h-4 text-emerald-500 hover:text-emerald-600 dark:text-emerald-400" />
+            <Eye className="w-4 h-4" />
           ) : (
-            <EyeOff className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+            <EyeOff className="w-4 h-4" />
           )}
         </button>
       </div>
@@ -851,21 +860,65 @@ export function SlidingEditorPanel({
   };
 
   // Section Ordering & Visibility Handlers
-  const handleMoveSection = (index: number, direction: 'up' | 'down') => {
+  // Sections are split into visible/hidden groups for independent DnD
+  const visibleSections = sectionOrder.filter((k) => sectionVisibility[k] !== false);
+  const hiddenSections = sectionOrder.filter((k) => sectionVisibility[k] === false);
+
+  // Called when user reorders items within the Visible group
+  const handleReorderVisible = (newVisible: string[]) => {
+    // Merge: visible items (new order) + hidden items (appended after)
+    setSectionOrder([...newVisible, ...hiddenSections]);
+  };
+
+  // Called when user reorders items within the Hidden group
+  const handleReorderHidden = (newHidden: string[]) => {
+    setSectionOrder([...visibleSections, ...newHidden]);
+  };
+
+  const handleMoveSection = (index: number, direction: 'up' | 'down', group: 'visible' | 'hidden') => {
+    const list = group === 'visible' ? visibleSections : hiddenSections;
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= sectionOrder.length) return;
-    const copy = [...sectionOrder];
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const copy = [...list];
     const [moved] = copy.splice(index, 1);
     copy.splice(targetIndex, 0, moved);
-    setSectionOrder(copy);
+    if (group === 'visible') {
+      setSectionOrder([...copy, ...hiddenSections]);
+    } else {
+      setSectionOrder([...visibleSections, ...copy]);
+    }
   };
 
   const handleToggleSectionVisibility = (sectionKey: string) => {
+    const isCurrentlyVisible = sectionVisibility[sectionKey] !== false;
     setSectionVisibility((prev) => ({
       ...prev,
-      [sectionKey]: prev[sectionKey] === false ? true : false
+      [sectionKey]: !isCurrentlyVisible
     }));
+    // Move the section to end of target group in the order array
+    setSectionOrder((prev) => {
+      const without = prev.filter((k) => k !== sectionKey);
+      if (isCurrentlyVisible) {
+        // Moving to hidden: append after last hidden item (= end of array)
+        return [...without, sectionKey];
+      } else {
+        // Moving to visible: insert before the first hidden item
+        const firstHiddenIdx = without.findIndex((k) => {
+          // after removing sectionKey, check current visibility of each
+          // Use latest sectionVisibility (prev state snapshot may lag)
+          return sectionVisibility[k] === false && k !== sectionKey;
+        });
+        if (firstHiddenIdx === -1) {
+          return [...without, sectionKey];
+        }
+        const result = [...without];
+        result.splice(firstHiddenIdx, 0, sectionKey);
+        return result;
+      }
+    });
   };
+
+
 
   // Toggle Visibility in Share Section
   const toggleVisibilityField = (field: keyof SharingSettings) => {
@@ -1812,22 +1865,28 @@ export function SlidingEditorPanel({
                   <span>7. Section Editor ({sectionOrder.length})</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/70 font-mono">
-                    {sectionOrder.filter((k) => sectionVisibility[k] !== false).length} visible
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-mono">
+                    {visibleSections.length} visible
                   </span>
+                  {hiddenSections.length > 0 && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/50 font-mono">
+                      {hiddenSections.length} hidden
+                    </span>
+                  )}
                   {expandedSections.sectionsLayout ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
                 </div>
               </button>
 
               {expandedSections.sectionsLayout && (
-                <div className="p-3.5 pt-0 space-y-2.5 border-t border-slate-200/60 dark:border-white/5">
+                <div className="p-3.5 pt-0 space-y-3 border-t border-slate-200/60 dark:border-white/5">
                   {/* Compact Header Bar */}
                   <div className="flex items-center justify-between gap-2 pt-2 pb-0.5">
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                      Drag handle to rearrange. Click eye icon to show or hide.
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1">
+                      <GripVertical className="w-3 h-3 text-indigo-400" />
+                      Drag to reorder · Eye icon to show/hide
                     </p>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      {sectionOrder.some((k) => sectionVisibility[k] === false) && (
+                      {hiddenSections.length > 0 && (
                         <button
                           type="button"
                           onClick={() => {
@@ -1855,38 +1914,96 @@ export function SlidingEditorPanel({
                     </div>
                   </div>
 
-                  {/* Compact Reorderable Section Items List */}
-                  <Reorder.Group
-                    axis="y"
-                    values={sectionOrder}
-                    onReorder={setSectionOrder}
-                    className="space-y-1.5"
-                  >
-                    {sectionOrder.map((sectionKey, idx) => {
-                      const cfg = SECTION_CONFIG[sectionKey] || {
-                        label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
-                        icon: Layers,
-                        color: 'text-slate-500'
-                      };
-                      const isVisible = sectionVisibility[sectionKey] !== false;
+                  {/* ── VISIBLE SECTIONS GROUP ── */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 px-0.5">
+                      <Eye className="w-3 h-3 text-emerald-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                        Visible ({visibleSections.length})
+                      </span>
+                    </div>
 
-                      return (
-                        <DraggableSectionItem
-                          key={sectionKey}
-                          sectionKey={sectionKey}
-                          label={cfg.label}
-                          icon={cfg.icon}
-                          iconColor={cfg.color}
-                          isVisible={isVisible}
-                          onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
-                          onMoveUp={() => handleMoveSection(idx, 'up')}
-                          onMoveDown={() => handleMoveSection(idx, 'down')}
-                          isFirst={idx === 0}
-                          isLast={idx === sectionOrder.length - 1}
-                        />
-                      );
-                    })}
-                  </Reorder.Group>
+                    {visibleSections.length === 0 ? (
+                      <div className="py-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center gap-1">
+                        <EyeOff className="w-4 h-4 text-slate-300 dark:text-zinc-600" />
+                        <p className="text-[11px] text-slate-400 dark:text-zinc-500">All sections are hidden</p>
+                      </div>
+                    ) : (
+                      <Reorder.Group
+                        axis="y"
+                        values={visibleSections}
+                        onReorder={handleReorderVisible}
+                        className="space-y-1.5"
+                      >
+                        {visibleSections.map((sectionKey, idx) => {
+                          const cfg = SECTION_CONFIG[sectionKey] || {
+                            label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
+                            icon: Layers,
+                            color: 'text-slate-500'
+                          };
+
+                          return (
+                            <DraggableSectionItem
+                              key={sectionKey}
+                              sectionKey={sectionKey}
+                              label={cfg.label}
+                              icon={cfg.icon}
+                              iconColor={cfg.color}
+                              isVisible={true}
+                              onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
+                              onMoveUp={() => handleMoveSection(idx, 'up', 'visible')}
+                              onMoveDown={() => handleMoveSection(idx, 'down', 'visible')}
+                              isFirst={idx === 0}
+                              isLast={idx === visibleSections.length - 1}
+                            />
+                          );
+                        })}
+                      </Reorder.Group>
+                    )}
+                  </div>
+
+                  {/* ── HIDDEN SECTIONS GROUP ── */}
+                  {hiddenSections.length > 0 && (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 px-0.5 pt-1">
+                        <EyeOff className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                          Hidden ({hiddenSections.length})
+                        </span>
+                      </div>
+
+                      <Reorder.Group
+                        axis="y"
+                        values={hiddenSections}
+                        onReorder={handleReorderHidden}
+                        className="space-y-1.5"
+                      >
+                        {hiddenSections.map((sectionKey, idx) => {
+                          const cfg = SECTION_CONFIG[sectionKey] || {
+                            label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
+                            icon: Layers,
+                            color: 'text-slate-500'
+                          };
+
+                          return (
+                            <DraggableSectionItem
+                              key={sectionKey}
+                              sectionKey={sectionKey}
+                              label={cfg.label}
+                              icon={cfg.icon}
+                              iconColor={cfg.color}
+                              isVisible={false}
+                              onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
+                              onMoveUp={() => handleMoveSection(idx, 'up', 'hidden')}
+                              onMoveDown={() => handleMoveSection(idx, 'down', 'hidden')}
+                              isFirst={idx === 0}
+                              isLast={idx === hiddenSections.length - 1}
+                            />
+                          );
+                        })}
+                      </Reorder.Group>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
