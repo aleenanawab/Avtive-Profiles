@@ -9,20 +9,25 @@ import {
   Calendar, 
   Hash, 
   Globe, 
-  Sparkles 
+  Sparkles,
+  Pencil
 } from 'lucide-react';
 import { ProfileData, CustomFieldItem } from '@/types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface CustomFieldsSectionProps {
   profile: ProfileData;
+  canEdit?: boolean;
   isEditing?: boolean;
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   theme?: ThemeConfig;
 }
 
 export function CustomFieldsSection({
   profile,
+  canEdit = false,
   isEditing = false,
+  onSelectSection,
   theme = getThemeConfig(profile.theme || 'editorial')
 }: CustomFieldsSectionProps) {
   const fields = (profile.customFields || []).filter(
@@ -98,11 +103,25 @@ export function CustomFieldsSection({
 
   return (
     <div className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} transition-colors space-y-3 shadow-2xs`}>
-      <div className="flex items-center justify-between pb-1 border-b border-black/5 dark:border-white/5">
-        <h3 className={`text-xs font-bold uppercase tracking-wider font-mono ${theme.textMuted} flex items-center gap-1.5`}>
-          <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-          <span>Custom Fields</span>
-        </h3>
+      <div 
+        onClick={() => canEdit && onSelectSection?.('customFields')}
+        className={`flex items-center justify-between pb-1 border-b border-black/5 dark:border-white/5 ${
+          canEdit ? 'cursor-pointer group/cfheader' : ''
+        }`}
+        title={canEdit ? 'Click to edit Custom Fields in Studio' : undefined}
+      >
+        <div className="flex items-center gap-2">
+          <h3 className={`text-xs font-bold uppercase tracking-wider font-mono ${theme.textMuted} flex items-center gap-1.5`}>
+            <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+            <span>Custom Fields</span>
+          </h3>
+          {canEdit && (
+            <span className="opacity-0 group-hover/cfheader:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+              <Pencil className="w-2.5 h-2.5" />
+              Edit All
+            </span>
+          )}
+        </div>
         <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-semibold`}>
           {fields.length} {fields.length === 1 ? 'Field' : 'Fields'}
         </span>
@@ -117,9 +136,13 @@ export function CustomFieldsSection({
           return (
             <div
               key={field.id}
+              onClick={() => canEdit && onSelectSection?.('customFields', field.id)}
               className={`p-3 rounded-xl border border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] flex items-start gap-2.5 transition-all hover:border-black/10 dark:hover:border-white/20 ${
                 isMultiLine ? 'sm:col-span-2' : ''
+              } ${
+                canEdit ? 'cursor-pointer group/cfitem hover:ring-2 hover:ring-purple-500/40 hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
               }`}
+              title={canEdit ? `Click to edit "${title}" in Studio` : undefined}
             >
               <div 
                 className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${theme.badgeBg} ${theme.accentText}`}
@@ -128,9 +151,17 @@ export function CustomFieldsSection({
               </div>
 
               <div className="min-w-0 flex-1">
-                <span className={`block text-[10px] font-bold uppercase tracking-wider ${theme.textMuted} truncate`}>
-                  {title}
-                </span>
+                <div className="flex items-center justify-between gap-1">
+                  <span className={`block text-[10px] font-bold uppercase tracking-wider ${theme.textMuted} truncate`}>
+                    {title}
+                  </span>
+                  {canEdit && (
+                    <span className="opacity-0 group-hover/cfitem:opacity-100 transition-opacity text-[9px] font-mono text-purple-600 dark:text-purple-400 font-bold flex items-center gap-0.5">
+                      <Pencil className="w-2.5 h-2.5" />
+                      Edit
+                    </span>
+                  )}
+                </div>
                 <div className="mt-1">
                   {renderFieldValue(field)}
                 </div>

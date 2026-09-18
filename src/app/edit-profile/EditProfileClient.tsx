@@ -37,12 +37,26 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop');
   const [isEditorOpen, setIsEditorOpen] = useState(true); // Open by default for Linktree sliding editing experience
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [activeSectionTarget, setActiveSectionTarget] = useState<{
+    sectionKey: string;
+    fieldKey?: string;
+    timestamp: number;
+  } | null>(null);
 
   const activeThemeConfig = getThemeConfig(activeTheme);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleSelectSection = (sectionKey: string, fieldKey?: string) => {
+    setIsEditorOpen(true);
+    setActiveSectionTarget({
+      sectionKey,
+      fieldKey,
+      timestamp: Date.now()
+    });
   };
 
   useEffect(() => {
@@ -54,7 +68,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   return (
     <div 
       data-theme={activeTheme}
-      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans ${isEditorOpen ? 'lg:pl-[540px] xl:pl-[580px]' : ''}`}
+      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans ${isEditorOpen ? 'md:pl-[460px] lg:pl-[500px] xl:pl-[540px]' : ''}`}
     >
       {/* Toast Notification Banner */}
       {toastMessage && (
@@ -173,6 +187,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
                 }
               }}
               hideHeaderLabel={true}
+              onSelectSection={handleSelectSection}
             />
           </div>
 
@@ -206,6 +221,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
               }}
               isDark={isDark}
               viewMode="standard"
+              onSelectSection={handleSelectSection}
             />
           </div>
         </main>
@@ -241,6 +257,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
               }}
               isDark={isDark}
               viewMode="standard"
+              onSelectSection={handleSelectSection}
             />
           </div>
         </main>
@@ -266,6 +283,7 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
         onClose={() => setIsEditorOpen(false)}
         initialProfile={profile}
         userProfiles={userProfiles}
+        activeSectionTarget={activeSectionTarget}
         onLiveUpdate={(updated) => {
           setProfile(updated);
           if (updated.theme && updated.theme !== activeTheme) {

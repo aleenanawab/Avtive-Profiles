@@ -87,6 +87,7 @@ interface AvtiveDigitalCardProps {
   onOpenMyCard?: () => void;
   isDark: boolean;
   viewMode?: 'standard' | 'web';
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
 export function AvtiveDigitalCard({
@@ -95,6 +96,7 @@ export function AvtiveDigitalCard({
   canEdit = false,
   isEditing = false,
   isConnected = false,
+  onSelectSection,
   onOpenEdit,
   onSaveEdits,
   onCancelEdit,
@@ -302,6 +304,7 @@ export function AvtiveDigitalCard({
           onNavigateToCompany={onViewCompany}
           onNavigateBack={onNavigateBack}
           theme={theme}
+          onSelectSection={onSelectSection}
         />
 
         {/* ========================================================================= */}
@@ -414,6 +417,8 @@ export function AvtiveDigitalCard({
                     key="about"
                     profile={draftProfile} 
                     isEditing={isEditing}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
                     onUpdateField={handleFieldUpdate}
                     theme={theme}
                   />
@@ -426,6 +431,8 @@ export function AvtiveDigitalCard({
                     key="contact"
                     profile={draftProfile}
                     isEditing={isEditing}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
                     onUpdateField={handleFieldUpdate}
                     theme={theme}
                   />
@@ -438,6 +445,8 @@ export function AvtiveDigitalCard({
                     key="custom-fields"
                     profile={draftProfile}
                     isEditing={isEditing}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
                     theme={theme}
                   />
                 );
@@ -450,6 +459,8 @@ export function AvtiveDigitalCard({
                     key="services"
                     profile={draftProfile}
                     isEditing={isEditing}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
                     onUpdateField={handleFieldUpdate}
                     onInquireService={onInquireService}
                     theme={theme}
@@ -472,6 +483,8 @@ export function AvtiveDigitalCard({
                     profile={draftProfile}
                     onSelectProject={onSelectProject}
                     theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
                   />
                 );
 
@@ -539,7 +552,21 @@ export function AvtiveDigitalCard({
                     const isPhone = customField.type === 'phone';
 
                     return (
-                      <div key={sectionKey} className={`px-6 sm:px-8 py-5 ${theme.cardBg} border-t ${theme.divider} transition-colors space-y-2.5`}>
+                      <div 
+                        key={sectionKey} 
+                        onClick={() => canEdit && onSelectSection?.('customFields', customField.id)}
+                        className={`relative group/cf px-6 sm:px-8 py-5 ${theme.cardBg} border-t ${theme.divider} transition-colors space-y-2.5 ${
+                          canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
+                        }`}
+                      >
+                        {canEdit && onSelectSection && (
+                          <div className="absolute top-4 right-6 opacity-0 group-hover/cf:opacity-100 transition-opacity">
+                            <span className="bg-primary text-primary-foreground text-[10px] font-semibold px-2 py-0.5 rounded-full shadow flex items-center gap-1">
+                              <Tag className="w-2.5 h-2.5" />
+                              Edit Field
+                            </span>
+                          </div>
+                        )}
                         <div className="flex items-center justify-between">
                           <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono flex items-center gap-1.5`}>
                             <Tag className="w-3.5 h-3.5 text-purple-500" />
@@ -555,6 +582,12 @@ export function AvtiveDigitalCard({
                               href={val.startsWith('http://') || val.startsWith('https://') ? val : `https://${val}`}
                               target="_blank"
                               rel="noopener noreferrer"
+                              onClick={(e) => {
+                                if (canEdit && onSelectSection) {
+                                  e.preventDefault();
+                                  onSelectSection('customFields', customField.id);
+                                }
+                              }}
                               className={`inline-flex items-center gap-1 font-semibold hover:underline break-all ${theme.accentText}`}
                             >
                               <span>{val}</span>
@@ -562,6 +595,12 @@ export function AvtiveDigitalCard({
                           ) : isEmail ? (
                             <a
                               href={`mailto:${val.replace(/^mailto:/, '')}`}
+                              onClick={(e) => {
+                                if (canEdit && onSelectSection) {
+                                  e.preventDefault();
+                                  onSelectSection('customFields', customField.id);
+                                }
+                              }}
                               className={`inline-flex items-center gap-1 font-semibold hover:underline break-all ${theme.accentText}`}
                             >
                               <span>{val}</span>
@@ -569,6 +608,12 @@ export function AvtiveDigitalCard({
                           ) : isPhone ? (
                             <a
                               href={`tel:${val.replace(/[^0-9+]/g, '')}`}
+                              onClick={(e) => {
+                                if (canEdit && onSelectSection) {
+                                  e.preventDefault();
+                                  onSelectSection('customFields', customField.id);
+                                }
+                              }}
                               className={`inline-flex items-center gap-1 font-semibold hover:underline ${theme.accentText}`}
                             >
                               <span>{val}</span>

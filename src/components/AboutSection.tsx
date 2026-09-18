@@ -1,20 +1,23 @@
-'use client';
-
 import React from 'react';
+import { Pencil } from 'lucide-react';
 import { ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface AboutSectionProps {
   profile: ProfileData;
+  canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   theme?: ThemeConfig;
 }
 
 export function AboutSection({ 
   profile, 
+  canEdit = false,
   isEditing = false, 
   onUpdateField,
+  onSelectSection,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: AboutSectionProps) {
   if (!profile.about && !profile.fullBio && !profile.shortBio && !isEditing) {
@@ -22,10 +25,24 @@ export function AboutSection({
   }
 
   return (
-    <section className={`px-6 sm:px-8 py-5 space-y-2 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors`}>
-      <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
-        About
-      </h2>
+    <section 
+      onClick={() => canEdit && onSelectSection?.('about', 'about')}
+      className={`px-6 sm:px-8 py-5 space-y-2 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
+        canEdit ? 'cursor-pointer group/about hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
+      }`}
+      title={canEdit ? 'Click to edit Story & Bio in Studio' : undefined}
+    >
+      <div className="flex items-center justify-between">
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+          About
+        </h2>
+        {canEdit && !isEditing && (
+          <span className="opacity-0 group-hover/about:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+            <Pencil className="w-2.5 h-2.5" />
+            Edit Story
+          </span>
+        )}
+      </div>
 
       {isEditing ? (
         <div className="space-y-1">

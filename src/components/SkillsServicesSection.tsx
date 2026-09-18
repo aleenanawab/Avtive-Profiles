@@ -1,23 +1,25 @@
-'use client';
-
 import React from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Pencil } from 'lucide-react';
 import { ProfileData, ServiceItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface SkillsServicesSectionProps {
   profile: ProfileData;
+  canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
   onInquireService?: (service: ServiceItem) => void;
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   theme?: ThemeConfig;
 }
 
 export function SkillsServicesSection({ 
   profile, 
+  canEdit = false,
   isEditing = false,
   onUpdateField,
   onInquireService,
+  onSelectSection,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: SkillsServicesSectionProps) {
   const hasServices = profile.services && profile.services.length > 0;
@@ -46,13 +48,27 @@ export function SkillsServicesSection({
   };
 
   return (
-    <section className={`px-6 sm:px-8 py-5 space-y-3.5 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors`}>
+    <section 
+      onClick={() => canEdit && onSelectSection?.('skills', 'skills')}
+      className={`px-6 sm:px-8 py-5 space-y-3.5 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
+        canEdit ? 'cursor-pointer group/skills hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
+      }`}
+      title={canEdit ? 'Click to edit Skills & Services in Studio' : undefined}
+    >
       {/* Services Section with strict heading: SERVICES */}
       <div className="space-y-2.5">
         <div className="flex items-center justify-between">
-          <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-            SERVICES
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+              SERVICES
+            </h2>
+            {canEdit && !isEditing && (
+              <span className="opacity-0 group-hover/skills:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                <Pencil className="w-2.5 h-2.5" />
+                Edit Skills & Services
+              </span>
+            )}
+          </div>
           {isEditing && (
             <button
               type="button"
