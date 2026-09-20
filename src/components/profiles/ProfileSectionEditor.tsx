@@ -130,6 +130,9 @@ export function ProfileSectionEditor({
   const [fullBio, setFullBio] = useState(
     profile.fullBio || profile.about || 'Hello! I specialize in high-performance web applications, responsive user interfaces, and modular design systems.'
   );
+  const [tagline, setTagline] = useState(
+    profile.tagline || ''
+  );
 
   // Organization & Location
   const [company, setCompany] = useState(profile.company || 'Avtive');
@@ -187,6 +190,7 @@ export function ProfileSectionEditor({
       setTheme(profile.theme === 'default' ? 'editorial' : (profile.theme || 'editorial'));
       setShortBio(profile.shortBio || profile.bio || '');
       setFullBio(profile.fullBio || profile.about || '');
+      setTagline(profile.tagline || '');
       setCompany(profile.company || '');
       setDepartment(profile.department || '');
       setLocation(profile.location || '');
@@ -227,6 +231,7 @@ export function ProfileSectionEditor({
         shortBio: shortBio.trim(),
         about: fullBio.trim(),
         fullBio: fullBio.trim(),
+        tagline: tagline.trim(),
         company: company.trim(),
         department: department.trim(),
         location: location.trim(),
@@ -256,6 +261,7 @@ export function ProfileSectionEditor({
     theme,
     shortBio,
     fullBio,
+    tagline,
     company,
     department,
     location,
@@ -290,6 +296,7 @@ export function ProfileSectionEditor({
       setTheme('editorial');
       setShortBio('Crafting exceptional digital identities and scalable products.');
       setFullBio('Welcome to my newly created profile persona.');
+      setTagline('');
       setCompany('Avtive Innovations');
       setDepartment('');
       setLocation('Global');
@@ -318,6 +325,7 @@ export function ProfileSectionEditor({
       setTheme(profile.theme === 'default' ? 'editorial' : (profile.theme || 'editorial'));
       setShortBio(profile.shortBio || profile.bio || '');
       setFullBio(profile.fullBio || profile.about || '');
+      setTagline(profile.tagline || '');
       setCompany(profile.company || '');
       setDepartment(profile.department || '');
       setLocation(profile.location || '');
@@ -419,6 +427,7 @@ export function ProfileSectionEditor({
       shortBio: shortBio.trim(),
       about: fullBio.trim(),
       fullBio: fullBio.trim(),
+      tagline: tagline.trim(),
       company: company.trim(),
       department: department.trim(),
       location: location.trim(),
@@ -868,6 +877,20 @@ export function ProfileSectionEditor({
                       />
                     </div>
                   </div>
+
+                  {/* Describe yourself best */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
+                      Describe yourself best
+                    </label>
+                    <input
+                      type="text"
+                      value={tagline}
+                      onChange={(e) => setTagline(e.target.value)}
+                      placeholder="A short punchy line or motto that describes you best…"
+                      className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                    />
+                  </div>
                 </div>
               )}
 
@@ -949,6 +972,20 @@ export function ProfileSectionEditor({
                         className="figma-input w-full pl-8 pr-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                       />
                     </div>
+                  </div>
+
+                  {/* Describe yourself best */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
+                      Describe yourself best
+                    </label>
+                    <input
+                      type="text"
+                      value={tagline}
+                      onChange={(e) => setTagline(e.target.value)}
+                      placeholder="A short punchy line or motto that describes you best…"
+                      className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                    />
                   </div>
                 </div>
               )}

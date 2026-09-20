@@ -47,14 +47,10 @@ import {
   ProfileData,
   ProfileTheme,
   ProjectItem,
-  ExperienceItem,
-  EducationItem,
-  SharingSettings,
-  CustomFieldItem,
-  DynamicSection,
   DEFAULT_SECTION_ORDER,
-  DEFAULT_SECTION_VISIBILITY
+  DEFAULT_SECTION_VISIBILITY,
 } from '@/types/profile';
+import { useProfileEditor, DraggableLinkItem as CtxDraggableLinkItem } from '@/context/ProfileEditorContext';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { LinkedInIcon, GithubIcon, TwitterIcon, WhatsAppIcon } from '@/components/BrandIcons';
 
@@ -67,13 +63,8 @@ export interface SlidingEditorPanelProps {
   onSaveSuccess?: (savedProfile: ProfileData) => void;
 }
 
-interface DraggableLinkItem {
-  id: string;
-  platform: 'github' | 'linkedin' | 'website' | 'twitter' | 'whatsapp' | 'other';
-  title: string;
-  url: string;
-  visible: boolean;
-}
+// Use context's DraggableLinkItem type to avoid local duplication
+type DraggableLinkItem = CtxDraggableLinkItem;
 
 const SECTION_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   hero: { label: 'Hero & Identity Header', icon: User, color: 'text-blue-500' },
@@ -488,150 +479,71 @@ export function SlidingEditorPanel({
   const coverInputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Active Profile State
-  const [profile, setProfile] = useState<ProfileData>(initialProfile);
-  const [activeTheme, setActiveTheme] = useState<ProfileTheme>(
-    initialProfile.theme === 'default' ? 'editorial' : (initialProfile.theme || 'editorial')
-  );
+  // ── All shared profile state comes from the single context ────────────────
+  const {
+    profile,
+    activeTheme, setActiveTheme,
+    firstName, setFirstName,
+    secondName, setSecondName,
+    username, setUsername,
+    professionalTitle, setProfessionalTitle,
+    bio, setBio,
+    company, setCompany,
+    location, setLocation,
+    avatar, setAvatar,
+    coverImage, setCoverImage,
+    skills, setSkills,
+    about, setAbout,
+    projects, setProjects,
+    experiences, setExperiences,
+    education, setEducation,
+    socialLinks, setSocialLinks,
+    customFields, setCustomFields,
+    dynamicSections, setDynamicSections,
+    sectionOrder, setSectionOrder,
+    sectionVisibility, setSectionVisibility,
+    sharingSettings, setSharingSettings,
+    isUploadingAvatar,
+    isUploadingCover,
+    isSaving,
+    statusMessage,
+    copySuccess,
+    fullName,
+    currentActiveIdentifier,
+    publicProfileUrl,
+    handleAvatarUpload,
+    handleCoverUpload,
+    handleAddLinkItem,
+    handleUpdateLink,
+    handleDeleteLink,
+    handleMoveLink,
+    handleAddCustomField,
+    handleUpdateCustomField,
+    handleDeleteCustomField,
+    handleMoveCustomField,
+    handleMoveSection,
+    handleToggleSectionVisibility,
+    handleInstantToggleSection,
+    toggleVisibilityField,
+    handleCopyLink,
+    handleSaveChanges,
+    handleSwitchToProfile,
+    handleProfileSectionLiveUpdate,
+    handleProfileSectionSaveSuccess,
+    liveProfile,
+  } = useProfileEditor();
 
-  // 1. Basic Info
-  const [firstName, setFirstName] = useState(
-    initialProfile.firstName || (initialProfile.name ? initialProfile.name.split(' ')[0] : 'Aleena')
-  );
-  const [secondName, setSecondName] = useState(
-    initialProfile.secondName || initialProfile.lastName || (initialProfile.name ? initialProfile.name.split(' ').slice(1).join(' ') : 'Nawab')
-  );
-  const [username, setUsername] = useState(
-    initialProfile.username || initialProfile.slug || ''
-  );
-  const [professionalTitle, setProfessionalTitle] = useState(
-    initialProfile.professionalTitle || initialProfile.designation || initialProfile.profession || 'Full Stack Engineer'
-  );
-  const [bio, setBio] = useState(
-    initialProfile.bio || initialProfile.shortBio || 'Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.'
-  );
-  const [company, setCompany] = useState(initialProfile.company || 'Avtive');
-  const [location, setLocation] = useState(initialProfile.location || 'Global');
-
-  // Images
-  const [avatar, setAvatar] = useState(
-    initialProfile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'
-  );
-  const [coverImage, setCoverImage] = useState(
-    initialProfile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'
-  );
-
-  // 2. Skills
-  const initialSkillsList: string[] = Array.isArray(initialProfile.skills)
-    ? initialProfile.skills.map((s) => (typeof s === 'string' ? s : s.name))
-    : ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'];
-  const [skills, setSkills] = useState<string[]>(initialSkillsList);
+  // 2. Skills (panel-only input state)
   const [newSkillInput, setNewSkillInput] = useState('');
-
-  // 3. About
-  const [about, setAbout] = useState(
-    initialProfile.about || initialProfile.fullBio || 'Hello! I am a full stack software engineer and product designer specializing in high-performance web applications, responsive user interfaces, and modular design systems.'
-  );
-
-  // 4. Projects
-  const initialProjectsList: ProjectItem[] = Array.isArray(initialProfile.projects) && initialProfile.projects.length > 0
-    ? initialProfile.projects
-    : [
-        {
-          id: 'proj-1',
-          title: 'Avtive Profiles Platform',
-          description: 'Verified digital identity cards and granular privacy profiles built with Next.js and Tailwind CSS.',
-          tags: ['Next.js', 'TypeScript', 'Tailwind CSS'],
-          link: 'https://www.avtive.app',
-          image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop',
-          category: 'Web App'
-        }
-      ];
-  const [projects, setProjects] = useState<ProjectItem[]>(initialProjectsList);
   const [isInlineProjectOpen, setIsInlineProjectOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
-  const [projectForm, setProjectForm] = useState({
-    title: '',
-    description: '',
-    tags: '',
-    link: '',
-    image: ''
-  });
-
-  // 5. Experience & Education
-  const initialExpList: ExperienceItem[] = Array.isArray(initialProfile.experiences || initialProfile.experience)
-    ? (initialProfile.experiences || initialProfile.experience || [])
-    : [];
-  const [experiences, setExperiences] = useState<ExperienceItem[]>(initialExpList);
-
-  const initialEduList: EducationItem[] = Array.isArray(initialProfile.education)
-    ? initialProfile.education
-    : [];
-  const [education, setEducation] = useState<EducationItem[]>(initialEduList);
-
-  // 6. Draggable Social Links
-  const [socialLinks, setSocialLinks] = useState<DraggableLinkItem[]>(() =>
-    buildSocialLinksFromProfile(initialProfile)
-  );
-
-  // 7. Dynamic Custom Fields
-  const [customFields, setCustomFields] = useState<CustomFieldItem[]>(() =>
-    Array.isArray(initialProfile.customFields) ? initialProfile.customFields : []
-  );
-
-  // 8. Dynamic Sections
-  const [dynamicSections, setDynamicSections] = useState<DynamicSection[]>(() =>
-    Array.isArray(initialProfile.dynamicSections) ? initialProfile.dynamicSections : []
-  );
-
-  // 9. Section Ordering & Independent Section Visibility
-  const [sectionOrder, setSectionOrder] = useState<string[]>(() =>
-    Array.isArray(initialProfile.sectionOrder) && initialProfile.sectionOrder.length > 0
-      ? initialProfile.sectionOrder
-      : DEFAULT_SECTION_ORDER
-  );
-
-  const [sectionVisibility, setSectionVisibility] = useState<Record<string, boolean>>(() =>
-    initialProfile.sectionVisibility && Object.keys(initialProfile.sectionVisibility).length > 0
-      ? initialProfile.sectionVisibility
-      : DEFAULT_SECTION_VISIBILITY
-  );
-
-  // 10. Sharing & Visibility Controls
-  const [sharingSettings, setSharingSettings] = useState<SharingSettings>(
-    initialProfile.sharingSettings || {
-      photo: true,
-      nameAndTitle: true,
-      bio: true,
-      skills: true,
-      projects: true,
-      experience: true,
-      education: true,
-      socialLinks: true,
-      email: false,
-      phone: false
-    }
-  );
-  const [copySuccess, setCopySuccess] = useState(false);
-
-  // UI / Upload States
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-  const [isUploadingCover, setIsUploadingCover] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [projectForm, setProjectForm] = useState({ title: '', description: '', tags: '', link: '', image: '' });
 
   const [expandedSections, setExpandedSections] = useState({
-    basicInfo: true,
-    skills: true,
-    about: true,
-    projects: true,
-    socials: true,
-    customFields: true,
-    sectionsLayout: false,
-    share: true
+    basicInfo: true, skills: true, about: true, projects: true,
+    socials: true, customFields: true, sectionsLayout: false, share: true
   });
 
-  // Inline Section Expansion State (for expanding Section Editor rows like Profile inline)
   const [expandedInlineSectionKey, setExpandedInlineSectionKey] = useState<string | null>('hero');
   const [inlineProfileMode, setInlineProfileMode] = useState<'edit' | 'add'>('edit');
 
@@ -644,497 +556,52 @@ export function SlidingEditorPanel({
     setExpandedInlineSectionKey((prev) => (prev === sectionKey ? null : sectionKey));
   };
 
-  const handleProfileSectionLiveUpdate = (updatedFields: Partial<ProfileData>) => {
-    if (updatedFields.firstName !== undefined) setFirstName(updatedFields.firstName);
-    if (updatedFields.secondName !== undefined) setSecondName(updatedFields.secondName);
-    if (updatedFields.username !== undefined) setUsername(updatedFields.username);
-    if (updatedFields.profession !== undefined) setProfessionalTitle(updatedFields.profession);
-    if (updatedFields.shortBio !== undefined) setBio(updatedFields.shortBio);
-    if (updatedFields.fullBio !== undefined) setAbout(updatedFields.fullBio);
-    if (updatedFields.company !== undefined) setCompany(updatedFields.company);
-    if (updatedFields.location !== undefined) setLocation(updatedFields.location);
-    if (updatedFields.theme !== undefined) setActiveTheme(updatedFields.theme);
-    if (updatedFields.avatar !== undefined) setAvatar(updatedFields.avatar);
-    if (updatedFields.coverImage !== undefined) setCoverImage(updatedFields.coverImage);
-  };
-
-  const handleProfileSectionSaveSuccess = (savedProfile: ProfileData, isNew?: boolean) => {
-    setProfile(savedProfile);
-    if (savedProfile.theme) setActiveTheme(savedProfile.theme);
-    if (savedProfile.firstName) setFirstName(savedProfile.firstName);
-    if (savedProfile.secondName || savedProfile.lastName) setSecondName(savedProfile.secondName || savedProfile.lastName || '');
-    if (savedProfile.username || savedProfile.slug) setUsername(savedProfile.username || savedProfile.slug || '');
-    if (savedProfile.profession || savedProfile.designation || savedProfile.professionalTitle) {
-      setProfessionalTitle(savedProfile.profession || savedProfile.designation || savedProfile.professionalTitle || '');
-    }
-    if (savedProfile.bio || savedProfile.shortBio) setBio(savedProfile.bio || savedProfile.shortBio || '');
-    if (savedProfile.about || savedProfile.fullBio) setAbout(savedProfile.about || savedProfile.fullBio || '');
-    if (savedProfile.company) setCompany(savedProfile.company);
-    if (savedProfile.location) setLocation(savedProfile.location);
-    if (savedProfile.avatar) setAvatar(savedProfile.avatar);
-    if (savedProfile.coverImage) setCoverImage(savedProfile.coverImage);
-
-    setStatusMessage({
-      type: 'success',
-      text: isNew
-        ? `✓ Created new profile persona "${savedProfile.profileName || savedProfile.name}"!`
-        : '✓ Profile updated and synchronized successfully!'
-    });
-
-    onSaveSuccess?.(savedProfile);
-  };
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
+  const toggleSection = (section: keyof typeof expandedSections) =>
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
 
   const scrollToSection = (sectionKey: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [sectionKey]: true }));
     const el = document.getElementById(`section-${sectionKey}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // Full Name
-  const fullName = `${firstName} ${secondName}`.trim();
-
-  // Compute Live Profile & notify parent in real-time
-  const activeSocialsPayload = socialLinks
-    .filter((s) => s.visible && s.url.trim())
-    .map((s) => ({ platform: s.platform as any, url: s.url, label: s.title }));
-
-  const currentLiveProfile: ProfileData = {
-    ...profile,
-    username: username.trim(),
-    name: fullName,
-    firstName: firstName.trim(),
-    secondName: secondName.trim(),
-    lastName: secondName.trim(),
-    professionalTitle: professionalTitle.trim(),
-    designation: professionalTitle.trim(),
-    profession: professionalTitle.trim(),
-    bio: bio.trim(),
-    shortBio: bio.trim(),
-    about: about.trim(),
-    fullBio: about.trim(),
-    company: company.trim(),
-    location: location.trim(),
-    theme: activeTheme,
-    avatar,
-    coverImage,
-    skills,
-    projects,
-    experience: experiences,
-    experiences: experiences,
-    education,
-    socials: activeSocialsPayload,
-    socialLinks: activeSocialsPayload,
-    customFields,
-    dynamicSections,
-    sectionOrder,
-    sectionVisibility,
-    sharingSettings: sharingSettings
-  };
-
-  // Trigger onLiveUpdate on any field change
-  useEffect(() => {
-    onLiveUpdate?.(currentLiveProfile);
-  }, [
-    firstName,
-    secondName,
-    username,
-    professionalTitle,
-    bio,
-    about,
-    company,
-    location,
-    activeTheme,
-    avatar,
-    coverImage,
-    skills,
-    projects,
-    socialLinks,
-    customFields,
-    sectionOrder,
-    sectionVisibility,
-    sharingSettings
-  ]);
-
-  // Skills Handlers
+  // ── Skills (panel-local handlers that delegate to context setters) ─────────
   const handleAddSkill = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = newSkillInput.trim();
-    if (!trimmed) return;
-    if (!skills.includes(trimmed)) {
-      setSkills((prev) => [...prev, trimmed]);
-    }
+    if (!trimmed || skills.includes(trimmed)) return;
+    setSkills((prev) => [...prev, trimmed]);
     setNewSkillInput('');
   };
+  const handleRemoveSkill = (s: string) => setSkills((prev) => prev.filter((x) => x !== s));
 
-  const handleRemoveSkill = (skillToRemove: string) => {
-    setSkills((prev) => prev.filter((s) => s !== skillToRemove));
-  };
-
-  // Inline Project Handlers
+  // ── Projects (panel-local project form state; setProjects comes from context) ─
   const handleOpenAddProject = () => {
     setEditingProject(null);
-    setProjectForm({
-      title: '',
-      description: '',
-      tags: '',
-      link: '',
-      image: ''
-    });
+    setProjectForm({ title: '', description: '', tags: '', link: '', image: '' });
     setIsInlineProjectOpen(true);
   };
-
   const handleOpenEditProject = (p: ProjectItem) => {
     setEditingProject(p);
-    setProjectForm({
-      title: p.title,
-      description: p.description,
-      tags: Array.isArray(p.tags) ? p.tags.join(', ') : '',
-      link: p.link || p.liveUrl || '',
-      image: p.image || p.coverImage || ''
-    });
+    setProjectForm({ title: p.title, description: p.description, tags: Array.isArray(p.tags) ? p.tags.join(', ') : '', link: p.link || p.liveUrl || '', image: p.image || p.coverImage || '' });
     setIsInlineProjectOpen(true);
   };
-
   const handleSaveInlineProject = (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectForm.title.trim()) return;
-
-    const tagsArray = projectForm.tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean);
-
+    const tagsArray = projectForm.tags.split(',').map((t) => t.trim()).filter(Boolean);
     if (editingProject) {
-      setProjects((prev) =>
-        prev.map((p) =>
-          p.id === editingProject.id
-            ? {
-                ...p,
-                title: projectForm.title.trim(),
-                description: projectForm.description.trim(),
-                tags: tagsArray,
-                link: projectForm.link.trim(),
-                image: projectForm.image.trim() || p.image,
-                coverImage: projectForm.image.trim() || p.coverImage
-              }
-            : p
-        )
-      );
+      setProjects((prev) => prev.map((p) =>
+        p.id === editingProject.id
+          ? { ...p, title: projectForm.title.trim(), description: projectForm.description.trim(), tags: tagsArray, link: projectForm.link.trim(), image: projectForm.image.trim() || p.image, coverImage: projectForm.image.trim() || p.coverImage }
+          : p
+      ));
     } else {
-      const newProj: ProjectItem = {
-        id: `proj-${Date.now()}`,
-        title: projectForm.title.trim(),
-        description: projectForm.description.trim(),
-        tags: tagsArray,
-        link: projectForm.link.trim(),
-        image: projectForm.image.trim() || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop',
-        coverImage: projectForm.image.trim(),
-        category: 'Project'
-      };
-      setProjects((prev) => [newProj, ...prev]);
+      setProjects((prev) => [{ id: `proj-${Date.now()}`, title: projectForm.title.trim(), description: projectForm.description.trim(), tags: tagsArray, link: projectForm.link.trim(), image: projectForm.image.trim() || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop', coverImage: projectForm.image.trim(), category: 'Project' }, ...prev]);
     }
-
     setIsInlineProjectOpen(false);
   };
-
-  const handleDeleteProject = (id: string) => {
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-  };
-
-  // Upload Handlers
-  const handleCoverUpload = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result) setCoverImage(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    setIsUploadingCover(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setCoverImage(data.url);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsUploadingCover(false);
-    }
-  };
-
-  const handleAvatarUpload = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result) setAvatar(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    setIsUploadingAvatar(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setAvatar(data.url);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsUploadingAvatar(false);
-    }
-  };
-
-  // Drag-and-drop Link Handlers
-  const handleUpdateLink = (id: string, patch: Partial<DraggableLinkItem>) => {
-    setSocialLinks((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
-  };
-
-  const handleDeleteLink = (id: string) => {
-    setSocialLinks((prev) => prev.filter((l) => l.id !== id));
-  };
-
-  const handleMoveLink = (index: number, direction: 'up' | 'down') => {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= socialLinks.length) return;
-    const copy = [...socialLinks];
-    const [moved] = copy.splice(index, 1);
-    copy.splice(targetIndex, 0, moved);
-    setSocialLinks(copy);
-  };
-
-  const handleAddLinkItem = (platform: DraggableLinkItem['platform']) => {
-    const newLink: DraggableLinkItem = {
-      id: `link-${Date.now()}`,
-      platform,
-      title: platform === 'other' ? 'Custom Link' : platform.charAt(0).toUpperCase() + platform.slice(1),
-      url: 'https://',
-      visible: true
-    };
-    setSocialLinks((prev) => [...prev, newLink]);
-  };
-
-  // Custom Fields Handlers
-  const handleAddCustomField = () => {
-    const newField: CustomFieldItem = {
-      id: `cf-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      label: 'New Custom Field',
-      value: '',
-      type: 'text',
-      visible: true,
-      order: customFields.length
-    };
-    setCustomFields((prev) => [...prev, newField]);
-  };
-
-  const handleUpdateCustomField = (id: string, patch: Partial<CustomFieldItem>) => {
-    setCustomFields((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, ...patch } : f))
-    );
-  };
-
-  const handleDeleteCustomField = (id: string) => {
-    setCustomFields((prev) => prev.filter((f) => f.id !== id));
-  };
-
-  const handleMoveCustomField = (index: number, direction: 'up' | 'down') => {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= customFields.length) return;
-    const copy = [...customFields];
-    const [moved] = copy.splice(index, 1);
-    copy.splice(targetIndex, 0, moved);
-    setCustomFields(copy);
-  };
-
-  // Section Ordering & Visibility Handlers
-  const handleMoveSection = (index: number, direction: 'up' | 'down') => {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= sectionOrder.length) return;
-    const copy = [...sectionOrder];
-    const [moved] = copy.splice(index, 1);
-    copy.splice(targetIndex, 0, moved);
-    setSectionOrder(copy);
-  };
-
-  const handleToggleSectionVisibility = (sectionKey: string) => {
-    setSectionVisibility((prev) => ({
-      ...prev,
-      [sectionKey]: prev[sectionKey] === false ? true : false
-    }));
-  };
-
-  // Toggle Visibility in Share Section
-  const toggleVisibilityField = (field: keyof SharingSettings) => {
-    setSharingSettings((prev) => ({
-      ...prev,
-      [field]: prev[field] === false ? true : false
-    }));
-  };
-
-  // Copy Profile Link
-  const currentActiveIdentifier = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
-  const publicProfileUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/profile/${currentActiveIdentifier}`
-    : `https://avtive.app/profile/${currentActiveIdentifier}`;
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(publicProfileUrl);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2500);
-    } catch {
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2500);
-    }
-  };
-
-  // Switch persona in-place
-  const handleSwitchToProfile = (newProf: ProfileData) => {
-    setProfile(newProf);
-    setActiveTheme(newProf.theme === 'default' ? 'editorial' : (newProf.theme || 'editorial'));
-    const fName = newProf.firstName || (newProf.name ? newProf.name.split(' ')[0] : '');
-    const lName = newProf.secondName || newProf.lastName || (newProf.name ? newProf.name.split(' ').slice(1).join(' ') : '');
-    setFirstName(fName);
-    setSecondName(lName);
-    setUsername(newProf.username || newProf.slug || '');
-    setProfessionalTitle(newProf.professionalTitle || newProf.designation || newProf.profession || '');
-    setBio(newProf.bio || newProf.shortBio || '');
-    setCompany(newProf.company || '');
-    setLocation(newProf.location || '');
-    setAvatar(newProf.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
-    setCoverImage(newProf.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
-    
-    const skillsList = Array.isArray(newProf.skills)
-      ? newProf.skills.map((s) => (typeof s === 'string' ? s : s.name))
-      : ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'];
-    setSkills(skillsList);
-    setAbout(newProf.about || newProf.fullBio || '');
-    setProjects(Array.isArray(newProf.projects) ? newProf.projects : []);
-    setExperiences(Array.isArray(newProf.experiences || newProf.experience) ? (newProf.experiences || newProf.experience || []) : []);
-    setEducation(Array.isArray(newProf.education) ? newProf.education : []);
-    setSocialLinks(buildSocialLinksFromProfile(newProf));
-    setCustomFields(Array.isArray(newProf.customFields) ? newProf.customFields : []);
-    setDynamicSections(Array.isArray(newProf.dynamicSections) ? newProf.dynamicSections : []);
-    if (Array.isArray(newProf.sectionOrder) && newProf.sectionOrder.length > 0) {
-      setSectionOrder(newProf.sectionOrder);
-    }
-    if (newProf.sectionVisibility && Object.keys(newProf.sectionVisibility).length > 0) {
-      setSectionVisibility(newProf.sectionVisibility);
-    }
-    if (newProf.sharingSettings) {
-      setSharingSettings(newProf.sharingSettings);
-    }
-
-    setStatusMessage({
-      type: 'success',
-      text: `✓ Switched to profile: ${newProf.profileName || newProf.name}`
-    });
-    setTimeout(() => {
-      setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
-    }, 3500);
-  };
-
-  // Save All Changes to Server
-  const handleSaveChanges = async () => {
-    setIsSaving(true);
-    setStatusMessage(null);
-
-    const updatedData: Partial<ProfileData> = {
-      name: fullName,
-      firstName: firstName.trim(),
-      secondName: secondName.trim(),
-      lastName: secondName.trim(),
-      username: username.trim().replace(/^@/, ''),
-      professionalTitle: professionalTitle.trim(),
-      designation: professionalTitle.trim(),
-      profession: professionalTitle.trim(),
-      bio: bio.trim(),
-      shortBio: bio.trim(),
-      about: about.trim(),
-      fullBio: about.trim(),
-      company: company.trim(),
-      location: location.trim(),
-      theme: activeTheme,
-      avatar,
-      coverImage,
-      skills,
-      projects,
-      experience: experiences,
-      experiences: experiences,
-      education,
-      socials: activeSocialsPayload,
-      socialLinks: activeSocialsPayload,
-      customFields,
-      dynamicSections,
-      sectionOrder,
-      sectionVisibility,
-      sharingSettings: sharingSettings
-    };
-
-    try {
-      const res = await fetch('/api/profile/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profileId: profile.id || initialProfile.id,
-          profileSlug: profile.slug || initialProfile.slug,
-          slug: profile.slug || initialProfile.slug,
-          userId: profile.userId || initialProfile.userId,
-          updatedData
-        })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setStatusMessage({ type: 'error', text: data.error || 'Failed to save changes.' });
-        setIsSaving(false);
-        return;
-      }
-
-      const savedSlug = data.updatedProfile?.slug || data.profile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
-      const finalProfile: ProfileData = data.updatedProfile || data.profile || { ...profile, ...updatedData, slug: savedSlug };
-      setProfile(finalProfile);
-
-      // Cache locally
-      try {
-        localStorage.setItem(`avtive_profile_${savedSlug}`, JSON.stringify(finalProfile));
-        if (initialProfile.slug) {
-          localStorage.setItem(`avtive_profile_${initialProfile.slug}`, JSON.stringify(finalProfile));
-        }
-        localStorage.setItem('avtive_last_saved_profile', JSON.stringify(finalProfile));
-      } catch (e) {
-        console.error('Failed to cache profile in localStorage:', e);
-      }
-
-      setStatusMessage({
-        type: 'success',
-        text: '✓ Profile saved successfully! Real-time canvas synced.'
-      });
-
-      onSaveSuccess?.(finalProfile);
-
-      setTimeout(() => {
-        setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
-      }, 4000);
-    } catch (err: any) {
-      console.error('Save changes error:', err);
-      setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const handleDeleteProject = (id: string) => setProjects((prev) => prev.filter((p) => p.id !== id));
 
   return (
     <AnimatePresence>
@@ -1344,7 +811,7 @@ export function SlidingEditorPanel({
                 <div className="p-4 pt-1 border-t border-slate-200/60 dark:border-white/5">
                   <ProfileSectionEditor
                     initialMode="edit"
-                    profile={currentLiveProfile}
+                    profile={liveProfile}
                     userProfiles={userProfiles}
                     isExpanded={true}
                     onLiveUpdate={handleProfileSectionLiveUpdate}
@@ -1889,7 +1356,7 @@ export function SlidingEditorPanel({
                           {isHero && isItemExpanded && (
                             <ProfileSectionEditor
                               initialMode={inlineProfileMode}
-                              profile={currentLiveProfile}
+                              profile={liveProfile}
                               userProfiles={userProfiles}
                               isExpanded={true}
                               onLiveUpdate={handleProfileSectionLiveUpdate}
