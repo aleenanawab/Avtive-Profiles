@@ -17,7 +17,7 @@ export function AboutSection({
   onUpdateField,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: AboutSectionProps) {
-  if (!profile.about && !profile.fullBio && !profile.shortBio && !isEditing) {
+  if (!profile.about && !profile.fullBio && !profile.shortBio && !profile.tagline && !isEditing) {
     return null;
   }
 
@@ -28,22 +28,45 @@ export function AboutSection({
       </h2>
 
       {isEditing ? (
-        <div className="space-y-1">
-          <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-            Professional Story / Bio
-          </label>
-          <textarea
-            rows={4}
-            value={profile.about || profile.fullBio || profile.shortBio || ''}
-            onChange={(e) => onUpdateField?.('about', e.target.value)}
-            placeholder="Write your background, experience, accomplishments, or philosophy..."
-            className={`w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-transparent text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:border-current`}
-          />
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
+              Describe yourself best
+            </label>
+            <input
+              type="text"
+              value={profile.tagline || ''}
+              onChange={(e) => onUpdateField?.('tagline', e.target.value)}
+              placeholder="A punchy phrase, personal tagline, or motto that describes you best..."
+              className={`w-full p-2.5 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-transparent text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:border-current`}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
+              Professional Story / Bio
+            </label>
+            <textarea
+              rows={4}
+              value={profile.about || profile.fullBio || profile.shortBio || ''}
+              onChange={(e) => onUpdateField?.('about', e.target.value)}
+              placeholder="Write your background, experience, accomplishments, or philosophy..."
+              className={`w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-transparent text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:border-current`}
+            />
+          </div>
         </div>
       ) : (
-        <p className={`text-xs sm:text-sm ${theme.textSecondary} leading-relaxed font-normal whitespace-pre-line`}>
-          {profile.about || profile.fullBio || profile.shortBio}
-        </p>
+        <div className="space-y-2">
+          {profile.tagline && (
+            <p className={`text-xs sm:text-sm font-medium italic ${theme.accentText}`}>
+              &ldquo;{profile.tagline}&rdquo;
+            </p>
+          )}
+          {(profile.about || profile.fullBio || profile.shortBio) && (
+            <p className={`text-xs sm:text-sm ${theme.textSecondary} leading-relaxed font-normal whitespace-pre-line`}>
+              {profile.about || profile.fullBio || profile.shortBio}
+            </p>
+          )}
+        </div>
       )}
     </section>
   );

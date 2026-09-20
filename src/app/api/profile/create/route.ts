@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       about: body.about?.trim() || body.fullBio?.trim() || 'Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.',
       shortBio: body.shortBio?.trim() || body.bio?.trim() || 'Welcome to my digital profile on Avtive.',
       fullBio: body.fullBio?.trim() || body.about?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
+      tagline: body.tagline?.trim() || '',
       theme: body.theme || 'editorial',
       skills: body.skills || [],
       experience: body.experience || body.experiences || [],
