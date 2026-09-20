@@ -527,6 +527,8 @@ export function SlidingEditorPanel({
     toggleVisibilityField,
     handleCopyLink,
     handleSaveChanges,
+    isConfirmed,
+    setIsConfirmed,
     handleSwitchToProfile,
     handleProfileSectionLiveUpdate,
     handleProfileSectionSaveSuccess,
@@ -606,15 +608,32 @@ export function SlidingEditorPanel({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.aside
-          key="sliding-editor-panel"
-          initial={{ x: '-100%', opacity: 0.7 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: '-100%', opacity: 0.7 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-          className="fixed top-0 bottom-0 left-0 z-40 h-full w-full sm:w-[500px] md:w-[540px] lg:w-[580px] xl:w-[620px] backdrop-blur-2xl bg-white/90 dark:bg-[#111319]/90 border-r border-slate-200/80 dark:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden"
-          style={{ willChange: 'transform' }}
-        >
+        <>
+          {/* Lightweight backdrop overlay for mobile viewports */}
+          <motion.div
+            key="sliding-editor-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+            onClick={onClose}
+            className="fixed inset-0 z-30 bg-black/30 backdrop-blur-xs lg:hidden"
+            aria-hidden="true"
+          />
+
+          {/* Linktree-style Smooth Sliding Editor Panel */}
+          <motion.aside
+            key="sliding-editor-panel"
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{
+              duration: 0.28,
+              ease: [0.16, 1, 0.3, 1]
+            }}
+            className="fixed top-0 bottom-0 left-0 z-40 h-full w-full sm:w-[500px] md:w-[540px] lg:w-[580px] xl:w-[620px] backdrop-blur-2xl bg-white/95 dark:bg-[#111319]/95 border-r border-slate-200/80 dark:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden"
+            style={{ willChange: 'transform' }}
+          >
           {/* Top Panel Navigation Bar */}
           <div className="shrink-0 px-4 py-3 border-b border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-[#111319]/60 backdrop-blur-md flex items-center justify-between gap-3 z-20">
             <div className="flex items-center gap-2 min-w-0">
@@ -1457,48 +1476,68 @@ export function SlidingEditorPanel({
           </div>
 
           {/* Sticky Action Footer */}
-          <div className="shrink-0 p-3.5 sm:p-4 border-t border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#111319]/70 backdrop-blur-md flex items-center justify-between gap-3 z-20">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-white/70 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              Collapse
-            </button>
+          {/* Sticky Action Footer */}
+          <div className="shrink-0 border-t border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#111319]/70 backdrop-blur-md z-20">
+            {/* Inline confirmation checkbox */}
+            <div className="px-3.5 sm:px-4 py-2.5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/70 dark:bg-black/30">
+              <label htmlFor="sliding-editor-confirm" className="flex items-center gap-2.5 cursor-pointer select-none group">
+                <input
+                  type="checkbox"
+                  id="sliding-editor-confirm"
+                  checked={isConfirmed}
+                  onChange={(e) => setIsConfirmed(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-indigo-500 cursor-pointer accent-indigo-600 shrink-0"
+                />
+                <span className="text-[11px] font-medium text-slate-700 dark:text-white/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  I confirm that all profile changes are accurate and ready to save.
+                </span>
+              </label>
+            </div>
 
-            <div className="flex items-center gap-2">
-              <Link
-                href={`/profile/${profile.slug || profile.id || initialProfile.slug || initialProfile.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="figma-pill-secondary py-2 px-3 text-xs font-bold flex items-center justify-center gap-1 shrink-0"
-                title="Open live public profile in a new tab"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Open Live</span>
-              </Link>
-
+            <div className="p-3.5 sm:p-4 flex items-center justify-between gap-3">
               <button
                 type="button"
-                onClick={handleSaveChanges}
-                disabled={isSaving}
-                className="figma-pill-primary py-2 px-5 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md"
+                onClick={onClose}
+                className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-white/70 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
               >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Saving...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Save Changes</span>
-                  </>
-                )}
+                Collapse
               </button>
+
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/profile/${profile.slug || profile.id || initialProfile.slug || initialProfile.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="figma-pill-secondary py-2 px-3 text-xs font-bold flex items-center justify-center gap-1 shrink-0"
+                  title="Open live public profile in a new tab"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Open Live</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleSaveChanges}
+                  disabled={isSaving || !isConfirmed}
+                  className="figma-pill-primary py-2 px-5 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md transition-all"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Save Changes</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </motion.aside>
+        </>
       )}
     </AnimatePresence>
   );
