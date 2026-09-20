@@ -166,6 +166,7 @@ export function ProfileSectionEditor({
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSectionConfirmed, setIsSectionConfirmed] = useState(false);
   const [statusFeedback, setStatusFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleSelectAvatar = (newAvatarUrl: string) => {
@@ -284,6 +285,7 @@ export function ProfileSectionEditor({
   const handleSwitchMode = (newMode: 'edit' | 'add') => {
     setMode(newMode);
     setStatusFeedback(null);
+    setIsSectionConfirmed(false);
 
     if (newMode === 'add') {
       // Reset form to clean template for new profile creation
@@ -402,6 +404,11 @@ export function ProfileSectionEditor({
   // Save / Submit Handler
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+
+    if (!isSectionConfirmed) {
+      setStatusFeedback({ type: 'error', text: 'Please check the confirmation box to confirm this profile information before saving.' });
+      return;
+    }
 
     if (!firstName.trim() && !fullName.trim()) {
       setStatusFeedback({ type: 'error', text: 'Please provide at least a First Name or Full Name.' });
@@ -1162,6 +1169,22 @@ export function ProfileSectionEditor({
                 </div>
               )}
 
+              {/* Inline Confirmation Checkbox */}
+              <div className="pt-3 pb-1 border-t border-slate-200/80 dark:border-white/10">
+                <label htmlFor="section-editor-confirm" className="flex items-center gap-2 cursor-pointer select-none group">
+                  <input
+                    type="checkbox"
+                    id="section-editor-confirm"
+                    checked={isSectionConfirmed}
+                    onChange={(e) => setIsSectionConfirmed(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-indigo-500 cursor-pointer accent-indigo-600 shrink-0"
+                  />
+                  <span className="text-[11px] font-medium text-slate-700 dark:text-white/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    I confirm that this profile persona information is accurate.
+                  </span>
+                </label>
+              </div>
+
               {/* Bottom Action Footer */}
               <div className="pt-2 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5">
@@ -1190,8 +1213,8 @@ export function ProfileSectionEditor({
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={isSaving}
-                    className={`py-2 px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md transition-all ${
+                    disabled={isSaving || !isSectionConfirmed}
+                    className={`py-2 px-4 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md transition-all ${
                       mode === 'add'
                         ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                         : 'figma-pill-primary'

@@ -149,6 +149,8 @@ export interface ProfileEditorContextValue {
   isUploadingAvatar: boolean;
   isUploadingCover: boolean;
   isSaving: boolean;
+  isConfirmed: boolean;
+  setIsConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
   statusMessage: { type: 'success' | 'error'; text: string } | null;
   copySuccess: boolean;
 
@@ -327,6 +329,7 @@ export function ProfileEditorProvider({
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -659,6 +662,7 @@ export function ProfileEditorProvider({
       setSectionVisibility(DEFAULT_SECTION_VISIBILITY);
     }
     if (newProf.sharingSettings) setSharingSettings(newProf.sharingSettings);
+    setIsConfirmed(false);
 
     setStatusMessage({
       type: 'success',
@@ -671,6 +675,14 @@ export function ProfileEditorProvider({
 
   // ── Save All Changes ──────────────────────────────────────────────────────
   const handleSaveChanges = useCallback(async () => {
+    if (!isConfirmed) {
+      setStatusMessage({
+        type: 'error',
+        text: 'Please check the confirmation box to confirm your profile changes before saving.',
+      });
+      return;
+    }
+
     setIsSaving(true);
     setStatusMessage(null);
 
@@ -772,6 +784,7 @@ export function ProfileEditorProvider({
     skills, projects, experiences, education,
     activeSocialsPayload, customFields, dynamicSections,
     sectionOrder, sectionVisibility, sharingSettings,
+    isConfirmed,
     profile, initialProfile, onSaveSuccess,
   ]);
 
@@ -807,6 +820,8 @@ export function ProfileEditorProvider({
       isUploadingAvatar,
       isUploadingCover,
       isSaving,
+      isConfirmed,
+      setIsConfirmed,
       statusMessage,
       copySuccess,
       handleAvatarUpload,
@@ -839,7 +854,7 @@ export function ProfileEditorProvider({
       socialLinks, customFields, dynamicSections,
       sectionOrder, sectionVisibility, sharingSettings,
       fullName, liveProfile, activeSocialsPayload,
-      isUploadingAvatar, isUploadingCover, isSaving, statusMessage, copySuccess,
+      isUploadingAvatar, isUploadingCover, isSaving, isConfirmed, statusMessage, copySuccess,
     ]
   );
 
