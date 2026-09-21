@@ -556,17 +556,20 @@ html, body {
   --theme-radius-btn: 8px;
 }
 
-/* PDF SLIDER & STUDIO CUSTOM STYLES */
+/* FIGMA MOBILE SLIDER & STUDIO CUSTOM STYLES */
+.figma-slider-divider,
 .pdf-slider-divider {
   box-shadow: 0 0 12px rgba(34, 211, 238, 0.75), 0 0 24px rgba(34, 211, 238, 0.35);
 }
 
+.figma-frosted-drawer,
 .pdf-frosted-drawer {
   background: rgba(10, 19, 34, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
+.figma-chip-tag,
 .pdf-chip-tag {
   background: #162438;
   border: 1px solid #283E5E;
@@ -574,9 +577,11 @@ html, body {
   transition: all 0.15s ease;
 }
 
+.figma-chip-tag:hover,
 .pdf-chip-tag:hover {
   border-color: rgba(34, 211, 238, 0.6);
   background: #1D304A;
 }
+
 
 
