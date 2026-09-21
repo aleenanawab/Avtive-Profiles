@@ -70,7 +70,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     setActiveSection
   } = useProfileEditor();
 
-  // Slider position (percentage from 0 to 100, default ~50% for balanced view)
+  // Slider position (percentage from 0 to 100, default ~50% to show exact PDF split)
   const [sliderPos, setSliderPos] = useState<number>(50);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,8 +96,8 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     if (profile.phone) setPhoneValue(profile.phone);
   }, [profile.email, profile.phone]);
 
-  // Section items matching Figma design drawer
-  const FIGMA_DRAWER_SECTIONS = [
+  // Section items matching the PDF right drawer exactly
+  const PDF_DRAWER_SECTIONS = [
     { key: 'profile', label: 'Profile', icon: User, hasToggle: true, hasArrow: true },
     { key: 'personalDetails', label: 'Personal Details', icon: Pencil, hasToggle: false, isEdit: true },
     { key: 'skills', label: 'Skills', icon: Code, hasToggle: true, hasArrow: true },
@@ -200,10 +200,10 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       <div className="w-full max-w-[375px] mb-2 px-1 flex items-center justify-between text-[11px] text-slate-400">
         <span className="flex items-center gap-1.5 font-bold text-cyan-400">
           <Smartphone className="w-3.5 h-3.5" />
-          <span>Mobile Profile Studio</span>
+          <span>PDF Mobile View</span>
         </span>
 
-        {/* Quick View Presets */}
+        {/* Quick Split Presets */}
         <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-0.5">
           <button
             type="button"
@@ -211,9 +211,9 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
               Math.round(sliderPos) === 50 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-slate-400 hover:text-white'
             }`}
-            title="Balanced 50/50 View"
+            title="Split 50% (As in PDF)"
           >
-            50 / 50
+            PDF Split
           </button>
           <button
             type="button"
@@ -221,9 +221,9 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
               sliderPos > 70 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-slate-400 hover:text-white'
             }`}
-            title="Card View Focus"
+            title="Show Form View"
           >
-            Card
+            Form
           </button>
           <button
             type="button"
@@ -231,14 +231,14 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
               sliderPos < 30 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-slate-400 hover:text-white'
             }`}
-            title="Section Menu Drawer"
+            title="Show Section Drawer"
           >
-            Sections
+            Drawer
           </button>
         </div>
       </div>
 
-      {/* Realistic Smartphone Chassis */}
+      {/* Realistic Smartphone Chassis matching PDF Screen */}
       <div 
         className="relative w-full max-w-[375px] h-[760px] rounded-[44px] p-2.5 bg-gradient-to-b from-[#1C2533] via-[#0E1522] to-[#080D1A] shadow-2xl ring-1 ring-white/10 border border-white/15 flex flex-col transition-all overflow-hidden shrink-0"
       >
@@ -263,7 +263,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             </div>
           </div>
 
-          {/* Top Background Cover Header */}
+          {/* Top Background Cover Header matching PDF */}
           <div className="relative h-44 w-full shrink-0 overflow-hidden bg-[#0D1626]">
             <img
               src={coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop'}
@@ -273,7 +273,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {/* Dark gradient fade into body */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0A101D]/50 to-[#0A101D]" />
 
-            {/* User Title & Avatar Overlay */}
+            {/* User Title & Avatar Overlay matching PDF */}
             <div className="absolute bottom-2 left-4 right-4 flex items-center gap-3">
               <div className="relative w-14 h-14 rounded-full border-2 border-[#1E2D44] overflow-hidden bg-[#131F33] shrink-0 shadow-lg">
                 <img
@@ -390,7 +390,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   </div>
                 </div>
 
-                {/* 3. Skills Card with Tag Chips & Search */}
+                {/* 3. Skills Card with Tag Chips & Search matching PDF */}
                 <div className="rounded-xl bg-[#111C2C]/90 border border-[#22354F] p-3 space-y-2 shadow-sm">
                   <div className="flex items-center justify-between text-xs font-bold text-white border-b border-[#22354F]/80 pb-1.5">
                     <span className="tracking-wide">Skills</span>
@@ -443,7 +443,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                     />
                   )}
 
-                  {/* Skill Chips pill style */}
+                  {/* Skill Chips matching PDF pill style */}
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {filteredSkills
                       .filter(s => !skillSearchQuery || s.toLowerCase().includes(skillSearchQuery.toLowerCase()))
@@ -521,7 +521,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               className="h-full overflow-y-auto overflow-x-hidden bg-[#0A1322]/95 backdrop-blur-xl border-l border-[#2B4060]/70 p-2.5 space-y-1.5 scrollbar-none overscroll-contain"
               style={{ width: `${100 - sliderPos}%` }}
             >
-              {FIGMA_DRAWER_SECTIONS.map((sec) => {
+              {PDF_DRAWER_SECTIONS.map((sec) => {
                 const isVis = isSectionVisible(sec.key);
                 const IconComponent = sec.icon;
                 const isSelected = selectedDrawerSection === sec.key;

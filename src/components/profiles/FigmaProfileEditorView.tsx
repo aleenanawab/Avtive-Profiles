@@ -35,8 +35,8 @@ export function FigmaProfileEditorView() {
 
   const identifier = profile.slug || profile.id || currentActiveIdentifier;
 
-  // View Mode: 'side-by-side' (Desktop Left + Mobile Preview Right) | 'desktop' (Desktop Fullscreen) | 'mobile' (Mobile Studio View)
-  const [viewMode, setViewMode] = useState<'side-by-side' | 'desktop' | 'mobile'>('side-by-side');
+  // View Mode: 'split' (Side by Side) | 'desktop' (Desktop Fullscreen) | 'mobile' (Mobile PDF Slider View)
+  const [viewMode, setViewMode] = useState<'split' | 'desktop' | 'mobile'>('split');
 
   const onGlobalSave = async () => {
     try {
@@ -58,17 +58,17 @@ export function FigmaProfileEditorView() {
         <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/5 border border-white/10">
           <button
             type="button"
-            onClick={() => setViewMode('side-by-side')}
+            onClick={() => setViewMode('split')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              viewMode === 'side-by-side'
+              viewMode === 'split'
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
             }`}
-            title="Side-by-Side View (Desktop Editor + Mobile Preview)"
+            title="Side-by-Side View (Desktop Left + Mobile Slider Right)"
           >
             <Columns className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Side by Side</span>
-            <span className="sm:hidden">Both</span>
+            <span className="hidden sm:inline">Side-by-Side</span>
+            <span className="sm:hidden">Split</span>
           </button>
 
           <button
@@ -82,7 +82,7 @@ export function FigmaProfileEditorView() {
             title="Desktop View Fullscreen"
           >
             <Monitor className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Desktop View</span>
+            <span className="hidden sm:inline">Desktop Only</span>
             <span className="sm:hidden">Desktop</span>
           </button>
 
@@ -94,10 +94,10 @@ export function FigmaProfileEditorView() {
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
             }`}
-            title="Mobile Studio View"
+            title="Mobile View with PDF Slider Bar"
           >
             <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Mobile View</span>
+            <span className="hidden sm:inline">Mobile (PDF Slider)</span>
             <span className="sm:hidden">Mobile</span>
           </button>
         </div>
@@ -140,7 +140,7 @@ export function FigmaProfileEditorView() {
         {/* ======================================================================= */}
         {/* 1. SIDE-BY-SIDE VIEW (Default on Desktop)                              */}
         {/* ======================================================================= */}
-        {viewMode === 'side-by-side' && (
+        {viewMode === 'split' && (
           <div className="w-full flex flex-col lg:flex-row h-[calc(100vh-108px)] overflow-hidden">
             
             {/* ── LEFT SIDE: DESKTOP PROFILE EDITOR (60-65% width on desktop) ───── */}
@@ -149,7 +149,7 @@ export function FigmaProfileEditorView() {
               <DesktopProfileContent hideRightPreview={true} />
             </div>
 
-            {/* ── RIGHT SIDE: MOBILE VIEW WITH LIVE CARD SLIDER (35-40% width) ───── */}
+            {/* ── RIGHT SIDE: MOBILE VIEW WITH PDF SLIDER BAR (35-40% width) ────── */}
             <aside className="w-full lg:w-[420px] xl:w-[460px] 2xl:w-[490px] shrink-0 h-full bg-[#050811] flex flex-col items-center justify-start p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
               <MobileSliderProfileView onSave={onGlobalSave} />
             </aside>
@@ -168,7 +168,7 @@ export function FigmaProfileEditorView() {
         )}
 
         {/* ======================================================================= */}
-        {/* 3. MOBILE VIEW ONLY                                                    */}
+        {/* 3. MOBILE (PDF SLIDER) VIEW ONLY                                       */}
         {/* ======================================================================= */}
         {viewMode === 'mobile' && (
           <div className="w-full h-[calc(100vh-108px)] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[#050811]">

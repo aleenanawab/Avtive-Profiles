@@ -3,13 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, UserX, Loader2 } from 'lucide-react';
-import { 
-  ProfileData, 
-  UserSession,
-  DEFAULT_SHARING_SETTINGS,
-  DEFAULT_SECTION_ORDER,
-  DEFAULT_SECTION_VISIBILITY
-} from '@/types/profile';
+import { ProfileData, UserSession } from '@/types/profile';
 import { PublicProfileClient } from './PublicProfileClient';
 
 interface ProfileNotFoundFallbackProps {
@@ -44,55 +38,17 @@ export function ProfileNotFoundFallback({ identifier, session }: ProfileNotFound
         }
       }
 
-      // 2. Comprehensive localStorage scan across all profile keys
-      if (!candidate && typeof window !== 'undefined') {
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && (key.startsWith('avtive_profile_') || key.startsWith('avtive_'))) {
-            try {
-              const val = JSON.parse(localStorage.getItem(key) || '{}');
-              if (
-                val &&
-                (val.slug === identifier ||
-                  val.id === identifier ||
-                  (val.slug && val.slug.toLowerCase() === identifier.toLowerCase()) ||
-                  (val.id && val.id.toLowerCase() === identifier.toLowerCase()))
-              ) {
-                candidate = val;
-                break;
-              }
-            } catch {}
-          }
-        }
-      }
-
       if (candidate) {
-        const normalizedCandidate: ProfileData = {
-          ...candidate,
-          theme: candidate.theme || 'editorial',
-          skills: Array.isArray(candidate.skills) ? candidate.skills : [],
-          projects: Array.isArray(candidate.projects) ? candidate.projects : [],
-          experiences: Array.isArray(candidate.experiences) ? candidate.experiences : Array.isArray((candidate as any).experience) ? (candidate as any).experience : [],
-          education: Array.isArray(candidate.education) ? candidate.education : [],
-          socialLinks: (Array.isArray(candidate.socialLinks) ? candidate.socialLinks : Array.isArray(candidate.socials) ? candidate.socials : []) as any,
-          socials: (Array.isArray(candidate.socials) ? candidate.socials : Array.isArray(candidate.socialLinks) ? candidate.socialLinks : []) as any,
-          customFields: Array.isArray(candidate.customFields) ? candidate.customFields : [],
-          dynamicSections: Array.isArray(candidate.dynamicSections) ? candidate.dynamicSections : [],
-          sharingSettings: candidate.sharingSettings || { ...DEFAULT_SHARING_SETTINGS },
-          sectionOrder: (candidate.sectionOrder && candidate.sectionOrder.length) ? candidate.sectionOrder : [...DEFAULT_SECTION_ORDER],
-          sectionVisibility: candidate.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY }
-        };
-
-        setCachedProfile(normalizedCandidate);
+        setCachedProfile(candidate);
         // Silently sync to server lambda so server DB has it
         fetch('/api/profile/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            profileId: normalizedCandidate.id,
-            profileSlug: normalizedCandidate.slug,
-            slug: normalizedCandidate.slug,
-            updatedData: normalizedCandidate
+            profileId: candidate.id,
+            profileSlug: candidate.slug,
+            slug: candidate.slug,
+            updatedData: candidate
           })
         }).catch(() => {});
       }
