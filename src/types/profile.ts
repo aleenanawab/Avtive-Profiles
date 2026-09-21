@@ -297,7 +297,7 @@ export interface CustomFieldItem {
   order?: number;
 }
 
-export interface DynamicSection<T = any> {
+export interface DynamicSection<T = React.ReactNode> {
   id: string;
   key: string;
   title: string;
@@ -347,6 +347,7 @@ export interface ProfileData {
   coverImage?: string;
   verified?: boolean;
   pronouns?: string;
+  birthday?: string;
   location: string;
   bio?: string;
   about?: string;
