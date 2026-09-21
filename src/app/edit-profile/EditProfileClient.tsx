@@ -50,7 +50,7 @@ function EditProfileInner({ initialProfile, userProfiles }: EditProfileClientPro
     <div className="min-h-screen w-full figma-editor-bg text-white font-sans flex flex-col">
       {/* Sleek Minimalist Top Navigation Bar */}
       <header className="sticky top-0 z-40 w-full bg-[#0B131E]/95 backdrop-blur-xl border-b border-[#23354C]/70 py-2.5 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-[1240px] mx-auto flex items-center justify-between gap-3">
+        <div className="w-full mx-auto flex items-center justify-between gap-3">
           
           <div className="flex items-center gap-3">
             <Link

@@ -35,7 +35,11 @@ import {
 } from '@/types/profile';
 import { LinkedInIcon, GithubIcon, TwitterIcon, WhatsAppIcon } from '@/components/BrandIcons';
 
-export function DesktopProfileContent() {
+export interface DesktopProfileContentProps {
+  hideRightPreview?: boolean;
+}
+
+export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfileContentProps) {
   const { 
     profile, 
     setProfile, 
@@ -1500,59 +1504,61 @@ export function DesktopProfileContent() {
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* RIGHT: Live Interactive Phone Preview Column (Sticky Alongside Content)    */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <aside className="w-[360px] xl:w-[390px] shrink-0 h-full border-l border-white/10 bg-[#060A14] flex flex-col items-center p-4 overflow-y-auto select-none scrollbar-thin">
-        <div className="w-full max-w-[340px] flex items-center justify-between px-3 py-1.5 mb-3 rounded-xl bg-white/5 border border-white/10 text-[11px] font-medium text-slate-400">
-          <span className="flex items-center gap-1.5 text-cyan-400 font-semibold">
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Live Card Preview</span>
-          </span>
-          <span className="flex items-center gap-1 text-emerald-400 font-mono text-[10px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Synchronized
-          </span>
-        </div>
+      {!hideRightPreview && (
+        <aside className="w-[360px] xl:w-[390px] shrink-0 h-full border-l border-white/10 bg-[#060A14] flex flex-col items-center p-4 overflow-y-auto select-none scrollbar-thin">
+          <div className="w-full max-w-[340px] flex items-center justify-between px-3 py-1.5 mb-3 rounded-xl bg-white/5 border border-white/10 text-[11px] font-medium text-slate-400">
+            <span className="flex items-center gap-1.5 text-cyan-400 font-semibold">
+              <Smartphone className="w-3.5 h-3.5" />
+              <span>Live Card Preview</span>
+            </span>
+            <span className="flex items-center gap-1 text-emerald-400 font-mono text-[10px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Synchronized
+            </span>
+          </div>
 
-        <PhonePreview
-          profile={{ ...profile, theme: activeTheme }}
-          isDark={isDark}
-          canEdit={true}
-          onOpenEdit={() => {}}
-          onOpenShare={() => showToast('Share settings accessible in sidebar')}
-          onOpenConnect={() => showToast('Connected!')}
-          onSaveContact={() => showToast('Contact information saved!')}
-          onSaveEdits={async (updated) => {
-            setProfile(updated);
-            showToast('Card updated!');
-          }}
-          hideHeaderLabel={true}
-          onSelectSection={(secKey) => {
-            const map: Record<string, string> = {
-              hero: 'profile',
-              basicInfo: 'profile',
-              about: 'profile',
-              personal: 'personalDetails',
-              personalDetails: 'personalDetails',
-              skills: 'skills',
-              services: 'skills',
-              projects: 'projects',
-              education: 'education',
-              contact: 'contactInfo',
-              contactInfo: 'contactInfo',
-              socials: 'socialLinks',
-              socialLinks: 'socialLinks',
-              experience: 'experience',
-              customFields: 'enhanceProfile',
-              'custom-fields': 'enhanceProfile'
-            };
-            const target = map[secKey] || secKey;
-            setActiveSection(target);
-          }}
-        />
+          <PhonePreview
+            profile={{ ...profile, theme: activeTheme }}
+            isDark={isDark}
+            canEdit={true}
+            onOpenEdit={() => {}}
+            onOpenShare={() => showToast('Share settings accessible in sidebar')}
+            onOpenConnect={() => showToast('Connected!')}
+            onSaveContact={() => showToast('Contact information saved!')}
+            onSaveEdits={async (updated) => {
+              setProfile(updated);
+              showToast('Card updated!');
+            }}
+            hideHeaderLabel={true}
+            onSelectSection={(secKey) => {
+              const map: Record<string, string> = {
+                hero: 'profile',
+                basicInfo: 'profile',
+                about: 'profile',
+                personal: 'personalDetails',
+                personalDetails: 'personalDetails',
+                skills: 'skills',
+                services: 'skills',
+                projects: 'projects',
+                education: 'education',
+                contact: 'contactInfo',
+                contactInfo: 'contactInfo',
+                socials: 'socialLinks',
+                socialLinks: 'socialLinks',
+                experience: 'experience',
+                customFields: 'enhanceProfile',
+                'custom-fields': 'enhanceProfile'
+              };
+              const target = map[secKey] || secKey;
+              setActiveSection(target);
+            }}
+          />
 
-        <p className="text-[10px] text-slate-500 text-center mt-3 max-w-[300px]">
-          Click any element on the card to navigate directly to its editor section on the left.
-        </p>
-      </aside>
+          <p className="text-[10px] text-slate-500 text-center mt-3 max-w-[300px]">
+            Click any element on the card to navigate directly to its editor section on the left.
+          </p>
+        </aside>
+      )}
 
     </div>
   );
