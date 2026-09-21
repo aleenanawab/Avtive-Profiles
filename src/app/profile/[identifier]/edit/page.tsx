@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { redirect, notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser } from '@/lib/db';
 import { EditProfileClient } from '@/app/edit-profile/EditProfileClient';
@@ -59,7 +59,7 @@ export default async function ProfileIdentifierEditPage({ params }: ProfileIdent
   const allUserProfiles = await getProfilesByUserId(session.id);
 
   return (
-    <main className="min-h-screen w-full bg-[#080D1A] text-slate-100 font-sans">
+    <main className="min-h-screen w-full figma-editor-bg text-white font-sans">
       <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-slate-400">Loading profile editor...</div>}>
         <EditProfileClient 
           initialProfile={targetProfile} 
