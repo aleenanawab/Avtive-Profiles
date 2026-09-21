@@ -18,9 +18,9 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
   useMemo,
-  useRef,
 } from 'react';
 import {
   ProfileData,
@@ -57,7 +57,7 @@ export function buildSocialLinksFromProfile(p: ProfileData): DraggableLinkItem[]
       : null;
 
   if (safeSocials && safeSocials.length > 0) {
-    return safeSocials.map((s: any, idx: number) => {
+    return safeSocials.map((s: { platform?: string; label?: string; url?: string; visible?: boolean }, idx: number) => {
       const platform = (s.platform || 'website') as DraggableLinkItem['platform'];
       return {
         id: `link-${platform}-${idx}`,
@@ -143,7 +143,7 @@ export interface ProfileEditorContextValue {
   // ── Derived ───────────────────────────────────────────────────────────────
   fullName: string;
   liveProfile: ProfileData;          // use this for <AvtiveDigitalCard> / <PhonePreview>
-  activeSocialsPayload: { platform: any; url: string; label: string }[];
+  activeSocialsPayload: { platform: string; url: string; label: string }[];
 
   // ── Upload / Save status ─────────────────────────────────────────────────
   isUploadingAvatar: boolean;
@@ -357,7 +357,7 @@ export function ProfileEditorProvider({
     () =>
       socialLinks
         .filter((s) => s.visible && s.url.trim())
-        .map((s) => ({ platform: s.platform as any, url: s.url, label: s.title })),
+        .map((s) => ({ platform: s.platform as string, url: s.url, label: s.title })),
     [socialLinks]
   );
 
@@ -788,7 +788,7 @@ export function ProfileEditorProvider({
       setTimeout(() => {
         setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
       }, 4000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Save changes error:', err);
       setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
     } finally {
@@ -848,7 +848,7 @@ export function ProfileEditorProvider({
     if (key === 'location' && typeof val === 'string') setLocation(val);
     if (key === 'avatar' && typeof val === 'string') setAvatar(val);
     if (key === 'coverImage' && typeof val === 'string') setCoverImage(val);
-    if (key === 'skills' && Array.isArray(val)) setSkills(val.map(s => typeof s === 'string' ? s : s.name));
+    if (key === 'skills' && Array.isArray(val)) setSkills((val as (string | { name: string })[]).map(s => typeof s === 'string' ? s : s.name));
     if (key === 'about' && typeof val === 'string') setAbout(val);
     if (key === 'projects' && Array.isArray(val)) setProjects(val as ProjectItem[]);
     if (key === 'experiences' && Array.isArray(val)) setExperiences(val as ExperienceItem[]);
