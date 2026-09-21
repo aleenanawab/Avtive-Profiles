@@ -384,6 +384,7 @@ export async function createProfileForUser(
     about: data.about?.trim() || data.fullBio?.trim() || 'Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.',
     shortBio: data.shortBio?.trim() || data.bio?.trim() || 'Welcome to my digital profile on Avtive.',
     fullBio: data.fullBio?.trim() || data.about?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
+    tagline: data.tagline?.trim() || '',
     phone: data.phone?.trim() || '',
     whatsapp: data.whatsapp?.trim() || data.phone?.trim() || '',
     theme: (data.theme && data.theme !== 'default' ? data.theme : 'editorial') as ProfileTheme,

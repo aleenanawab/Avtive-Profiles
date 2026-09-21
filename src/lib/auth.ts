@@ -4,8 +4,24 @@ import { cookies } from 'next/headers';
 import { UserSession } from '@/types/profile';
 
 const SESSION_COOKIE_NAME = 'avtive_session';
+export const RETURNING_USER_COOKIE_NAME = 'avtive_returning_user';
+export const DUMMY_BCRYPT_HASH = '$2a$10$wN1Q/X8Oa6xG/G9x0.GzOuq8Z9y2j4yJz/uVl3IqNfO1.tJ5bI5Ki';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'avtive-super-secret-key-prod-2026-secure-session-auth';
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+export function setReturningUserCookie(response?: any): void {
+  if (response && response.cookies) {
+    try {
+      response.cookies.set(RETURNING_USER_COOKIE_NAME, 'true', {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365
+      });
+    } catch {}
+  }
+}
 
 /**
  * Hash plain-text password using bcryptjs
@@ -96,73 +112,79 @@ export async function getSession(): Promise<UserSession | null> {
 /**
  * Server-side helper to set session cookie on response
  */
-export async function setSessionCookie(user: UserSession): Promise<void> {
+export async function setSessionCookie(user: UserSession, response?: any): Promise<string> {
   const token = createSessionToken(user);
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: SESSION_DURATION_SECONDS
-  });
-}
-
-/**
- * Server-side helper to clear session cookie on logout
- */
-export async function clearSessionCookie(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 0
-  });
-}
-
-export const RETURNING_USER_COOKIE_NAME = 'avtive_returning_user';
-
-/**
- * Valid dummy bcrypt hash used for constant-time comparisons when a user record is not found.
- * Prevents timing attacks for email enumeration during login attempts.
- */
-export const DUMMY_BCRYPT_HASH = '$2a$10$wT8vM9hN2sL5qE3yU7kI.OFmC5nN7mE3gA1fJ8lP0kQ5rT2vW4xYa';
-
-/**
- * Server-side helper to record that a user has previously created or logged into an account.
- */
-export async function setReturningUserCookie(): Promise<void> {
   try {
     const cookieStore = await cookies();
-    cookieStore.set(RETURNING_USER_COOKIE_NAME, 'true', {
-      httpOnly: false,
+    cookieStore.set(SESSION_COOKIE_NAME, token, {
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 365 // 1 year
+      maxAge: SESSION_DURATION_SECONDS
     });
   } catch {}
+
+  if (response && response.cookies) {
+    try {
+      response.cookies.set(SESSION_COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: SESSION_DURATION_SECONDS
+      });
+    } catch {}
+  }
+
+  return token;
 }
 
 /**
- * Server-side helper to check if this client is a returning user.
+ * Server-side helper to clear session cookie and all profile cached cookies on logout
  */
-export async function isReturningUser(): Promise<boolean> {
+export async function clearSessionCookie(response?: any): Promise<void> {
+  const cookiesToClear = [
+    SESSION_COOKIE_NAME,
+    'avtive_user_cache',
+    'avtive_last_profile',
+    'avtive_prof_count'
+  ];
+
+  for (let i = 0; i <= 20; i++) {
+    cookiesToClear.push(`avtive_prof_${i}`);
+  }
+
   try {
     const cookieStore = await cookies();
-    const returningCookie = cookieStore.get(RETURNING_USER_COOKIE_NAME);
-    if (returningCookie?.value === 'true') {
-      return true;
+    for (const cookieName of cookiesToClear) {
+      cookieStore.set(cookieName, '', {
+        httpOnly: cookieName === SESSION_COOKIE_NAME || cookieName === 'avtive_user_cache',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 0,
+        expires: new Date(0)
+      });
+      cookieStore.delete(cookieName);
     }
-    // Also consider legacy user_cache as indicator of returning user
-    const cacheCookie = cookieStore.get('avtive_user_cache');
-    if (cacheCookie?.value) {
-      return true;
-    }
-    return false;
-  } catch {
-    return false;
+  } catch {}
+
+  if (response && response.cookies) {
+    try {
+      for (const cookieName of cookiesToClear) {
+        response.cookies.set(cookieName, '', {
+          httpOnly: cookieName === SESSION_COOKIE_NAME || cookieName === 'avtive_user_cache',
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 0,
+          expires: new Date(0)
+        });
+        response.cookies.delete(cookieName);
+      }
+    } catch {}
   }
 }
+
+

@@ -47,14 +47,10 @@ import {
   ProfileData,
   ProfileTheme,
   ProjectItem,
-  ExperienceItem,
-  EducationItem,
-  SharingSettings,
-  CustomFieldItem,
-  DynamicSection,
   DEFAULT_SECTION_ORDER,
-  DEFAULT_SECTION_VISIBILITY
+  DEFAULT_SECTION_VISIBILITY,
 } from '@/types/profile';
+import { useProfileEditor, DraggableLinkItem as CtxDraggableLinkItem } from '@/context/ProfileEditorContext';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { LinkedInIcon, GithubIcon, TwitterIcon, WhatsAppIcon } from '@/components/BrandIcons';
 
@@ -65,16 +61,10 @@ export interface SlidingEditorPanelProps {
   userProfiles?: ProfileData[];
   onLiveUpdate?: (updatedProfile: ProfileData) => void;
   onSaveSuccess?: (savedProfile: ProfileData) => void;
-  activeSectionTarget?: { sectionKey: string; fieldKey?: string; timestamp: number } | null;
 }
 
-interface DraggableLinkItem {
-  id: string;
-  platform: 'github' | 'linkedin' | 'website' | 'twitter' | 'whatsapp' | 'other';
-  title: string;
-  url: string;
-  visible: boolean;
-}
+// Use context's DraggableLinkItem type to avoid local duplication
+type DraggableLinkItem = CtxDraggableLinkItem;
 
 const SECTION_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   hero: { label: 'Hero & Identity Header', icon: User, color: 'text-blue-500' },
@@ -303,6 +293,8 @@ function DraggableLinkCard({
   );
 }
 
+import { ProfileSectionEditor } from '@/components/profiles/ProfileSectionEditor';
+
 function DraggableSectionItem({
   sectionKey,
   label,
@@ -313,7 +305,10 @@ function DraggableSectionItem({
   onMoveUp,
   onMoveDown,
   isFirst,
-  isLast
+  isLast,
+  isExpanded,
+  onToggleExpand,
+  children
 }: {
   sectionKey: string;
   label: string;
@@ -325,6 +320,9 @@ function DraggableSectionItem({
   onMoveDown: () => void;
   isFirst: boolean;
   isLast: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
+  children?: React.ReactNode;
 }) {
   const dragControls = useDragControls();
 
@@ -334,284 +332,137 @@ function DraggableSectionItem({
       id={sectionKey}
       dragListener={false}
       dragControls={dragControls}
-      layout
-      layoutId={`section-item-${sectionKey}`}
-      className={`group px-2.5 py-2 rounded-xl border flex items-center justify-between gap-2 transition-all select-none cursor-default ${
+      className={`group rounded-xl border transition-all select-none overflow-hidden ${
         isVisible
           ? 'bg-white dark:bg-white/5 border-slate-200/90 dark:border-white/10 shadow-2xs hover:border-slate-300 dark:hover:border-white/20'
-          : 'bg-slate-100/50 dark:bg-black/25 border-dashed border-slate-200/60 dark:border-white/5 opacity-70'
+          : 'bg-slate-100/50 dark:bg-black/25 border-dashed border-slate-200/60 dark:border-white/5 opacity-60'
       }`}
-      whileDrag={{
-        scale: 1.02,
-        boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
-        zIndex: 50,
-        background: isVisible ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.4)'
-      }}
     >
-      {/* Left: Drag Handle + Section Icon + Section Name */}
-      <div className="flex items-center gap-2 min-w-0 flex-1">
-        {/* Drag Handle – clearly styled so users know it's draggable */}
-        <button
-          type="button"
-          onPointerDown={(e) => dragControls.start(e)}
-          className="p-1 -ml-1 rounded-md text-slate-300 dark:text-zinc-600 hover:text-slate-600 dark:hover:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10 cursor-grab active:cursor-grabbing shrink-0 transition-all group/handle"
-          title="Drag to rearrange section order"
-          aria-label="Drag handle"
-        >
-          <GripVertical className="w-4 h-4 group-hover/handle:text-indigo-500 dark:group-hover/handle:text-indigo-400 transition-colors" />
-        </button>
-
-        {/* Small Section Icon */}
+      {/* Row Header */}
+      <div className="px-2.5 py-2 flex items-center justify-between gap-2">
+        {/* Left: Drag Handle + Section Icon + Section Name */}
         <div
-          className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-            isVisible
-              ? 'bg-slate-100 dark:bg-white/10'
-              : 'bg-slate-200/50 dark:bg-white/5'
-          }`}
+          onClick={onToggleExpand}
+          className={`flex items-center gap-2 min-w-0 flex-1 ${onToggleExpand ? 'cursor-pointer' : ''}`}
         >
-          <Icon className={`w-3.5 h-3.5 ${isVisible ? iconColor : 'text-slate-400 dark:text-zinc-500'}`} />
-        </div>
-
-        {/* Section Name */}
-        <span
-          className={`text-xs font-medium truncate transition-colors ${
-            isVisible
-              ? 'text-slate-900 dark:text-zinc-100 font-semibold'
-              : 'text-slate-400 dark:text-zinc-500'
-          }`}
-        >
-          {label}
-        </span>
-      </div>
-
-      {/* Right Controls: Micro Up/Down Arrows + Eye Visibility Control */}
-      <div className="flex items-center gap-1 shrink-0">
-        {/* Subtle Up/Down arrows for non-mouse or keyboard accessibility */}
-        <div className="hidden sm:flex items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
-          <button
-            type="button"
-            onClick={onMoveUp}
-            disabled={isFirst}
-            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 disabled:hover:text-slate-400 cursor-pointer"
-            title="Move up"
-          >
-            <ArrowUp className="w-3 h-3" />
-          </button>
-          <button
-            type="button"
-            onClick={onMoveDown}
-            disabled={isLast}
-            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 disabled:hover:text-slate-400 cursor-pointer"
-            title="Move down"
-          >
-            <ArrowDown className="w-3 h-3" />
-          </button>
-        </div>
-
-        {/* Eye Visibility Control */}
-        <button
-          type="button"
-          onClick={onToggleVisibility}
-          className={`p-1.5 rounded-lg transition-all cursor-pointer ${
-            isVisible
-              ? 'text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
-              : 'text-slate-400 hover:text-slate-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-slate-200/50 dark:hover:bg-white/5'
-          }`}
-          title={isVisible ? 'Visible – click to hide' : 'Hidden – click to show'}
-          aria-label={isVisible ? `Hide ${label}` : `Show ${label}`}
-        >
-          {isVisible ? (
-            <Eye className="w-4 h-4" />
-          ) : (
-            <EyeOff className="w-4 h-4" />
-          )}
-        </button>
-      </div>
-    </Reorder.Item>
-  );
-}
-
-function DraggableCustomFieldItem({
-  field,
-  index,
-  total,
-  onUpdate,
-  onDelete,
-  onMoveUp,
-  onMoveDown,
-  isHighlighted = false
-}: {
-  field: CustomFieldItem;
-  index: number;
-  total: number;
-  onUpdate: (patch: Partial<CustomFieldItem>) => void;
-  onDelete: () => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
-  isHighlighted?: boolean;
-}) {
-  const dragControls = useDragControls();
-  const isVisible = field.visible !== false;
-  const isMultiLine = field.type === 'markdown' || (field.value && field.value.includes('\n'));
-
-  return (
-    <Reorder.Item
-      value={field}
-      id={`cf-item-${field.id}`}
-      dragListener={false}
-      dragControls={dragControls}
-      layout
-      layoutId={`custom-field-item-${field.id}`}
-      className={`p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-white/5 border transition-all flex flex-col gap-2.5 shadow-2xs ${
-        isHighlighted
-          ? 'ring-2 ring-purple-500 shadow-lg border-purple-400 bg-purple-50/20'
-          : isVisible
-          ? 'border-slate-200 dark:border-white/10'
-          : 'border-slate-200/50 dark:border-white/5 opacity-60 bg-slate-50/50 dark:bg-black/20'
-      }`}
-      whileDrag={{
-        scale: 1.02,
-        boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
-        zIndex: 50,
-        background: isVisible ? 'rgba(255,255,255,0.98)' : 'rgba(0,0,0,0.5)'
-      }}
-    >
-      {/* Top row: Drag Handle + Move Arrows + Field # + Eye Toggle + Delete */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
           {/* Drag Handle */}
           <button
             type="button"
-            onPointerDown={(e) => dragControls.start(e)}
-            className="p-1 -ml-1 rounded-md text-slate-300 dark:text-zinc-600 hover:text-slate-600 dark:hover:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10 cursor-grab active:cursor-grabbing shrink-0 transition-all group/handle"
-            title="Drag to rearrange custom field order"
-            aria-label="Drag handle"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              dragControls.start(e);
+            }}
+            className="p-1 -ml-1 text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-grab active:cursor-grabbing shrink-0 transition-colors"
+            title="Drag to rearrange section"
           >
-            <GripVertical className="w-4 h-4 group-hover/handle:text-purple-500 transition-colors" />
+            <GripVertical className="w-3.5 h-3.5" />
           </button>
 
-          {/* Micro Up/Down Arrows */}
-          <div className="flex items-center gap-0.5">
+          {/* Small Section Icon */}
+          <div
+            className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+              isVisible
+                ? 'bg-slate-100 dark:bg-white/10'
+                : 'bg-slate-200/50 dark:bg-white/5'
+            }`}
+          >
+            <Icon className={`w-3.5 h-3.5 ${isVisible ? iconColor : 'text-slate-400 dark:text-zinc-500'}`} />
+          </div>
+
+          {/* Section Name */}
+          <span
+            className={`text-xs font-medium truncate transition-colors ${
+              isVisible
+                ? 'text-slate-900 dark:text-zinc-100 font-semibold'
+                : 'text-slate-400 dark:text-zinc-500'
+            }`}
+          >
+            {label}
+          </span>
+
+          {onToggleExpand && (
+            <span className={`text-[10px] px-1.5 py-0.2 rounded font-medium ml-1 transition-colors ${
+              isExpanded
+                ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 font-semibold'
+                : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/60'
+            }`}>
+              {isExpanded ? 'Expanded' : 'Edit inline'}
+            </span>
+          )}
+        </div>
+
+        {/* Right Controls: Micro Up/Down Arrows + Expand Chevron + Eye Visibility Control */}
+        <div className="flex items-center gap-1 shrink-0">
+          {/* Subtle Up/Down arrows for keyboard accessibility */}
+          <div className="hidden sm:flex items-center opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
             <button
               type="button"
               onClick={onMoveUp}
-              disabled={index === 0}
-              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
-              title="Move Up"
+              disabled={isFirst}
+              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 disabled:hover:text-slate-400 cursor-pointer"
+              title="Move up"
             >
-              <ArrowUp className="w-3.5 h-3.5" />
+              <ArrowUp className="w-3 h-3" />
             </button>
             <button
               type="button"
               onClick={onMoveDown}
-              disabled={index === total - 1}
-              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
-              title="Move Down"
+              disabled={isLast}
+              className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 disabled:hover:text-slate-400 cursor-pointer"
+              title="Move down"
             >
-              <ArrowDown className="w-3.5 h-3.5" />
+              <ArrowDown className="w-3 h-3" />
             </button>
           </div>
 
-          <span className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 font-mono">
-            #{index + 1}
-          </span>
-        </div>
+          {/* Expand Toggle Button */}
+          {onToggleExpand && (
+            <button
+              type="button"
+              onClick={onToggleExpand}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                isExpanded
+                  ? 'bg-slate-200/80 dark:bg-white/15 text-slate-900 dark:text-white'
+                  : 'text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
+              }`}
+              title={isExpanded ? 'Collapse section' : 'Expand section editor inline'}
+              aria-label={isExpanded ? `Collapse ${label}` : `Expand ${label}`}
+            >
+              {isExpanded ? (
+                <ChevronUp className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronDown className="w-3.5 h-3.5" />
+              )}
+            </button>
+          )}
 
-        <div className="flex items-center gap-1 shrink-0">
           {/* Eye Visibility Control */}
           <button
             type="button"
-            onClick={() => onUpdate({ visible: !isVisible })}
+            onClick={onToggleVisibility}
             className={`p-1.5 rounded-lg transition-all cursor-pointer ${
               isVisible
-                ? 'text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
+                ? 'text-slate-700 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
                 : 'text-slate-400 hover:text-slate-600 dark:text-zinc-500 dark:hover:text-zinc-300 hover:bg-slate-200/50 dark:hover:bg-white/5'
             }`}
-            title={isVisible ? 'Visible on profile (click to hide)' : 'Hidden from profile (click to show)'}
-            aria-label={isVisible ? 'Hide custom field' : 'Show custom field'}
+            title={isVisible ? 'Visible (Click to hide)' : 'Hidden (Click to show)'}
+            aria-label={isVisible ? `Hide ${label}` : `Show ${label}`}
           >
-            {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-          </button>
-
-          {/* Delete Button */}
-          <button
-            type="button"
-            onClick={onDelete}
-            className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
-            title="Delete custom field"
-          >
-            <Trash2 className="w-4 h-4" />
+            {isVisible ? (
+              <Eye className="w-4 h-4 text-emerald-500 hover:text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <EyeOff className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+            )}
           </button>
         </div>
       </div>
 
-      {/* Inputs: Field Title & Format */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <div className="sm:col-span-2">
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 mb-1">
-            Field Title
-          </label>
-          <input
-            type="text"
-            value={field.label || (field as any).title || ''}
-            onChange={(e) => onUpdate({ label: e.target.value, title: e.target.value } as any)}
-            placeholder="e.g. Publications, Office Hours, Discord"
-            className="figma-input w-full px-2.5 py-1.5 text-xs font-semibold focus:outline-hidden focus:ring-1 focus:ring-purple-400 dark:focus:ring-purple-400"
-          />
+      {/* Inline Expanded Content Container (Directly Beneath Row) */}
+      {isExpanded && children && (
+        <div className="px-3 pb-3 pt-1 border-t border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-black/25">
+          {children}
         </div>
-
-        <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 mb-1">
-            Format / Type
-          </label>
-          <select
-            value={field.type || 'text'}
-            onChange={(e) => onUpdate({ type: e.target.value as any })}
-            className="figma-input w-full px-2 py-1.5 text-[11px] bg-slate-50 dark:bg-[#191c25] focus:outline-hidden cursor-pointer"
-            title="Field Format"
-          >
-            <option value="text">Text</option>
-            <option value="markdown">Paragraph / Note</option>
-            <option value="link">Link (URL)</option>
-            <option value="email">Email</option>
-            <option value="phone">Phone</option>
-            <option value="number">Number</option>
-            <option value="date">Date</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Field Content */}
-      <div>
-        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400 mb-1">
-          Field Content
-        </label>
-        {field.type === 'markdown' || isMultiLine ? (
-          <textarea
-            rows={3}
-            value={field.value || (field as any).content || ''}
-            onChange={(e) => onUpdate({ value: e.target.value, content: e.target.value } as any)}
-            placeholder="Enter field content, description, details, or multiline text..."
-            className="figma-input w-full px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-purple-400 dark:focus:ring-purple-400 resize-y leading-relaxed"
-          />
-        ) : (
-          <input
-            type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
-            value={field.value || (field as any).content || ''}
-            onChange={(e) => onUpdate({ value: e.target.value, content: e.target.value } as any)}
-            placeholder={
-              field.type === 'link'
-                ? 'https://...'
-                : field.type === 'email'
-                ? 'contact@domain.com'
-                : field.type === 'phone'
-                ? '+1 (555) 000-0000'
-                : 'Enter field content, value, or link...'
-            }
-            className="figma-input w-full px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-purple-400 dark:focus:ring-purple-400"
-          />
-        )}
-      </div>
+      )}
     </Reorder.Item>
   );
 }
@@ -622,744 +473,167 @@ export function SlidingEditorPanel({
   initialProfile,
   userProfiles,
   onLiveUpdate,
-  onSaveSuccess,
-  activeSectionTarget
+  onSaveSuccess
 }: SlidingEditorPanelProps) {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Active Profile State
-  const [profile, setProfile] = useState<ProfileData>(initialProfile);
-  const [activeTheme, setActiveTheme] = useState<ProfileTheme>(
-    initialProfile.theme === 'default' ? 'editorial' : (initialProfile.theme || 'editorial')
-  );
-  const [highlightedField, setHighlightedField] = useState<string | null>(null);
+  // ── All shared profile state comes from the single context ────────────────
+  const {
+    profile,
+    activeTheme, setActiveTheme,
+    firstName, setFirstName,
+    secondName, setSecondName,
+    username, setUsername,
+    professionalTitle, setProfessionalTitle,
+    bio, setBio,
+    company, setCompany,
+    location, setLocation,
+    avatar, setAvatar,
+    coverImage, setCoverImage,
+    skills, setSkills,
+    about, setAbout,
+    projects, setProjects,
+    experiences, setExperiences,
+    education, setEducation,
+    socialLinks, setSocialLinks,
+    customFields, setCustomFields,
+    dynamicSections, setDynamicSections,
+    sectionOrder, setSectionOrder,
+    sectionVisibility, setSectionVisibility,
+    sharingSettings, setSharingSettings,
+    isUploadingAvatar,
+    isUploadingCover,
+    isSaving,
+    statusMessage,
+    copySuccess,
+    fullName,
+    currentActiveIdentifier,
+    publicProfileUrl,
+    handleAvatarUpload,
+    handleCoverUpload,
+    handleAddLinkItem,
+    handleUpdateLink,
+    handleDeleteLink,
+    handleMoveLink,
+    handleAddCustomField,
+    handleUpdateCustomField,
+    handleDeleteCustomField,
+    handleMoveCustomField,
+    handleMoveSection,
+    handleToggleSectionVisibility,
+    handleInstantToggleSection,
+    toggleVisibilityField,
+    handleCopyLink,
+    handleSaveChanges,
+    isConfirmed,
+    setIsConfirmed,
+    handleSwitchToProfile,
+    handleProfileSectionLiveUpdate,
+    handleProfileSectionSaveSuccess,
+    liveProfile,
+  } = useProfileEditor();
 
-  // 1. Basic Info
-  const [firstName, setFirstName] = useState(
-    initialProfile.firstName || (initialProfile.name ? initialProfile.name.split(' ')[0] : 'Aleena')
-  );
-  const [secondName, setSecondName] = useState(
-    initialProfile.secondName || initialProfile.lastName || (initialProfile.name ? initialProfile.name.split(' ').slice(1).join(' ') : 'Nawab')
-  );
-  const [username, setUsername] = useState(
-    initialProfile.username || initialProfile.slug || ''
-  );
-  const [professionalTitle, setProfessionalTitle] = useState(
-    initialProfile.professionalTitle || initialProfile.designation || initialProfile.profession || 'Full Stack Engineer'
-  );
-  const [bio, setBio] = useState(
-    initialProfile.bio || initialProfile.shortBio || 'Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.'
-  );
-  const [company, setCompany] = useState(initialProfile.company || 'Avtive');
-  const [location, setLocation] = useState(initialProfile.location || 'Global');
-
-  // Images
-  const [avatar, setAvatar] = useState(
-    initialProfile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'
-  );
-  const [coverImage, setCoverImage] = useState(
-    initialProfile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'
-  );
-
-  // 2. Skills
-  const initialSkillsList: string[] = Array.isArray(initialProfile.skills)
-    ? initialProfile.skills.map((s) => (typeof s === 'string' ? s : s.name))
-    : ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'];
-  const [skills, setSkills] = useState<string[]>(initialSkillsList);
+  // 2. Skills (panel-only input state)
   const [newSkillInput, setNewSkillInput] = useState('');
-
-  // 3. About
-  const [about, setAbout] = useState(
-    initialProfile.about || initialProfile.fullBio || 'Hello! I am a full stack software engineer and product designer specializing in high-performance web applications, responsive user interfaces, and modular design systems.'
-  );
-
-  // 4. Projects
-  const initialProjectsList: ProjectItem[] = Array.isArray(initialProfile.projects) && initialProfile.projects.length > 0
-    ? initialProfile.projects
-    : [
-        {
-          id: 'proj-1',
-          title: 'Avtive Profiles Platform',
-          description: 'Verified digital identity cards and granular privacy profiles built with Next.js and Tailwind CSS.',
-          tags: ['Next.js', 'TypeScript', 'Tailwind CSS'],
-          link: 'https://www.avtive.app',
-          image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop',
-          category: 'Web App'
-        }
-      ];
-  const [projects, setProjects] = useState<ProjectItem[]>(initialProjectsList);
   const [isInlineProjectOpen, setIsInlineProjectOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
-  const [projectForm, setProjectForm] = useState({
-    title: '',
-    description: '',
-    tags: '',
-    link: '',
-    image: ''
-  });
+  const [projectForm, setProjectForm] = useState({ title: '', description: '', tags: '', link: '', image: '' });
 
-  // 5. Experience & Education
-  const initialExpList: ExperienceItem[] = Array.isArray(initialProfile.experiences || initialProfile.experience)
-    ? (initialProfile.experiences || initialProfile.experience || [])
-    : [];
-  const [experiences, setExperiences] = useState<ExperienceItem[]>(initialExpList);
-
-  const initialEduList: EducationItem[] = Array.isArray(initialProfile.education)
-    ? initialProfile.education
-    : [];
-  const [education, setEducation] = useState<EducationItem[]>(initialEduList);
-
-  // 6. Draggable Social Links
-  const [socialLinks, setSocialLinks] = useState<DraggableLinkItem[]>(() =>
-    buildSocialLinksFromProfile(initialProfile)
-  );
-
-  // 7. Dynamic Custom Fields
-  const [customFields, setCustomFields] = useState<CustomFieldItem[]>(() =>
-    Array.isArray(initialProfile.customFields) ? initialProfile.customFields : []
-  );
-
-  // 8. Dynamic Sections
-  const [dynamicSections, setDynamicSections] = useState<DynamicSection[]>(() =>
-    Array.isArray(initialProfile.dynamicSections) ? initialProfile.dynamicSections : []
-  );
-
-  // 9. Section Ordering & Independent Section Visibility
-  const [sectionOrder, setSectionOrder] = useState<string[]>(() =>
-    Array.isArray(initialProfile.sectionOrder) && initialProfile.sectionOrder.length > 0
-      ? initialProfile.sectionOrder
-      : DEFAULT_SECTION_ORDER
-  );
-
-  const [sectionVisibility, setSectionVisibility] = useState<Record<string, boolean>>(() =>
-    initialProfile.sectionVisibility && Object.keys(initialProfile.sectionVisibility).length > 0
-      ? initialProfile.sectionVisibility
-      : DEFAULT_SECTION_VISIBILITY
-  );
-
-  // 10. Sharing & Visibility Controls
-  const [sharingSettings, setSharingSettings] = useState<SharingSettings>(
-    initialProfile.sharingSettings || {
-      photo: true,
-      nameAndTitle: true,
-      bio: true,
-      skills: true,
-      projects: true,
-      experience: true,
-      education: true,
-      socialLinks: true,
-      email: false,
-      phone: false
-    }
-  );
-  const [copySuccess, setCopySuccess] = useState(false);
-
-  // UI / Upload States
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-  const [isUploadingCover, setIsUploadingCover] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  // Accordion Section Toggle State
   const [expandedSections, setExpandedSections] = useState({
-    basicInfo: true,
-    skills: true,
-    about: true,
-    projects: true,
-    socials: true,
-    customFields: true,
-    sectionsLayout: false,
-    share: true
+    basicInfo: true, skills: true, about: true, projects: true,
+    socials: true, customFields: true, sectionsLayout: false, share: true
   });
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  const [expandedInlineSectionKey, setExpandedInlineSectionKey] = useState<string | null>('hero');
+  const [inlineProfileMode, setInlineProfileMode] = useState<'edit' | 'add'>('edit');
+
+  const handleToggleInlineSection = (sectionKey: string, targetMode?: 'edit' | 'add') => {
+    if (targetMode) {
+      setInlineProfileMode(targetMode);
+      setExpandedInlineSectionKey(sectionKey);
+      return;
+    }
+    setExpandedInlineSectionKey((prev) => (prev === sectionKey ? null : sectionKey));
   };
+
+  const toggleSection = (section: keyof typeof expandedSections) =>
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
 
   const scrollToSection = (sectionKey: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({ ...prev, [sectionKey]: true }));
     const el = document.getElementById(`section-${sectionKey}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // Sync with initialProfile if changed externally
-  useEffect(() => {
-    if (initialProfile) {
-      setProfile(initialProfile);
-    }
-  }, [initialProfile.id, initialProfile.slug]);
-
-  // Handle activeSectionTarget from Live Preview interactions
-  useEffect(() => {
-    if (!activeSectionTarget) return;
-    const { sectionKey, fieldKey } = activeSectionTarget;
-
-    const validSectionKeys: Record<string, keyof typeof expandedSections> = {
-      basicInfo: 'basicInfo',
-      skills: 'skills',
-      about: 'about',
-      projects: 'projects',
-      socials: 'socials',
-      customFields: 'customFields',
-      'custom-fields': 'customFields',
-      sectionsLayout: 'sectionsLayout',
-      share: 'share'
-    };
-
-    const targetSection = validSectionKeys[sectionKey] || 'basicInfo';
-
-    // 1. Expand the target section
-    setExpandedSections((prev) => ({
-      ...prev,
-      [targetSection]: true
-    }));
-
-    // 2. Set active highlight effect (2.5s pulse)
-    const highlightKey = fieldKey || targetSection;
-    setHighlightedField(highlightKey);
-    const timer = setTimeout(() => {
-      setHighlightedField(null);
-    }, 2500);
-
-    // 3. Scroll to the element smoothly & focus if input
-    setTimeout(() => {
-      let targetEl: HTMLElement | null = null;
-      if (fieldKey) {
-        targetEl = document.getElementById(`input-${fieldKey}`) ||
-                   document.getElementById(`btn-${fieldKey}`) ||
-                   document.getElementById(`cf-item-${fieldKey}`) ||
-                   document.getElementById(fieldKey);
-      }
-      if (!targetEl) {
-        targetEl = document.getElementById(`section-${targetSection}`);
-      }
-
-      if (targetEl) {
-        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (targetEl instanceof HTMLInputElement || targetEl instanceof HTMLTextAreaElement) {
-          targetEl.focus();
-        } else {
-          const inner = targetEl.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
-          if (inner) inner.focus();
-        }
-      }
-    }, 180);
-
-    return () => clearTimeout(timer);
-  }, [activeSectionTarget]);
-
-  // Full Name
-  const fullName = `${firstName} ${secondName}`.trim();
-
-  // Compute Live Profile & notify parent in real-time
-  const activeSocialsPayload = socialLinks
-    .filter((s) => s.visible && s.url.trim())
-    .map((s) => ({ platform: s.platform as any, url: s.url, label: s.title }));
-
-  const currentLiveProfile: ProfileData = {
-    ...profile,
-    username: username.trim(),
-    name: fullName,
-    firstName: firstName.trim(),
-    secondName: secondName.trim(),
-    lastName: secondName.trim(),
-    professionalTitle: professionalTitle.trim(),
-    designation: professionalTitle.trim(),
-    profession: professionalTitle.trim(),
-    bio: bio.trim(),
-    shortBio: bio.trim(),
-    about: about.trim(),
-    fullBio: about.trim(),
-    company: company.trim(),
-    location: location.trim(),
-    theme: activeTheme,
-    avatar,
-    coverImage,
-    skills,
-    projects,
-    experience: experiences,
-    experiences: experiences,
-    education,
-    socials: activeSocialsPayload,
-    socialLinks: activeSocialsPayload,
-    customFields,
-    dynamicSections,
-    sectionOrder,
-    sectionVisibility,
-    sharingSettings: sharingSettings
-  };
-
-  // Trigger onLiveUpdate on any field change
-  useEffect(() => {
-    onLiveUpdate?.(currentLiveProfile);
-  }, [
-    firstName,
-    secondName,
-    username,
-    professionalTitle,
-    bio,
-    about,
-    company,
-    location,
-    activeTheme,
-    avatar,
-    coverImage,
-    skills,
-    projects,
-    socialLinks,
-    customFields,
-    sectionOrder,
-    sectionVisibility,
-    sharingSettings
-  ]);
-
-  // Skills Handlers
+  // ── Skills (panel-local handlers that delegate to context setters) ─────────
   const handleAddSkill = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = newSkillInput.trim();
-    if (!trimmed) return;
-    if (!skills.includes(trimmed)) {
-      setSkills((prev) => [...prev, trimmed]);
-    }
+    if (!trimmed || skills.includes(trimmed)) return;
+    setSkills((prev) => [...prev, trimmed]);
     setNewSkillInput('');
   };
+  const handleRemoveSkill = (s: string) => setSkills((prev) => prev.filter((x) => x !== s));
 
-  const handleRemoveSkill = (skillToRemove: string) => {
-    setSkills((prev) => prev.filter((s) => s !== skillToRemove));
-  };
-
-  // Inline Project Handlers
+  // ── Projects (panel-local project form state; setProjects comes from context) ─
   const handleOpenAddProject = () => {
     setEditingProject(null);
-    setProjectForm({
-      title: '',
-      description: '',
-      tags: '',
-      link: '',
-      image: ''
-    });
+    setProjectForm({ title: '', description: '', tags: '', link: '', image: '' });
     setIsInlineProjectOpen(true);
   };
-
   const handleOpenEditProject = (p: ProjectItem) => {
     setEditingProject(p);
-    setProjectForm({
-      title: p.title,
-      description: p.description,
-      tags: Array.isArray(p.tags) ? p.tags.join(', ') : '',
-      link: p.link || p.liveUrl || '',
-      image: p.image || p.coverImage || ''
-    });
+    setProjectForm({ title: p.title, description: p.description, tags: Array.isArray(p.tags) ? p.tags.join(', ') : '', link: p.link || p.liveUrl || '', image: p.image || p.coverImage || '' });
     setIsInlineProjectOpen(true);
   };
-
   const handleSaveInlineProject = (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectForm.title.trim()) return;
-
-    const tagsArray = projectForm.tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean);
-
+    const tagsArray = projectForm.tags.split(',').map((t) => t.trim()).filter(Boolean);
     if (editingProject) {
-      setProjects((prev) =>
-        prev.map((p) =>
-          p.id === editingProject.id
-            ? {
-                ...p,
-                title: projectForm.title.trim(),
-                description: projectForm.description.trim(),
-                tags: tagsArray,
-                link: projectForm.link.trim(),
-                image: projectForm.image.trim() || p.image,
-                coverImage: projectForm.image.trim() || p.coverImage
-              }
-            : p
-        )
-      );
+      setProjects((prev) => prev.map((p) =>
+        p.id === editingProject.id
+          ? { ...p, title: projectForm.title.trim(), description: projectForm.description.trim(), tags: tagsArray, link: projectForm.link.trim(), image: projectForm.image.trim() || p.image, coverImage: projectForm.image.trim() || p.coverImage }
+          : p
+      ));
     } else {
-      const newProj: ProjectItem = {
-        id: `proj-${Date.now()}`,
-        title: projectForm.title.trim(),
-        description: projectForm.description.trim(),
-        tags: tagsArray,
-        link: projectForm.link.trim(),
-        image: projectForm.image.trim() || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop',
-        coverImage: projectForm.image.trim(),
-        category: 'Project'
-      };
-      setProjects((prev) => [newProj, ...prev]);
+      setProjects((prev) => [{ id: `proj-${Date.now()}`, title: projectForm.title.trim(), description: projectForm.description.trim(), tags: tagsArray, link: projectForm.link.trim(), image: projectForm.image.trim() || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop', coverImage: projectForm.image.trim(), category: 'Project' }, ...prev]);
     }
-
     setIsInlineProjectOpen(false);
   };
-
-  const handleDeleteProject = (id: string) => {
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-  };
-
-  // Upload Handlers
-  const handleCoverUpload = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result) setCoverImage(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    setIsUploadingCover(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setCoverImage(data.url);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsUploadingCover(false);
-    }
-  };
-
-  const handleAvatarUpload = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result) setAvatar(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    setIsUploadingAvatar(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setAvatar(data.url);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsUploadingAvatar(false);
-    }
-  };
-
-  // Drag-and-drop Link Handlers
-  const handleUpdateLink = (id: string, patch: Partial<DraggableLinkItem>) => {
-    setSocialLinks((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
-  };
-
-  const handleDeleteLink = (id: string) => {
-    setSocialLinks((prev) => prev.filter((l) => l.id !== id));
-  };
-
-  const handleMoveLink = (index: number, direction: 'up' | 'down') => {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= socialLinks.length) return;
-    const copy = [...socialLinks];
-    const [moved] = copy.splice(index, 1);
-    copy.splice(targetIndex, 0, moved);
-    setSocialLinks(copy);
-  };
-
-  const handleAddLinkItem = (platform: DraggableLinkItem['platform']) => {
-    const newLink: DraggableLinkItem = {
-      id: `link-${Date.now()}`,
-      platform,
-      title: platform === 'other' ? 'Custom Link' : platform.charAt(0).toUpperCase() + platform.slice(1),
-      url: 'https://',
-      visible: true
-    };
-    setSocialLinks((prev) => [...prev, newLink]);
-  };
-
-  // Custom Fields Handlers
-  const handleAddCustomField = () => {
-    const newField: CustomFieldItem = {
-      id: `cf-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      label: 'New Custom Field',
-      value: '',
-      type: 'text',
-      visible: true,
-      order: customFields.length
-    };
-    setCustomFields((prev) => [...prev, newField]);
-
-    // Ensure 'custom-fields' is in sectionOrder and visible so changes immediately reflect in the preview
-    setSectionOrder((prev) => {
-      if (!prev.includes('custom-fields')) {
-        return [...prev, 'custom-fields'];
-      }
-      return prev;
-    });
-    setSectionVisibility((prev) => ({
-      ...prev,
-      'custom-fields': true
-    }));
-  };
-
-  const handleUpdateCustomField = (id: string, patch: Partial<CustomFieldItem>) => {
-    setCustomFields((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, ...patch } : f))
-    );
-  };
-
-  const handleDeleteCustomField = (id: string) => {
-    setCustomFields((prev) => prev.filter((f) => f.id !== id));
-  };
-
-  const handleMoveCustomField = (index: number, direction: 'up' | 'down') => {
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= customFields.length) return;
-    const copy = [...customFields];
-    const [moved] = copy.splice(index, 1);
-    copy.splice(targetIndex, 0, moved);
-    setCustomFields(copy);
-  };
-
-  // Section Ordering & Visibility Handlers
-  // Sections are split into visible/hidden groups for independent DnD
-  const visibleSections = sectionOrder.filter((k) => sectionVisibility[k] !== false);
-  const hiddenSections = sectionOrder.filter((k) => sectionVisibility[k] === false);
-
-  // Called when user reorders items within the Visible group
-  const handleReorderVisible = (newVisible: string[]) => {
-    // Merge: visible items (new order) + hidden items (appended after)
-    setSectionOrder([...newVisible, ...hiddenSections]);
-  };
-
-  // Called when user reorders items within the Hidden group
-  const handleReorderHidden = (newHidden: string[]) => {
-    setSectionOrder([...visibleSections, ...newHidden]);
-  };
-
-  const handleMoveSection = (index: number, direction: 'up' | 'down', group: 'visible' | 'hidden') => {
-    const list = group === 'visible' ? visibleSections : hiddenSections;
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= list.length) return;
-    const copy = [...list];
-    const [moved] = copy.splice(index, 1);
-    copy.splice(targetIndex, 0, moved);
-    if (group === 'visible') {
-      setSectionOrder([...copy, ...hiddenSections]);
-    } else {
-      setSectionOrder([...visibleSections, ...copy]);
-    }
-  };
-
-  const handleToggleSectionVisibility = (sectionKey: string) => {
-    const isCurrentlyVisible = sectionVisibility[sectionKey] !== false;
-    setSectionVisibility((prev) => ({
-      ...prev,
-      [sectionKey]: !isCurrentlyVisible
-    }));
-    // Move the section to end of target group in the order array
-    setSectionOrder((prev) => {
-      const without = prev.filter((k) => k !== sectionKey);
-      if (isCurrentlyVisible) {
-        // Moving to hidden: append after last hidden item (= end of array)
-        return [...without, sectionKey];
-      } else {
-        // Moving to visible: insert before the first hidden item
-        const firstHiddenIdx = without.findIndex((k) => {
-          // after removing sectionKey, check current visibility of each
-          // Use latest sectionVisibility (prev state snapshot may lag)
-          return sectionVisibility[k] === false && k !== sectionKey;
-        });
-        if (firstHiddenIdx === -1) {
-          return [...without, sectionKey];
-        }
-        const result = [...without];
-        result.splice(firstHiddenIdx, 0, sectionKey);
-        return result;
-      }
-    });
-  };
-
-
-
-  // Toggle Visibility in Share Section
-  const toggleVisibilityField = (field: keyof SharingSettings) => {
-    setSharingSettings((prev) => ({
-      ...prev,
-      [field]: prev[field] === false ? true : false
-    }));
-  };
-
-  // Copy Profile Link
-  const currentActiveIdentifier = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
-  const publicProfileUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/profile/${currentActiveIdentifier}`
-    : `https://avtive.app/profile/${currentActiveIdentifier}`;
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(publicProfileUrl);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2500);
-    } catch {
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2500);
-    }
-  };
-
-  // Switch persona in-place
-  const handleSwitchToProfile = (newProf: ProfileData) => {
-    setProfile(newProf);
-    setActiveTheme(newProf.theme === 'default' ? 'editorial' : (newProf.theme || 'editorial'));
-    const fName = newProf.firstName || (newProf.name ? newProf.name.split(' ')[0] : '');
-    const lName = newProf.secondName || newProf.lastName || (newProf.name ? newProf.name.split(' ').slice(1).join(' ') : '');
-    setFirstName(fName);
-    setSecondName(lName);
-    setUsername(newProf.username || newProf.slug || '');
-    setProfessionalTitle(newProf.professionalTitle || newProf.designation || newProf.profession || '');
-    setBio(newProf.bio || newProf.shortBio || '');
-    setCompany(newProf.company || '');
-    setLocation(newProf.location || '');
-    setAvatar(newProf.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
-    setCoverImage(newProf.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
-    
-    const skillsList = Array.isArray(newProf.skills)
-      ? newProf.skills.map((s) => (typeof s === 'string' ? s : s.name))
-      : ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'];
-    setSkills(skillsList);
-    setAbout(newProf.about || newProf.fullBio || '');
-    setProjects(Array.isArray(newProf.projects) ? newProf.projects : []);
-    setExperiences(Array.isArray(newProf.experiences || newProf.experience) ? (newProf.experiences || newProf.experience || []) : []);
-    setEducation(Array.isArray(newProf.education) ? newProf.education : []);
-    setSocialLinks(buildSocialLinksFromProfile(newProf));
-    setCustomFields(Array.isArray(newProf.customFields) ? newProf.customFields : []);
-    setDynamicSections(Array.isArray(newProf.dynamicSections) ? newProf.dynamicSections : []);
-    if (Array.isArray(newProf.sectionOrder) && newProf.sectionOrder.length > 0) {
-      setSectionOrder(newProf.sectionOrder);
-    }
-    if (newProf.sectionVisibility && Object.keys(newProf.sectionVisibility).length > 0) {
-      setSectionVisibility(newProf.sectionVisibility);
-    }
-    if (newProf.sharingSettings) {
-      setSharingSettings(newProf.sharingSettings);
-    }
-
-    setStatusMessage({
-      type: 'success',
-      text: `✓ Switched to profile: ${newProf.profileName || newProf.name}`
-    });
-    setTimeout(() => {
-      setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
-    }, 3500);
-  };
-
-  // Save All Changes to Server
-  const handleSaveChanges = async () => {
-    setIsSaving(true);
-    setStatusMessage(null);
-
-    const updatedData: Partial<ProfileData> = {
-      name: fullName,
-      firstName: firstName.trim(),
-      secondName: secondName.trim(),
-      lastName: secondName.trim(),
-      username: username.trim().replace(/^@/, ''),
-      professionalTitle: professionalTitle.trim(),
-      designation: professionalTitle.trim(),
-      profession: professionalTitle.trim(),
-      bio: bio.trim(),
-      shortBio: bio.trim(),
-      about: about.trim(),
-      fullBio: about.trim(),
-      company: company.trim(),
-      location: location.trim(),
-      theme: activeTheme,
-      avatar,
-      coverImage,
-      skills,
-      projects,
-      experience: experiences,
-      experiences: experiences,
-      education,
-      socials: activeSocialsPayload,
-      socialLinks: activeSocialsPayload,
-      customFields,
-      dynamicSections,
-      sectionOrder,
-      sectionVisibility,
-      sharingSettings: sharingSettings
-    };
-
-    try {
-      const res = await fetch('/api/profile/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profileId: profile.id || initialProfile.id,
-          profileSlug: profile.slug || initialProfile.slug,
-          slug: profile.slug || initialProfile.slug,
-          userId: profile.userId || initialProfile.userId,
-          updatedData
-        })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setStatusMessage({ type: 'error', text: data.error || 'Failed to save changes.' });
-        setIsSaving(false);
-        return;
-      }
-
-      const savedSlug = data.updatedProfile?.slug || data.profile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
-      const finalProfile: ProfileData = data.updatedProfile || data.profile || { ...profile, ...updatedData, slug: savedSlug };
-      setProfile(finalProfile);
-
-      // Cache locally
-      try {
-        localStorage.setItem(`avtive_profile_${savedSlug}`, JSON.stringify(finalProfile));
-        if (initialProfile.slug) {
-          localStorage.setItem(`avtive_profile_${initialProfile.slug}`, JSON.stringify(finalProfile));
-        }
-        localStorage.setItem('avtive_last_saved_profile', JSON.stringify(finalProfile));
-      } catch (e) {
-        console.error('Failed to cache profile in localStorage:', e);
-      }
-
-      setStatusMessage({
-        type: 'success',
-        text: '✓ Profile saved successfully! Real-time canvas synced.'
-      });
-
-      onSaveSuccess?.(finalProfile);
-
-      setTimeout(() => {
-        setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
-      }, 4000);
-    } catch (err: any) {
-      console.error('Save changes error:', err);
-      setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const handleDeleteProject = (id: string) => setProjects((prev) => prev.filter((p) => p.id !== id));
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.aside
-          key="sliding-editor-panel"
-          initial={{ x: '-100%', opacity: 0.7 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: '-100%', opacity: 0.7 }}
-          transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-          className="fixed top-0 bottom-0 left-0 z-40 h-full w-full md:w-[460px] lg:w-[500px] xl:w-[540px] backdrop-blur-2xl bg-white/90 dark:bg-[#111319]/90 border-r border-slate-200/80 dark:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden"
-          style={{ willChange: 'transform' }}
-        >
+        <>
+          {/* Lightweight backdrop overlay for mobile viewports */}
+          <motion.div
+            key="sliding-editor-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+            onClick={onClose}
+            className="fixed inset-0 z-30 bg-black/30 backdrop-blur-xs lg:hidden"
+            aria-hidden="true"
+          />
+
+          {/* Linktree-style Smooth Sliding Editor Panel */}
+          <motion.aside
+            key="sliding-editor-panel"
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{
+              duration: 0.28,
+              ease: [0.16, 1, 0.3, 1]
+            }}
+            className="fixed top-0 bottom-0 left-0 z-40 h-full w-full sm:w-[500px] md:w-[540px] lg:w-[580px] xl:w-[620px] backdrop-blur-2xl bg-white/95 dark:bg-[#111319]/95 border-r border-slate-200/80 dark:border-white/10 shadow-2xl flex flex-col font-sans overflow-hidden"
+            style={{ willChange: 'transform' }}
+          >
           {/* Top Panel Navigation Bar */}
           <div className="shrink-0 px-4 py-3 border-b border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-[#111319]/60 backdrop-blur-md flex items-center justify-between gap-3 z-20">
             <div className="flex items-center gap-2 min-w-0">
@@ -1445,12 +719,9 @@ export function SlidingEditorPanel({
                 {/* Cover Change Button */}
                 <button
                   type="button"
-                  id="btn-cover"
                   onClick={() => coverInputRef.current?.click()}
                   disabled={isUploadingCover}
-                  className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md ${
-                    highlightedField === 'cover' ? 'ring-4 ring-primary ring-offset-2 scale-110' : ''
-                  }`}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-md"
                   title="Change Cover Banner"
                 >
                   {isUploadingCover ? (
@@ -1474,12 +745,7 @@ export function SlidingEditorPanel({
               {/* Avatar & Realtime Title */}
               <div className="px-4 pb-4 pt-0 relative -mt-10 flex items-end justify-between gap-3">
                 <div className="flex items-end gap-3 min-w-0">
-                  <div 
-                    id="btn-avatar"
-                    className={`relative w-20 h-20 rounded-full border-3 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 transition-all ${
-                      highlightedField === 'avatar' ? 'ring-4 ring-primary ring-offset-2 animate-pulse' : ''
-                    }`}
-                  >
+                  <div className="relative w-20 h-20 rounded-full border-3 border-white dark:border-[#111319] shadow-xl overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0">
                     <img
                       src={avatar}
                       alt={fullName}
@@ -1554,154 +820,22 @@ export function SlidingEditorPanel({
                 className="w-full p-3.5 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-slate-900 dark:text-white hover:bg-slate-100/60 dark:hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-slate-600 dark:text-white/70" />
-                  <span>1. Identity & Card Theme</span>
+                  <User className="w-4 h-4 text-blue-500" />
+                  <span>1. Identity & Profile Editor</span>
                 </div>
                 {expandedSections.basicInfo ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
               </button>
 
               {expandedSections.basicInfo && (
-                <div className="p-4 pt-1 space-y-3 border-t border-slate-200/60 dark:border-white/5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
-                        First Name
-                      </label>
-                      <input
-                        id="input-firstName"
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder="First Name"
-                        className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all ${
-                          highlightedField === 'name' || highlightedField === 'firstName' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
-                        }`}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
-                        Last Name
-                      </label>
-                      <input
-                        id="input-secondName"
-                        type="text"
-                        value={secondName}
-                        onChange={(e) => setSecondName(e.target.value)}
-                        placeholder="Last Name"
-                        className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
-                      Username / URL Handle
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3 text-xs font-semibold text-slate-400 dark:text-white/40 select-none">
-                        @
-                      </span>
-                      <input
-                        id="input-username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value.replace(/^@/, ''))}
-                        placeholder="username"
-                        className="figma-input w-full pl-7 pr-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 font-mono"
-                      />
-                    </div>
-                    <p className="text-[10px] text-slate-400 dark:text-white/40 mt-1">
-                      Public card URL: <span className="font-mono text-slate-600 dark:text-white/60">avtive.app/profile/{username || 'username'}</span>
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
-                      Professional Title
-                    </label>
-                    <input
-                      id="input-professionalTitle"
-                      type="text"
-                      value={professionalTitle}
-                      onChange={(e) => setProfessionalTitle(e.target.value)}
-                      placeholder="e.g. Full Stack Engineer"
-                      className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all ${
-                        highlightedField === 'title' || highlightedField === 'professionalTitle' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
-                      }`}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
-                      Short Bio
-                    </label>
-                    <textarea
-                      id="input-bio"
-                      rows={2}
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                      placeholder="A concise overview of your focus..."
-                      className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 resize-none transition-all ${
-                        highlightedField === 'bio' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
-                      }`}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
-                        Company / Organization
-                      </label>
-                      <input
-                        id="input-company"
-                        type="text"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                        placeholder="Company"
-                        className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1">
-                        Location
-                      </label>
-                      <input
-                        id="input-location"
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="Location"
-                        className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Card Theme Preset Picker */}
-                  <div className="pt-2 border-t border-slate-200/60 dark:border-white/5">
-                    <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1.5 flex items-center gap-1.5">
-                      <Palette className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Card Theme Preset</span>
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {THEME_OPTIONS.map((t) => {
-                        const isSelected = activeTheme === t.id;
-                        return (
-                          <button
-                            key={t.id}
-                            type="button"
-                            onClick={() => setActiveTheme(t.id)}
-                            className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-slate-900 dark:border-white shadow-xs font-bold'
-                                : 'bg-white dark:bg-white/5 text-slate-700 dark:text-white/70 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30'
-                            }`}
-                          >
-                            <div className="text-xs truncate">{t.name}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                <div className="p-4 pt-1 border-t border-slate-200/60 dark:border-white/5">
+                  <ProfileSectionEditor
+                    initialMode="edit"
+                    profile={liveProfile}
+                    userProfiles={userProfiles}
+                    isExpanded={true}
+                    onLiveUpdate={handleProfileSectionLiveUpdate}
+                    onSaveSuccess={handleProfileSectionSaveSuccess}
+                  />
                 </div>
               )}
             </div>
@@ -1724,14 +858,11 @@ export function SlidingEditorPanel({
                 <div className="p-4 pt-1 space-y-3 border-t border-slate-200/60 dark:border-white/5">
                   <form onSubmit={handleAddSkill} className="flex gap-2">
                     <input
-                      id="input-newSkill"
                       type="text"
                       value={newSkillInput}
                       onChange={(e) => setNewSkillInput(e.target.value)}
                       placeholder="Add skill (e.g. Next.js, GraphQL, Figma)..."
-                      className={`figma-input flex-1 px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 transition-all ${
-                        highlightedField === 'skills' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
-                      }`}
+                      className="figma-input flex-1 px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
                     />
                     <button
                       type="submit"
@@ -1780,14 +911,11 @@ export function SlidingEditorPanel({
               {expandedSections.about && (
                 <div className="p-4 pt-1 space-y-2 border-t border-slate-200/60 dark:border-white/5">
                   <textarea
-                    id="input-about"
                     rows={4}
                     value={about}
                     onChange={(e) => setAbout(e.target.value)}
                     placeholder="Share your detailed career journey, achievements, or project specialties..."
-                    className={`figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 leading-relaxed resize-none transition-all ${
-                      highlightedField === 'about' ? 'ring-2 ring-primary ring-offset-1 bg-primary/5' : ''
-                    }`}
+                    className="figma-input w-full px-3 py-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40 leading-relaxed resize-none"
                   />
                 </div>
               )}
@@ -2033,68 +1161,113 @@ export function SlidingEditorPanel({
               </div>
 
               {expandedSections.customFields && (
-                <div className="p-4 pt-0 space-y-3.5 border-t border-slate-200/60 dark:border-white/5">
-                  <div className="flex items-center justify-between gap-2 pt-2">
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1">
-                      <GripVertical className="w-3 h-3 text-purple-400" />
-                      Editable · Draggable · Eye icon toggles preview
-                    </p>
-                    {customFields.length > 0 && (
-                      <span className="text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 px-2 py-0.5 rounded-full">
-                        {customFields.filter(f => f.visible !== false).length} visible
-                      </span>
-                    )}
-                  </div>
+                <div className="p-4 pt-0 space-y-3 border-t border-slate-200/60 dark:border-white/5">
+                  <p className="text-[11px] text-slate-500 dark:text-white/50 mb-2">
+                    Add custom contact channels, calendar links, or public identifiers.
+                  </p>
 
                   {customFields.length === 0 ? (
-                    <div className="text-center py-6 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02]">
-                      <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-2">
-                        <Tag className="w-5 h-5" />
-                      </div>
-                      <p className="text-xs font-semibold text-slate-700 dark:text-zinc-200 mb-1">No custom fields added yet</p>
-                      <p className="text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs mx-auto mb-3">
-                        Create custom fields for publications, office hours, calendar links, or public identifiers.
-                      </p>
+                    <div className="text-center py-4 border border-dashed border-slate-200 dark:border-white/10 rounded-xl">
+                      <Tag className="w-5 h-5 text-slate-400 dark:text-white/30 mx-auto mb-1" />
+                      <p className="text-xs text-slate-500 dark:text-white/50 mb-2">No custom fields yet</p>
                       <button
                         type="button"
                         onClick={handleAddCustomField}
-                        className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white shadow-xs inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                        className="px-3 py-1 rounded-md text-xs font-semibold bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-white/20 transition-colors cursor-pointer"
                       >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add Your First Field</span>
+                        + Create Field
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <Reorder.Group
-                        axis="y"
-                        values={customFields}
-                        onReorder={setCustomFields}
-                        className="space-y-2.5"
-                      >
-                        {customFields.map((field, idx) => (
-                          <DraggableCustomFieldItem
-                            key={field.id}
-                            field={field}
-                            index={idx}
-                            total={customFields.length}
-                            onUpdate={(patch) => handleUpdateCustomField(field.id, patch)}
-                            onDelete={() => handleDeleteCustomField(field.id)}
-                            onMoveUp={() => handleMoveCustomField(idx, 'up')}
-                            onMoveDown={() => handleMoveCustomField(idx, 'down')}
-                            isHighlighted={highlightedField === field.id || highlightedField === `customFields-${field.id}`}
-                          />
-                        ))}
-                      </Reorder.Group>
+                    <div className="space-y-2.5">
+                      {customFields.map((field, idx) => (
+                        <div
+                          key={field.id}
+                          className={`p-3 rounded-xl bg-white dark:bg-white/5 border transition-all flex flex-col gap-2 shadow-2xs ${
+                            field.visible !== false
+                              ? 'border-slate-200 dark:border-white/10'
+                              : 'border-slate-200/50 dark:border-white/5 opacity-60 bg-slate-50/50 dark:bg-black/20'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleMoveCustomField(idx, 'up')}
+                                disabled={idx === 0}
+                                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+                                title="Move Up"
+                              >
+                                <ArrowUp className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveCustomField(idx, 'down')}
+                                disabled={idx === customFields.length - 1}
+                                className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white disabled:opacity-20 cursor-pointer"
+                                title="Move Down"
+                              >
+                                <ArrowDown className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
 
-                      <button
-                        type="button"
-                        onClick={handleAddCustomField}
-                        className="w-full py-2.5 rounded-xl border border-dashed border-purple-300 dark:border-purple-500/30 hover:border-purple-500 dark:hover:border-purple-400 bg-purple-50/50 dark:bg-purple-950/20 hover:bg-purple-100/60 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add Another Custom Field</span>
-                      </button>
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <input
+                                type="text"
+                                value={field.label}
+                                onChange={(e) => handleUpdateCustomField(field.id, { label: e.target.value })}
+                                placeholder="Field Label (e.g. Calendly, Discord)"
+                                className="figma-input w-full px-2.5 py-1.5 text-xs font-semibold focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                              />
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'}
+                                  value={field.value}
+                                  onChange={(e) => handleUpdateCustomField(field.id, { value: e.target.value })}
+                                  placeholder="Value or Link..."
+                                  className="figma-input flex-1 px-2.5 py-1.5 text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-400 dark:focus:ring-white/40"
+                                />
+                                <select
+                                  value={field.type || 'text'}
+                                  onChange={(e) => handleUpdateCustomField(field.id, { type: e.target.value as any })}
+                                  className="figma-input px-2 py-1.5 text-[11px] bg-slate-50 dark:bg-[#191c25] focus:outline-hidden cursor-pointer"
+                                  title="Field Type"
+                                >
+                                  <option value="text">Text</option>
+                                  <option value="link">Link</option>
+                                  <option value="email">Email</option>
+                                  <option value="phone">Phone</option>
+                                  <option value="number">Number</option>
+                                  <option value="date">Date</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateCustomField(field.id, { visible: field.visible === false ? true : false })}
+                                className={`px-2 py-1 rounded-md text-[10px] font-bold transition-colors cursor-pointer ${
+                                  field.visible !== false
+                                    ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                                    : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/40'
+                                }`}
+                                title={field.visible !== false ? 'Visible on profile' : 'Hidden from profile'}
+                              >
+                                {field.visible !== false ? 'ON' : 'OFF'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteCustomField(field.id)}
+                                className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
+                                title="Delete Field"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -2113,28 +1286,32 @@ export function SlidingEditorPanel({
                   <span>7. Section Editor ({sectionOrder.length})</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-mono">
-                    {visibleSections.length} visible
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/70 font-mono">
+                    {sectionOrder.filter((k) => sectionVisibility[k] !== false).length} visible
                   </span>
-                  {hiddenSections.length > 0 && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/50 font-mono">
-                      {hiddenSections.length} hidden
-                    </span>
-                  )}
                   {expandedSections.sectionsLayout ? <ChevronUp className="w-4 h-4 text-slate-400 dark:text-white/50" /> : <ChevronDown className="w-4 h-4 text-slate-400 dark:text-white/50" />}
                 </div>
               </button>
 
               {expandedSections.sectionsLayout && (
-                <div className="p-3.5 pt-0 space-y-3 border-t border-slate-200/60 dark:border-white/5">
+                <div className="p-3.5 pt-0 space-y-2.5 border-t border-slate-200/60 dark:border-white/5">
                   {/* Compact Header Bar */}
                   <div className="flex items-center justify-between gap-2 pt-2 pb-0.5">
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 flex items-center gap-1">
-                      <GripVertical className="w-3 h-3 text-indigo-400" />
-                      Drag to reorder · Eye icon to show/hide
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                      Drag handle to rearrange. Click eye icon to show or hide.
                     </p>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      {hiddenSections.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => handleToggleInlineSection('hero', 'add')}
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900 transition-colors cursor-pointer flex items-center gap-1"
+                        title="Add a new profile persona inline"
+                      >
+                        <Plus className="w-2.5 h-2.5" />
+                        <span>Add Profile</span>
+                      </button>
+
+                      {sectionOrder.some((k) => sectionVisibility[k] === false) && (
                         <button
                           type="button"
                           onClick={() => {
@@ -2162,120 +1339,54 @@ export function SlidingEditorPanel({
                     </div>
                   </div>
 
-                  {/* ── VISIBLE SECTIONS GROUP ── */}
-                  {(() => {
-                    const getSectionLayoutConfig = (sectionKey: string) => {
-                      if (sectionKey === 'custom-fields') {
-                        return {
-                          label: `Custom Fields (${customFields.length})`,
-                          icon: Tag,
-                          color: 'text-purple-500'
-                        };
-                      }
-                      if (sectionKey.startsWith('custom-field-')) {
-                        const fieldId = sectionKey.replace('custom-field-', '');
-                        const cf = customFields.find((f) => f.id === fieldId || `custom-field-${f.id}` === sectionKey);
-                        return {
-                          label: cf ? `Field: ${cf.label || (cf as any).title || 'Custom Field'}` : 'Custom Field',
-                          icon: Tag,
-                          color: 'text-purple-500'
-                        };
-                      }
+                  {/* Compact Reorderable Section Items List */}
+                  <Reorder.Group
+                    axis="y"
+                    values={sectionOrder}
+                    onReorder={setSectionOrder}
+                    className="space-y-1.5"
+                  >
+                    {sectionOrder.map((sectionKey, idx) => {
+                      const cfg = SECTION_CONFIG[sectionKey] || {
+                        label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
+                        icon: Layers,
+                        color: 'text-slate-500'
+                      };
+                      const isVisible = sectionVisibility[sectionKey] !== false;
+                      const isHero = sectionKey === 'hero';
+                      const isItemExpanded = expandedInlineSectionKey === sectionKey;
+
                       return (
-                        SECTION_CONFIG[sectionKey] || {
-                          label: SECTION_LABELS[sectionKey] || (sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1)),
-                          icon: Layers,
-                          color: 'text-slate-500'
-                        }
-                      );
-                    };
-
-                    return (
-                      <>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1.5 px-0.5">
-                            <Eye className="w-3 h-3 text-emerald-500" />
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                              Visible ({visibleSections.length})
-                            </span>
-                          </div>
-
-                          {visibleSections.length === 0 ? (
-                            <div className="py-4 rounded-xl border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center gap-1">
-                              <EyeOff className="w-4 h-4 text-slate-300 dark:text-zinc-600" />
-                              <p className="text-[11px] text-slate-400 dark:text-zinc-500">All sections are hidden</p>
-                            </div>
-                          ) : (
-                            <Reorder.Group
-                              axis="y"
-                              values={visibleSections}
-                              onReorder={handleReorderVisible}
-                              className="space-y-1.5"
-                            >
-                              {visibleSections.map((sectionKey, idx) => {
-                                const cfg = getSectionLayoutConfig(sectionKey);
-
-                                return (
-                                  <DraggableSectionItem
-                                    key={sectionKey}
-                                    sectionKey={sectionKey}
-                                    label={cfg.label}
-                                    icon={cfg.icon}
-                                    iconColor={cfg.color}
-                                    isVisible={true}
-                                    onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
-                                    onMoveUp={() => handleMoveSection(idx, 'up', 'visible')}
-                                    onMoveDown={() => handleMoveSection(idx, 'down', 'visible')}
-                                    isFirst={idx === 0}
-                                    isLast={idx === visibleSections.length - 1}
-                                  />
-                                );
-                              })}
-                            </Reorder.Group>
+                        <DraggableSectionItem
+                          key={sectionKey}
+                          sectionKey={sectionKey}
+                          label={cfg.label}
+                          icon={cfg.icon}
+                          iconColor={cfg.color}
+                          isVisible={isVisible}
+                          onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
+                          onMoveUp={() => handleMoveSection(idx, 'up')}
+                          onMoveDown={() => handleMoveSection(idx, 'down')}
+                          isFirst={idx === 0}
+                          isLast={idx === sectionOrder.length - 1}
+                          isExpanded={isItemExpanded}
+                          onToggleExpand={isHero ? () => handleToggleInlineSection(sectionKey) : undefined}
+                        >
+                          {isHero && isItemExpanded && (
+                            <ProfileSectionEditor
+                              initialMode={inlineProfileMode}
+                              profile={liveProfile}
+                              userProfiles={userProfiles}
+                              isExpanded={true}
+                              onLiveUpdate={handleProfileSectionLiveUpdate}
+                              onSaveSuccess={handleProfileSectionSaveSuccess}
+                              onCancel={() => setExpandedInlineSectionKey(null)}
+                            />
                           )}
-                        </div>
-
-                        {/* ── HIDDEN SECTIONS GROUP ── */}
-                        {hiddenSections.length > 0 && (
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 px-0.5 pt-1">
-                              <EyeOff className="w-3 h-3 text-slate-400 dark:text-zinc-500" />
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                                Hidden ({hiddenSections.length})
-                              </span>
-                            </div>
-
-                            <Reorder.Group
-                              axis="y"
-                              values={hiddenSections}
-                              onReorder={handleReorderHidden}
-                              className="space-y-1.5"
-                            >
-                              {hiddenSections.map((sectionKey, idx) => {
-                                const cfg = getSectionLayoutConfig(sectionKey);
-
-                                return (
-                                  <DraggableSectionItem
-                                    key={sectionKey}
-                                    sectionKey={sectionKey}
-                                    label={cfg.label}
-                                    icon={cfg.icon}
-                                    iconColor={cfg.color}
-                                    isVisible={false}
-                                    onToggleVisibility={() => handleToggleSectionVisibility(sectionKey)}
-                                    onMoveUp={() => handleMoveSection(idx, 'up', 'hidden')}
-                                    onMoveDown={() => handleMoveSection(idx, 'down', 'hidden')}
-                                    isFirst={idx === 0}
-                                    isLast={idx === hiddenSections.length - 1}
-                                  />
-                                );
-                              })}
-                            </Reorder.Group>
-                          </div>
-                        )}
-                      </>
-                    );
-                  })()}
+                        </DraggableSectionItem>
+                      );
+                    })}
+                  </Reorder.Group>
                 </div>
               )}
             </div>
@@ -2365,48 +1476,68 @@ export function SlidingEditorPanel({
           </div>
 
           {/* Sticky Action Footer */}
-          <div className="shrink-0 p-3.5 sm:p-4 border-t border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#111319]/70 backdrop-blur-md flex items-center justify-between gap-3 z-20">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-white/70 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              Collapse
-            </button>
+          {/* Sticky Action Footer */}
+          <div className="shrink-0 border-t border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#111319]/70 backdrop-blur-md z-20">
+            {/* Inline confirmation checkbox */}
+            <div className="px-3.5 sm:px-4 py-2.5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/70 dark:bg-black/30">
+              <label htmlFor="sliding-editor-confirm" className="flex items-center gap-2.5 cursor-pointer select-none group">
+                <input
+                  type="checkbox"
+                  id="sliding-editor-confirm"
+                  checked={isConfirmed}
+                  onChange={(e) => setIsConfirmed(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 dark:border-white/20 text-indigo-600 focus:ring-indigo-500 cursor-pointer accent-indigo-600 shrink-0"
+                />
+                <span className="text-[11px] font-medium text-slate-700 dark:text-white/80 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  I confirm that all profile changes are accurate and ready to save.
+                </span>
+              </label>
+            </div>
 
-            <div className="flex items-center gap-2">
-              <Link
-                href={`/profile/${profile.slug || profile.id || initialProfile.slug || initialProfile.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="figma-pill-secondary py-2 px-3 text-xs font-bold flex items-center justify-center gap-1 shrink-0"
-                title="Open live public profile in a new tab"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Open Live</span>
-              </Link>
-
+            <div className="p-3.5 sm:p-4 flex items-center justify-between gap-3">
               <button
                 type="button"
-                onClick={handleSaveChanges}
-                disabled={isSaving}
-                className="figma-pill-primary py-2 px-5 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-md"
+                onClick={onClose}
+                className="px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-white/70 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
               >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Saving...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Save Changes</span>
-                  </>
-                )}
+                Collapse
               </button>
+
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/profile/${profile.slug || profile.id || initialProfile.slug || initialProfile.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="figma-pill-secondary py-2 px-3 text-xs font-bold flex items-center justify-center gap-1 shrink-0"
+                  title="Open live public profile in a new tab"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Open Live</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={handleSaveChanges}
+                  disabled={isSaving || !isConfirmed}
+                  className="figma-pill-primary py-2 px-5 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md transition-all"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Save Changes</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </motion.aside>
+        </>
       )}
     </AnimatePresence>
   );

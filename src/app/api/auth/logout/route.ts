@@ -3,19 +3,16 @@ import { clearSessionCookie, RETURNING_USER_COOKIE_NAME } from '@/lib/auth';
 
 export async function POST() {
   try {
-    await clearSessionCookie();
     const response = NextResponse.json({
       success: true,
       message: 'Logged out successfully.'
     });
 
-    // Ensure returning user flag persists so subsequent visits go to /login
-    response.cookies.set(RETURNING_USER_COOKIE_NAME, 'true', {
-      path: '/',
-      httpOnly: false,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 365
-    });
+    await clearSessionCookie(response);
+
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
 
     return response;
   } catch (error) {
@@ -26,3 +23,4 @@ export async function POST() {
     );
   }
 }
+
