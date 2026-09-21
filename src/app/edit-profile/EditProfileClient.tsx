@@ -44,7 +44,6 @@ function EditProfileClientInner() {
     activeTheme, 
     isDark, 
     currentIdentifier,
-    activeSectionTarget,
     setActiveSectionTarget,
     userProfiles
   } = useProfileEditor();
@@ -225,7 +224,6 @@ function EditProfileClientInner() {
             onClose={() => setIsMobileDrawerOpen(false)}
             initialProfile={profile}
             userProfiles={userProfiles}
-            activeSectionTarget={activeSectionTarget}
             onLiveUpdate={(updated) => {
               updateProfilePartial(updated);
             }}
