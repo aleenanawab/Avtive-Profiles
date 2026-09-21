@@ -49,6 +49,7 @@ export interface SharingSettings {
   languages?: boolean;
   companySection?: boolean;
   nfcCard?: boolean;
+  customFields?: boolean;
 }
 
 export const DEFAULT_SHARING_SETTINGS: SharingSettings = {
@@ -70,7 +71,8 @@ export const DEFAULT_SHARING_SETTINGS: SharingSettings = {
   languages: true,
   recommendations: true,
   companySection: true,
-  nfcCard: true
+  nfcCard: true,
+  customFields: true
 };
 
 export const DEFAULT_SECTION_VISIBILITY: Record<string, boolean> = {

@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { ProfileData, SharingSettings, ProfileType } from '@/types/profile';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DynamicSectionGroups, ALL_PROFILE_SECTIONS } from '@/components/sections/DynamicSectionGroups';
 
 export interface ShareModalProps {
   isOpen: boolean;
@@ -41,25 +42,7 @@ export interface ShareModalProps {
   onUpdateProfile?: (updatedProfile: ProfileData) => void;
 }
 
-interface VisibilityModule {
-  id: string;
-  key: keyof SharingSettings;
-  label: string;
-  description: string;
-  icon: React.ElementType;
-}
-
-const VISIBILITY_MODULES: VisibilityModule[] = [
-  { id: 'photo', key: 'photo', label: 'Profile Photo', description: 'Show your avatar on the shared pass', icon: User },
-  { id: 'nameAndTitle', key: 'nameAndTitle', label: 'Name & Title', description: 'Display your full name and job title', icon: User },
-  { id: 'bio', key: 'bio', label: 'Bio', description: 'Include your professional summary', icon: FileText },
-  { id: 'skills', key: 'skills', label: 'Skills', description: 'List your technical capabilities & tags', icon: Code },
-  { id: 'projects', key: 'projects', label: 'Projects', description: 'Showcase your portfolio project cards', icon: FolderGit2 },
-  { id: 'experience', key: 'experience', label: 'Experience', description: 'Display your career history & milestones', icon: Briefcase },
-  { id: 'education', key: 'education', label: 'Education', description: 'Show your academic degrees & studies', icon: GraduationCap },
-  { id: 'contactInfo', key: 'contactInfo', label: 'Contact Information', description: 'Allow direct email, phone, and WhatsApp contact', icon: Phone },
-  { id: 'socialLinks', key: 'socialLinks', label: 'Social Links', description: 'Display links to GitHub, LinkedIn, Website, etc.', icon: Link2 }
-];
+const VISIBILITY_MODULES = ALL_PROFILE_SECTIONS;
 
 export function ShareModal({
   isOpen,

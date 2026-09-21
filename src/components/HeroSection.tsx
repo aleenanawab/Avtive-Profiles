@@ -187,6 +187,11 @@ export function HeroSection({
             <p className="text-sm sm:text-base md:text-lg font-medium text-slate-500 dark:text-zinc-400">
               {profile.profession || profile.designation || profile.profileName || 'Professional'}
             </p>
+            {profile.tagline && (
+              <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-zinc-300 italic pt-0.5">
+                &ldquo;{profile.tagline}&rdquo;
+              </p>
+            )}
             {profile.location && (
               <p className="text-xs sm:text-sm text-slate-400 dark:text-zinc-500">
                 {profile.location}

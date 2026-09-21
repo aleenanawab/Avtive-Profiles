@@ -14,7 +14,7 @@ export const metadata = {
 export default async function RegisterPage() {
   const session = await getSession();
 
-  // Existing authenticated users must not be sent through registration again
+  // Existing authenticated users should not see register form again
   if (session) {
     const profiles = await getProfilesByUserId(session.id);
     if (profiles && profiles.length > 0) {

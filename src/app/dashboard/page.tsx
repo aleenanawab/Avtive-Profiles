@@ -4,6 +4,9 @@ import { getProfilesByUserId } from '@/lib/db';
 import { ProfileDashboard } from '@/components/profiles/ProfileDashboard';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'My Profiles | Avtive Workspaces',
   description: 'Manage your verified digital profiles and professional identities on Avtive.'
