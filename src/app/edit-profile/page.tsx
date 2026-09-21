@@ -46,8 +46,8 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
   }
 
   return (
-    <main className="min-h-screen w-full py-6 sm:py-8 px-4 sm:px-6 lg:px-8 bg-[#FAFAF9] dark:bg-[#09090B] text-slate-900 dark:text-white transition-colors font-sans">
-      <Suspense fallback={<div className="p-8 text-center text-sm font-semibold">Loading profile editor...</div>}>
+    <main className="min-h-screen w-full bg-[#080D1A] text-slate-100 font-sans">
+      <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-slate-400">Loading profile editor...</div>}>
         <EditProfileClient initialProfile={targetProfile} />
       </Suspense>
     </main>
