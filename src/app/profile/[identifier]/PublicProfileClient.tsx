@@ -150,19 +150,14 @@ export function PublicProfileClient({
             )}
 
             {isOwner && (
-              <button
-                type="button"
-                onClick={() => setIsEditorOpen(!isEditorOpen)}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-2xs cursor-pointer shrink-0 ${
-                  isEditorOpen
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm'
-                    : 'border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700'
-                }`}
-                title={isEditorOpen ? 'Collapse Editor' : 'Open Sliding Editor'}
+              <Link
+                href={`/profile/${identifier}/edit`}
+                className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-xs transition-all shrink-0"
+                title="Open Profile Editing Studio"
               >
                 <Edit3 className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline">{isEditorOpen ? 'Editor Open' : 'Edit Profile'}</span>
-              </button>
+                <span>Edit Profile</span>
+              </Link>
             )}
 
             <button
