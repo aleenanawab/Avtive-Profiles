@@ -49,7 +49,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
   }
 
   return (
-    <main className="min-h-screen w-full bg-[#080D1A] text-slate-100 font-sans">
+    <main className="min-h-screen w-full figma-editor-bg text-white font-sans">
       <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-slate-400">Loading profile editor...</div>}>
         <EditProfileClient initialProfile={targetProfile} />
       </Suspense>

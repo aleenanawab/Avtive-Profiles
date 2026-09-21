@@ -419,6 +419,20 @@
       "email": "e2e_user_1789633311181@avtive.app",
       "passwordHash": "$2b$10$7iatqthMDRlOFA6Sh1oVJO.rs3NQ0w0eLTm4yWacJhweXVeomDYm.",
       "createdAt": "2026-09-17T08:21:51.428Z"
+    },
+    {
+      "id": "user-1789991187245-c5ayp",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789991186507@example.com",
+      "passwordHash": "$2b$10$fCiademQPrWPXB7kVZw6BeEnjzFQ/wozzVr03ZuZP0t4ad.Pza0J6",
+      "createdAt": "2026-09-21T11:46:27.245Z"
+    },
+    {
+      "id": "user-1789991250074-85xay",
+      "name": "Elena Rostova",
+      "email": "elena_1789991249765@example.com",
+      "passwordHash": "$2b$10$3JvJuTuDop.wQj7jMgHUs.cngTnWbISNT.1.0q7lTTXBZMJRLgulq",
+      "createdAt": "2026-09-21T11:47:30.074Z"
     }
   ],
   "profiles": {
@@ -697,7 +711,27 @@
           "visible": true,
           "order": 3
         }
-      ]
+      ],
+      "username": "syedmesumraza",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "syedmesumraza": {
       "id": "mesum-raza",
@@ -974,12 +1008,32 @@
           "visible": true,
           "order": 3
         }
-      ]
+      ],
+      "username": "syedmesumraza",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "hamza-malik": {
       "id": "hamza-malik",
       "slug": "hamza-malik",
-      "type": "team-member",
+      "type": "individual",
       "companyId": "avtive-company",
       "companyName": "Avtive",
       "name": "Hamza Malik",
@@ -1107,12 +1161,32 @@
           "url": "https://www.avtive.app",
           "label": "Avtive Platform"
         }
-      ]
+      ],
+      "username": "hamza-malik",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "avtive-company": {
       "id": "avtive-company",
       "slug": "avtive",
-      "type": "company",
+      "type": "team",
       "name": "Avtive",
       "designation": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "company": "Avtive SaaS Platform",
@@ -1230,12 +1304,32 @@
           "url": "https://www.linkedin.com/company/avtive",
           "label": "LinkedIn"
         }
-      ]
+      ],
+      "username": "avtive",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "avtive": {
       "id": "avtive-company",
       "slug": "avtive",
-      "type": "company",
+      "type": "team",
       "name": "Avtive",
       "designation": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "company": "Avtive SaaS Platform",
@@ -1353,7 +1447,27 @@
           "url": "https://www.linkedin.com/company/avtive",
           "label": "LinkedIn"
         }
-      ]
+      ],
+      "username": "avtive",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788782031980": {
       "id": "prof-1788782031980",
@@ -1424,7 +1538,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "jane-doe-c2n0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "jane-doe-c2n0": {
       "id": "prof-1788782031980",
@@ -1495,7 +1629,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "jane-doe-c2n0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788782083177": {
       "id": "prof-1788782083177",
@@ -1566,7 +1720,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "sarah-connor-3h4s",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "sarah-connor-3h4s": {
       "id": "prof-1788782083177",
@@ -1637,7 +1811,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "sarah-connor-3h4s",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788782534301": {
       "id": "prof-1788782534301",
@@ -1742,7 +1936,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-nawab-adhb",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-nawab-adhb": {
       "id": "prof-1788782534301",
@@ -1847,7 +2061,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-nawab-adhb",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788783656219": {
       "id": "prof-1788783656219",
@@ -1921,7 +2155,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "alice-designer-c5a5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "alice-designer-c5a5": {
       "id": "prof-1788783656219",
@@ -1995,7 +2249,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "alice-designer-c5a5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788783656969": {
       "id": "prof-1788783656969",
@@ -2066,7 +2340,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "bob-engineer-vops",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "bob-engineer-vops": {
       "id": "prof-1788783656969",
@@ -2137,7 +2431,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "bob-engineer-vops",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788787437694": {
       "id": "prof-1788787437694",
@@ -2211,7 +2525,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "alice-designer-qqqv",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "alice-designer-qqqv": {
       "id": "prof-1788787437694",
@@ -2285,7 +2619,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "alice-designer-qqqv",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788787438525": {
       "id": "prof-1788787438525",
@@ -2356,7 +2710,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "bob-engineer-df5t",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "bob-engineer-df5t": {
       "id": "prof-1788787438525",
@@ -2427,7 +2801,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "bob-engineer-df5t",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788787550288": {
       "id": "prof-1788787550288",
@@ -2501,7 +2895,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "alice-designer-3uw0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "alice-designer-3uw0": {
       "id": "prof-1788787550288",
@@ -2575,7 +2989,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "alice-designer-3uw0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788787551209": {
       "id": "prof-1788787551209",
@@ -2646,7 +3080,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "bob-engineer-mau0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "bob-engineer-mau0": {
       "id": "prof-1788787551209",
@@ -2717,7 +3171,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "bob-engineer-mau0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788788018664": {
       "id": "prof-1788788018664",
@@ -2788,7 +3262,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleeza-a26n",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleeza-a26n": {
       "id": "prof-1788788018664",
@@ -2859,7 +3353,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleeza-a26n",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788789773224": {
       "id": "prof-1788789773224",
@@ -2930,7 +3444,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "google-founder-13wk",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "google-founder-13wk": {
       "id": "prof-1788789773224",
@@ -3001,7 +3535,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "google-founder-13wk",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788789773255": {
       "id": "prof-1788789773255",
@@ -3072,7 +3626,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "linkedin-professional-39rd",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "linkedin-professional-39rd": {
       "id": "prof-1788789773255",
@@ -3143,7 +3717,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "linkedin-professional-39rd",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788789893722": {
       "id": "prof-1788789893722",
@@ -3214,7 +3808,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-nawab-po4w",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-nawab-po4w": {
       "id": "prof-1788789893722",
@@ -3285,7 +3899,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-nawab-po4w",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788789976653": {
       "id": "prof-1788789976653",
@@ -3356,7 +3990,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-nawab-7zst",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-nawab-7zst": {
       "id": "prof-1788789976653",
@@ -3427,7 +4081,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-nawab-7zst",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1788799714788": {
       "id": "prof-1788799714788",
@@ -3500,7 +4174,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "new-user-1788799712532-21dw",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "new-user-1788799712532-21dw": {
       "id": "prof-1788799714788",
@@ -3573,7 +4267,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "new-user-1788799712532-21dw",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789368780163-6d4zi": {
       "id": "prof-1789368780163-6d4zi",
@@ -3669,7 +4383,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-developer-profile-h9x8",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-multi-user-developer-profile-h9x8": {
       "id": "prof-1789368780163-6d4zi",
@@ -3765,7 +4499,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-developer-profile-h9x8",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789368780168-bwau8": {
       "id": "prof-1789368780168-bwau8",
@@ -3854,7 +4608,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-hr-profile-j6bx",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-multi-user-hr-profile-j6bx": {
       "id": "prof-1789368780168-bwau8",
@@ -3943,7 +4717,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-hr-profile-j6bx",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789368780178-005bm": {
       "id": "prof-1789368780178-005bm",
@@ -4032,7 +4826,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-uiux-designer-profile-nxu0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-multi-user-uiux-designer-profile-nxu0": {
       "id": "prof-1789368780178-005bm",
@@ -4121,7 +4935,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-uiux-designer-profile-nxu0",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789369113412-dk7it": {
       "id": "prof-1789369113412-dk7it",
@@ -4203,7 +5037,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-developer-profile-s60g",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "dashboard-tester-developer-profile-s60g": {
       "id": "prof-1789369113412-dk7it",
@@ -4285,7 +5139,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-developer-profile-s60g",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789369113415-szet1": {
       "id": "prof-1789369113415-szet1",
@@ -4367,7 +5241,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-hr-professional-zi0z",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "dashboard-tester-hr-professional-zi0z": {
       "id": "prof-1789369113415-szet1",
@@ -4449,7 +5343,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-hr-professional-zi0z",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789369113418-t1y9e": {
       "id": "prof-1789369113418-t1y9e",
@@ -4531,7 +5445,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-uiux-designer-l5gy",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "dashboard-tester-uiux-designer-l5gy": {
       "id": "prof-1789369113418-t1y9e",
@@ -4613,7 +5547,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-uiux-designer-l5gy",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789369346101-he0tw": {
       "id": "prof-1789369346101-he0tw",
@@ -4702,7 +5656,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-test-developer-profile-57rt",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-test-developer-profile-57rt": {
       "id": "prof-1789369346101-he0tw",
@@ -4791,7 +5765,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-test-developer-profile-57rt",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789369346105-cxzr5": {
       "id": "prof-1789369346105-cxzr5",
@@ -4880,7 +5874,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-test-hr-profile-54iy",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-test-hr-profile-54iy": {
       "id": "prof-1789369346105-cxzr5",
@@ -4969,7 +5983,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-test-hr-profile-54iy",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789369346108-6ukzz": {
       "id": "prof-1789369346108-6ukzz",
@@ -5058,7 +6092,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-test-uiux-designer-profile-nujz",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-test-uiux-designer-profile-nujz": {
       "id": "prof-1789369346108-6ukzz",
@@ -5147,7 +6201,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-test-uiux-designer-profile-nujz",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789369981200-fucjf": {
       "id": "prof-1789369981200-fucjf",
@@ -5282,7 +6356,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "security-test-profile-privacy-sharing-pass-6txs",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "security-test-profile-privacy-sharing-pass-6txs": {
       "id": "prof-1789369981200-fucjf",
@@ -5417,7 +6511,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "security-test-profile-privacy-sharing-pass-6txs",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789370051354-1eulx": {
       "id": "prof-1789370051354-1eulx",
@@ -5516,7 +6630,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-developer-profile-yeea",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-multi-user-developer-profile-yeea": {
       "id": "prof-1789370051354-1eulx",
@@ -5615,7 +6749,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-developer-profile-yeea",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": false,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789370051358-d1qca": {
       "id": "prof-1789370051358-d1qca",
@@ -5707,7 +6861,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-hr-profile-013v",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-multi-user-hr-profile-013v": {
       "id": "prof-1789370051358-d1qca",
@@ -5799,7 +6973,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-hr-profile-013v",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789370051361-9ocyl": {
       "id": "prof-1789370051361-9ocyl",
@@ -5891,7 +7085,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-uiux-designer-profile-z2qy",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-multi-user-uiux-designer-profile-z2qy": {
       "id": "prof-1789370051361-9ocyl",
@@ -5983,7 +7197,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "test-multi-user-uiux-designer-profile-z2qy",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789370076011-tbgwb": {
       "id": "prof-1789370076011-tbgwb",
@@ -6068,7 +7302,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-developer-profile-wqu1",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "dashboard-tester-developer-profile-wqu1": {
       "id": "prof-1789370076011-tbgwb",
@@ -6153,7 +7407,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-developer-profile-wqu1",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789370076015-hknh8": {
       "id": "prof-1789370076015-hknh8",
@@ -6238,7 +7512,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-hr-professional-y4wv",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "dashboard-tester-hr-professional-y4wv": {
       "id": "prof-1789370076015-hknh8",
@@ -6323,7 +7617,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-hr-professional-y4wv",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789370076019-ir8l1": {
       "id": "prof-1789370076019-ir8l1",
@@ -6408,7 +7722,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-uiux-designer-v6eo",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "dashboard-tester-uiux-designer-v6eo": {
       "id": "prof-1789370076019-ir8l1",
@@ -6493,7 +7827,27 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "dashboard-tester-uiux-designer-v6eo",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789381785980-rpal9": {
       "id": "prof-1789381785980-rpal9",
@@ -6501,7 +7855,7 @@
       "profileName": "MERN Developer",
       "profession": "Full Stack Developer",
       "slug": "aleena-nawab-mern-developer-uu41",
-      "type": "company",
+      "type": "team",
       "name": "ALEENA NAWAB",
       "email": "aleenaknawab@gmail.com",
       "designation": "Full Stack Developer",
@@ -6556,7 +7910,27 @@
       ],
       "createdAt": "2026-09-14T10:29:45.980Z",
       "updatedAt": "2026-09-14T11:33:44.254Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "aleena-nawab-mern-developer-uu41",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-nawab-mern-developer-uu41": {
       "id": "prof-1789381785980-rpal9",
@@ -6564,7 +7938,7 @@
       "profileName": "MERN Developer",
       "profession": "Full Stack Developer",
       "slug": "aleena-nawab-mern-developer-uu41",
-      "type": "company",
+      "type": "team",
       "name": "ALEENA NAWAB",
       "email": "aleenaknawab@gmail.com",
       "designation": "Full Stack Developer",
@@ -6619,13 +7993,33 @@
       ],
       "createdAt": "2026-09-14T10:29:45.980Z",
       "updatedAt": "2026-09-14T11:33:44.254Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "aleena-nawab-mern-developer-uu41",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-mern": {
       "id": "aleena-mern",
       "userId": "user-aleena",
       "slug": "aleena-dev",
-      "type": "owner",
+      "type": "individual",
       "profileName": "MERN Developer",
       "profession": "Full Stack Developer",
       "name": "Aleena Nawab",
@@ -6784,13 +8178,33 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-dev",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": false,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-dev": {
       "id": "aleena-mern",
       "userId": "user-aleena",
       "slug": "aleena-dev",
-      "type": "owner",
+      "type": "individual",
       "profileName": "MERN Developer",
       "profession": "Full Stack Developer",
       "name": "Aleena Nawab",
@@ -6949,13 +8363,33 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-dev",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": false,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleenanawab": {
       "id": "aleena-mern",
       "userId": "user-aleena",
       "slug": "aleena-dev",
-      "type": "owner",
+      "type": "individual",
       "profileName": "MERN Developer",
       "profession": "Full Stack Developer",
       "name": "Aleena Nawab",
@@ -7114,13 +8548,33 @@
           "url": "https://www.avtive.app",
           "label": "Website"
         }
-      ]
+      ],
+      "username": "aleena-dev",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": false,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-hr": {
       "id": "aleena-hr",
       "userId": "user-aleena",
       "slug": "aleena-hr",
-      "type": "owner",
+      "type": "individual",
       "profileName": "HR Professional",
       "profession": "People & Culture Strategist",
       "name": "Aleena Nawab",
@@ -7217,13 +8671,33 @@
           "url": "https://www.avtive.app",
           "label": "Avtive People"
         }
-      ]
+      ],
+      "username": "aleena-hr",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": false,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleena-designer": {
       "id": "aleena-designer",
       "userId": "user-aleena",
       "slug": "aleena-designer",
-      "type": "owner",
+      "type": "individual",
       "profileName": "UI/UX Designer",
       "profession": "Product Designer",
       "name": "Aleena Nawab",
@@ -7333,7 +8807,27 @@
           "url": "https://www.avtive.app",
           "label": "Portfolio"
         }
-      ]
+      ],
+      "username": "aleena-designer",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": false,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789394487293-u2ef4": {
       "id": "prof-1789394487293-u2ef4",
@@ -7341,7 +8835,7 @@
       "profileName": "Full Stack Engineer",
       "profession": "Senior Developer",
       "slug": "test-new-user-full-stack-engineer-b12d",
-      "type": "owner",
+      "type": "individual",
       "name": "Test New User",
       "email": "newuser_1789394486158@test.com",
       "designation": "Senior Developer",
@@ -7405,7 +8899,27 @@
       ],
       "createdAt": "2026-09-14T14:01:27.293Z",
       "updatedAt": "2026-09-14T14:01:27.293Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "test-new-user-full-stack-engineer-b12d",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-new-user-full-stack-engineer-b12d": {
       "id": "prof-1789394487293-u2ef4",
@@ -7413,7 +8927,7 @@
       "profileName": "Full Stack Engineer",
       "profession": "Senior Developer",
       "slug": "test-new-user-full-stack-engineer-b12d",
-      "type": "owner",
+      "type": "individual",
       "name": "Test New User",
       "email": "newuser_1789394486158@test.com",
       "designation": "Senior Developer",
@@ -7477,7 +8991,27 @@
       ],
       "createdAt": "2026-09-14T14:01:27.293Z",
       "updatedAt": "2026-09-14T14:01:27.293Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "test-new-user-full-stack-engineer-b12d",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789394601727-qjz4r": {
       "id": "prof-1789394601727-qjz4r",
@@ -7485,7 +9019,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-ymfl",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789394588802@example.com",
       "designation": "Senior Product Designer",
@@ -7545,7 +9079,27 @@
       ],
       "createdAt": "2026-09-14T14:03:21.727Z",
       "updatedAt": "2026-09-14T14:03:24.627Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "zara-qureshi-uiux-designer-ymfl",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "zara-qureshi-uiux-designer-ymfl": {
       "id": "prof-1789394601727-qjz4r",
@@ -7553,7 +9107,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-ymfl",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789394588802@example.com",
       "designation": "Senior Product Designer",
@@ -7613,7 +9167,27 @@
       ],
       "createdAt": "2026-09-14T14:03:21.727Z",
       "updatedAt": "2026-09-14T14:03:24.627Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "zara-qureshi-uiux-designer-ymfl",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789398279154-dcc9i": {
       "id": "prof-1789398279154-dcc9i",
@@ -7621,7 +9195,7 @@
       "profileName": "Full Stack Engineer",
       "profession": "Senior Developer",
       "slug": "test-new-user-full-stack-engineer-k47r",
-      "type": "owner",
+      "type": "individual",
       "name": "Test New User",
       "email": "newuser_1789398278823@test.com",
       "designation": "Senior Developer",
@@ -7685,7 +9259,27 @@
       ],
       "createdAt": "2026-09-14T15:04:39.154Z",
       "updatedAt": "2026-09-14T15:04:39.154Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "test-new-user-full-stack-engineer-k47r",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "test-new-user-full-stack-engineer-k47r": {
       "id": "prof-1789398279154-dcc9i",
@@ -7693,7 +9287,7 @@
       "profileName": "Full Stack Engineer",
       "profession": "Senior Developer",
       "slug": "test-new-user-full-stack-engineer-k47r",
-      "type": "owner",
+      "type": "individual",
       "name": "Test New User",
       "email": "newuser_1789398278823@test.com",
       "designation": "Senior Developer",
@@ -7757,7 +9351,27 @@
       ],
       "createdAt": "2026-09-14T15:04:39.154Z",
       "updatedAt": "2026-09-14T15:04:39.154Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "test-new-user-full-stack-engineer-k47r",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789398839296-b03z5": {
       "id": "prof-1789398839296-b03z5",
@@ -7765,7 +9379,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-jncf",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789398838836@example.com",
       "designation": "Senior Product Designer",
@@ -7825,7 +9439,27 @@
       ],
       "createdAt": "2026-09-14T15:13:59.296Z",
       "updatedAt": "2026-09-14T15:13:59.400Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "zara-qureshi-uiux-designer-jncf",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "zara-qureshi-uiux-designer-jncf": {
       "id": "prof-1789398839296-b03z5",
@@ -7833,7 +9467,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-jncf",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789398838836@example.com",
       "designation": "Senior Product Designer",
@@ -7893,7 +9527,27 @@
       ],
       "createdAt": "2026-09-14T15:13:59.296Z",
       "updatedAt": "2026-09-14T15:13:59.400Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "zara-qureshi-uiux-designer-jncf",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789399114037-fpuou": {
       "id": "prof-1789399114037-fpuou",
@@ -7901,7 +9555,7 @@
       "profileName": "Team Member Profile",
       "profession": "Full Stack Developer",
       "slug": "aleeza-team-member-profile-cguf",
-      "type": "employee",
+      "type": "individual",
       "name": "aleeza",
       "email": "aleenanawab3@gmail.com",
       "designation": "Full Stack Developer",
@@ -7982,7 +9636,27 @@
       ],
       "createdAt": "2026-09-14T15:18:34.037Z",
       "updatedAt": "2026-09-14T15:18:34.037Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "aleeza-team-member-profile-cguf",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "aleeza-team-member-profile-cguf": {
       "id": "prof-1789399114037-fpuou",
@@ -7990,7 +9664,7 @@
       "profileName": "Team Member Profile",
       "profession": "Full Stack Developer",
       "slug": "aleeza-team-member-profile-cguf",
-      "type": "employee",
+      "type": "individual",
       "name": "aleeza",
       "email": "aleenanawab3@gmail.com",
       "designation": "Full Stack Developer",
@@ -8071,7 +9745,27 @@
       ],
       "createdAt": "2026-09-14T15:18:34.037Z",
       "updatedAt": "2026-09-14T15:18:34.037Z",
-      "socialLinks": []
+      "socialLinks": [],
+      "username": "aleeza-team-member-profile-cguf",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452450780-utm87": {
       "id": "prof-1789452450780-utm87",
@@ -8079,7 +9773,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Architect",
       "slug": "taylor-reed-professional-profile-pmhe",
-      "type": "owner",
+      "type": "individual",
       "name": "Taylor Reed",
       "email": "schema_user_1789452450298@example.com",
       "firstName": "Taylor",
@@ -8201,7 +9895,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:07:30.780Z",
-      "updatedAt": "2026-09-15T06:07:31.128Z"
+      "updatedAt": "2026-09-15T06:07:31.128Z",
+      "username": "taylor-reed-professional-profile-pmhe",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "taylor-reed-professional-profile-pmhe": {
       "id": "prof-1789452450780-utm87",
@@ -8209,7 +9923,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Architect",
       "slug": "taylor-reed-professional-profile-pmhe",
-      "type": "owner",
+      "type": "individual",
       "name": "Taylor Reed",
       "email": "schema_user_1789452450298@example.com",
       "firstName": "Taylor",
@@ -8331,7 +10045,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:07:30.780Z",
-      "updatedAt": "2026-09-15T06:07:31.128Z"
+      "updatedAt": "2026-09-15T06:07:31.128Z",
+      "username": "taylor-reed-professional-profile-pmhe",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452522045-l5up6": {
       "id": "prof-1789452522045-l5up6",
@@ -8339,7 +10073,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-9ojm",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789452521492@example.com",
       "firstName": "Zara",
@@ -8408,7 +10142,27 @@
         "projects"
       ],
       "createdAt": "2026-09-15T06:08:42.045Z",
-      "updatedAt": "2026-09-15T06:08:42.181Z"
+      "updatedAt": "2026-09-15T06:08:42.181Z",
+      "username": "zara-qureshi-uiux-designer-9ojm",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "zara-qureshi-uiux-designer-9ojm": {
       "id": "prof-1789452522045-l5up6",
@@ -8416,7 +10170,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-9ojm",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789452521492@example.com",
       "firstName": "Zara",
@@ -8485,7 +10239,27 @@
         "projects"
       ],
       "createdAt": "2026-09-15T06:08:42.045Z",
-      "updatedAt": "2026-09-15T06:08:42.181Z"
+      "updatedAt": "2026-09-15T06:08:42.181Z",
+      "username": "zara-qureshi-uiux-designer-9ojm",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452664034-v4pry": {
       "id": "prof-1789452664034-v4pry",
@@ -8493,7 +10267,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-ooba",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452663146@example.com",
       "firstName": "Eman",
@@ -8600,7 +10374,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:11:04.034Z",
-      "updatedAt": "2026-09-15T06:11:04.034Z"
+      "updatedAt": "2026-09-15T06:11:04.034Z",
+      "username": "eman-tariq-professional-profile-ooba",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "eman-tariq-professional-profile-ooba": {
       "id": "prof-1789452664034-v4pry",
@@ -8608,7 +10402,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-ooba",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452663146@example.com",
       "firstName": "Eman",
@@ -8715,7 +10509,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:11:04.034Z",
-      "updatedAt": "2026-09-15T06:11:04.034Z"
+      "updatedAt": "2026-09-15T06:11:04.034Z",
+      "username": "eman-tariq-professional-profile-ooba",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452690277-k5xup": {
       "id": "prof-1789452690277-k5xup",
@@ -8723,7 +10537,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-ju2q",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452689911@example.com",
       "firstName": "Eman",
@@ -8830,7 +10644,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:11:30.277Z",
-      "updatedAt": "2026-09-15T06:11:30.277Z"
+      "updatedAt": "2026-09-15T06:11:30.277Z",
+      "username": "eman-tariq-professional-profile-ju2q",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "eman-tariq-professional-profile-ju2q": {
       "id": "prof-1789452690277-k5xup",
@@ -8838,7 +10672,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-ju2q",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452689911@example.com",
       "firstName": "Eman",
@@ -8945,7 +10779,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:11:30.277Z",
-      "updatedAt": "2026-09-15T06:11:30.277Z"
+      "updatedAt": "2026-09-15T06:11:30.277Z",
+      "username": "eman-tariq-professional-profile-ju2q",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452710168-kes4c": {
       "id": "prof-1789452710168-kes4c",
@@ -8953,7 +10807,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-6cx5",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452709806@example.com",
       "firstName": "Eman",
@@ -9060,7 +10914,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:11:50.168Z",
-      "updatedAt": "2026-09-15T06:11:50.168Z"
+      "updatedAt": "2026-09-15T06:11:50.168Z",
+      "username": "eman-tariq-professional-profile-6cx5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "eman-tariq-professional-profile-6cx5": {
       "id": "prof-1789452710168-kes4c",
@@ -9068,7 +10942,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-6cx5",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452709806@example.com",
       "firstName": "Eman",
@@ -9175,7 +11049,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:11:50.168Z",
-      "updatedAt": "2026-09-15T06:11:50.168Z"
+      "updatedAt": "2026-09-15T06:11:50.168Z",
+      "username": "eman-tariq-professional-profile-6cx5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452726854-mfhqi": {
       "id": "prof-1789452726854-mfhqi",
@@ -9183,7 +11077,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-h7mv",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452726374@example.com",
       "firstName": "Eman",
@@ -9290,7 +11184,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:12:06.854Z",
-      "updatedAt": "2026-09-15T06:12:06.854Z"
+      "updatedAt": "2026-09-15T06:12:06.854Z",
+      "username": "eman-tariq-professional-profile-h7mv",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "eman-tariq-professional-profile-h7mv": {
       "id": "prof-1789452726854-mfhqi",
@@ -9298,7 +11212,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-h7mv",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452726374@example.com",
       "firstName": "Eman",
@@ -9405,7 +11319,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:12:06.854Z",
-      "updatedAt": "2026-09-15T06:12:06.854Z"
+      "updatedAt": "2026-09-15T06:12:06.854Z",
+      "username": "eman-tariq-professional-profile-h7mv",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452975855-spz9v": {
       "id": "prof-1789452975855-spz9v",
@@ -9413,7 +11347,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-7pnf",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452974441@example.com",
       "firstName": "Eman",
@@ -9520,7 +11454,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:16:15.855Z",
-      "updatedAt": "2026-09-15T06:16:15.855Z"
+      "updatedAt": "2026-09-15T06:16:15.855Z",
+      "username": "eman-tariq-professional-profile-7pnf",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "eman-tariq-professional-profile-7pnf": {
       "id": "prof-1789452975855-spz9v",
@@ -9528,7 +11482,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-7pnf",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789452974441@example.com",
       "firstName": "Eman",
@@ -9635,7 +11589,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:16:15.855Z",
-      "updatedAt": "2026-09-15T06:16:15.855Z"
+      "updatedAt": "2026-09-15T06:16:15.855Z",
+      "username": "eman-tariq-professional-profile-7pnf",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452982890-l4bkz": {
       "id": "prof-1789452982890-l4bkz",
@@ -9643,7 +11617,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Architect",
       "slug": "taylor-reed-professional-profile-0y2u",
-      "type": "owner",
+      "type": "individual",
       "name": "Taylor Reed",
       "email": "schema_user_1789452982484@example.com",
       "firstName": "Taylor",
@@ -9765,7 +11739,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:16:22.890Z",
-      "updatedAt": "2026-09-15T06:16:23.134Z"
+      "updatedAt": "2026-09-15T06:16:23.134Z",
+      "username": "taylor-reed-professional-profile-0y2u",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "taylor-reed-professional-profile-0y2u": {
       "id": "prof-1789452982890-l4bkz",
@@ -9773,7 +11767,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Architect",
       "slug": "taylor-reed-professional-profile-0y2u",
-      "type": "owner",
+      "type": "individual",
       "name": "Taylor Reed",
       "email": "schema_user_1789452982484@example.com",
       "firstName": "Taylor",
@@ -9895,7 +11889,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:16:22.890Z",
-      "updatedAt": "2026-09-15T06:16:23.134Z"
+      "updatedAt": "2026-09-15T06:16:23.134Z",
+      "username": "taylor-reed-professional-profile-0y2u",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789452991738-pf4aw": {
       "id": "prof-1789452991738-pf4aw",
@@ -9903,7 +11917,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-s9v6",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789452990845@example.com",
       "firstName": "Zara",
@@ -9972,7 +11986,27 @@
         "projects"
       ],
       "createdAt": "2026-09-15T06:16:31.738Z",
-      "updatedAt": "2026-09-15T06:16:31.827Z"
+      "updatedAt": "2026-09-15T06:16:31.827Z",
+      "username": "zara-qureshi-uiux-designer-s9v6",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "zara-qureshi-uiux-designer-s9v6": {
       "id": "prof-1789452991738-pf4aw",
@@ -9980,7 +12014,7 @@
       "profileName": "UI/UX Designer",
       "profession": "Senior Product Designer",
       "slug": "zara-qureshi-uiux-designer-s9v6",
-      "type": "owner",
+      "type": "individual",
       "name": "Zara Qureshi",
       "email": "test_flow_1789452990845@example.com",
       "firstName": "Zara",
@@ -10049,7 +12083,27 @@
         "projects"
       ],
       "createdAt": "2026-09-15T06:16:31.738Z",
-      "updatedAt": "2026-09-15T06:16:31.827Z"
+      "updatedAt": "2026-09-15T06:16:31.827Z",
+      "username": "zara-qureshi-uiux-designer-s9v6",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": false,
+        "custom-fields": true,
+        "experience": true,
+        "education": false,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789453938715-9vqg9": {
       "id": "prof-1789453938715-9vqg9",
@@ -10057,7 +12111,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-6n0b",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789453938069@example.com",
       "firstName": "Eman",
@@ -10164,7 +12218,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:32:18.715Z",
-      "updatedAt": "2026-09-15T06:32:18.715Z"
+      "updatedAt": "2026-09-15T06:32:18.715Z",
+      "username": "eman-tariq-professional-profile-6n0b",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "eman-tariq-professional-profile-6n0b": {
       "id": "prof-1789453938715-9vqg9",
@@ -10172,7 +12246,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-6n0b",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789453938069@example.com",
       "firstName": "Eman",
@@ -10279,7 +12353,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:32:18.715Z",
-      "updatedAt": "2026-09-15T06:32:18.715Z"
+      "updatedAt": "2026-09-15T06:32:18.715Z",
+      "username": "eman-tariq-professional-profile-6n0b",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789454940742-vm1kq": {
       "id": "prof-1789454940742-vm1kq",
@@ -10287,7 +12381,7 @@
       "profileName": "Primary Profile",
       "profession": "Full Stack Engineer",
       "slug": "abcd-user-primary-profile-i0da",
-      "type": "owner",
+      "type": "individual",
       "name": "ABCD User",
       "email": "abcd@gmail.com",
       "firstName": "ABCD",
@@ -10364,7 +12458,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:49:00.742Z",
-      "updatedAt": "2026-09-15T06:49:00.742Z"
+      "updatedAt": "2026-09-15T06:49:00.742Z",
+      "username": "abcd-user-primary-profile-i0da",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "abcd-user-primary-profile-i0da": {
       "id": "prof-1789454940742-vm1kq",
@@ -10372,7 +12486,7 @@
       "profileName": "Primary Profile",
       "profession": "Full Stack Engineer",
       "slug": "abcd-user-primary-profile-i0da",
-      "type": "owner",
+      "type": "individual",
       "name": "ABCD User",
       "email": "abcd@gmail.com",
       "firstName": "ABCD",
@@ -10449,7 +12563,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:49:00.742Z",
-      "updatedAt": "2026-09-15T06:49:00.742Z"
+      "updatedAt": "2026-09-15T06:49:00.742Z",
+      "username": "abcd-user-primary-profile-i0da",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789454949499-s9ju5": {
       "id": "prof-1789454949499-s9ju5",
@@ -10457,7 +12591,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-86d5",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789454949060@example.com",
       "firstName": "Eman",
@@ -10564,7 +12698,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:49:09.499Z",
-      "updatedAt": "2026-09-15T06:49:09.499Z"
+      "updatedAt": "2026-09-15T06:49:09.499Z",
+      "username": "eman-tariq-professional-profile-86d5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "eman-tariq-professional-profile-86d5": {
       "id": "prof-1789454949499-s9ju5",
@@ -10572,7 +12726,7 @@
       "profileName": "Professional Profile",
       "profession": "Lead Product Designer",
       "slug": "eman-tariq-professional-profile-86d5",
-      "type": "owner",
+      "type": "individual",
       "name": "Eman Tariq",
       "email": "onboarding_test_1789454949060@example.com",
       "firstName": "Eman",
@@ -10679,7 +12833,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T06:49:09.499Z",
-      "updatedAt": "2026-09-15T06:49:09.499Z"
+      "updatedAt": "2026-09-15T06:49:09.499Z",
+      "username": "eman-tariq-professional-profile-86d5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-abcd": {
       "id": "prof-abcd",
@@ -10916,7 +13090,27 @@
           "url": "https://www.avtive.app",
           "label": "Avtive.app"
         }
-      ]
+      ],
+      "username": "abcd-user-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "abcd-user-profile": {
       "id": "prof-abcd",
@@ -11153,7 +13347,27 @@
           "url": "https://www.avtive.app",
           "label": "Avtive.app"
         }
-      ]
+      ],
+      "username": "abcd-user-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789474327781-jw7on": {
       "id": "prof-1789474327781-jw7on",
@@ -11161,7 +13375,7 @@
       "profileName": "Senior Portfolio 7764",
       "profession": "Principal Engineer",
       "slug": "senior-portfolio-7764-senior-portfolio-7764-zysr",
-      "type": "owner",
+      "type": "individual",
       "name": "Senior Portfolio 7764",
       "email": "mesum@avtive.app",
       "firstName": "Senior",
@@ -11235,7 +13449,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T12:12:07.781Z",
-      "updatedAt": "2026-09-15T12:12:07.781Z"
+      "updatedAt": "2026-09-15T12:12:07.781Z",
+      "username": "senior-portfolio-7764-senior-portfolio-7764-zysr",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "senior-portfolio-7764-senior-portfolio-7764-zysr": {
       "id": "prof-1789474327781-jw7on",
@@ -11243,7 +13477,7 @@
       "profileName": "Senior Portfolio 7764",
       "profession": "Principal Engineer",
       "slug": "senior-portfolio-7764-senior-portfolio-7764-zysr",
-      "type": "owner",
+      "type": "individual",
       "name": "Senior Portfolio 7764",
       "email": "mesum@avtive.app",
       "firstName": "Senior",
@@ -11317,7 +13551,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-15T12:12:07.781Z",
-      "updatedAt": "2026-09-15T12:12:07.781Z"
+      "updatedAt": "2026-09-15T12:12:07.781Z",
+      "username": "senior-portfolio-7764-senior-portfolio-7764-zysr",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789631636511-ka568": {
       "id": "prof-1789631636511-ka568",
@@ -11325,7 +13579,7 @@
       "profileName": "Brokerage Executive",
       "profession": "Managing Director",
       "slug": "jordan-belfort-brokerage-executive-nlyc",
-      "type": "owner",
+      "type": "individual",
       "name": "Jordan Belfort",
       "email": "e2e_user_1789631635527@avtive.app",
       "firstName": "Jordan",
@@ -11403,7 +13657,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-17T07:53:56.511Z",
-      "updatedAt": "2026-09-17T07:53:57.025Z"
+      "updatedAt": "2026-09-17T07:53:57.025Z",
+      "username": "jordan-belfort-brokerage-executive-nlyc",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "jordan-belfort-brokerage-executive-nlyc": {
       "id": "prof-1789631636511-ka568",
@@ -11411,7 +13685,7 @@
       "profileName": "Brokerage Executive",
       "profession": "Managing Director",
       "slug": "jordan-belfort-brokerage-executive-nlyc",
-      "type": "owner",
+      "type": "individual",
       "name": "Jordan Belfort",
       "email": "e2e_user_1789631635527@avtive.app",
       "firstName": "Jordan",
@@ -11489,7 +13763,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-17T07:53:56.511Z",
-      "updatedAt": "2026-09-17T07:53:57.025Z"
+      "updatedAt": "2026-09-17T07:53:57.025Z",
+      "username": "jordan-belfort-brokerage-executive-nlyc",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789631653984-yixjs": {
       "id": "prof-1789631653984-yixjs",
@@ -11497,7 +13791,7 @@
       "profileName": "Brokerage Executive",
       "profession": "Managing Director",
       "slug": "jordan-belfort-brokerage-executive-kn19",
-      "type": "owner",
+      "type": "individual",
       "name": "Jordan Belfort",
       "email": "e2e_user_1789631653429@avtive.app",
       "firstName": "Jordan",
@@ -11575,7 +13869,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-17T07:54:13.984Z",
-      "updatedAt": "2026-09-17T07:54:14.130Z"
+      "updatedAt": "2026-09-17T07:54:14.130Z",
+      "username": "jordan-belfort-brokerage-executive-kn19",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "jordan-belfort-brokerage-executive-kn19": {
       "id": "prof-1789631653984-yixjs",
@@ -11583,7 +13897,7 @@
       "profileName": "Brokerage Executive",
       "profession": "Managing Director",
       "slug": "jordan-belfort-brokerage-executive-kn19",
-      "type": "owner",
+      "type": "individual",
       "name": "Jordan Belfort",
       "email": "e2e_user_1789631653429@avtive.app",
       "firstName": "Jordan",
@@ -11661,7 +13975,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-17T07:54:13.984Z",
-      "updatedAt": "2026-09-17T07:54:14.130Z"
+      "updatedAt": "2026-09-17T07:54:14.130Z",
+      "username": "jordan-belfort-brokerage-executive-kn19",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "prof-1789633311485-l5uym": {
       "id": "prof-1789633311485-l5uym",
@@ -11669,7 +14003,7 @@
       "profileName": "Brokerage Executive",
       "profession": "Managing Director",
       "slug": "jordan-belfort-brokerage-executive-c6c7",
-      "type": "owner",
+      "type": "individual",
       "name": "Jordan Belfort",
       "email": "e2e_user_1789633311181@avtive.app",
       "firstName": "Jordan",
@@ -11747,7 +14081,27 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-17T08:21:51.485Z",
-      "updatedAt": "2026-09-17T08:21:51.586Z"
+      "updatedAt": "2026-09-17T08:21:51.586Z",
+      "username": "jordan-belfort-brokerage-executive-c6c7",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     },
     "jordan-belfort-brokerage-executive-c6c7": {
       "id": "prof-1789633311485-l5uym",
@@ -11755,7 +14109,7 @@
       "profileName": "Brokerage Executive",
       "profession": "Managing Director",
       "slug": "jordan-belfort-brokerage-executive-c6c7",
-      "type": "owner",
+      "type": "individual",
       "name": "Jordan Belfort",
       "email": "e2e_user_1789633311181@avtive.app",
       "firstName": "Jordan",
@@ -11833,7 +14187,1374 @@
         "virtual-card"
       ],
       "createdAt": "2026-09-17T08:21:51.485Z",
-      "updatedAt": "2026-09-17T08:21:51.586Z"
+      "updatedAt": "2026-09-17T08:21:51.586Z",
+      "username": "jordan-belfort-brokerage-executive-c6c7",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
+    },
+    "prof-1789991091445-53ean": {
+      "id": "prof-1789991091445-53ean",
+      "userId": "user-abcd",
+      "profileName": "Primary Profile",
+      "profession": "Full Stack Engineer",
+      "slug": "abcd-user-primary-profile-6lob",
+      "type": "individual",
+      "name": "ABCD User",
+      "email": "abcd@gmail.com",
+      "firstName": "ABCD",
+      "secondName": "User",
+      "lastName": "User",
+      "professionalTitle": "Full Stack Engineer",
+      "designation": "Full Stack Engineer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Testing profile creation workflow",
+      "about": "About story content",
+      "shortBio": "Testing profile creation workflow",
+      "fullBio": "About story content",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Next.js",
+        "React",
+        "TypeScript"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "abcd-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-21T11:44:51.445Z",
+      "updatedAt": "2026-09-21T11:44:51.445Z"
+    },
+    "abcd-user-primary-profile-6lob": {
+      "id": "prof-1789991091445-53ean",
+      "userId": "user-abcd",
+      "profileName": "Primary Profile",
+      "profession": "Full Stack Engineer",
+      "slug": "abcd-user-primary-profile-6lob",
+      "type": "individual",
+      "name": "ABCD User",
+      "email": "abcd@gmail.com",
+      "firstName": "ABCD",
+      "secondName": "User",
+      "lastName": "User",
+      "professionalTitle": "Full Stack Engineer",
+      "designation": "Full Stack Engineer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Testing profile creation workflow",
+      "about": "About story content",
+      "shortBio": "Testing profile creation workflow",
+      "fullBio": "About story content",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Next.js",
+        "React",
+        "TypeScript"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "abcd-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-21T11:44:51.445Z",
+      "updatedAt": "2026-09-21T11:44:51.445Z"
+    },
+    "abcd-user-primary-profile": {
+      "id": "prof-1789991091445-53ean",
+      "userId": "user-abcd",
+      "profileName": "Primary Profile",
+      "profession": "Full Stack Engineer",
+      "slug": "abcd-user-primary-profile-6lob",
+      "type": "individual",
+      "name": "ABCD User",
+      "email": "abcd@gmail.com",
+      "firstName": "ABCD",
+      "secondName": "User",
+      "lastName": "User",
+      "professionalTitle": "Full Stack Engineer",
+      "designation": "Full Stack Engineer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Testing profile creation workflow",
+      "about": "About story content",
+      "shortBio": "Testing profile creation workflow",
+      "fullBio": "About story content",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Next.js",
+        "React",
+        "TypeScript"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "abcd-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-21T11:44:51.445Z",
+      "updatedAt": "2026-09-21T11:44:51.445Z"
+    },
+    "prof-1789991195980-kh5ti": {
+      "id": "prof-1789991195980-kh5ti",
+      "userId": "user-1789991187245-c5ayp",
+      "profileName": "UI/UX Designer",
+      "profession": "Senior Product Designer",
+      "slug": "zara-qureshi-uiux-designer-569i",
+      "type": "individual",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789991186507@example.com",
+      "firstName": "Zara",
+      "secondName": "Qureshi",
+      "lastName": "Qureshi",
+      "professionalTitle": "Senior Product Designer",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Design Lab",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Designing futuristic interfaces and design systems.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Designing futuristic interfaces and design systems.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Tailwind CSS",
+        "Design Systems"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-zara-1",
+          "title": "Avtive Mobile Experience",
+          "description": "Design system tokens and responsive layouts."
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "zara-qureshi-uiux-designer",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-21T11:46:35.980Z",
+      "updatedAt": "2026-09-21T11:46:35.980Z"
+    },
+    "zara-qureshi-uiux-designer-569i": {
+      "id": "prof-1789991195980-kh5ti",
+      "userId": "user-1789991187245-c5ayp",
+      "profileName": "UI/UX Designer",
+      "profession": "Senior Product Designer",
+      "slug": "zara-qureshi-uiux-designer-569i",
+      "type": "individual",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789991186507@example.com",
+      "firstName": "Zara",
+      "secondName": "Qureshi",
+      "lastName": "Qureshi",
+      "professionalTitle": "Senior Product Designer",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Design Lab",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Designing futuristic interfaces and design systems.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Designing futuristic interfaces and design systems.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Tailwind CSS",
+        "Design Systems"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-zara-1",
+          "title": "Avtive Mobile Experience",
+          "description": "Design system tokens and responsive layouts."
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "zara-qureshi-uiux-designer",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-21T11:46:35.980Z",
+      "updatedAt": "2026-09-21T11:46:35.980Z"
+    },
+    "zara-qureshi-uiux-designer": {
+      "id": "prof-1789991195980-kh5ti",
+      "userId": "user-1789991187245-c5ayp",
+      "profileName": "UI/UX Designer",
+      "profession": "Senior Product Designer",
+      "slug": "zara-qureshi-uiux-designer-569i",
+      "type": "individual",
+      "name": "Zara Qureshi",
+      "email": "test_flow_1789991186507@example.com",
+      "firstName": "Zara",
+      "secondName": "Qureshi",
+      "lastName": "Qureshi",
+      "professionalTitle": "Senior Product Designer",
+      "designation": "Senior Product Designer",
+      "company": "Avtive Design Lab",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Designing futuristic interfaces and design systems.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Designing futuristic interfaces and design systems.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [
+        "Figma",
+        "UI/UX",
+        "Tailwind CSS",
+        "Design Systems"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-zara-1",
+          "title": "Avtive Mobile Experience",
+          "description": "Design system tokens and responsive layouts."
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "zara-qureshi-uiux-designer",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-21T11:46:35.980Z",
+      "updatedAt": "2026-09-21T11:46:35.980Z"
+    },
+    "prof-1789991250470-i8b1c": {
+      "id": "prof-1789991250470-i8b1c",
+      "userId": "user-1789991250074-85xay",
+      "profileName": "Principal Cloud Architect",
+      "profession": "Principal Cloud Architect",
+      "slug": "elena-rostova-principal-cloud-architect-atgl",
+      "type": "individual",
+      "name": "Elena Rostova",
+      "email": "elena_1789991249765@example.com",
+      "firstName": "Elena",
+      "secondName": "Rostova",
+      "lastName": "Rostova",
+      "professionalTitle": "Principal Cloud Architect",
+      "designation": "Principal Cloud Architect",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
+      "coverImage": "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+      "bio": "Passionate systems architect delivering resilient cloud solutions.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Passionate systems architect delivering resilient cloud solutions.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": false,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "skills",
+        "projects",
+        "experience",
+        "contact",
+        "virtual-card",
+        "custom-fields"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": false,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "elena_1789991249765",
+      "customFields": [
+        {
+          "id": "cf-1",
+          "label": "Discord",
+          "value": "elena#1337",
+          "type": "text",
+          "visible": true,
+          "order": 0
+        },
+        {
+          "id": "cf-2",
+          "label": "Calendly",
+          "value": "https://calendly.com/elena",
+          "type": "link",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "cf-3",
+          "label": "Consulting Rate",
+          "value": "$250/hr",
+          "type": "text",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "cf-4",
+          "label": "Substack",
+          "value": "https://elena.substack.com",
+          "type": "link",
+          "visible": true,
+          "order": 3
+        },
+        {
+          "id": "cf-5",
+          "label": "GitHub Sponsors",
+          "value": "https://github.com/sponsors/elena",
+          "type": "link",
+          "visible": true,
+          "order": 4
+        },
+        {
+          "id": "cf-6",
+          "label": "License Number",
+          "value": "PE-98765432",
+          "type": "text",
+          "visible": true,
+          "order": 5
+        },
+        {
+          "id": "cf-7",
+          "label": "Matrix",
+          "value": "@elena:matrix.org",
+          "type": "text",
+          "visible": true,
+          "order": 6
+        },
+        {
+          "id": "cf-8",
+          "label": "Telegram",
+          "value": "t.me/elenacloud",
+          "type": "link",
+          "visible": true,
+          "order": 7
+        },
+        {
+          "id": "cf-9",
+          "label": "Emergency Contact",
+          "value": "support@elena.io",
+          "type": "email",
+          "visible": false,
+          "order": 8
+        },
+        {
+          "id": "cf-10",
+          "label": "Office Hours",
+          "value": "Fridays 2-4pm UTC",
+          "type": "text",
+          "visible": true,
+          "order": 9
+        },
+        {
+          "id": "cf-11",
+          "label": "Timezone",
+          "value": "UTC+1 / CET",
+          "type": "text",
+          "visible": true,
+          "order": 10
+        },
+        {
+          "id": "cf-12",
+          "label": "Security Clearance",
+          "value": "Level 4 / NATO Secret",
+          "type": "text",
+          "visible": true,
+          "order": 11
+        }
+      ],
+      "dynamicSections": [
+        {
+          "id": "ds-publications",
+          "key": "publications",
+          "title": "Publications & Whitepapers",
+          "type": "custom",
+          "visible": true,
+          "order": 4,
+          "data": "Author of Cloud Resiliency Patterns (O'Reilly, 2025)",
+          "customFields": [
+            {
+              "id": "ds-cf-1",
+              "label": "ISBN",
+              "value": "978-0134685991",
+              "type": "text",
+              "visible": true,
+              "order": 0
+            }
+          ]
+        }
+      ],
+      "createdAt": "2026-09-21T11:47:30.470Z",
+      "updatedAt": "2026-09-21T11:47:31.207Z"
+    },
+    "elena-rostova-principal-cloud-architect-atgl": {
+      "id": "prof-1789991250470-i8b1c",
+      "userId": "user-1789991250074-85xay",
+      "profileName": "Principal Cloud Architect",
+      "profession": "Principal Cloud Architect",
+      "slug": "elena-rostova-principal-cloud-architect-atgl",
+      "type": "individual",
+      "name": "Elena Rostova",
+      "email": "elena_1789991249765@example.com",
+      "firstName": "Elena",
+      "secondName": "Rostova",
+      "lastName": "Rostova",
+      "professionalTitle": "Principal Cloud Architect",
+      "designation": "Principal Cloud Architect",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
+      "coverImage": "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+      "bio": "Passionate systems architect delivering resilient cloud solutions.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Passionate systems architect delivering resilient cloud solutions.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": false,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "skills",
+        "projects",
+        "experience",
+        "contact",
+        "virtual-card",
+        "custom-fields"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": false,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "elena_1789991249765",
+      "customFields": [
+        {
+          "id": "cf-1",
+          "label": "Discord",
+          "value": "elena#1337",
+          "type": "text",
+          "visible": true,
+          "order": 0
+        },
+        {
+          "id": "cf-2",
+          "label": "Calendly",
+          "value": "https://calendly.com/elena",
+          "type": "link",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "cf-3",
+          "label": "Consulting Rate",
+          "value": "$250/hr",
+          "type": "text",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "cf-4",
+          "label": "Substack",
+          "value": "https://elena.substack.com",
+          "type": "link",
+          "visible": true,
+          "order": 3
+        },
+        {
+          "id": "cf-5",
+          "label": "GitHub Sponsors",
+          "value": "https://github.com/sponsors/elena",
+          "type": "link",
+          "visible": true,
+          "order": 4
+        },
+        {
+          "id": "cf-6",
+          "label": "License Number",
+          "value": "PE-98765432",
+          "type": "text",
+          "visible": true,
+          "order": 5
+        },
+        {
+          "id": "cf-7",
+          "label": "Matrix",
+          "value": "@elena:matrix.org",
+          "type": "text",
+          "visible": true,
+          "order": 6
+        },
+        {
+          "id": "cf-8",
+          "label": "Telegram",
+          "value": "t.me/elenacloud",
+          "type": "link",
+          "visible": true,
+          "order": 7
+        },
+        {
+          "id": "cf-9",
+          "label": "Emergency Contact",
+          "value": "support@elena.io",
+          "type": "email",
+          "visible": false,
+          "order": 8
+        },
+        {
+          "id": "cf-10",
+          "label": "Office Hours",
+          "value": "Fridays 2-4pm UTC",
+          "type": "text",
+          "visible": true,
+          "order": 9
+        },
+        {
+          "id": "cf-11",
+          "label": "Timezone",
+          "value": "UTC+1 / CET",
+          "type": "text",
+          "visible": true,
+          "order": 10
+        },
+        {
+          "id": "cf-12",
+          "label": "Security Clearance",
+          "value": "Level 4 / NATO Secret",
+          "type": "text",
+          "visible": true,
+          "order": 11
+        }
+      ],
+      "dynamicSections": [
+        {
+          "id": "ds-publications",
+          "key": "publications",
+          "title": "Publications & Whitepapers",
+          "type": "custom",
+          "visible": true,
+          "order": 4,
+          "data": "Author of Cloud Resiliency Patterns (O'Reilly, 2025)",
+          "customFields": [
+            {
+              "id": "ds-cf-1",
+              "label": "ISBN",
+              "value": "978-0134685991",
+              "type": "text",
+              "visible": true,
+              "order": 0
+            }
+          ]
+        }
+      ],
+      "createdAt": "2026-09-21T11:47:30.470Z",
+      "updatedAt": "2026-09-21T11:47:31.207Z"
+    },
+    "elena_1789991249765": {
+      "id": "prof-1789991250470-i8b1c",
+      "userId": "user-1789991250074-85xay",
+      "profileName": "Principal Cloud Architect",
+      "profession": "Principal Cloud Architect",
+      "slug": "elena-rostova-principal-cloud-architect-atgl",
+      "type": "individual",
+      "name": "Elena Rostova",
+      "email": "elena_1789991249765@example.com",
+      "firstName": "Elena",
+      "secondName": "Rostova",
+      "lastName": "Rostova",
+      "professionalTitle": "Principal Cloud Architect",
+      "designation": "Principal Cloud Architect",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
+      "coverImage": "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+      "bio": "Passionate systems architect delivering resilient cloud solutions.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Passionate systems architect delivering resilient cloud solutions.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [],
+      "socialLinks": [],
+      "skills": [],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": false,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "skills",
+        "projects",
+        "experience",
+        "contact",
+        "virtual-card",
+        "custom-fields"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": false,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "elena_1789991249765",
+      "customFields": [
+        {
+          "id": "cf-1",
+          "label": "Discord",
+          "value": "elena#1337",
+          "type": "text",
+          "visible": true,
+          "order": 0
+        },
+        {
+          "id": "cf-2",
+          "label": "Calendly",
+          "value": "https://calendly.com/elena",
+          "type": "link",
+          "visible": true,
+          "order": 1
+        },
+        {
+          "id": "cf-3",
+          "label": "Consulting Rate",
+          "value": "$250/hr",
+          "type": "text",
+          "visible": true,
+          "order": 2
+        },
+        {
+          "id": "cf-4",
+          "label": "Substack",
+          "value": "https://elena.substack.com",
+          "type": "link",
+          "visible": true,
+          "order": 3
+        },
+        {
+          "id": "cf-5",
+          "label": "GitHub Sponsors",
+          "value": "https://github.com/sponsors/elena",
+          "type": "link",
+          "visible": true,
+          "order": 4
+        },
+        {
+          "id": "cf-6",
+          "label": "License Number",
+          "value": "PE-98765432",
+          "type": "text",
+          "visible": true,
+          "order": 5
+        },
+        {
+          "id": "cf-7",
+          "label": "Matrix",
+          "value": "@elena:matrix.org",
+          "type": "text",
+          "visible": true,
+          "order": 6
+        },
+        {
+          "id": "cf-8",
+          "label": "Telegram",
+          "value": "t.me/elenacloud",
+          "type": "link",
+          "visible": true,
+          "order": 7
+        },
+        {
+          "id": "cf-9",
+          "label": "Emergency Contact",
+          "value": "support@elena.io",
+          "type": "email",
+          "visible": false,
+          "order": 8
+        },
+        {
+          "id": "cf-10",
+          "label": "Office Hours",
+          "value": "Fridays 2-4pm UTC",
+          "type": "text",
+          "visible": true,
+          "order": 9
+        },
+        {
+          "id": "cf-11",
+          "label": "Timezone",
+          "value": "UTC+1 / CET",
+          "type": "text",
+          "visible": true,
+          "order": 10
+        },
+        {
+          "id": "cf-12",
+          "label": "Security Clearance",
+          "value": "Level 4 / NATO Secret",
+          "type": "text",
+          "visible": true,
+          "order": 11
+        }
+      ],
+      "dynamicSections": [
+        {
+          "id": "ds-publications",
+          "key": "publications",
+          "title": "Publications & Whitepapers",
+          "type": "custom",
+          "visible": true,
+          "order": 4,
+          "data": "Author of Cloud Resiliency Patterns (O'Reilly, 2025)",
+          "customFields": [
+            {
+              "id": "ds-cf-1",
+              "label": "ISBN",
+              "value": "978-0134685991",
+              "type": "text",
+              "visible": true,
+              "order": 0
+            }
+          ]
+        }
+      ],
+      "createdAt": "2026-09-21T11:47:30.470Z",
+      "updatedAt": "2026-09-21T11:47:31.207Z"
     }
   },
   "connections": [

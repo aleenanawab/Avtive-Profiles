@@ -123,6 +123,97 @@ html:not(.dark) .figma-pill-secondary:hover {
   background: #E2E8F0;
 }
 
+/* FIGMA SLATE BLUE PROFILE EDITOR THEME TOKENS */
+.figma-editor-bg {
+  background-color: #0B131E;
+}
+
+.figma-slate-card {
+  background-color: #131F2E;
+  border: 1px solid #23354C;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.figma-slate-card-nested {
+  background-color: #0E1724;
+  border: 1px solid #1C2D40;
+  border-radius: 14px;
+}
+
+.figma-slate-input {
+  background-color: #0E1724;
+  border: 1px solid #23354C;
+  color: #F8FAFC;
+  border-radius: 12px;
+  transition: all 0.15s ease;
+}
+
+.figma-slate-input:focus {
+  border-color: #38BDF8;
+  outline: none;
+  box-shadow: 0 0 0 1px #38BDF8;
+}
+
+.figma-slate-input::placeholder {
+  color: #64748B;
+}
+
+.figma-slate-btn-save {
+  background: #16273C;
+  border: 1px solid #2C4566;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
+}
+
+.figma-slate-btn-save:hover {
+  background: #1F3652;
+  border-color: #3B5D8A;
+  transform: translateY(-1px);
+}
+
+.figma-slate-btn-next {
+  background: #16273C;
+  border: 1px solid #2C4566;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
+}
+
+.figma-slate-btn-next:hover {
+  background: #1F3652;
+  border-color: #3B5D8A;
+  transform: translateY(-1px);
+}
+
+.figma-slate-toggle {
+  background-color: #1E2D40;
+  border: 1px solid #2D425E;
+}
+
+.figma-slate-toggle-active {
+  background-color: #10B981;
+  border-color: #34D399;
+}
+
+.figma-slate-tag {
+  background-color: #0E1724;
+  border: 1px solid #23354C;
+  color: #CBD5E1;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.figma-slate-tag:hover {
+  border-color: #38BDF8;
+  color: #FFFFFF;
+}
+
 html, body {
   background-color: var(--bg-main);
   color: var(--text-primary);

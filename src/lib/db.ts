@@ -256,7 +256,7 @@ function saveDb(data: DatabaseSchema): void {
 export async function getUserByEmail(email: string): Promise<UserRecord | null> {
   const db = loadDb();
   const normalizedEmail = email.toLowerCase().trim();
-  let user = db.users.find((u) => u.email.toLowerCase().trim() === normalizedEmail);
+  const user = db.users.find((u) => u.email.toLowerCase().trim() === normalizedEmail);
   if (user) return user;
 
   try {
