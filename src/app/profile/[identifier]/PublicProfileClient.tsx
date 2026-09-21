@@ -13,14 +13,16 @@ import { PhonePreview } from '@/components/PhonePreview';
 import { getThemeConfig } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
 import { SlidingEditorPanel } from '@/components/profiles/SlidingEditorPanel';
+import { ProfileEditorProvider } from '@/context/ProfileEditorContext';
 import { 
   Share2, 
   Home, 
   Users, 
-  Edit3,
-  Monitor,
-  Smartphone
+  Edit3, 
+  Monitor, 
+  Smartphone 
 } from 'lucide-react';
+
 interface PublicProfileClientProps {
   initialProfile: ProfileData;
   session: UserSession | null;
@@ -28,6 +30,22 @@ interface PublicProfileClientProps {
 }
 
 export function PublicProfileClient({
+  initialProfile,
+  session,
+  isOwner
+}: PublicProfileClientProps) {
+  return (
+    <ProfileEditorProvider initialProfile={initialProfile}>
+      <PublicProfileClientInner
+        initialProfile={initialProfile}
+        session={session}
+        isOwner={isOwner}
+      />
+    </ProfileEditorProvider>
+  );
+}
+
+function PublicProfileClientInner({
   initialProfile,
   session,
   isOwner
