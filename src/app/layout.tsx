@@ -42,6 +42,17 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  // Purge legacy oversized cookies that cause 494 REQUEST_HEADER_TOO_LARGE
+                  var cookies = document.cookie.split(';');
+                  for (var i = 0; i < cookies.length; i++) {
+                    var c = cookies[i].trim();
+                    var eq = c.indexOf('=');
+                    var name = eq > -1 ? c.substring(0, eq).trim() : c.trim();
+                    if (name === 'avtive_prof_count' || name.indexOf('avtive_prof_') === 0) {
+                      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;';
+                      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + window.location.hostname + ';';
+                    }
+                  }
                   var savedPortfolioTheme = localStorage.getItem('portfolio_theme') || 'editorial';
                   document.documentElement.setAttribute('data-theme', savedPortfolioTheme);
                   var savedTheme = localStorage.getItem('avtive_theme_pref');
