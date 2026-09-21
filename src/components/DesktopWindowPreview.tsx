@@ -62,7 +62,7 @@ export interface DesktopWindowPreviewProps {
   profile: ProfileData;
   url?: string;
   onUpdateProfile: (updatedProfile: ProfileData) => void;
-  onSave: () => Promise<void>;
+  onSave: () => Promise<any> | void;
   onNext?: () => void;
   onViewCard?: () => void;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
