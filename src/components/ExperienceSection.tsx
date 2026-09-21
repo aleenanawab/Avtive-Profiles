@@ -7,18 +7,35 @@ import { ThemeConfig, getThemeConfig } from './themeStyles';
 interface ExperienceSectionProps {
   profile: ProfileData;
   theme?: ThemeConfig;
+  canEdit?: boolean;
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
-export function ExperienceSection({ profile, theme = getThemeConfig(profile.theme || 'elegant') }: ExperienceSectionProps) {
+export function ExperienceSection({ 
+  profile, 
+  theme = getThemeConfig(profile.theme || 'elegant'),
+  canEdit = false,
+  onSelectSection
+}: ExperienceSectionProps) {
   if (!profile.experiences || profile.experiences.length === 0) {
     return null;
   }
 
   return (
-    <section className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
-      <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
-        Experience
-      </h2>
+    <section 
+      onClick={() => canEdit && onSelectSection?.('experience')}
+      className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${canEdit ? 'cursor-pointer hover:ring-1 hover:ring-emerald-500/40 rounded-xl transition-all' : ''}`}
+    >
+      <div className="flex items-center justify-between">
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+          Experience
+        </h2>
+        {canEdit && (
+          <span className="text-[10px] font-mono text-emerald-500 opacity-80 hover:opacity-100">
+            Click to edit ↗
+          </span>
+        )}
+      </div>
 
       <div className="space-y-3">
         {profile.experiences.map((exp) => (

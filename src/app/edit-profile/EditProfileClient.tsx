@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -9,8 +9,9 @@ import {
 } from '@/types/profile';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { PhonePreview } from '@/components/PhonePreview';
-import { getThemeConfig } from '@/components/themeStyles';
+import { DesktopWindowPreview, AvtiveLogoIcon } from '@/components/DesktopWindowPreview';
 import { SlidingEditorPanel } from '@/components/profiles/SlidingEditorPanel';
+import { getThemeConfig } from '@/components/themeStyles';
 import { 
   ArrowLeft,
   Edit3,
@@ -18,8 +19,14 @@ import {
   Smartphone,
   ExternalLink,
   Sparkles,
-  Share2,
-  CheckCircle2
+  CheckCircle2,
+  Save,
+  Loader2,
+  Columns,
+  Layers,
+  Eye,
+  SlidersHorizontal,
+  Share2
 } from 'lucide-react';
 
 interface EditProfileClientProps {
@@ -34,29 +41,94 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
     initialProfile.theme === 'default' ? 'editorial' : (initialProfile.theme || 'editorial')
   );
   const [isDark, setIsDark] = useState(false);
-  const [deviceView, setDeviceView] = useState<'desktop' | 'mobile'>('desktop');
-  const [isEditorOpen, setIsEditorOpen] = useState(true); // Open by default for Linktree sliding editing experience
+  
+  // Responsive mode: on large screens both are displayed side-by-side simultaneously.
+  // On smaller viewports (< lg), the user can toggle between Dual (stacked), Desktop window, or Mobile phone.
+  const [responsiveMode, setResponsiveMode] = useState<'dual' | 'desktop' | 'mobile'>('dual');
+  
+  // Optional slide-in drawer for advanced fine-tuning
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  
+  // Active section target to coordinate two-way focus between Mobile Preview and Desktop Window
   const [activeSectionTarget, setActiveSectionTarget] = useState<{
     sectionKey: string;
     fieldKey?: string;
     timestamp: number;
   } | null>(null);
 
-  const activeThemeConfig = getThemeConfig(activeTheme);
+  const phoneContainerRef = useRef<HTMLDivElement>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // Two-way interaction: Clicking an element on the mobile preview focuses the desktop window section
   const handleSelectSection = (sectionKey: string, fieldKey?: string) => {
-    setIsEditorOpen(true);
     setActiveSectionTarget({
       sectionKey,
       fieldKey,
       timestamp: Date.now()
     });
+    showToast(`Focused section: ${sectionKey}`);
+  };
+
+  // Interaction from desktop window "Preview your card" button to highlight mobile preview
+  const handleViewCard = () => {
+    if (phoneContainerRef.current) {
+      phoneContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast('Mobile card preview in view');
+    }
+  };
+
+  // Global save handler saving to backend API & localStorage
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/profiles/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profileId: profile.id || initialProfile.id,
+          profileSlug: profile.slug || initialProfile.slug,
+          slug: profile.slug || initialProfile.slug,
+          userId: profile.userId || initialProfile.userId,
+          updatedData: profile
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || 'Failed to save changes.');
+        setIsSaving(false);
+        return;
+      }
+
+      const savedSlug = data.updatedProfile?.slug || data.profile?.slug || profile.slug || initialProfile.slug || initialProfile.id;
+      const finalProfile: ProfileData = data.updatedProfile || data.profile || { ...profile, slug: savedSlug };
+      setProfile(finalProfile);
+
+      // Cache locally
+      try {
+        localStorage.setItem(`avtive_profile_${savedSlug}`, JSON.stringify(finalProfile));
+        if (initialProfile.slug) {
+          localStorage.setItem(`avtive_profile_${initialProfile.slug}`, JSON.stringify(finalProfile));
+        }
+        localStorage.setItem('avtive_last_saved_profile', JSON.stringify(finalProfile));
+      } catch (e) {
+        console.error('Failed to cache profile in localStorage:', e);
+      }
+
+      showToast('✓ Profile saved successfully! Dual screens synchronized.');
+    } catch (err: any) {
+      console.error('Save profile error:', err);
+      showToast('Network error while saving changes.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   useEffect(() => {
@@ -64,118 +136,217 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
   }, []);
 
   const identifier = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
+  const currentBrowserUrl = `https://avtive-profiles-d297.vercel.app/profile/${identifier}/edit`;
 
   return (
     <div 
-      data-theme={activeTheme}
-      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans ${isEditorOpen ? 'md:pl-[460px] lg:pl-[500px] xl:pl-[540px]' : ''}`}
+      className="min-h-screen w-full flex flex-col bg-[#080D1A] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden"
+      style={{
+        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 165, 233, 0.12), transparent 70%), radial-gradient(ellipse 60% 40% at 100% 40%, rgba(99, 102, 241, 0.08), transparent 60%)'
+      }}
     >
       {/* Toast Notification Banner */}
       {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-xl border border-white/10 animate-in fade-in slide-in-from-top-2">
-          {toastMessage}
+        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-cyan-500/30 backdrop-blur-md animate-in fade-in slide-in-from-top-3 flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Top Studio Bar */}
-      <header className="sticky top-[53px] z-30 w-full bg-white/85 dark:bg-[#0B0D13]/85 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 transition-colors py-2 px-2.5 sm:px-4 shadow-2xs">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-3">
+      <header className="sticky top-0 z-30 w-full bg-[#080D1A]/90 backdrop-blur-xl border-b border-white/10 transition-colors py-2.5 px-3 sm:px-6 shadow-md">
+        <div className="max-w-[1780px] mx-auto flex items-center justify-between gap-3 sm:gap-4">
           
-          {/* Left: Back Link & Device View Switcher */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Left: Avtive Branding & Return to Public Profile */}
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <Link
               href={`/profile/${identifier}`}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs shrink-0"
+              className="flex items-center gap-2 group shrink-0"
+              title="Return to Public Profile"
+            >
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+                <AvtiveLogoIcon className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-extrabold text-white tracking-tight">avtive</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-400 font-mono font-bold border border-cyan-500/20 hidden sm:inline-block">
+                    PRO STUDIO
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-400 hidden sm:inline-block">Your Profile. Your Story.</span>
+              </div>
+            </Link>
+
+            <span className="h-4 w-px bg-white/15 hidden md:inline-block" />
+
+            <Link
+              href={`/profile/${identifier}`}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white transition-colors shadow-2xs shrink-0"
               title="Return to Public Profile"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Public Profile</span>
+              <span className="hidden md:inline">Public Profile</span>
             </Link>
+          </div>
 
-            {/* Device View Switcher */}
-            <div className="inline-flex items-center p-0.5 sm:p-1 rounded-2xl bg-slate-100 dark:bg-zinc-800/90 border border-slate-200 dark:border-zinc-700/80 shadow-2xs shrink-0">
+          {/* Center: Live Dual-Screen Indicator & Small Viewport Switcher */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Live Indicator Pill */}
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Simultaneous Dual-Screen Workspace</span>
+            </div>
+
+            {/* View Mode Switcher (Useful for small/medium viewports < lg) */}
+            <div className="flex lg:hidden items-center p-0.5 rounded-xl bg-white/5 border border-white/10">
               <button
                 type="button"
-                onClick={() => setDeviceView('desktop')}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  deviceView === 'desktop'
-                    ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
-                    : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                onClick={() => setResponsiveMode('dual')}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  responsiveMode === 'dual'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    : 'text-slate-400 hover:text-white'
                 }`}
-                title="Desktop View"
+                title="View Both Previews"
               >
-                <Monitor className="w-3.5 h-3.5 shrink-0" />
+                <Columns className="w-3 h-3" />
+                <span className="hidden sm:inline">Dual</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setResponsiveMode('desktop')}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  responsiveMode === 'desktop'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Desktop Window Only"
+              >
+                <Monitor className="w-3 h-3" />
                 <span className="hidden sm:inline">Desktop</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => setDeviceView('mobile')}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  deviceView === 'mobile'
-                    ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs'
-                    : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'
+                onClick={() => setResponsiveMode('mobile')}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  responsiveMode === 'mobile'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    : 'text-slate-400 hover:text-white'
                 }`}
-                title="Mobile View"
+                title="Mobile Phone Only"
               >
-                <Smartphone className="w-3.5 h-3.5 shrink-0" />
+                <Smartphone className="w-3 h-3" />
                 <span className="hidden sm:inline">Mobile</span>
               </button>
             </div>
           </div>
 
-          {/* Right: Studio Status & Toggle Button */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <span className="hidden md:flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mr-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live Interactive Canvas
-            </span>
-
+          {/* Right: Actions (Save, Sliding Drawer, View Live) */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Optional Slide-in Drawer Toggle */}
             <button
               type="button"
               onClick={() => setIsEditorOpen(!isEditorOpen)}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-2xs cursor-pointer shrink-0 ${
-                isEditorOpen
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm'
-                  : 'border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700'
-              }`}
-              title={isEditorOpen ? 'Collapse Editor Panel' : 'Open Sliding Editor'}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer shadow-2xs"
+              title={isEditorOpen ? 'Close Advanced Drawer' : 'Open Sliding Editor'}
             >
-              <Edit3 className="w-3.5 h-3.5 shrink-0" />
-              <span>{isEditorOpen ? 'Editor Open' : 'Edit Profile'}</span>
+              <Edit3 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="hidden md:inline">{isEditorOpen ? 'Close Drawer' : 'Quick Drawer'}</span>
             </button>
 
+            {/* Save Changes Button */}
+            <button
+              type="button"
+              onClick={handleSaveProfile}
+              disabled={isSaving}
+              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 active:scale-95"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span className="hidden sm:inline">Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5" />
+                  <span>Save</span>
+                </>
+              )}
+            </button>
+
+            {/* View Live Link in New Tab */}
             <Link
               href={`/profile/${identifier}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs shrink-0"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white transition-colors shadow-2xs shrink-0"
               title="Open public profile in new tab"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-              <span className="hidden sm:inline">View Live</span>
+              <ExternalLink className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="hidden sm:inline">Live URL</span>
             </Link>
           </div>
 
         </div>
       </header>
 
-      {/* Main Live Preview Canvas */}
-      {deviceView === 'mobile' ? (
-        <main className="flex-1 w-full mx-auto px-4 py-6 sm:py-8 flex justify-center items-start transition-all duration-300">
-          {/* Smartphone Chassis on Tablet/Desktop */}
-          <div className="hidden sm:block">
+      {/* Main Dual-Screen Interactive Workspace */}
+      <main className="flex-1 w-full max-w-[1780px] mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 transition-all duration-300">
+        
+        {/* Large Screens (lg & xl): Simultaneous Side-By-Side Layout */}
+        <div className="hidden lg:flex items-start justify-center gap-6 xl:gap-8 w-full">
+          
+          {/* SCREEN 1: Desktop Browser/Window Preview (Primary Canvas) */}
+          <div className="flex-1 min-w-0 max-w-[960px] xl:max-w-[1060px] 2xl:max-w-[1140px] transition-all">
+            <DesktopWindowPreview
+              profile={profile}
+              url={currentBrowserUrl}
+              onUpdateProfile={(updated) => {
+                setProfile(updated);
+                if (updated.theme && updated.theme !== activeTheme) {
+                  setActiveTheme(updated.theme);
+                }
+              }}
+              onSave={handleSaveProfile}
+              onViewCard={handleViewCard}
+              onSelectSection={handleSelectSection}
+              activeSectionTarget={activeSectionTarget}
+              isSaving={isSaving}
+            />
+          </div>
+
+          {/* SCREEN 2: Mobile Profile Preview (Figma Phone Preview alongside) */}
+          <aside 
+            ref={phoneContainerRef}
+            className="sticky top-20 shrink-0 w-[360px] xl:w-[380px] flex flex-col items-center select-none pt-1"
+          >
+            {/* Header pill above mobile phone */}
+            <div className="w-full max-w-[340px] flex items-center justify-between px-3 py-1.5 mb-2 rounded-xl bg-white/5 border border-white/10 text-[11px] font-medium text-slate-400">
+              <span className="flex items-center gap-1.5 text-cyan-400 font-semibold">
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>Live Phone Preview</span>
+              </span>
+              <span className="flex items-center gap-1 text-emerald-400 font-mono text-[10px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Synced
+              </span>
+            </div>
+
+            {/* Smartphone chassis hosting AvtiveDigitalCard */}
             <PhonePreview
               profile={{ ...profile, theme: activeTheme }}
               isDark={isDark}
               canEdit={true}
               onOpenEdit={() => setIsEditorOpen(true)}
-              onOpenShare={() => showToast('Share settings accessible in editor panel')}
+              onOpenShare={() => showToast('Share settings accessible in desktop window')}
               onOpenConnect={() => showToast('Connected!')}
               onSaveContact={() => showToast('Contact information saved!')}
               onSaveEdits={async (updated) => {
                 setProfile(updated);
-                showToast('Changes updated!');
+                showToast('Card updated!');
               }}
               onSelectTeamMember={(member) => {
                 const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
@@ -189,95 +360,137 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
               hideHeaderLabel={true}
               onSelectSection={handleSelectSection}
             />
-          </div>
 
-          {/* Full-Width Mobile View on Small Screens (< sm) */}
-          <div className="sm:hidden w-full max-w-md bg-white dark:bg-[#18181B] rounded-3xl border border-slate-200/80 dark:border-zinc-800/80 shadow-xs overflow-hidden">
-            <AvtiveDigitalCard
-              profile={{ ...profile, theme: activeTheme }}
-              canEdit={true}
-              isEditing={false}
-              isConnected={false}
-              onOpenEdit={() => setIsEditorOpen(true)}
-              onCancelEdit={() => {}}
-              onSaveEdits={async (updated) => {
-                setProfile(updated);
-                showToast('Changes updated!');
-              }}
-              onSaveContact={() => showToast('Contact information saved!')}
-              onOpenShare={() => showToast('Share settings accessible in editor panel')}
-              onOpenConnect={() => showToast('Connected!')}
-              onOpenQRModal={() => {}}
-              onOpenResumeModal={() => {}}
-              onSelectProject={() => {}}
-              onSelectTeamMember={(member) => {
-                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
-                router.push(`/profile/${slug}`);
-              }}
-              onViewCompany={() => {
-                if (profile.companyId) {
-                  router.push(`/profile/${profile.companyId}`);
-                }
-              }}
-              isDark={isDark}
-              viewMode="standard"
-              onSelectSection={handleSelectSection}
-            />
-          </div>
-        </main>
-      ) : (
-        /* Full Desktop Profile Card Viewport */
-        <main className="flex-1 w-full mx-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-8 flex justify-center transition-all duration-300 max-w-4xl lg:max-w-5xl">
-          <div className="w-full bg-white dark:bg-[#18181B] sm:rounded-3xl sm:border border-slate-200/80 dark:border-zinc-800/80 shadow-xs overflow-hidden">
-            <AvtiveDigitalCard
-              profile={{ ...profile, theme: activeTheme }}
-              canEdit={true}
-              isEditing={false}
-              isConnected={false}
-              onOpenEdit={() => setIsEditorOpen(true)}
-              onCancelEdit={() => {}}
-              onSaveEdits={async (updated) => {
-                setProfile(updated);
-                showToast('Changes updated!');
-              }}
-              onSaveContact={() => showToast('Contact information saved!')}
-              onOpenShare={() => showToast('Share settings accessible in editor panel')}
-              onOpenConnect={() => showToast('Connected!')}
-              onOpenQRModal={() => {}}
-              onOpenResumeModal={() => {}}
-              onSelectProject={() => {}}
-              onSelectTeamMember={(member) => {
-                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
-                router.push(`/profile/${slug}`);
-              }}
-              onViewCompany={() => {
-                if (profile.companyId) {
-                  router.push(`/profile/${profile.companyId}`);
-                }
-              }}
-              isDark={isDark}
-              viewMode="standard"
-              onSelectSection={handleSelectSection}
-            />
-          </div>
-        </main>
-      )}
+            <p className="text-[10px] text-slate-500 text-center mt-2.5">
+              Click any element on the phone to focus & edit it in the desktop window.
+            </p>
+          </aside>
 
-      {/* Floating Action Pill to Reopen Editor when Collapsed */}
-      {!isEditorOpen && (
-        <button
-          type="button"
-          onClick={() => setIsEditorOpen(true)}
-          className="fixed bottom-6 left-6 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/90 dark:bg-white/95 text-white dark:text-slate-900 backdrop-blur-md shadow-2xl hover:scale-105 active:scale-95 transition-all text-xs font-bold border border-white/20 dark:border-slate-300/40 cursor-pointer group"
-          title="Open sliding profile editor"
-        >
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse group-hover:scale-125 transition-transform" />
-          <Edit3 className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" />
-          <span>Edit Profile</span>
-        </button>
-      )}
+        </div>
 
-      {/* Linktree-inspired Sliding Editing Panel */}
+        {/* Smaller Screens (< lg): Responsive Adaptations without Horizontal Overflow */}
+        <div className="lg:hidden w-full flex flex-col items-center gap-6">
+          
+          {/* Dual Stacked View */}
+          {responsiveMode === 'dual' && (
+            <>
+              <div className="w-full max-w-2xl">
+                <div className="flex items-center justify-between px-2 py-1 mb-2 text-xs font-bold text-slate-400">
+                  <span className="flex items-center gap-1.5 text-cyan-400">
+                    <Monitor className="w-3.5 h-3.5" />
+                    <span>Desktop Window</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500">Screen 1 of 2</span>
+                </div>
+                <DesktopWindowPreview
+                  profile={profile}
+                  url={currentBrowserUrl}
+                  onUpdateProfile={(updated) => {
+                    setProfile(updated);
+                    if (updated.theme && updated.theme !== activeTheme) {
+                      setActiveTheme(updated.theme);
+                    }
+                  }}
+                  onSave={handleSaveProfile}
+                  onViewCard={handleViewCard}
+                  onSelectSection={handleSelectSection}
+                  activeSectionTarget={activeSectionTarget}
+                  isSaving={isSaving}
+                />
+              </div>
+
+              <div ref={phoneContainerRef} className="w-full max-w-sm flex flex-col items-center pt-4 border-t border-white/10">
+                <div className="flex items-center justify-between w-full max-w-[340px] px-2 py-1 mb-2 text-xs font-bold text-slate-400">
+                  <span className="flex items-center gap-1.5 text-cyan-400">
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>Mobile Phone Preview</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500">Screen 2 of 2</span>
+                </div>
+                <PhonePreview
+                  profile={{ ...profile, theme: activeTheme }}
+                  isDark={isDark}
+                  canEdit={true}
+                  onOpenEdit={() => setIsEditorOpen(true)}
+                  onOpenShare={() => showToast('Share settings accessible in desktop window')}
+                  onOpenConnect={() => showToast('Connected!')}
+                  onSaveContact={() => showToast('Contact information saved!')}
+                  onSaveEdits={async (updated) => {
+                    setProfile(updated);
+                    showToast('Card updated!');
+                  }}
+                  onSelectTeamMember={(member) => {
+                    const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                    router.push(`/profile/${slug}`);
+                  }}
+                  onViewCompany={() => {
+                    if (profile.companyId) {
+                      router.push(`/profile/${profile.companyId}`);
+                    }
+                  }}
+                  hideHeaderLabel={true}
+                  onSelectSection={handleSelectSection}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Desktop Window Only */}
+          {responsiveMode === 'desktop' && (
+            <div className="w-full max-w-2xl">
+              <DesktopWindowPreview
+                profile={profile}
+                url={currentBrowserUrl}
+                onUpdateProfile={(updated) => {
+                  setProfile(updated);
+                  if (updated.theme && updated.theme !== activeTheme) {
+                    setActiveTheme(updated.theme);
+                  }
+                }}
+                onSave={handleSaveProfile}
+                onViewCard={handleViewCard}
+                onSelectSection={handleSelectSection}
+                activeSectionTarget={activeSectionTarget}
+                isSaving={isSaving}
+              />
+            </div>
+          )}
+
+          {/* Mobile Phone Only */}
+          {responsiveMode === 'mobile' && (
+            <div ref={phoneContainerRef} className="w-full max-w-sm flex flex-col items-center">
+              <PhonePreview
+                profile={{ ...profile, theme: activeTheme }}
+                isDark={isDark}
+                canEdit={true}
+                onOpenEdit={() => setIsEditorOpen(true)}
+                onOpenShare={() => showToast('Share settings accessible in desktop window')}
+                onOpenConnect={() => showToast('Connected!')}
+                onSaveContact={() => showToast('Contact information saved!')}
+                onSaveEdits={async (updated) => {
+                  setProfile(updated);
+                  showToast('Card updated!');
+                }}
+                onSelectTeamMember={(member) => {
+                  const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                  router.push(`/profile/${slug}`);
+                }}
+                onViewCompany={() => {
+                  if (profile.companyId) {
+                    router.push(`/profile/${profile.companyId}`);
+                  }
+                }}
+                hideHeaderLabel={true}
+                onSelectSection={handleSelectSection}
+              />
+            </div>
+          )}
+
+        </div>
+
+      </main>
+
+      {/* Sliding Drawer for fine-tuning when user clicks "Quick Drawer" */}
       <SlidingEditorPanel
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}

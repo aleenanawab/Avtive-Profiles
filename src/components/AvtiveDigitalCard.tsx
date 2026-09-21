@@ -471,7 +471,13 @@ export function AvtiveDigitalCard({
                 if (!isSectionVisible('experience')) return null;
                 if (!isEditing && (!draftProfile.experiences || draftProfile.experiences.length === 0)) return null;
                 return (
-                  <ExperienceSection key="experience" profile={draftProfile} theme={theme} />
+                  <ExperienceSection 
+                    key="experience" 
+                    profile={draftProfile} 
+                    theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
                 );
 
               case 'projects':
