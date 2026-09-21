@@ -357,7 +357,7 @@ export function ProfileEditorProvider({
     () =>
       socialLinks
         .filter((s) => s.visible && s.url.trim())
-        .map((s) => ({ platform: s.platform as string, url: s.url, label: s.title })),
+        .map((s) => ({ platform: s.platform as any, url: s.url, label: s.title })),
     [socialLinks]
   );
 
