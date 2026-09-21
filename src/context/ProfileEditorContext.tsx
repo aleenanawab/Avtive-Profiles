@@ -33,6 +33,7 @@ import {
   DynamicSection,
   DEFAULT_SECTION_ORDER,
   DEFAULT_SECTION_VISIBILITY,
+  SocialLink,
 } from '@/types/profile';
 import { ALL_PROFILE_SECTIONS } from '@/components/sections/DynamicSectionGroups';
 
@@ -143,7 +144,7 @@ export interface ProfileEditorContextValue {
   // ── Derived ───────────────────────────────────────────────────────────────
   fullName: string;
   liveProfile: ProfileData;          // use this for <AvtiveDigitalCard> / <PhonePreview>
-  activeSocialsPayload: { platform: string; url: string; label: string }[];
+  activeSocialsPayload: SocialLink[];
 
   // ── Upload / Save status ─────────────────────────────────────────────────
   isUploadingAvatar: boolean;
@@ -353,11 +354,11 @@ export function ProfileEditorProvider({
   // ── Derived values ────────────────────────────────────────────────────────
   const fullName = `${firstName} ${secondName}`.trim();
 
-  const activeSocialsPayload = useMemo(
+  const activeSocialsPayload = useMemo<SocialLink[]>(
     () =>
       socialLinks
         .filter((s) => s.visible && s.url.trim())
-        .map((s) => ({ platform: s.platform as any, url: s.url, label: s.title })),
+        .map((s) => ({ platform: s.platform as SocialLink['platform'], url: s.url, label: s.title })),
     [socialLinks]
   );
 
