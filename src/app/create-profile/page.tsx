@@ -20,8 +20,8 @@ export default async function CreateProfilePage() {
   }
 
   return (
-    <main className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 bg-[#FAFAF9] dark:bg-[#09090B] text-slate-900 dark:text-white transition-colors font-sans">
-      <Suspense fallback={<div className="p-8 text-center text-sm font-semibold">Loading profile setup...</div>}>
+    <main className="min-h-screen w-full bg-[#070B14] text-white transition-colors font-sans">
+      <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-slate-400">Loading profile setup...</div>}>
         <CreateProfileClient user={session} />
       </Suspense>
     </main>
