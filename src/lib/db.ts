@@ -4,16 +4,17 @@ import bcrypt from 'bcryptjs';
 import { ProfileData, UserRecord, ProfileTheme, UserConnection, SharingSettings, normalizeProfileType } from '@/types/profile';
 import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
 
-export {
-  DEFAULT_SHARING_SETTINGS,
-  DEFAULT_SECTION_VISIBILITY,
-  DEFAULT_SECTION_ORDER
-} from '@/types/profile';
 import {
   DEFAULT_SHARING_SETTINGS,
   DEFAULT_SECTION_VISIBILITY,
   DEFAULT_SECTION_ORDER
 } from '@/types/profile';
+
+export {
+  DEFAULT_SHARING_SETTINGS,
+  DEFAULT_SECTION_VISIBILITY,
+  DEFAULT_SECTION_ORDER
+};
 
 interface DatabaseSchema {
   users: UserRecord[];
@@ -445,26 +446,12 @@ export async function createProfileForUser(
 
 export function setProfileResponseCookies(response: any, profile: ProfileData) {
   try {
-    const raw = JSON.stringify(profile);
-    const encoded = encodeURIComponent(raw);
-    const CHUNK_SIZE = 2000;
-    const totalChunks = Math.ceil(encoded.length / CHUNK_SIZE);
+    if (!response || !response.cookies) return;
 
-    response.cookies.set('avtive_prof_count', String(totalChunks), {
-      path: '/',
-      httpOnly: false,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30
-    });
-
-    for (let i = 0; i < totalChunks; i++) {
-      const chunk = encoded.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-      response.cookies.set(`avtive_prof_${i}`, chunk, {
-        path: '/',
-        httpOnly: false,
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 30
-      });
+    // Proactively delete/expire legacy chunked cookies that cause 494 REQUEST_HEADER_TOO_LARGE
+    response.cookies.delete('avtive_prof_count');
+    for (let i = 0; i <= 25; i++) {
+      response.cookies.delete(`avtive_prof_${i}`);
     }
 
     const mini = {
@@ -480,7 +467,7 @@ export function setProfileResponseCookies(response: any, profile: ProfileData) {
       maxAge: 60 * 60 * 24 * 30
     });
   } catch (err) {
-    console.error('Failed to set chunked profile cookies:', err);
+    console.error('Failed to set response cookie:', err);
   }
 }
 
@@ -513,32 +500,6 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
   try {
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
-    const countStr = cookieStore.get('avtive_prof_count')?.value;
-    if (countStr) {
-      const count = parseInt(countStr, 10);
-      let combined = '';
-      for (let i = 0; i < count; i++) {
-        const chunk = cookieStore.get(`avtive_prof_${i}`)?.value;
-        if (chunk) {
-          combined += chunk;
-        }
-      }
-      if (combined) {
-        const p = JSON.parse(decodeURIComponent(combined));
-        if (
-          p &&
-          (p.id?.toLowerCase() === idOrSlug.toLowerCase() ||
-            p.slug?.toLowerCase() === idOrSlug.toLowerCase() ||
-            p.userId === idOrSlug ||
-            idOrSlug.toLowerCase().includes(p.slug?.toLowerCase()) ||
-            p.slug?.toLowerCase().includes(idOrSlug.toLowerCase()))
-        ) {
-          db.profiles[p.id] = p;
-          db.profiles[p.slug] = p;
-          return p;
-        }
-      }
-    }
 
     const lastProfileRaw = cookieStore.get('avtive_last_profile')?.value;
     if (lastProfileRaw) {
