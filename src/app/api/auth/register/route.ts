@@ -57,12 +57,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Save account (profile will be created in profile-creation step)
-    const { user } = await createUser({
+    // 5. Save account & auto-create default profile
+    const { user, profile } = await createUser({
       name: name.trim(),
       email: normalizedEmail,
       passwordHash,
-      createProfile: false
+      createProfile: true
     });
 
     const sessionUser = {
@@ -76,7 +76,9 @@ export async function POST(request: NextRequest) {
         success: true,
         autoLogin: true,
         message: 'Account created successfully.',
-        user: sessionUser
+        user: sessionUser,
+        profile,
+        profileSlug: profile?.slug || profile?.id
       },
       { status: 201 }
     );

@@ -33,7 +33,8 @@ import {
   SlidersHorizontal,
   Smartphone,
   Eye,
-  Columns
+  Columns,
+  Layers
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { ProjectItem, ExperienceItem, EducationItem } from '@/types/profile';
@@ -197,43 +198,52 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     <div className={`w-[375px] min-w-[375px] max-w-[375px] h-full flex flex-col select-none overflow-hidden ${className}`}>
       
       {/* Top Slider Control Presets Bar */}
-      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-400 bg-[#0E1528] border-b border-white/10 shrink-0">
+      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-300 bg-[#0C1424] border-b border-white/10 shrink-0">
         <span className="flex items-center gap-1.5 font-bold text-cyan-400">
           <Smartphone className="w-3.5 h-3.5" />
           <span>Mobile View</span>
         </span>
 
-        {/* Quick Split Presets */}
-        <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-0.5">
+        {/* Quick Split Presets Bar */}
+        <div className="flex items-center gap-1 bg-[#070D18] border border-cyan-500/30 rounded-lg p-0.5 shadow-inner">
           <button
             type="button"
             onClick={() => setSliderPos(50)}
-            className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
-              Math.round(sliderPos) === 50 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-slate-400 hover:text-white'
+            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+              Math.round(sliderPos) === 50
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
             title="Split 50%"
           >
-            Split
+            <Columns className="w-2.5 h-2.5" />
+            <span>Split</span>
           </button>
           <button
             type="button"
             onClick={() => setSliderPos(85)}
-            className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
-              sliderPos > 70 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-slate-400 hover:text-white'
+            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+              sliderPos > 70
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
             title="Show Form View"
           >
-            Form
+            <User className="w-2.5 h-2.5" />
+            <span>Form</span>
           </button>
           <button
             type="button"
             onClick={() => setSliderPos(15)}
-            className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
-              sliderPos < 30 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-slate-400 hover:text-white'
+            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+              sliderPos < 30
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
             title="Show Section Drawer"
           >
-            Drawer
+            <Layers className="w-2.5 h-2.5" />
+            <span>Drawer</span>
           </button>
         </div>
       </div>
@@ -621,20 +631,28 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             </div>
 
             {/* ─────────────────────────────────────────────────────────────────── */}
-            {/* SLIDER BAR HANDLE & VERTICAL DIVIDER LINE                           */}
+            {/* SLIDER BAR HANDLE & VERTICAL DIVIDER LINE (High Visibility)         */}
             {/* ─────────────────────────────────────────────────────────────────── */}
             <div
               onMouseDown={handleMouseDown}
               onTouchStart={handleTouchStart}
               style={{ left: `${sliderPos}%` }}
-              className="absolute top-0 bottom-0 -ml-2.5 w-5 flex flex-col items-center justify-center z-30 cursor-ew-resize group select-none touch-none"
+              className="absolute top-0 bottom-0 -ml-4 w-8 flex flex-col items-center justify-center z-40 cursor-ew-resize group select-none touch-none"
             >
-              {/* Glowing vertical line */}
-              <div className="w-[2px] h-full bg-cyan-400/80 group-hover:bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.8)] transition-all" />
+              {/* Glowing High-Contrast Vertical Divider */}
+              <div className="w-[3px] h-full bg-gradient-to-b from-cyan-400 via-sky-300 to-cyan-500 shadow-[0_0_12px_rgba(34,211,238,0.95)] group-hover:w-[4px] transition-all" />
               
-              {/* Circular / Pill Drag Handle */}
-              <div className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#0D182A] border-2 border-cyan-400 flex items-center justify-center shadow-lg group-hover:scale-110 active:scale-95 transition-transform">
-                <Columns className="w-3 h-3 text-cyan-300" />
+              {/* Circular Illuminated Drag Button */}
+              <div 
+                title="Drag to adjust split view"
+                className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#081120] border-2 border-cyan-400 ring-2 ring-cyan-500/40 flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.85)] group-hover:scale-115 active:scale-95 transition-all cursor-grab active:cursor-grabbing"
+              >
+                <SlidersHorizontal className="w-4 h-4 text-cyan-300" />
+              </div>
+
+              {/* Visual "◀ SLIDE ▶" Drag Affordance Pill */}
+              <div className="absolute top-[calc(50%+22px)] -translate-x-1/2 left-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#081120]/95 border border-cyan-400/60 text-[8px] font-mono font-extrabold text-cyan-300 shadow-md pointer-events-none opacity-90 group-hover:opacity-100 transition-opacity">
+                ◀ SLIDE ▶
               </div>
             </div>
 

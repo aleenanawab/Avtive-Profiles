@@ -149,7 +149,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
 
         <div className="flex items-center gap-3 shrink-0">
           <Link
-            href="/onboarding/theme"
+            href="/create-profile"
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 transition-all active:scale-95"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -162,7 +162,6 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {profiles.map((p) => {
           const isActive = p.id === activeProfile?.id;
-          const themeName = getThemeDisplay(p.theme);
 
           return (
             <div
@@ -200,10 +199,6 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                   <div className="flex justify-between">
                     <span className="text-slate-400">Type</span>
                     <span className="font-semibold capitalize text-cyan-300">{p.type || 'Individual'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Theme</span>
-                    <span className="font-semibold text-slate-200">{themeName}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Organization</span>
@@ -255,7 +250,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
       <div>
         <div className="flex items-center justify-between mb-3 text-slate-400">
           <h2 className="text-base font-bold text-white">My Profiles ({profiles.length})</h2>
-          <Link href="/onboarding/theme" className="text-xs font-bold text-cyan-400">
+          <Link href="/create-profile" className="text-xs font-bold text-cyan-400">
             + New
           </Link>
         </div>

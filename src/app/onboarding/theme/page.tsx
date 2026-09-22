@@ -66,6 +66,22 @@ function ThemeStepContent() {
   // Shared theme state between Desktop and Mobile screens
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>(initialTheme);
 
+  // If user is already authenticated with a profile, redirect immediately so theme is not asked again
+  React.useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
+          if (hasProfiles) {
+            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug || data.user.id;
+            router.replace(`/profile/${targetSlug}`);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [router]);
+
   const handleNext = () => {
     router.push(`/onboarding/role?theme=${selectedTheme}`);
   };

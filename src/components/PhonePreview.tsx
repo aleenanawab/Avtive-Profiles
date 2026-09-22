@@ -40,51 +40,47 @@ export function PhonePreview({
   headerTitle = 'Live Mobile Preview',
   onSelectSection
 }: PhonePreviewProps) {
-  const responsiveChassisWidth = 'min(375px, calc(100vw - 2rem), calc((82vh - 2.5rem) * (375 / 760)))';
-
   return (
-    <div className="w-full flex flex-col items-center select-none px-2 sm:px-0">
+    <div className="w-full flex flex-col items-center select-none">
       {/* Phone Header Label */}
       {!hideHeaderLabel && (
         <div 
-          className="w-full flex items-center justify-between pb-2 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all"
-          style={{ width: responsiveChassisWidth, maxWidth: '100%' }}
+          className="w-full max-w-[390px] flex items-center justify-between pb-2 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all"
         >
-          <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px] truncate">
-            <Smartphone className="w-3.5 h-3.5 shrink-0" />
+          <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px] truncate font-mono">
+            <Smartphone className="w-3.5 h-3.5 shrink-0 text-cyan-500" />
             <span className="truncate">{headerTitle}</span>
           </span>
           <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Realtime
+            Standard 390×844
           </span>
         </div>
       )}
 
-      {/* Realistic Smartphone Chassis - Strict 375:760 Aspect Ratio & Viewport-Fitting */}
+      {/* Realistic Standard Smartphone Chassis (390px x 844px standard mobile aspect ratio) */}
       <div 
-        className="relative aspect-[375/760] max-h-[82vh] rounded-[36px] sm:rounded-[48px] p-2 sm:p-[9px] bg-gradient-to-b from-neutral-800 via-neutral-900 to-black shadow-2xl ring-1 ring-black/50 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0"
-        style={{ width: responsiveChassisWidth, maxWidth: '100%' }}
+        className="relative w-full max-w-[390px] aspect-[390/844] max-h-[85vh] rounded-[48px] p-2.5 sm:p-3 bg-gradient-to-b from-[#222736] via-[#141824] to-[#0A0D15] shadow-2xl shadow-black/80 ring-1 ring-white/15 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0"
       >
         
-        {/* Screen Frame */}
-        <div className="relative w-full h-full rounded-[28px] sm:rounded-[40px] overflow-hidden bg-white dark:bg-[#111319] flex flex-col border border-black/40 select-text">
+        {/* Internal Screen Frame */}
+        <div className="relative w-full h-full rounded-[38px] overflow-hidden bg-white dark:bg-[#0E1528] flex flex-col border border-black/40 select-text">
           
           {/* iOS Status Bar */}
-          <div className="relative z-30 flex items-center justify-between px-4 sm:px-6 pt-2.5 sm:pt-3 pb-1 text-[10px] sm:text-[11px] font-semibold text-slate-800 dark:text-white select-none bg-transparent shrink-0">
-            <span className="tabular-nums font-mono text-[10px] sm:text-[11px]">9:41</span>
+          <div className="relative z-30 flex items-center justify-between px-5 pt-2.5 pb-1 text-[11px] font-semibold text-slate-800 dark:text-white select-none bg-transparent shrink-0">
+            <span className="tabular-nums font-mono text-[11px]">9:41</span>
 
             {/* Dynamic Island Notch */}
-            <div className="w-20 sm:w-24 h-4 sm:h-5 bg-black rounded-full flex items-center justify-end px-1.5 sm:px-2 gap-1 sm:gap-1.5 shadow-sm shrink-0">
-              <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#111] ring-1 ring-white/10" />
-              <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
+            <div className="w-22 h-4.5 bg-black rounded-full flex items-center justify-end px-2 gap-1.5 shadow-sm shrink-0">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#1c1f28] ring-1 ring-white/10" />
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
             </div>
 
             {/* Status Icons */}
-            <div className="flex items-center gap-1 shrink-0">
-              <Signal className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
-              <Wifi className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
-              <Battery className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Signal className="w-3 h-3" />
+              <Wifi className="w-3 h-3" />
+              <Battery className="w-3.5 h-3.5" />
             </div>
           </div>
 
@@ -113,8 +109,8 @@ export function PhonePreview({
           </div>
 
           {/* Bottom Home Indicator */}
-          <div className="relative z-30 w-full py-1 sm:py-1.5 flex justify-center bg-transparent pointer-events-none shrink-0">
-            <div className="w-20 sm:w-28 h-0.5 sm:h-1 bg-black/40 dark:bg-white/40 rounded-full" />
+          <div className="relative z-30 w-full py-1.5 flex justify-center bg-transparent pointer-events-none shrink-0">
+            <div className="w-32 h-1 bg-black/40 dark:bg-white/40 rounded-full" />
           </div>
 
         </div>

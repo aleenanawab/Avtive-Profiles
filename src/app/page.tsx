@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfilesByUserId } from '@/lib/db';
+import { getProfilesByUserId, createProfileForUser } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +14,15 @@ export default async function Home() {
       const targetId = primaryProfile.slug || primaryProfile.id;
       redirect(`/profile/${targetId}/edit`);
     } else {
-      redirect('/onboarding/theme');
+      const newProfile = await createProfileForUser(session.id, {
+        name: session.name,
+        email: session.email,
+        profileName: 'Primary Profile',
+        designation: 'Professional',
+        type: 'individual',
+        theme: 'editorial'
+      });
+      redirect(`/profile/${newProfile.slug || newProfile.id}/edit`);
     }
   }
 

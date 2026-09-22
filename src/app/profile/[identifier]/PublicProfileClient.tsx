@@ -20,10 +20,13 @@ import {
   Users, 
   Edit3, 
   Monitor, 
-  Smartphone,
-  Sparkles,
-  ExternalLink,
-  Lock
+  Smartphone, 
+  Sparkles, 
+  ExternalLink, 
+  Lock,
+  LogOut,
+  LayoutGrid,
+  LogIn
 } from 'lucide-react';
 
 interface PublicProfileClientProps {
@@ -64,6 +67,7 @@ function PublicProfileClientInner({
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserSession | null>(session);
 
   const activeThemeConfig = getThemeConfig(activeTheme);
 
@@ -76,6 +80,31 @@ function PublicProfileClientInner({
     const hasDark = document.documentElement.classList.contains('dark');
     setIsDark(hasDark);
   }, []);
+
+  // Fetch / verify session dynamically so logout button is always available when user is logged in
+  useEffect(() => {
+    if (!currentUser) {
+      fetch('/api/auth/me')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user) {
+            setCurrentUser(data.user);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [currentUser]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      setCurrentUser(null);
+      window.location.replace('/login');
+    }
+  };
 
   const handleSaveEdits = async (updatedData: ProfileData) => {
     try {
@@ -137,7 +166,7 @@ function PublicProfileClientInner({
             <span>Desktop ⇄ Mobile Simultaneous Working View</span>
           </div>
 
-          {/* Right Toolbar Actions */}
+          {/* Right Toolbar Actions: Studio Editor, Dashboard, Share & Logout */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             {isOwner && (
               <Link
@@ -150,6 +179,17 @@ function PublicProfileClientInner({
               </Link>
             )}
 
+            {currentUser && (
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer shrink-0"
+                title="View Profiles Dashboard"
+              >
+                <LayoutGrid className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                <span className="hidden md:inline">Dashboard</span>
+              </Link>
+            )}
+
             <button
               type="button"
               onClick={() => setIsShareModalOpen(true)}
@@ -159,6 +199,27 @@ function PublicProfileClientInner({
               <Share2 className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
               <span>Share</span>
             </button>
+
+            {currentUser ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-400 dark:hover:text-rose-300 dark:hover:bg-rose-950/30 border border-rose-500/20 transition-all cursor-pointer shadow-2xs shrink-0"
+                title="Sign Out of Account"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-all shadow-2xs shrink-0 cursor-pointer"
+                title="Log In"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Log In</span>
+              </Link>
+            )}
           </div>
 
         </div>
@@ -227,17 +288,17 @@ function PublicProfileClientInner({
         </section>
 
         {/* ======================================================================= */}
-        {/* WORKING SCREEN 2: MOBILE SMARTPHONE PASS                               */}
+        {/* WORKING SCREEN 2: MOBILE SMARTPHONE PASS (Standard 390×844 Mobile)     */}
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[410px] min-w-[390px] max-w-[430px] shrink-0 flex flex-col items-center"
+          className="w-[390px] min-w-[360px] max-w-[410px] shrink-0 flex flex-col items-center"
         >
           {/* Top Label */}
           <div className="w-full flex items-center justify-between px-2 mb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
               <Smartphone className="w-3.5 h-3.5 text-cyan-500" />
-              <span>Mobile Screen &middot; Interactive Pass</span>
+              <span>Mobile Screen &middot; Standard 390×844</span>
             </span>
             <span className="text-emerald-500 font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -246,7 +307,7 @@ function PublicProfileClientInner({
           </div>
 
           {/* Smartphone Chassis Frame */}
-          <div className="w-full">
+          <div className="w-full flex justify-center">
             <PhonePreview
               profile={{ ...profile, theme: activeTheme }}
               isDark={isDark}

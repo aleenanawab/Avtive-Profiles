@@ -57,10 +57,10 @@ export default function LoginClient() {
             } else if (targetId) {
               router.replace(`/profile/${targetId}`);
             } else {
-              router.replace('/onboarding/theme');
+              router.replace('/dashboard');
             }
           } else {
-            router.replace('/onboarding/theme');
+            router.replace('/dashboard');
           }
         }
       })
@@ -95,7 +95,7 @@ export default function LoginClient() {
           router.push(`/profile/${targetId}`);
         }
       } else {
-        router.push('/onboarding/theme');
+        router.push('/dashboard');
       }
       router.refresh();
     } catch (err) {
@@ -145,7 +145,7 @@ export default function LoginClient() {
           router.push(`/profile/${targetId}`);
         }
       } else {
-        router.push('/onboarding/theme');
+        router.push('/dashboard');
       }
 
       router.refresh();

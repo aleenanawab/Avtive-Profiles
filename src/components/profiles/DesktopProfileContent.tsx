@@ -10,7 +10,6 @@ import {
   ExternalLink, 
   Eye, 
   EyeOff, 
-  Palette, 
   Lock, 
   Shield, 
   Tag, 
@@ -538,51 +537,6 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#080D1A] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
                   placeholder="Comprehensive background, achievements, and technical philosophy..."
                 />
-              </div>
-            </div>
-
-            {/* Theme Selector Strip */}
-            <div className="p-5 rounded-2xl bg-[#0E1526] border border-white/10 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-cyan-400" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white font-mono">Profile Theme</h3>
-                </div>
-                <span className="text-[11px] font-mono text-emerald-400">● Live Preview Active</span>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-                {[
-                  { id: 'editorial' as ProfileTheme, name: 'Editorial', tag: 'Minimal' },
-                  { id: 'cyber' as ProfileTheme, name: 'Developer', tag: 'Terminal' },
-                  { id: 'luxe' as ProfileTheme, name: 'Luxe Velvet', tag: 'Executive' },
-                  { id: 'elegant' as ProfileTheme, name: 'Elegant', tag: 'Luxury' },
-                  { id: 'dark' as ProfileTheme, name: 'Dark Navy', tag: 'Executive' },
-                  { id: 'minimal' as ProfileTheme, name: 'Clean Pure', tag: 'Pure' }
-                ].map((th) => {
-                  const isSelected = activeTheme === th.id;
-                  return (
-                    <button
-                      key={th.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveTheme(th.id);
-                        updateField('theme', th.id);
-                      }}
-                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                        isSelected 
-                          ? 'border-cyan-400 bg-cyan-500/15 ring-1 ring-cyan-400 shadow-md' 
-                          : 'border-white/10 bg-white/[0.02] hover:bg-white/5 text-slate-300'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-white truncate">{th.name}</span>
-                        {isSelected && <Check className="w-3 h-3 text-cyan-400 shrink-0" />}
-                      </div>
-                      <span className="text-[10px] text-slate-400 font-mono">{th.tag}</span>
-                    </button>
-                  );
-                })}
               </div>
             </div>
 

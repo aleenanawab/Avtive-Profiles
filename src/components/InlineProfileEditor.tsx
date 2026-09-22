@@ -6,7 +6,6 @@ import {
   X, 
   Loader2, 
   AlertCircle, 
-  Palette, 
   User, 
   Briefcase, 
   Building2, 
@@ -32,51 +31,6 @@ interface InlineProfileEditorProps {
   onCancel: () => void;
   onThemePreview?: (theme: ProfileTheme) => void;
 }
-
-const THEME_OPTIONS: { id: ProfileTheme; name: string; tag: string; description: string; previewClass: string }[] = [
-  {
-    id: 'elegant',
-    name: 'Elegant',
-    tag: 'Luxury',
-    description: 'Warm champagne & amber tones, refined typography, single unified color with zero blue',
-    previewClass: 'bg-[#FAF7F2] border-[#B88746] text-[#2C221E]'
-  },
-  {
-    id: 'dark',
-    name: 'Dark Executive',
-    tag: 'Executive',
-    description: 'Deep obsidian contrast, crisp silver accents, sleek executive monochrome in one solid color',
-    previewClass: 'bg-[#121216] border-neutral-600 text-white'
-  },
-  {
-    id: 'minimal',
-    name: 'Minimal',
-    tag: 'Pure',
-    description: 'Subtle borders and stark monochromatic typography in one solid color',
-    previewClass: 'bg-neutral-50 border-neutral-800 text-neutral-900'
-  },
-  {
-    id: 'professional',
-    name: 'Professional',
-    tag: 'Corporate',
-    description: 'Cool slate background with deep business styling in one solid color with zero blue',
-    previewClass: 'bg-slate-100 border-slate-700 text-slate-900'
-  },
-  {
-    id: 'modern',
-    name: 'Modern / Creative',
-    tag: 'Creative',
-    description: 'Modern cards with gradient accents and emerald highlights in one solid color',
-    previewClass: 'bg-[#F8FAFC] border-emerald-500 text-emerald-950'
-  },
-  {
-    id: 'default',
-    name: 'Clean Neutral',
-    tag: 'Clean',
-    description: 'Neutral crisp contrast with balanced corporate typography in one solid color with zero blue',
-    previewClass: 'bg-white border-slate-700 text-slate-900'
-  }
-];
 
 export function InlineProfileEditor({
   profile,
@@ -217,58 +171,6 @@ export function InlineProfileEditor({
           <span>{errorMessage}</span>
         </div>
       )}
-
-      {/* ========================================================================= */}
-      {/* 1. PROFILE THEME SELECTOR                                                 */}
-      {/* ========================================================================= */}
-      <div className={`p-5 rounded-3xl ${theme.cardBg} border ${theme.cardBorder} shadow-sm space-y-3`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Palette className={`w-4 h-4 ${theme.accentText}`} />
-            <h3 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-              Profile Theme (Select 1 of 6)
-            </h3>
-          </div>
-          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md ${theme.badgeBg} ${theme.badgeText} font-bold`}>
-            ● Live Preview
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-          {THEME_OPTIONS.map((th) => {
-            const isSelected = (formData.theme || 'elegant') === th.id;
-            const thConfig = getThemeConfig(th.id);
-            return (
-              <button
-                key={th.id}
-                type="button"
-                onClick={() => handleThemeSelect(th.id)}
-                className={`p-2.5 rounded-2xl border-2 text-left transition-all flex flex-col justify-between ${
-                  isSelected
-                    ? `${thConfig.cardBorder} shadow-md scale-[1.02] ${thConfig.badgeBg} ${thConfig.accentText}`
-                    : `${theme.cardBorder} hover:opacity-85 ${theme.cardBg} ${theme.textSecondary}`
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-bold uppercase font-mono">
-                    {th.tag}
-                  </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
-                </div>
-                <div className={`h-6 w-full rounded-lg mb-1.5 flex items-center px-2 text-[10px] font-bold border ${th.previewClass}`}>
-                  Aa
-                </div>
-                <p className="text-xs font-bold truncate">
-                  {th.name}
-                </p>
-                <p className={`text-[10px] leading-tight line-clamp-2 mt-0.5 opacity-80`}>
-                  {th.description}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-      </div>
 
       {/* ========================================================================= */}
       {/* 2. MEDIA UPLOADERS: Cover & Avatar (Requirement 4)                       */}
