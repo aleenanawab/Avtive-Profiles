@@ -10,7 +10,6 @@ import {
 } from '@/types/profile';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { PhonePreview } from '@/components/PhonePreview';
-import { MobileSliderProfileView } from '@/components/profiles/MobileSliderProfileView';
 import { getThemeConfig } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
 import { SlidingEditorPanel } from '@/components/profiles/SlidingEditorPanel';
@@ -27,11 +26,7 @@ import {
   Lock,
   LogOut,
   LayoutGrid,
-  LogIn,
-  SlidersHorizontal,
-  Signal,
-  Wifi,
-  Battery
+  LogIn
 } from 'lucide-react';
 
 interface PublicProfileClientProps {
@@ -73,9 +68,6 @@ function PublicProfileClientInner({
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<UserSession | null>(session);
-
-  // Mobile screen view tab: 'slider' (Split Slider Window) | 'card' (Live Pass Card)
-  const [mobileTab, setMobileTab] = useState<'slider' | 'card'>('slider');
 
   const activeThemeConfig = getThemeConfig(activeTheme);
 
@@ -296,114 +288,46 @@ function PublicProfileClientInner({
         </section>
 
         {/* ======================================================================= */}
-        {/* WORKING SCREEN 2: MOBILE SMARTPHONE PASS (Exact 375×667 Dimensions)     */}
+        {/* WORKING SCREEN 2: ORIGINAL LIVE MOBILE PREVIEW (Standard 375×667 px)    */}
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
           className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center"
         >
-          {/* Top Label & View Tabs: Slider Window (with 3-line icon) vs Live Card */}
-          <div className="w-full flex items-center justify-between px-1 mb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+          {/* Top Label */}
+          <div className="w-full flex items-center justify-between px-2 mb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
               <Smartphone className="w-3.5 h-3.5 text-cyan-500" />
-              <span>375×667 px</span>
+              <span>Mobile Screen &middot; 375×667 px</span>
             </span>
-
-            {/* Toggle between Slider Window & Live Card */}
-            <div className="flex items-center gap-1 p-0.5 rounded-xl bg-black/40 border border-white/10">
-              <button
-                type="button"
-                onClick={() => setMobileTab('slider')}
-                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                  mobileTab === 'slider'
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Slider Window with three-lines split handle"
-              >
-                {/* 3 Horizontal Lines Icon */}
-                <div className="flex flex-col gap-0.5 justify-center">
-                  <div className="w-2.5 h-[1.5px] bg-current rounded-full" />
-                  <div className="w-2.5 h-[1.5px] bg-current rounded-full" />
-                  <div className="w-2.5 h-[1.5px] bg-current rounded-full" />
-                </div>
-                <span>Slider Window</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setMobileTab('card')}
-                className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
-                  mobileTab === 'card'
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-                title="Live Pass Digital Card"
-              >
-                <span>Live Card</span>
-              </button>
-            </div>
+            <span className="text-emerald-500 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Live Card</span>
+            </span>
           </div>
 
-          {/* Smartphone Chassis Frame (Standard 375px x 667px) */}
-          <div className="w-[375px] min-w-[375px] max-w-[375px] h-[667px] min-h-[667px] max-h-[667px] rounded-[40px] border-[6px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-white/10">
-            
-            {/* Phone Status Bar (9:41, Wifi, Battery) */}
-            <div className="w-full bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-300 shrink-0 border-b border-white/5 select-none">
-              <span>9:41</span>
-              <div className="w-20 h-4 rounded-full bg-black border border-white/10 flex items-center justify-center">
-                <span className="w-2 h-2 rounded-full bg-slate-900 border border-white/20" />
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <Signal className="w-3 h-3" />
-                <Wifi className="w-3 h-3" />
-                <Battery className="w-3.5 h-3.5" />
-              </div>
-            </div>
-
-            {/* Mobile Viewport Content (375x667) */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-[#050811]">
-              {mobileTab === 'slider' ? (
-                <div className="w-full flex-1 flex flex-col overflow-x-hidden">
-                  <MobileSliderProfileView />
-                </div>
-              ) : (
-                <div className="w-full flex-1 overflow-y-auto overflow-x-hidden">
-                  <AvtiveDigitalCard
-                    profile={{ ...profile, theme: activeTheme }}
-                    canEdit={isOwner}
-                    isEditing={isEditing}
-                    isConnected={false}
-                    onOpenEdit={() => router.push(`/profile/${identifier}/edit`)}
-                    onCancelEdit={() => setIsEditing(false)}
-                    onSaveEdits={handleSaveEdits}
-                    onSaveContact={() => showToast('Contact information saved!')}
-                    onOpenShare={() => setIsShareModalOpen(true)}
-                    onOpenConnect={() => showToast('Connected!')}
-                    onOpenQRModal={() => {}}
-                    onOpenResumeModal={() => {}}
-                    onSelectProject={() => {}}
-                    onSelectTeamMember={(member) => {
-                      const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
-                      router.push(`/profile/${slug}`);
-                    }}
-                    onViewCompany={() => {
-                      if (profile.companyId) {
-                        router.push(`/profile/${profile.companyId}`);
-                      }
-                    }}
-                    isDark={isDark}
-                    viewMode="standard"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Phone Bottom Home Bar */}
-            <div className="w-full py-1.5 bg-[#090E1B] flex items-center justify-center shrink-0 border-t border-white/5">
-              <div className="w-28 h-1 rounded-full bg-white/30" />
-            </div>
-
+          {/* Smartphone Chassis Frame with Original Live PhonePreview */}
+          <div className="w-full flex justify-center">
+            <PhonePreview
+              profile={{ ...profile, theme: activeTheme }}
+              isDark={isDark}
+              canEdit={isOwner}
+              onOpenEdit={() => router.push(`/profile/${identifier}/edit`)}
+              onOpenShare={() => setIsShareModalOpen(true)}
+              onOpenConnect={() => showToast('Connected!')}
+              onSaveContact={() => showToast('Contact information saved!')}
+              onSaveEdits={handleSaveEdits}
+              onSelectTeamMember={(member) => {
+                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                router.push(`/profile/${slug}`);
+              }}
+              onViewCompany={() => {
+                if (profile.companyId) {
+                  router.push(`/profile/${profile.companyId}`);
+                }
+              }}
+              hideHeaderLabel={true}
+            />
           </div>
         </aside>
 
