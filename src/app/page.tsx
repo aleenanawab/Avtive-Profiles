@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfilesByUserId, createProfileForUser } from '@/lib/db';
+import { getProfilesByUserId } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,22 +12,14 @@ export default async function Home() {
     if (userProfiles && userProfiles.length > 0) {
       const primaryProfile = userProfiles[0];
       const targetId = primaryProfile.slug || primaryProfile.id;
-      redirect(`/profile/${targetId}/edit`);
+      // Returning user with profile: redirect directly to profile without asking theme again
+      redirect(`/profile/${targetId}`);
     } else {
-      const newProfile = await createProfileForUser(session.id, {
-        name: session.name,
-        email: session.email,
-        profileName: 'Primary Profile',
-        designation: 'Professional',
-        type: 'individual',
-        theme: 'editorial'
-      });
-      redirect(`/profile/${newProfile.slug || newProfile.id}/edit`);
+      // First time logged-in user without profile: ask theme for the first time
+      redirect('/onboarding/theme');
     }
   }
 
-  // New visitors default to the registration flow
-  redirect('/register');
+  // Whenever a user meets our app, they log in through the website
+  redirect('/login');
 }
-
-

@@ -60,7 +60,7 @@ export default function LoginClient() {
               router.replace('/dashboard');
             }
           } else {
-            router.replace('/dashboard');
+            router.replace('/onboarding/theme');
           }
         }
       })
@@ -95,7 +95,7 @@ export default function LoginClient() {
           router.push(`/profile/${targetId}`);
         }
       } else {
-        router.push('/dashboard');
+        router.push('/onboarding/theme');
       }
       router.refresh();
     } catch (err) {
@@ -145,7 +145,7 @@ export default function LoginClient() {
           router.push(`/profile/${targetId}`);
         }
       } else {
-        router.push('/dashboard');
+        router.push('/onboarding/theme');
       }
 
       router.refresh();

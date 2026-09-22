@@ -57,12 +57,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Save account & auto-create default profile
+    // 5. Save account (profile will be created via onboarding theme selection)
     const { user, profile } = await createUser({
       name: name.trim(),
       email: normalizedEmail,
       passwordHash,
-      createProfile: true
+      createProfile: false
     });
 
     const sessionUser = {
@@ -77,8 +77,9 @@ export async function POST(request: NextRequest) {
         autoLogin: true,
         message: 'Account created successfully.',
         user: sessionUser,
-        profile,
-        profileSlug: profile?.slug || profile?.id
+        hasProfile: false,
+        profile: null,
+        profileSlug: null
       },
       { status: 201 }
     );

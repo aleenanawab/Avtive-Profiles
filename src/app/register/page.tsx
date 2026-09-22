@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfilesByUserId, createProfileForUser } from '@/lib/db';
+import { getProfilesByUserId } from '@/lib/db';
 import RegisterClient from './RegisterClient';
 
 export const dynamic = 'force-dynamic';
@@ -18,17 +18,11 @@ export default async function RegisterPage() {
   if (session) {
     const profiles = await getProfilesByUserId(session.id);
     if (profiles && profiles.length > 0) {
+      // Returning user with profile: redirect directly to profile without asking theme again
       redirect(`/profile/${profiles[0].slug || profiles[0].id}`);
     } else {
-      const newProfile = await createProfileForUser(session.id, {
-        name: session.name,
-        email: session.email,
-        profileName: 'Primary Profile',
-        designation: 'Professional',
-        type: 'individual',
-        theme: 'editorial'
-      });
-      redirect(`/profile/${newProfile.slug || newProfile.id}`);
+      // First-time user without profile: route to theme selection
+      redirect('/onboarding/theme');
     }
   }
 

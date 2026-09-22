@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfilesByUserId, createProfileForUser } from '@/lib/db';
+import { getProfilesByUserId } from '@/lib/db';
 import LoginClient from './LoginClient';
 
 export const dynamic = 'force-dynamic';
@@ -19,23 +19,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const session = await getSession();
   const { returnUrl } = await searchParams;
 
-  // Existing authenticated users should not see login form again
+  // Authenticated session check
   if (session) {
     const profiles = await getProfilesByUserId(session.id);
     if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
       redirect(returnUrl);
     } else if (profiles && profiles.length > 0) {
+      // Returning user with profile: redirect directly to profile without asking theme again
       redirect(`/profile/${profiles[0].slug || profiles[0].id}`);
     } else {
-      const newProfile = await createProfileForUser(session.id, {
-        name: session.name,
-        email: session.email,
-        profileName: 'Primary Profile',
-        designation: 'Professional',
-        type: 'individual',
-        theme: 'editorial'
-      });
-      redirect(`/profile/${newProfile.slug || newProfile.id}`);
+      // First-time logged in user without profile: ask theme for the first time
+      redirect('/onboarding/theme');
     }
   }
 
