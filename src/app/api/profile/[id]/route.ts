@@ -8,6 +8,14 @@ interface RouteContext {
 
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized: You must be logged in to access profile data.' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await context.params;
     const profile = await getProfileByIdOrSlug(id);
 
@@ -18,8 +26,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const session = await getSession();
-    const isOwner = Boolean(session && profile.userId && session.id === profile.userId);
+    const isOwner = Boolean(profile.userId && session.id === profile.userId);
     const sanitized = sanitizeProfileForPublic(profile, isOwner);
 
     return NextResponse.json({

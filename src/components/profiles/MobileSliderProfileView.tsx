@@ -197,21 +197,21 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
   return (
     <div className={`w-[375px] min-w-[375px] max-w-[375px] h-full flex flex-col select-none overflow-hidden ${className}`}>
       
-      {/* Top Slider Control Presets Bar */}
-      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-300 bg-[#0C1424] border-b border-white/10 shrink-0">
+      {/* Top Transparent Slider Control Presets Bar */}
+      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-300 bg-[#0C1424]/60 backdrop-blur-xl border-b border-white/10 shrink-0">
         <span className="flex items-center gap-1.5 font-bold text-cyan-400">
           <Smartphone className="w-3.5 h-3.5" />
           <span>Mobile View</span>
         </span>
 
         {/* Quick Split Presets Bar */}
-        <div className="flex items-center gap-1 bg-[#070D18] border border-cyan-500/30 rounded-lg p-0.5 shadow-inner">
+        <div className="flex items-center gap-1 bg-[#070D18]/50 backdrop-blur-md border border-cyan-500/30 rounded-lg p-0.5 shadow-inner">
           <button
             type="button"
             onClick={() => setSliderPos(50)}
             className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
               Math.round(sliderPos) === 50
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                ? 'bg-gradient-to-r from-cyan-500/80 to-blue-600/80 text-white shadow-xs'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
             title="Split 50%"
@@ -224,7 +224,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             onClick={() => setSliderPos(85)}
             className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
               sliderPos > 70
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                ? 'bg-gradient-to-r from-cyan-500/80 to-blue-600/80 text-white shadow-xs'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
             title="Show Form View"
@@ -237,7 +237,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             onClick={() => setSliderPos(15)}
             className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
               sliderPos < 30
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                ? 'bg-gradient-to-r from-cyan-500/80 to-blue-600/80 text-white shadow-xs'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
             title="Show Section Drawer"
@@ -568,7 +568,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {/* LAYER 2: RIGHT FROSTED GLASS DRAWER (14 Section Toggle List)       */}
             {/* ─────────────────────────────────────────────────────────────────── */}
             <div 
-              className="h-full overflow-y-auto overflow-x-hidden bg-[#0A1322]/95 backdrop-blur-xl border-l border-[#2B4060]/70 p-2.5 space-y-1.5 scrollbar-none overscroll-contain"
+              className="h-full overflow-y-auto overflow-x-hidden bg-[#0A1322]/70 backdrop-blur-2xl border-l border-[#2B4060]/50 p-2.5 space-y-1.5 scrollbar-none overscroll-contain"
               style={{ width: `${100 - sliderPos}%` }}
             >
               {PDF_DRAWER_SECTIONS.map((sec) => {
@@ -583,10 +583,10 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                       setSelectedDrawerSection(sec.key);
                       setActiveSection(sec.key);
                     }}
-                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl border transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl border transition-all cursor-pointer backdrop-blur-md ${
                       isSelected
-                        ? 'bg-[#152338] border-cyan-500/60 shadow-md shadow-cyan-500/10'
-                        : 'bg-[#0E1B2D]/80 hover:bg-[#132238] border-[#223754]/80'
+                        ? 'bg-[#152338]/80 border-cyan-500/70 shadow-md shadow-cyan-500/15'
+                        : 'bg-[#0E1B2D]/50 hover:bg-[#132238]/70 border-[#223754]/60'
                     }`}
                   >
                     {/* Left: Icon & Label */}
@@ -607,7 +607,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                             handleToggleSectionVisibility(sec.key);
                           }}
                           className={`p-1 rounded-lg transition-colors cursor-pointer ${
-                            isVis ? 'text-cyan-400 hover:bg-cyan-500/15' : 'text-slate-500 hover:text-amber-400 hover:bg-amber-500/15'
+                            isVis ? 'text-cyan-400 hover:bg-cyan-500/20' : 'text-slate-500 hover:text-amber-400 hover:bg-amber-500/20'
                           }`}
                           title={isVis ? 'Hide section' : 'Show section'}
                         >
@@ -631,7 +631,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             </div>
 
             {/* ─────────────────────────────────────────────────────────────────── */}
-            {/* SLIDER BAR HANDLE & VERTICAL DIVIDER LINE (High Visibility)         */}
+            {/* SLIDER BAR HANDLE & VERTICAL DIVIDER LINE (Transparent Aesthetic)   */}
             {/* ─────────────────────────────────────────────────────────────────── */}
             <div
               onMouseDown={handleMouseDown}
@@ -639,24 +639,24 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               style={{ left: `${sliderPos}%` }}
               className="absolute top-0 bottom-0 -ml-4 w-8 flex flex-col items-center justify-center z-40 cursor-ew-resize group select-none touch-none"
             >
-              {/* Glowing High-Contrast Vertical Divider */}
-              <div className="w-[3px] h-full bg-gradient-to-b from-cyan-400 via-sky-300 to-cyan-500 shadow-[0_0_12px_rgba(34,211,238,0.95)] group-hover:w-[4px] transition-all" />
+              {/* Glowing Transparent Vertical Divider */}
+              <div className="w-[2px] h-full bg-gradient-to-b from-cyan-400/20 via-cyan-300/80 to-cyan-500/20 shadow-[0_0_12px_rgba(34,211,238,0.5)] backdrop-blur-xs group-hover:w-[3px] group-hover:shadow-[0_0_18px_rgba(34,211,238,0.85)] transition-all" />
               
-              {/* Circular Illuminated Drag Button with Three Lines Handle */}
+              {/* Frosted Transparent Illuminated Drag Button with Three Lines Handle */}
               <div 
                 title="Drag to adjust split view"
-                className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#081120] border-2 border-cyan-400 ring-2 ring-cyan-500/40 flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.85)] group-hover:scale-115 active:scale-95 transition-all cursor-grab active:cursor-grabbing"
+                className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#081120]/40 backdrop-blur-2xl border border-cyan-400/70 ring-2 ring-cyan-400/25 flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.5),0_0_12px_rgba(34,211,238,0.4)] group-hover:scale-115 group-hover:bg-cyan-500/20 group-hover:border-cyan-300 active:scale-95 transition-all cursor-grab active:cursor-grabbing"
               >
                 {/* Three Lines Button (Grip) */}
                 <div className="flex flex-col items-center justify-center gap-1">
-                  <div className="w-3.5 h-[2px] bg-cyan-300 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
-                  <div className="w-3.5 h-[2px] bg-cyan-300 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
-                  <div className="w-3.5 h-[2px] bg-cyan-300 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
+                  <div className="w-3.5 h-[2px] bg-cyan-300/90 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
+                  <div className="w-3.5 h-[2px] bg-cyan-300/90 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
+                  <div className="w-3.5 h-[2px] bg-cyan-300/90 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
                 </div>
               </div>
 
               {/* Visual "◀ SLIDE ▶" Drag Affordance Pill */}
-              <div className="absolute top-[calc(50%+22px)] -translate-x-1/2 left-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#081120]/95 border border-cyan-400/60 text-[8px] font-mono font-extrabold text-cyan-300 shadow-md pointer-events-none opacity-90 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-[calc(50%+22px)] -translate-x-1/2 left-1/2 whitespace-nowrap px-2 py-0.5 rounded-full bg-[#081120]/45 backdrop-blur-xl border border-cyan-400/50 text-[8px] font-mono font-extrabold text-cyan-200 shadow-[0_4px_16px_rgba(0,0,0,0.4)] pointer-events-none opacity-90 group-hover:opacity-100 transition-opacity">
                 ◀ SLIDE ▶
               </div>
             </div>
