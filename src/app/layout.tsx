@@ -69,7 +69,6 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[var(--bg-main)] text-[var(--text-primary)] transition-colors duration-200">
         <ThemeProvider>
-          <AvtivePlatformHeader />
           <div className="flex-1 flex flex-col">{children}</div>
         </ThemeProvider>
       </body>

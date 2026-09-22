@@ -2,9 +2,9 @@
 
 import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, ArrowRight, Sparkles, Terminal, Gem } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Check, ArrowRight, Sparkles, Terminal, Gem, ArrowLeft } from 'lucide-react';
 import { ProfileTheme } from '@/types/profile';
+import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 interface ThemeCardData {
   id: ProfileTheme;
@@ -16,6 +16,7 @@ interface ThemeCardData {
   accentColor: string;
   cardBg: string;
   description: string;
+  fontTag: string;
 }
 
 const THEME_OPTIONS: ThemeCardData[] = [
@@ -25,10 +26,11 @@ const THEME_OPTIONS: ThemeCardData[] = [
     subtitle: 'Clean, Classy, Professional',
     icon: Sparkles,
     previewBg: 'bg-[#FAFAF9]',
-    previewBorder: 'border-stone-200',
+    previewBorder: 'border-stone-300',
     accentColor: '#C2410C',
     cardBg: 'bg-white text-stone-900',
-    description: 'High-contrast typography, crisp borders, and timeless serif accents.'
+    description: 'High-contrast typography, crisp borders, and timeless serif accents tailored for creatives, consultants, and leaders.',
+    fontTag: 'Serif & Clean Sans'
   },
   {
     id: 'cyber',
@@ -36,10 +38,11 @@ const THEME_OPTIONS: ThemeCardData[] = [
     subtitle: 'Dark, Techy, Modern',
     icon: Terminal,
     previewBg: 'bg-[#09090B]',
-    previewBorder: 'border-emerald-500/30',
+    previewBorder: 'border-emerald-500/40',
     accentColor: '#10B981',
     cardBg: 'bg-[#121215] text-white',
-    description: 'Monospace code highlights, neon emerald badges, and dark developer aesthetic.'
+    description: 'Monospace code highlights, neon emerald badges, and dark terminal aesthetic built for software engineers and makers.',
+    fontTag: 'JetBrains Mono'
   },
   {
     id: 'luxe',
@@ -47,10 +50,11 @@ const THEME_OPTIONS: ThemeCardData[] = [
     subtitle: 'Rich, Bold, Premium',
     icon: Gem,
     previewBg: 'bg-[#0D0509]',
-    previewBorder: 'border-rose-500/30',
+    previewBorder: 'border-rose-500/40',
     accentColor: '#FB7185',
     cardBg: 'bg-[#180D15] text-white',
-    description: 'Deep royal plum tones, glowing velvet accents, and premium luxury finishes.'
+    description: 'Deep royal plum tones, glowing velvet accents, and premium luxury finishes for executive branding.',
+    fontTag: 'Display Velvet'
   }
 ];
 
@@ -59,131 +63,234 @@ function ThemeStepContent() {
   const searchParams = useSearchParams();
   const initialTheme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
 
+  // Shared theme state between Desktop and Mobile screens
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>(initialTheme);
 
   const handleNext = () => {
     router.push(`/onboarding/role?theme=${selectedTheme}`);
   };
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.2 }}
-      className="figma-phone-frame w-full max-w-[390px] p-6 sm:p-7 flex flex-col justify-between relative"
-    >
-      {/* Mobile Top Status Bar (9:41, Wifi, Battery) */}
-      <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-zinc-400 mb-4 px-1 font-mono">
-        <span>9:41</span>
-        <div className="flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
-          </svg>
-          <div className="w-5 h-2.5 border border-current rounded-xs p-0.5 flex items-center">
-            <div className="w-full h-full bg-current rounded-2xs" />
-          </div>
-        </div>
-      </div>
+  const handleBack = () => {
+    router.push('/dashboard');
+  };
 
-      {/* Screen 3 Header: Back Arrow, Step 2/3, Title & Subtitle */}
-      <div className="space-y-2 mb-5">
-        <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
-            aria-label="Go back"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <span className="text-xs font-mono font-medium tracking-wider">
-            2/3
-          </span>
-        </div>
-
+  // ──────────────────────────────────────────────────────────────────────────
+  // DESKTOP WORKING SCREEN REPRESENTATION
+  // ──────────────────────────────────────────────────────────────────────────
+  const desktopView = (
+    <div className="w-full max-w-5xl mx-auto my-auto py-6 space-y-6 text-left">
+      
+      {/* Desktop Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Choose Theme
-            <span className="sr-only"> - Choose Your Theme</span>
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
+            <span>Onboarding Flow</span>
+            <span>&middot;</span>
+            <span>Step 1 of 3</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Choose Your Design Theme
           </h1>
-          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 leading-normal">
-            Pick a style that matches your vibe. You can change it first.
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Pick a foundation that matches your vibe. Your cards, typography, and badges will adapt seamlessly.
           </p>
         </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={handleNext}
+            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+          >
+            <span>Next: Select Role</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
-      {/* Theme Cards List matching Figma Screen 3 */}
-      <div className="space-y-3 mb-6">
+      {/* 3 Widescreen Theme Studio Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {THEME_OPTIONS.map((item) => {
           const isSelected = selectedTheme === item.id;
+          const Icon = item.icon;
 
           return (
             <div
               key={item.id}
               onClick={() => setSelectedTheme(item.id)}
-              className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+              className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden group ${
                 isSelected
-                  ? 'bg-slate-50 dark:bg-[#1B1E28] border-slate-900 dark:border-rose-500/80 shadow-xs ring-1 ring-slate-900/10 dark:ring-rose-500/30'
-                  : 'bg-white dark:bg-[#151821] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                  ? 'bg-cyan-950/20 border-cyan-400/80 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-500/40'
+                  : 'bg-[#0E1528] border-white/10 hover:border-white/25 hover:bg-[#121B32]'
               }`}
             >
-              <div className="flex items-center gap-3">
-                {/* Visual Thumbnail Preview matching Figma */}
-                <div 
-                  className={`w-14 h-12 rounded-xl p-1.5 flex flex-col justify-between shrink-0 border ${
-                    item.id === 'editorial'
-                      ? 'bg-[#FAFAF9] border-stone-200 text-stone-900'
-                      : item.id === 'cyber'
-                      ? 'bg-[#09090B] border-emerald-500/40 text-emerald-400'
-                      : 'bg-[#180D15] border-rose-500/40 text-rose-300'
-                  }`}
-                >
-                  <div className="w-full h-2 rounded-xs bg-current opacity-30" />
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-full bg-current opacity-60 shrink-0" />
-                    <div className="w-6 h-1 rounded-2xs bg-current opacity-40" />
+              {isSelected && (
+                <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-cyan-400 text-slate-950 font-mono text-[10px] font-extrabold tracking-wider">
+                  ACTIVE
+                </div>
+              )}
+
+              <div>
+                {/* Visual Canvas Demo Box */}
+                <div className={`w-full h-28 rounded-xl p-3 mb-4 flex flex-col justify-between border ${item.previewBg} ${item.previewBorder}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/40 text-white">
+                      {item.fontTag}
+                    </span>
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.accentColor }} />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="w-16 h-2 rounded bg-current opacity-40" />
+                    <div className="w-28 h-3 rounded bg-current opacity-70" />
                   </div>
                 </div>
 
-                {/* Details */}
-                <div className="text-left">
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
-                    {item.subtitle}
-                  </p>
+                <div className="flex items-center gap-2.5 mb-1.5">
+                  <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-cyan-400">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white">{item.title}</h3>
+                    <p className="text-[11px] text-slate-400">{item.subtitle}</p>
+                  </div>
                 </div>
+
+                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                  {item.description}
+                </p>
               </div>
 
-              {/* Radio Indicator */}
-              <div
-                className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                  isSelected
-                    ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-black'
-                    : 'border-slate-300 dark:border-zinc-700 bg-transparent'
-                }`}
-              >
-                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+              {/* Bottom selection bar */}
+              <div className="pt-4 mt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                <span className="font-mono text-[11px] text-slate-400">Accent: {item.accentColor}</span>
+                <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
+                  isSelected ? 'border-cyan-400 bg-cyan-400 text-slate-950 font-bold' : 'border-white/20'
+                }`}>
+                  {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Primary Action Button: White Pill Button */}
+    </div>
+  );
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // MOBILE WORKING SCREEN REPRESENTATION
+  // ──────────────────────────────────────────────────────────────────────────
+  const mobileView = (
+    <div className="w-full flex-1 flex flex-col justify-between py-1 text-left">
+      
       <div>
+        {/* Screen 3 Header: Back Arrow, Step 2/3, Title & Subtitle */}
+        <div className="space-y-1.5 mb-4">
+          <div className="flex items-center justify-between text-slate-400">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="p-1 -ml-1 text-slate-300 hover:text-white cursor-pointer"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
+              2/3
+            </span>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-white">
+              Choose Theme
+            </h2>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Pick a style that matches your vibe. You can change it anytime.
+            </p>
+          </div>
+        </div>
+
+        {/* Theme Cards List matching Figma Screen 3 */}
+        <div className="space-y-2.5 mb-4">
+          {THEME_OPTIONS.map((item) => {
+            const isSelected = selectedTheme === item.id;
+
+            return (
+              <div
+                key={item.id}
+                onClick={() => setSelectedTheme(item.id)}
+                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                  isSelected
+                    ? 'bg-[#151D30] border-cyan-400/80 shadow-xs ring-1 ring-cyan-500/40'
+                    : 'bg-[#0E1528] border-white/10 hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Visual Thumbnail Preview matching Figma */}
+                  <div 
+                    className={`w-12 h-10 rounded-xl p-1.5 flex flex-col justify-between shrink-0 border ${
+                      item.id === 'editorial'
+                        ? 'bg-[#FAFAF9] border-stone-200 text-stone-900'
+                        : item.id === 'cyber'
+                        ? 'bg-[#09090B] border-emerald-500/40 text-emerald-400'
+                        : 'bg-[#180D15] border-rose-500/40 text-rose-300'
+                    }`}
+                  >
+                    <div className="w-full h-1.5 rounded-xs bg-current opacity-30" />
+                    <div className="flex items-center gap-1">
+                      <div className="w-2.5 h-2.5 rounded-full bg-current opacity-60 shrink-0" />
+                      <div className="w-4 h-1 rounded-2xs bg-current opacity-40" />
+                    </div>
+                  </div>
+
+                  <div className="min-w-0">
+                    <h3 className="text-xs font-bold text-white truncate leading-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-[10px] text-slate-400 truncate mt-0.5">
+                      {item.subtitle}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Radio Indicator */}
+                <div
+                  className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                    isSelected
+                      ? 'border-white bg-white text-black'
+                      : 'border-zinc-700 bg-transparent'
+                  }`}
+                >
+                  {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Primary Action Button: White Pill Button */}
+      <div className="pt-2">
         <button
           type="button"
           onClick={handleNext}
-          className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
         >
           <span>Next</span>
         </button>
       </div>
-    </motion.div>
+
+    </div>
+  );
+
+  return (
+    <DualScreenWorkspace
+      workflowTitle="3. Choose Theme"
+      workflowSubtitle="Onboarding Step 1 of 3"
+      currentUrlPath={`/onboarding/theme?theme=${selectedTheme}`}
+      desktopContent={desktopView}
+      mobileContent={mobileView}
+    />
   );
 }
 

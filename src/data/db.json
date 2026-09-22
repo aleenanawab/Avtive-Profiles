@@ -433,6 +433,13 @@
       "email": "elena_1789991249765@example.com",
       "passwordHash": "$2b$10$3JvJuTuDop.wQj7jMgHUs.cngTnWbISNT.1.0q7lTTXBZMJRLgulq",
       "createdAt": "2026-09-21T11:47:30.074Z"
+    },
+    {
+      "id": "user-1790056678563-hl0bv",
+      "name": "Google User",
+      "email": "google.user@avtive.app",
+      "passwordHash": "oauth_google_verified_1790056678563",
+      "createdAt": "2026-09-22T05:57:58.564Z"
     }
   ],
   "profiles": {
@@ -15555,6 +15562,465 @@
       ],
       "createdAt": "2026-09-21T11:47:30.470Z",
       "updatedAt": "2026-09-21T11:47:31.207Z"
+    },
+    "prof-1790056789923-xyyq1": {
+      "id": "prof-1790056789923-xyyq1",
+      "userId": "user-1790056678563-hl0bv",
+      "profileName": "Personal Profile",
+      "profession": "Full Stack Developer",
+      "slug": "google-user-personal-profile-81t1",
+      "type": "individual",
+      "name": "Google User",
+      "email": "google.user@avtive.app",
+      "firstName": "Google",
+      "secondName": "User",
+      "lastName": "User",
+      "professionalTitle": "Full Stack Developer",
+      "designation": "Full Stack Developer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "about": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "shortBio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "fullBio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "website",
+          "url": "https://avtive.app",
+          "label": "Website / Portfolio"
+        }
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "website",
+          "url": "https://avtive.app",
+          "label": "Website / Portfolio"
+        }
+      ],
+      "skills": [
+        "TypeScript",
+        "Next.js",
+        "React",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Digital Portfolio Architecture",
+          "description": "Clean, modern digital profile UI architecture with responsive cards.",
+          "link": "https://github.com",
+          "image": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "google-user-personal-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-22T05:59:49.923Z",
+      "updatedAt": "2026-09-22T06:44:30.329Z"
+    },
+    "google-user-personal-profile-81t1": {
+      "id": "prof-1790056789923-xyyq1",
+      "userId": "user-1790056678563-hl0bv",
+      "profileName": "Personal Profile",
+      "profession": "Full Stack Developer",
+      "slug": "google-user-personal-profile-81t1",
+      "type": "individual",
+      "name": "Google User",
+      "email": "google.user@avtive.app",
+      "firstName": "Google",
+      "secondName": "User",
+      "lastName": "User",
+      "professionalTitle": "Full Stack Developer",
+      "designation": "Full Stack Developer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "about": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "shortBio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "fullBio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "website",
+          "url": "https://avtive.app",
+          "label": "Website / Portfolio"
+        }
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "website",
+          "url": "https://avtive.app",
+          "label": "Website / Portfolio"
+        }
+      ],
+      "skills": [
+        "TypeScript",
+        "Next.js",
+        "React",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Digital Portfolio Architecture",
+          "description": "Clean, modern digital profile UI architecture with responsive cards.",
+          "link": "https://github.com",
+          "image": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "google-user-personal-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-22T05:59:49.923Z",
+      "updatedAt": "2026-09-22T06:44:30.329Z"
+    },
+    "google-user-personal-profile": {
+      "id": "prof-1790056789923-xyyq1",
+      "userId": "user-1790056678563-hl0bv",
+      "profileName": "Personal Profile",
+      "profession": "Full Stack Developer",
+      "slug": "google-user-personal-profile-81t1",
+      "type": "individual",
+      "name": "Google User",
+      "email": "google.user@avtive.app",
+      "firstName": "Google",
+      "secondName": "User",
+      "lastName": "User",
+      "professionalTitle": "Full Stack Developer",
+      "designation": "Full Stack Developer",
+      "company": "Avtive",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "bio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "about": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "shortBio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "fullBio": "Passionate developer delivering intuitive digital experiences with modern web technology.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "cyber",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "website",
+          "url": "https://avtive.app",
+          "label": "Website / Portfolio"
+        }
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://linkedin.com",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "github",
+          "url": "https://github.com",
+          "label": "GitHub"
+        },
+        {
+          "platform": "website",
+          "url": "https://avtive.app",
+          "label": "Website / Portfolio"
+        }
+      ],
+      "skills": [
+        "TypeScript",
+        "Next.js",
+        "React",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Digital Portfolio Architecture",
+          "description": "Clean, modern digital profile UI architecture with responsive cards.",
+          "link": "https://github.com",
+          "image": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=800&auto=format&fit=crop"
+        }
+      ],
+      "services": [],
+      "certifications": [],
+      "volunteerExperiences": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "google-user-personal-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-09-22T05:59:49.923Z",
+      "updatedAt": "2026-09-22T06:44:30.329Z"
     }
   },
   "connections": [
