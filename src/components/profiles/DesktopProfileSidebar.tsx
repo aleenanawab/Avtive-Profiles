@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Reorder } from 'framer-motion';
 import { 
   User, 
   FileText, 
@@ -12,6 +13,7 @@ import {
   Link2, 
   Briefcase, 
   Sparkles, 
+  Eye,
   EyeOff, 
   UserCheck, 
   Archive, 
@@ -19,7 +21,9 @@ import {
   Settings,
   ExternalLink,
   Save,
-  Loader2
+  Loader2,
+  GripVertical,
+  X
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { AvtiveLogoIcon } from '@/components/DesktopWindowPreview';
@@ -55,7 +59,11 @@ export const DESKTOP_SIDEBAR_SECTIONS: SidebarSectionItem[] = [
   { key: 'settings', label: 'Settings', icon: Settings, category: 'system' }
 ];
 
-export function DesktopProfileSidebar() {
+export interface DesktopProfileSidebarProps {
+  onClose?: () => void;
+}
+
+export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
   const { 
     profile, 
     activeSection, 
@@ -64,15 +72,19 @@ export function DesktopProfileSidebar() {
     saveProfile, 
     currentIdentifier,
     userProfiles,
-    handleSwitchPersona
+    handleSwitchPersona,
+    sectionOrder,
+    setSectionOrder,
+    sectionVisibility,
+    handleToggleSectionVisibility
   } = useProfileEditor();
 
   const skillsCount = Array.isArray(profile.skills) ? profile.skills.length : 0;
   const projectsCount = Array.isArray(profile.projects) ? profile.projects.length : 0;
   
   // Count hidden sections for Archive badge
-  const hiddenCount = profile.sectionVisibility 
-    ? Object.values(profile.sectionVisibility).filter(v => v === false).length 
+  const hiddenCount = sectionVisibility 
+    ? Object.values(sectionVisibility).filter(v => v === false).length 
     : 0;
 
   const customFieldsCount = Array.isArray(profile.customFields) ? profile.customFields.length : 0;
@@ -92,11 +104,51 @@ export function DesktopProfileSidebar() {
     }
   };
 
+  // Build sorted core sections list based on shared sectionOrder
+  const coreSections = DESKTOP_SIDEBAR_SECTIONS.filter(s => s.category === 'core');
+  const orderedCoreSections = React.useMemo(() => {
+    if (!sectionOrder || sectionOrder.length === 0) return coreSections;
+    
+    // Key mapping for variations in naming
+    const normalizeKey = (k: string) => {
+      if (k === 'about') return 'personalDetails';
+      if (k === 'contact') return 'contactInfo';
+      if (k === 'services') return 'skills';
+      return k;
+    };
+
+    const ordered: SidebarSectionItem[] = [];
+    // First, add sections in sectionOrder
+    for (const key of sectionOrder) {
+      const norm = normalizeKey(key);
+      const found = coreSections.find(s => s.key === norm || s.key === key);
+      if (found && !ordered.some(o => o.key === found.key)) {
+        ordered.push(found);
+      }
+    }
+    // Then add any remaining core sections
+    for (const sec of coreSections) {
+      if (!ordered.some(o => o.key === sec.key)) {
+        ordered.push(sec);
+      }
+    }
+    return ordered;
+  }, [sectionOrder, coreSections]);
+
+  // Handle Drag & Drop reorder
+  const handleReorderCore = (newItems: SidebarSectionItem[]) => {
+    const newCoreKeys = newItems.map(item => item.key);
+    // Preserve any non-core sections that were in sectionOrder
+    const nonCoreKeys = (sectionOrder || []).filter(k => !coreSections.some(c => c.key === k));
+    const mergedOrder = [...newCoreKeys, ...nonCoreKeys];
+    setSectionOrder(mergedOrder);
+  };
+
   return (
-    <aside className="w-[280px] xl:w-[310px] shrink-0 h-full bg-[#080D1A] border-r border-white/10 flex flex-col select-none relative z-20">
+    <aside className="w-[300px] xl:w-[330px] shrink-0 h-full bg-[#080D1A] border-r border-white/10 flex flex-col select-none relative z-30 shadow-2xl">
       
-      {/* 1. Header with Avtive Branding */}
-      <div className="p-4 border-b border-white/10 flex items-center justify-between gap-3">
+      {/* 1. Header with Avtive Branding & Close Button */}
+      <div className="p-4 border-b border-white/10 flex items-center justify-between gap-3 shrink-0">
         <Link 
           href={`/profile/${currentIdentifier}`} 
           className="flex items-center gap-2.5 group"
@@ -115,10 +167,23 @@ export function DesktopProfileSidebar() {
             <span className="text-[10px] text-slate-400">Desktop Profile Editor</span>
           </div>
         </Link>
+
+        {/* Close Button for Slide-In Panel */}
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close navigation panel"
+            title="Close panel"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* 2. User Profile Summary Card / Persona Switcher */}
-      <div className="px-3.5 py-3 border-b border-white/10 bg-white/[0.02]">
+      <div className="px-3.5 py-3 border-b border-white/10 bg-white/[0.02] shrink-0">
         <div className="flex items-center gap-3">
           <div className="relative w-10 h-10 rounded-full border-2 border-cyan-500/40 overflow-hidden bg-slate-800 shrink-0 shadow-sm">
             <img 
@@ -149,144 +214,219 @@ export function DesktopProfileSidebar() {
         </div>
       </div>
 
-      {/* 3. Section Navigation List (14 Sections from Figma Design) */}
-      <div className="flex-1 overflow-y-auto py-2.5 px-2.5 space-y-1 scrollbar-thin scrollbar-thumb-white/10">
+      {/* 3. Section Navigation List with Drag-and-Drop & Visibility Toggles */}
+      <div className="flex-1 overflow-y-auto py-2.5 px-2.5 space-y-2 scrollbar-thin scrollbar-thumb-white/10">
         
-        {/* Group 1: Core Profile */}
-        <div className="px-2 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
-          Core Profile
+        {/* Group 1: Core Profile Sections with Drag & Drop Reordering */}
+        <div>
+          <div className="flex items-center justify-between px-2 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
+            <span>Profile Sections</span>
+            <span className="text-[9px] text-cyan-400/80 lowercase">drag to reorder</span>
+          </div>
+
+          <Reorder.Group 
+            axis="y" 
+            values={orderedCoreSections} 
+            onReorder={handleReorderCore} 
+            className="space-y-1"
+          >
+            {orderedCoreSections.map((sec) => {
+              const Icon = sec.icon;
+              const isActive = activeSection === sec.key;
+              const isVisible = sectionVisibility[sec.key] !== false && sectionVisibility[sec.key === 'personalDetails' ? 'about' : sec.key === 'contactInfo' ? 'contact' : sec.key] !== false;
+              const badge = getSectionBadge(sec.key);
+
+              return (
+                <Reorder.Item
+                  key={sec.key}
+                  value={sec}
+                  className={`w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-xs font-semibold transition-all relative select-none group ${
+                    isActive
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-500/40 text-white font-bold shadow-sm'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04] border border-transparent'
+                  }`}
+                >
+                  {isActive && (
+                    <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-4 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/80" />
+                  )}
+                  
+                  {/* Drag Handle */}
+                  <div 
+                    title="Drag to reorder"
+                    aria-label={`Drag to reorder ${sec.label}`}
+                    className="p-1 text-slate-600 hover:text-cyan-400 cursor-grab active:cursor-grabbing shrink-0 transition-colors"
+                  >
+                    <GripVertical className="w-3.5 h-3.5" />
+                  </div>
+
+                  {/* Section Label & Click Target */}
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection(sec.key)}
+                    className="flex-1 flex items-center gap-2 min-w-0 px-1 py-0.5 text-left cursor-pointer"
+                  >
+                    <Icon className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                      isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'
+                    }`} />
+                    <span className={`truncate text-xs ${!isVisible ? 'line-through text-slate-600' : ''}`}>
+                      {sec.label}
+                    </span>
+                  </button>
+
+                  {/* Badge & Visibility Toggle */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {badge !== undefined && (
+                      <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md ${
+                        isActive 
+                          ? 'bg-cyan-500/30 text-cyan-200 border border-cyan-400/30' 
+                          : 'bg-white/5 text-slate-400 border border-white/10'
+                      }`}>
+                        {badge}
+                      </span>
+                    )}
+
+                    {/* Show / Hide Eye Icon */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleSectionVisibility(sec.key);
+                        if (sec.key === 'personalDetails') handleToggleSectionVisibility('about');
+                        if (sec.key === 'contactInfo') handleToggleSectionVisibility('contact');
+                      }}
+                      title={isVisible ? `Hide ${sec.label}` : `Show ${sec.label}`}
+                      aria-label={isVisible ? `Hide ${sec.label}` : `Show ${sec.label}`}
+                      className="p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                    >
+                      {isVisible ? (
+                        <Eye className="w-3.5 h-3.5 text-cyan-400 hover:text-cyan-300" />
+                      ) : (
+                        <EyeOff className="w-3.5 h-3.5 text-slate-600 hover:text-slate-400" />
+                      )}
+                    </button>
+                  </div>
+                </Reorder.Item>
+              );
+            })}
+          </Reorder.Group>
         </div>
-        {DESKTOP_SIDEBAR_SECTIONS.filter(s => s.category === 'core').map((sec) => {
-          const Icon = sec.icon;
-          const isActive = activeSection === sec.key;
-          const badge = getSectionBadge(sec.key);
-
-          return (
-            <button
-              key={sec.key}
-              type="button"
-              onClick={() => setActiveSection(sec.key)}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all relative cursor-pointer text-left ${
-                isActive
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-500/40 text-white font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04] border border-transparent'
-              }`}
-            >
-              {isActive && (
-                <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-4 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/80" />
-              )}
-              
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Icon className={`w-4 h-4 shrink-0 transition-colors ${
-                  isActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-slate-200'
-                }`} />
-                <span className="truncate">{sec.label}</span>
-              </div>
-
-              {badge !== undefined && (
-                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md shrink-0 ${
-                  isActive 
-                    ? 'bg-cyan-500/30 text-cyan-200 border border-cyan-400/30' 
-                    : 'bg-white/5 text-slate-400 border border-white/10'
-                }`}>
-                  {badge}
-                </span>
-              )}
-            </button>
-          );
-        })}
 
         {/* Group 2: Advanced Profile Tools */}
-        <div className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
-          Management & Enhancements
-        </div>
-        {DESKTOP_SIDEBAR_SECTIONS.filter(s => s.category === 'advanced').map((sec) => {
-          const Icon = sec.icon;
-          const isActive = activeSection === sec.key;
-          const badge = getSectionBadge(sec.key);
+        <div>
+          <div className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
+            Management & Enhancements
+          </div>
+          {DESKTOP_SIDEBAR_SECTIONS.filter(s => s.category === 'advanced').map((sec) => {
+            const Icon = sec.icon;
+            const isActive = activeSection === sec.key;
+            const badge = getSectionBadge(sec.key);
+            const isVisible = sectionVisibility[sec.key] !== false;
 
-          return (
-            <button
-              key={sec.key}
-              type="button"
-              onClick={() => setActiveSection(sec.key)}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all relative cursor-pointer text-left ${
-                isActive
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-500/40 text-white font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04] border border-transparent'
-              }`}
-            >
-              {isActive && (
-                <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-4 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/80" />
-              )}
-              
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Icon className={`w-4 h-4 shrink-0 transition-colors ${
-                  isActive ? 'text-cyan-400' : 'text-slate-400'
-                }`} />
-                <span className="truncate">{sec.label}</span>
+            return (
+              <div
+                key={sec.key}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition-all relative ${
+                  isActive
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-500/40 text-white font-bold shadow-sm'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04] border border-transparent'
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-4 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/80" />
+                )}
+                
+                <button
+                  type="button"
+                  onClick={() => setActiveSection(sec.key)}
+                  className="flex-1 flex items-center gap-2.5 min-w-0 text-left cursor-pointer"
+                >
+                  <Icon className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                    isActive ? 'text-cyan-400' : 'text-slate-400'
+                  }`} />
+                  <span className="truncate text-xs">{sec.label}</span>
+                </button>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {badge !== undefined && (
+                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md ${
+                      isActive 
+                        ? 'bg-cyan-500/30 text-cyan-200 border border-cyan-400/30' 
+                        : 'bg-white/5 text-slate-400 border border-white/10'
+                    }`}>
+                      {badge}
+                    </span>
+                  )}
+
+                  {sec.key === 'enhanceProfile' && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSectionVisibility('customFields')}
+                      title={isVisible ? "Hide custom fields" : "Show custom fields"}
+                      aria-label="Toggle custom fields visibility"
+                      className="p-1 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                    >
+                      {isVisible ? (
+                        <Eye className="w-3.5 h-3.5 text-cyan-400 hover:text-cyan-300" />
+                      ) : (
+                        <EyeOff className="w-3.5 h-3.5 text-slate-600 hover:text-slate-400" />
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
-
-              {badge !== undefined && (
-                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md shrink-0 ${
-                  isActive 
-                    ? 'bg-cyan-500/30 text-cyan-200 border border-cyan-400/30' 
-                    : 'bg-white/5 text-slate-400 border border-white/10'
-                }`}>
-                  {badge}
-                </span>
-              )}
-            </button>
-          );
-        })}
+            );
+          })}
+        </div>
 
         {/* Group 3: System & Security */}
-        <div className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
-          System & Security
-        </div>
-        {DESKTOP_SIDEBAR_SECTIONS.filter(s => s.category === 'system').map((sec) => {
-          const Icon = sec.icon;
-          const isActive = activeSection === sec.key;
+        <div>
+          <div className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
+            System & Security
+          </div>
+          {DESKTOP_SIDEBAR_SECTIONS.filter(s => s.category === 'system').map((sec) => {
+            const Icon = sec.icon;
+            const isActive = activeSection === sec.key;
 
-          return (
-            <button
-              key={sec.key}
-              type="button"
-              onClick={() => setActiveSection(sec.key)}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all relative cursor-pointer text-left ${
-                isActive
-                  ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-500/40 text-white font-bold shadow-sm'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04] border border-transparent'
-              }`}
-            >
-              {isActive && (
-                <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-4 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/80" />
-              )}
-              
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Icon className={`w-4 h-4 shrink-0 transition-colors ${
-                  isActive ? 'text-cyan-400' : 'text-slate-400'
-                }`} />
-                <span className="truncate">{sec.label}</span>
-              </div>
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={sec.key}
+                type="button"
+                onClick={() => setActiveSection(sec.key)}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition-all relative cursor-pointer text-left ${
+                  isActive
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/10 border border-cyan-500/40 text-white font-bold shadow-sm'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-white/[0.04] border border-transparent'
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-4 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/80" />
+                )}
+                
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Icon className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                    isActive ? 'text-cyan-400' : 'text-slate-400'
+                  }`} />
+                  <span className="truncate text-xs">{sec.label}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
 
       </div>
 
       {/* 4. Bottom Sticky Action Footer */}
-      <div className="p-3.5 border-t border-white/10 bg-[#080D1A]/95 backdrop-blur-md space-y-2">
+      <div className="p-3.5 border-t border-white/10 bg-[#080D1A]/95 backdrop-blur-md space-y-2 shrink-0">
         <button
           type="button"
           onClick={() => saveProfile()}
           disabled={isSaving}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 active:scale-98"
+          className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 active:scale-98"
         >
           {isSaving ? (
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Saving Changes...</span>
+              <span>Saving...</span>
             </>
           ) : (
             <>
