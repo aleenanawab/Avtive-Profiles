@@ -41,11 +41,11 @@ export function PhonePreview({
   onSelectSection
 }: PhonePreviewProps) {
   return (
-    <div className="w-full flex flex-col items-center select-none">
+    <div className="w-[375px] min-w-[375px] max-w-[375px] flex flex-col items-center select-none">
       {/* Phone Header Label */}
       {!hideHeaderLabel && (
         <div 
-          className="w-full max-w-[390px] flex items-center justify-between pb-2 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all"
+          className="w-full flex items-center justify-between pb-2 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all"
         >
           <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px] truncate font-mono">
             <Smartphone className="w-3.5 h-3.5 shrink-0 text-cyan-500" />
@@ -53,25 +53,25 @@ export function PhonePreview({
           </span>
           <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Standard 390×844
+            Standard 375×667 px
           </span>
         </div>
       )}
 
-      {/* Realistic Standard Smartphone Chassis (390px x 844px standard mobile aspect ratio) */}
+      {/* Realistic Standard Smartphone Chassis (Strict 375px x 667px Specifications) */}
       <div 
-        className="relative w-full max-w-[390px] aspect-[390/844] max-h-[85vh] rounded-[48px] p-2.5 sm:p-3 bg-gradient-to-b from-[#222736] via-[#141824] to-[#0A0D15] shadow-2xl shadow-black/80 ring-1 ring-white/15 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0"
+        className="relative w-[375px] min-w-[375px] max-w-[375px] h-[667px] min-h-[667px] max-h-[667px] rounded-[40px] p-2.5 bg-gradient-to-b from-[#222736] via-[#141824] to-[#0A0D15] shadow-2xl shadow-black/80 ring-1 ring-white/15 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0"
       >
         
         {/* Internal Screen Frame */}
-        <div className="relative w-full h-full rounded-[38px] overflow-hidden bg-white dark:bg-[#0E1528] flex flex-col border border-black/40 select-text">
+        <div className="relative w-full h-full rounded-[32px] overflow-hidden bg-white dark:bg-[#0E1528] flex flex-col border border-black/40 select-text">
           
           {/* iOS Status Bar */}
-          <div className="relative z-30 flex items-center justify-between px-5 pt-2.5 pb-1 text-[11px] font-semibold text-slate-800 dark:text-white select-none bg-transparent shrink-0">
+          <div className="relative z-30 flex items-center justify-between px-5 pt-2 pb-1 text-[11px] font-semibold text-slate-800 dark:text-white select-none bg-transparent shrink-0">
             <span className="tabular-nums font-mono text-[11px]">9:41</span>
 
-            {/* Dynamic Island Notch */}
-            <div className="w-22 h-4.5 bg-black rounded-full flex items-center justify-end px-2 gap-1.5 shadow-sm shrink-0">
+            {/* Dynamic Notch */}
+            <div className="w-20 h-4 bg-black rounded-full flex items-center justify-end px-2 gap-1.5 shadow-sm shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-[#1c1f28] ring-1 ring-white/10" />
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/80 animate-pulse" />
             </div>
@@ -110,7 +110,7 @@ export function PhonePreview({
 
           {/* Bottom Home Indicator */}
           <div className="relative z-30 w-full py-1.5 flex justify-center bg-transparent pointer-events-none shrink-0">
-            <div className="w-32 h-1 bg-black/40 dark:bg-white/40 rounded-full" />
+            <div className="w-28 h-1 bg-black/40 dark:bg-white/40 rounded-full" />
           </div>
 
         </div>

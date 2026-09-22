@@ -642,12 +642,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               {/* Glowing High-Contrast Vertical Divider */}
               <div className="w-[3px] h-full bg-gradient-to-b from-cyan-400 via-sky-300 to-cyan-500 shadow-[0_0_12px_rgba(34,211,238,0.95)] group-hover:w-[4px] transition-all" />
               
-              {/* Circular Illuminated Drag Button */}
+              {/* Circular Illuminated Drag Button with Three Lines Handle */}
               <div 
                 title="Drag to adjust split view"
                 className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#081120] border-2 border-cyan-400 ring-2 ring-cyan-500/40 flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.85)] group-hover:scale-115 active:scale-95 transition-all cursor-grab active:cursor-grabbing"
               >
-                <SlidersHorizontal className="w-4 h-4 text-cyan-300" />
+                {/* Three Lines Button (Grip) */}
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <div className="w-3.5 h-[2px] bg-cyan-300 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
+                  <div className="w-3.5 h-[2px] bg-cyan-300 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
+                  <div className="w-3.5 h-[2px] bg-cyan-300 rounded-full shadow-[0_0_4px_rgba(34,211,238,0.8)]" />
+                </div>
               </div>
 
               {/* Visual "◀ SLIDE ▶" Drag Affordance Pill */}

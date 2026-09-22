@@ -252,17 +252,17 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
         </section>
 
         {/* ======================================================================= */}
-        {/* WORKING SCREEN 2: MOBILE SMARTPHONE WORKING EDITOR                      */}
+        {/* WORKING SCREEN 2: MOBILE SMARTPHONE WORKING EDITOR (Standard 375×667)   */}
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[410px] min-w-[390px] max-w-[430px] shrink-0 flex flex-col items-center justify-center"
+          className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center justify-center"
         >
-          {/* Smartphone Chassis Frame */}
-          <div className="w-full flex-1 rounded-[42px] border-[7px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-white/10 min-h-[720px] max-h-[880px]">
+          {/* Smartphone Chassis Frame (Standard 375px × 667px) */}
+          <div className="w-[375px] min-w-[375px] max-w-[375px] h-[667px] min-h-[667px] max-h-[667px] rounded-[40px] border-[6px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-white/10">
             
             {/* Phone Status Bar (9:41, Wifi, Battery) */}
-            <div className="w-full bg-[#090E1B] pt-2 px-5 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-300 shrink-0 border-b border-white/5 select-none">
+            <div className="w-full bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-300 shrink-0 border-b border-white/5 select-none">
               <span>9:41</span>
               <div className="w-20 h-4 rounded-full bg-black border border-white/10 flex items-center justify-center">
                 <span className="w-2 h-2 rounded-full bg-slate-900 border border-white/20" />
@@ -276,14 +276,14 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
 
             {/* Mobile Editor Canvas: Fixed 375px internal website design viewport */}
             <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-[#050811]">
-              <div className="w-[375px] min-w-[375px] max-w-[375px] flex-1 flex flex-col overflow-x-hidden">
+              <div className="w-full flex-1 flex flex-col overflow-x-hidden">
                 <MobileSliderProfileView onSave={onGlobalSave} />
               </div>
             </div>
 
             {/* Phone Bottom Home Bar */}
-            <div className="w-full py-2 bg-[#090E1B] flex items-center justify-center shrink-0 border-t border-white/5">
-              <div className="w-32 h-1 rounded-full bg-white/30" />
+            <div className="w-full py-1.5 bg-[#090E1B] flex items-center justify-center shrink-0 border-t border-white/5">
+              <div className="w-28 h-1 rounded-full bg-white/30" />
             </div>
 
           </div>
