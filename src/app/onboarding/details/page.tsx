@@ -376,6 +376,18 @@ function DetailsStepContent() {
 
         <div className="px-4 space-y-2 text-xs">
           <div>
+            <label className="text-[10px] text-slate-400 block mb-0.5">Persona Title</label>
+            <input
+              type="text"
+              value={profileName}
+              onChange={(e) => setProfileName(e.target.value)}
+              placeholder="e.g. MERN Developer"
+              className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] text-slate-400 block mb-0.5">Full Name</label>
             <input
               type="text"
               value={fullName}
@@ -385,19 +397,33 @@ function DetailsStepContent() {
             />
           </div>
 
-          <div>
-            <input
-              type="text"
-              value={professionalTitle}
-              onChange={(e) => setProfessionalTitle(e.target.value)}
-              placeholder="Title"
-              className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-[10px] text-slate-400 block mb-0.5">Title</label>
+              <input
+                type="text"
+                value={professionalTitle}
+                onChange={(e) => setProfessionalTitle(e.target.value)}
+                placeholder="Title"
+                className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-slate-400 block mb-0.5">Company</label>
+              <input
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="Company"
+                className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+              />
+            </div>
           </div>
 
           <div>
+            <label className="text-[10px] text-slate-400 block mb-0.5">Bio</label>
             <textarea
-              rows={3}
+              rows={2}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Bio..."

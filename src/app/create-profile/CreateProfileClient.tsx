@@ -353,11 +353,27 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
             <h2 className="text-lg font-bold text-white">Profile Details</h2>
             <div className="space-y-2 text-xs">
               <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white/5 border border-white/10">
-                <img src={avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-cyan-400" />
-                <div>
-                  <div className="text-xs font-bold text-white">{fullName}</div>
-                  <div className="text-[10px] text-slate-400">{professionalTitle}</div>
+                <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                  <img src={avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-cyan-400" />
+                  <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="w-3 h-3 text-white" />
+                  </div>
                 </div>
+                <div>
+                  <div className="text-xs font-bold text-white">{fullName || 'Your Name'}</div>
+                  <div className="text-[10px] text-slate-400">{professionalTitle || 'Professional Title'}</div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-400">Profile Persona Name</label>
+                <input
+                  type="text"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  placeholder="e.g. MERN Developer"
+                  className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+                />
               </div>
 
               <div className="space-y-1">
@@ -366,6 +382,7 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Full Name"
                   className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
                 />
               </div>
@@ -376,6 +393,7 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                   type="text"
                   value={professionalTitle}
                   onChange={(e) => setProfessionalTitle(e.target.value)}
+                  placeholder="e.g. Full Stack Developer"
                   className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
                 />
               </div>
@@ -386,6 +404,7 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                   rows={2}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
+                  placeholder="Short bio description..."
                   className="figma-input w-full px-2.5 py-1 text-xs text-white resize-none"
                 />
               </div>

@@ -522,8 +522,20 @@ function CreateProfileContent() {
           </div>
         </div>
 
-        {/* Mobile Form Fields (Synchronized State) */}
-        <div className="space-y-2 text-xs">
+        {/* Mobile Form Fields (100% Synchronized State with Desktop) */}
+        <div className="space-y-2 text-xs max-h-[380px] overflow-y-auto pr-0.5 scrollbar-thin">
+          {/* Profile Persona Title */}
+          <div className="space-y-0.5">
+            <label className="text-[10px] text-slate-400">Persona Title</label>
+            <input
+              type="text"
+              value={profileName}
+              onChange={(e) => setProfileName(e.target.value)}
+              placeholder="e.g. Personal Profile"
+              className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-0.5">
               <label className="text-[10px] text-slate-400">First Name</label>
@@ -547,15 +559,27 @@ function CreateProfileContent() {
             </div>
           </div>
 
-          <div className="space-y-0.5">
-            <label className="text-[10px] text-slate-400">Professional Title</label>
-            <input
-              type="text"
-              value={professionalTitle}
-              onChange={(e) => setProfessionalTitle(e.target.value)}
-              placeholder="e.g. Full Stack Developer"
-              className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-0.5">
+              <label className="text-[10px] text-slate-400">Professional Title</label>
+              <input
+                type="text"
+                value={professionalTitle}
+                onChange={(e) => setProfessionalTitle(e.target.value)}
+                placeholder="e.g. Full Stack Developer"
+                className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+              />
+            </div>
+            <div className="space-y-0.5">
+              <label className="text-[10px] text-slate-400">Organization / Company</label>
+              <input
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="e.g. Avtive"
+                className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+              />
+            </div>
           </div>
 
           <div className="space-y-0.5">
@@ -569,27 +593,86 @@ function CreateProfileContent() {
             />
           </div>
 
-          {/* Skills summary chips */}
+          {/* Skills summary & tag input */}
           <div className="space-y-1 pt-1">
-            <label className="text-[10px] text-slate-400">Skills ({skills.length})</label>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] text-slate-400">Skills ({skills.length})</label>
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddSkill(); } }}
+                  placeholder="Add skill..."
+                  className="w-24 px-1.5 py-0.5 rounded bg-black/40 border border-white/10 text-[9px] text-white focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddSkill}
+                  className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-bold"
+                >
+                  +
+                </button>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
               {skills.map((s) => (
-                <span key={s} className="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-slate-200">
-                  {s}
+                <span key={s} className="px-2 py-0.5 rounded-md bg-white/10 text-[10px] text-slate-200 flex items-center gap-1">
+                  <span>{s}</span>
+                  <button type="button" onClick={() => handleRemoveSkill(s)} className="text-slate-400 hover:text-rose-400 text-[9px]">
+                    &times;
+                  </button>
                 </span>
               ))}
+            </div>
+          </div>
+
+          {/* Social & Contact Links */}
+          <div className="space-y-1 pt-1">
+            <label className="text-[10px] text-slate-400">Social Links</label>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/40 border border-white/10">
+                <LinkedInIcon className="w-3 h-3 text-blue-400 shrink-0" />
+                <input
+                  type="text"
+                  value={linkedin}
+                  onChange={(e) => setLinkedin(e.target.value)}
+                  placeholder="LinkedIn URL..."
+                  className="w-full bg-transparent text-[10px] text-white focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/40 border border-white/10">
+                <GithubIcon className="w-3 h-3 text-slate-300 shrink-0" />
+                <input
+                  type="text"
+                  value={github}
+                  onChange={(e) => setGithub(e.target.value)}
+                  placeholder="GitHub URL..."
+                  className="w-full bg-transparent text-[10px] text-white focus:outline-none"
+                />
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/40 border border-white/10">
+                <TwitterXIcon className="w-3 h-3 text-slate-300 shrink-0" />
+                <input
+                  type="text"
+                  value={twitter}
+                  onChange={(e) => setTwitter(e.target.value)}
+                  placeholder="X / Twitter URL..."
+                  className="w-full bg-transparent text-[10px] text-white focus:outline-none"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Save Action Pill */}
-      <div className="pt-3">
+      <div className="pt-2">
         <button
           type="button"
           onClick={() => handleSave()}
           disabled={isLoading}
-          className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+          className="figma-pill-primary w-full py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
         >
           {isLoading ? (
             <>

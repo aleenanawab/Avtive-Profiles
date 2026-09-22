@@ -42,30 +42,7 @@ export default function LoginClient() {
     return new URLSearchParams(window.location.search).get('returnUrl');
   };
 
-  // Session check: if already authenticated, redirect to Profile or Onboarding
-  useEffect(() => {
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          const returnUrl = getReturnUrl();
-          const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
-          if (hasProfiles) {
-            const targetId = data.profiles?.[0]?.slug || data.profile?.slug || data.user?.id;
-            if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-              router.replace(returnUrl);
-            } else if (targetId) {
-              router.replace(`/profile/${targetId}`);
-            } else {
-              router.replace('/dashboard');
-            }
-          } else {
-            router.replace('/onboarding/theme');
-          }
-        }
-      })
-      .catch(() => {});
-  }, [router]);
+  // When user lands on /login, they enter their credentials to sign in
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
