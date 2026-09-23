@@ -335,12 +335,12 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
   };
 
   return (
-    <div className="flex-1 h-full flex overflow-hidden bg-slate-50 dark:bg-[#080D1A] transition-colors">
+    <div className="flex-1 h-full min-h-0 flex overflow-hidden bg-slate-50 dark:bg-[#080D1A] transition-colors">
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* LEFT / CENTER: Active Section Edit Panel (Scrolls independently)           */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex-1 h-full overflow-y-auto p-5 sm:p-7 xl:p-8 scrollbar-thin scrollbar-thumb-white/10 space-y-6">
+      <div className="flex-1 h-full min-h-0 overflow-y-auto overflow-x-hidden p-5 sm:p-7 xl:p-8 scrollbar-thin scrollbar-thumb-white/10 space-y-6">
         
         {/* Top Section Header with Title, Visibility Toggle & Quick Save */}
         <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10">

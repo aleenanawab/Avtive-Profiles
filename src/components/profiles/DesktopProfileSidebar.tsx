@@ -159,7 +159,7 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
   };
 
   return (
-    <aside className="w-[300px] xl:w-[330px] shrink-0 h-full bg-white dark:bg-[#080D1A] border-r border-slate-200 dark:border-white/10 flex flex-col select-none relative z-30 shadow-2xl transition-colors">
+    <aside className="w-[300px] xl:w-[330px] shrink-0 h-full min-h-0 bg-white dark:bg-[#080D1A] border-r border-slate-200 dark:border-white/10 flex flex-col select-none relative z-30 shadow-2xl transition-colors">
       
       {/* 1. Header with Avtive Branding & Close Button */}
       <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 shrink-0">
@@ -229,7 +229,7 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
       </div>
 
       {/* 3. Section Navigation List with Drag-and-Drop & Visibility Toggles */}
-      <div className="flex-1 overflow-y-auto py-2.5 px-2.5 space-y-2 scrollbar-thin scrollbar-thumb-white/10">
+      <div className="flex-1 min-h-0 overflow-y-auto py-2.5 px-2.5 space-y-2 scrollbar-thin scrollbar-thumb-white/10">
         
         {/* Group 1: Core Profile Sections with Drag & Drop Reordering */}
         <div>

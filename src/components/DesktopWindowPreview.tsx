@@ -438,12 +438,12 @@ export function DesktopWindowPreview({
         {/* ========================================================================= */}
         {/* 3. WINDOW WORKSPACE (LEFT SIDEBAR + MAIN EDITOR CANVAS)                    */}
         {/* ========================================================================= */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#070C18]">
+        <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden bg-[#070C18]">
           
           {/* ──────────────────────────────────────────────────────────────────────── */}
           {/* A. LEFT SIDEBAR (Dark Navy, User Identity, Navigation Menu, Card Preview)*/}
           {/* ──────────────────────────────────────────────────────────────────────── */}
-          <aside className="w-full md:w-60 xl:w-64 bg-[#0B1322] border-r border-slate-800/80 flex flex-col justify-between p-3.5 sm:p-4 shrink-0 overflow-y-auto">
+          <aside className="w-full md:w-60 xl:w-64 bg-[#0B1322] border-r border-slate-800/80 flex flex-col justify-between p-3.5 sm:p-4 shrink-0 min-h-0 overflow-y-auto">
             
             <div className="space-y-4">
               {/* Top Avtive Brand in Window */}
@@ -550,7 +550,7 @@ export function DesktopWindowPreview({
           {/* ──────────────────────────────────────────────────────────────────────── */}
           {/* B. MAIN DESKTOP EDITOR CANVAS (Header + Section Cards List)             */}
           {/* ──────────────────────────────────────────────────────────────────────── */}
-          <main className="flex-1 flex flex-col overflow-y-auto bg-[#070C18] p-4 sm:p-6 lg:p-7 space-y-5">
+          <main className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden bg-[#070C18] p-4 sm:p-6 lg:p-7 space-y-5">
             
             {/* Main Header Bar (Matching Screenshot) */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">

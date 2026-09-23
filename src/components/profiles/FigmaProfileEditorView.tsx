@@ -145,7 +145,7 @@ export function FigmaProfileEditorView() {
           <div className="w-full flex flex-col lg:flex-row h-[calc(100vh-108px)] overflow-hidden">
             
             {/* ── LEFT SIDE: DESKTOP PROFILE EDITOR (60-65% width on desktop) ───── */}
-            <div className="flex-1 h-full flex overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 min-w-0">
+            <div className="flex-1 h-full min-h-0 flex overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 min-w-0">
               <DesktopProfileSidebar />
               <DesktopProfileContent hideRightPreview={true} />
             </div>
@@ -162,7 +162,7 @@ export function FigmaProfileEditorView() {
         {/* 2. DESKTOP VIEW FULLSCREEN                                             */}
         {/* ======================================================================= */}
         {viewMode === 'desktop' && (
-          <div className="w-full h-[calc(100vh-108px)] flex flex-row overflow-hidden">
+          <div className="w-full h-[calc(100vh-108px)] min-h-0 flex flex-row overflow-hidden">
             <DesktopProfileSidebar />
             <DesktopProfileContent />
           </div>

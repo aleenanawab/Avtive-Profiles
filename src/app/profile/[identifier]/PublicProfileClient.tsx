@@ -104,7 +104,7 @@ function PublicProfileClientInner({
   return (
     <div 
       data-theme={activeTheme}
-      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans overflow-x-auto`}
+      className={`h-screen max-h-screen h-[100dvh] max-h-[100dvh] w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans overflow-hidden`}
     >
       {/* Toast Notification Banner */}
       {toastMessage && (
@@ -183,8 +183,7 @@ function PublicProfileClientInner({
       {/* Both Desktop Screen and Mobile Screen are permanently mounted & visible.   */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
       <main 
-        className="flex-1 w-full p-3 sm:p-4 lg:p-5 flex flex-row items-center justify-center gap-4 sm:gap-6 min-w-[1100px] xl:min-w-0 max-w-[1920px] mx-auto min-h-0 overflow-hidden"
-        style={{ height: 'calc(100vh - 56px)', maxHeight: 'calc(100vh - 56px)' }}
+        className="flex-1 w-full h-full min-h-0 p-2 sm:p-3 lg:p-4 flex flex-row items-center justify-center gap-3 sm:gap-5 min-w-0 max-w-[1920px] mx-auto overflow-hidden"
       >
         
         {/* ======================================================================= */}
@@ -192,7 +191,7 @@ function PublicProfileClientInner({
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[560px] max-w-[1240px] h-full flex flex-col rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1528] shadow-2xl shadow-black/30 overflow-hidden min-h-0"
+          className="flex-1 min-w-0 max-w-[1240px] h-full flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1528] shadow-2xl shadow-black/30 overflow-hidden min-h-0"
         >
           {/* Desktop Frame Window Header */}
           <div className="w-full bg-slate-100 dark:bg-[#0A101E] border-b border-slate-200 dark:border-white/10 px-4 py-2 flex items-center justify-between gap-3 shrink-0">
@@ -213,7 +212,7 @@ function PublicProfileClientInner({
           </div>
 
           {/* Desktop Profile Card Content */}
-          <div className="flex-1 w-full overflow-y-auto p-4 sm:p-6">
+          <div className="flex-1 w-full min-h-0 overflow-y-auto p-4 sm:p-6">
             <AvtiveDigitalCard
               profile={{ ...profile, theme: activeTheme }}
               canEdit={isOwner}
