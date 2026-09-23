@@ -46,11 +46,11 @@ export function HeroSection({
   const sharing = profile.sharingSettings || {};
 
   const normalizedType = normalizeProfileType(profile.type);
-  const typeBadgeLabel = normalizedType === 'team' ? 'Team' : 'Individual';
+  const typeBadgeLabel = normalizedType === 'team' ? 'Company' : 'Individual';
 
   const defaultStats = normalizedType === 'team'
     ? [
-        { value: profile.highlights?.[0]?.value || '15+', label: profile.highlights?.[0]?.label || 'Team' },
+        { value: profile.highlights?.[0]?.value || '15+', label: profile.highlights?.[0]?.label || 'Company' },
         { value: profile.highlights?.[1]?.value || '25+', label: profile.highlights?.[1]?.label || 'Projects' },
         { value: profile.highlights?.[2]?.value || '4+', label: profile.highlights?.[2]?.label || 'Years' }
       ]

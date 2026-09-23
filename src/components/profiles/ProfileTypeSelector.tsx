@@ -19,8 +19,8 @@ export const PROFILE_TYPES_CONFIG = [
   },
   {
     type: 'team' as const,
-    title: 'Team',
-    description: 'Organization, agency, or group presence',
+    title: 'Company',
+    description: 'Company, organization, or enterprise presence',
     icon: Users
   }
 ];

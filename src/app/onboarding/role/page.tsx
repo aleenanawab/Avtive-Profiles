@@ -31,14 +31,14 @@ const ROLE_OPTIONS: RoleCardData[] = [
   },
   {
     id: 'team',
-    title: 'Team',
-    badge: 'Group / Organization',
-    icon: Users,
-    description: 'Collaborative team presence, organization roster, services showcase, and company identity.',
+    title: 'Company',
+    badge: 'Company Profile',
+    icon: Building2,
+    description: 'Collaborative company presence, organization roster, services showcase, and enterprise identity.',
     features: [
-      'Team roster & collaborative showcases',
+      'Company roster & collaborative showcases',
       'Products, services & organization credentials',
-      'Unified team contact & inquiry channels',
+      'Unified company contact & inquiry channels',
       'Organization branding & employee passes'
     ]
   }
@@ -47,18 +47,31 @@ const ROLE_OPTIONS: RoleCardData[] = [
 function RoleStepContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
   const initialRole = normalizeProfileType(searchParams.get('role') || 'individual');
 
   // Shared state between Desktop and Mobile screens
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
 
+  // Existing profile check: prevent prompting already completed users
+  React.useEffect(() => {
+    if (searchParams.get('new')) return;
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        const slug = data.profile?.slug || (data.profiles && data.profiles[0]?.slug);
+        if (slug) {
+          router.replace(`/profile/${slug}`);
+        }
+      })
+      .catch(() => {});
+  }, [router, searchParams]);
+
   const handleBack = () => {
-    router.push(`/onboarding/theme?theme=${theme}`);
+    router.push('/dashboard');
   };
 
   const handleNext = () => {
-    router.push(`/onboarding/create?theme=${theme}&role=${selectedRole}`);
+    router.push(`/onboarding/theme?role=${selectedRole}`);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -73,7 +86,7 @@ function RoleStepContent() {
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
             <span>Onboarding Flow</span>
             <span>&middot;</span>
-            <span>Step 2 of 3</span>
+            <span>Step 1 of 3</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Select Your Profile Type
@@ -96,7 +109,7 @@ function RoleStepContent() {
             onClick={handleNext}
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
           >
-            <span>Next: Profile Details</span>
+            <span>Next: Choose Theme</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -193,7 +206,7 @@ function RoleStepContent() {
               <ArrowLeft className="w-4 h-4" />
             </button>
             <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
-              3/3
+              1/3
             </span>
           </div>
 
@@ -273,9 +286,9 @@ function RoleStepContent() {
 
   return (
     <DualScreenWorkspace
-      workflowTitle="4. Select Profile Type"
-      workflowSubtitle="Onboarding Step 2 of 3"
-      currentUrlPath={`/onboarding/role?theme=${theme}&role=${selectedRole}`}
+      workflowTitle="2. Select Profile Type"
+      workflowSubtitle="Onboarding Step 1 of 3"
+      currentUrlPath={`/onboarding/role?role=${selectedRole}`}
       desktopContent={desktopView}
       mobileContent={mobileView}
     />

@@ -273,8 +273,8 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
               <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-cyan-400 mb-3">
                 <Users className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">Team / Organization</h3>
-              <p className="text-xs text-slate-300 mt-1">Collaborative team presence, organization roster, and company services.</p>
+              <h3 className="text-lg font-bold text-white">Company</h3>
+              <p className="text-xs text-slate-300 mt-1">Collaborative company presence, organization roster, and corporate services.</p>
             </div>
             <div className="pt-4 mt-4 border-t border-white/10 flex justify-end">
               <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-white/20'}`}>
@@ -439,8 +439,8 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                 <div className="flex items-center gap-2.5">
                   <Users className="w-4 h-4 text-cyan-400" />
                   <div>
-                    <h3 className="text-xs font-bold text-white">Team</h3>
-                    <p className="text-[10px] text-slate-400">Group / Organization</p>
+                    <h3 className="text-xs font-bold text-white">Company</h3>
+                    <p className="text-[10px] text-slate-400">Company Profile</p>
                   </div>
                 </div>
                 <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-white bg-white text-black' : 'border-zinc-700'}`}>

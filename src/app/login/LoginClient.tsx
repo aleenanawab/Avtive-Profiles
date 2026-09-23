@@ -52,15 +52,15 @@ export default function LoginClient() {
           const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
           if (hasProfiles) {
             const targetId = data.profiles?.[0]?.slug || data.profile?.slug || data.user?.id;
-            if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
+            if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
               router.replace(returnUrl);
             } else if (targetId) {
               router.replace(`/profile/${targetId}`);
             } else {
-              router.replace('/onboarding/theme');
+              router.replace('/onboarding/role');
             }
           } else {
-            router.replace('/onboarding/theme');
+            router.replace('/onboarding/role');
           }
         }
       })
@@ -89,13 +89,13 @@ export default function LoginClient() {
       if (data.hasProfile) {
         const returnUrl = getReturnUrl();
         const targetId = data.profileSlug || data.user?.id;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
+        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
           router.push(returnUrl);
         } else {
           router.push(`/profile/${targetId}`);
         }
       } else {
-        router.push('/onboarding/theme');
+        router.push('/onboarding/role');
       }
       router.refresh();
     } catch (err) {
@@ -139,13 +139,13 @@ export default function LoginClient() {
       const returnUrl = getReturnUrl();
       if (data.hasProfile) {
         const targetId = data.profileSlug || data.user?.id;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
+        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
           router.push(returnUrl);
         } else {
           router.push(`/profile/${targetId}`);
         }
       } else {
-        router.push('/onboarding/theme');
+        router.push('/onboarding/role');
       }
 
       router.refresh();

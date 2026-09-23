@@ -36,11 +36,11 @@ function DetailsStepContent() {
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const [profileName, setProfileName] = useState(
-    role === 'team' ? 'Team Profile' : 'Personal Profile'
+    role === 'team' ? 'Company Profile' : 'Personal Profile'
   );
   const [fullName, setFullName] = useState('');
   const [professionalTitle, setProfessionalTitle] = useState(
-    role === 'team' ? 'Team / Organization' : 'Full Stack Developer'
+    role === 'team' ? 'Company' : 'Full Stack Developer'
   );
   const [company, setCompany] = useState(role === 'team' ? 'Avtive Inc.' : 'Avtive');
   const [bio, setBio] = useState(

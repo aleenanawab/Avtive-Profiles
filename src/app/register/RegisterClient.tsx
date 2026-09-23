@@ -70,7 +70,7 @@ export default function RegisterClient() {
       if (data.hasProfile && data.profileSlug) {
         router.push(`/profile/${data.profileSlug}`);
       } else {
-        router.push('/onboarding/theme');
+        router.push('/onboarding/role');
       }
       router.refresh();
     } catch (err) {
@@ -125,8 +125,8 @@ export default function RegisterClient() {
         localStorage.setItem('avtive_returning_user', 'true');
       } catch {}
 
-      // User is now authenticated automatically: proceed directly to theme onboarding
-      router.push('/onboarding/theme');
+      // User is now authenticated automatically: proceed directly to role onboarding
+      router.push('/onboarding/role');
       router.refresh();
     } catch (err) {
       console.error(err);

@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, ArrowRight, Sparkles, Terminal, Gem, ArrowLeft } from 'lucide-react';
-import { ProfileTheme } from '@/types/profile';
+import { ProfileTheme, normalizeProfileType } from '@/types/profile';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 interface ThemeCardData {
@@ -62,16 +62,22 @@ function ThemeStepContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTheme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
+  const role = normalizeProfileType(searchParams.get('role') || 'individual');
 
   // Shared theme state between Desktop and Mobile screens
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>(initialTheme);
 
-  const handleNext = () => {
-    router.push(`/onboarding/role?theme=${selectedTheme}`);
+  const handleBack = () => {
+    router.push(`/onboarding/role?role=${role}`);
   };
 
-  const handleBack = () => {
-    router.push('/dashboard');
+  const handleNext = () => {
+    router.push(`/onboarding/create?theme=${selectedTheme}&role=${role}`);
+  };
+
+  const handleSkip = () => {
+    // Skip theme selection and proceed directly with default/selected theme
+    router.push(`/onboarding/create?theme=${selectedTheme || 'editorial'}&role=${role}`);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -86,7 +92,7 @@ function ThemeStepContent() {
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
             <span>Onboarding Flow</span>
             <span>&middot;</span>
-            <span>Step 1 of 3</span>
+            <span>Step 2 of 3</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Choose Your Design Theme
@@ -99,10 +105,24 @@ function ThemeStepContent() {
         <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
+            onClick={handleBack}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors cursor-pointer"
+          >
+            Back
+          </button>
+          <button
+            type="button"
+            onClick={handleSkip}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors cursor-pointer"
+          >
+            Skip
+          </button>
+          <button
+            type="button"
             onClick={handleNext}
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
           >
-            <span>Next: Select Role</span>
+            <span>Next: Profile Details</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -195,9 +215,18 @@ function ThemeStepContent() {
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
-              2/3
-            </span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleSkip}
+                className="text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                Skip
+              </button>
+              <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
+                2/3
+              </span>
+            </div>
           </div>
 
           <div>
@@ -269,12 +298,19 @@ function ThemeStepContent() {
         </div>
       </div>
 
-      {/* Primary Action Button: White Pill Button */}
-      <div className="pt-2">
+      {/* Action Buttons: Skip and Next */}
+      <div className="pt-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleSkip}
+          className="py-3 px-4 rounded-xl border border-white/10 bg-white/5 text-slate-300 text-xs font-semibold hover:bg-white/10 transition-colors cursor-pointer"
+        >
+          Skip
+        </button>
         <button
           type="button"
           onClick={handleNext}
-          className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          className="figma-pill-primary flex-1 py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
         >
           <span>Next</span>
         </button>
@@ -286,8 +322,8 @@ function ThemeStepContent() {
   return (
     <DualScreenWorkspace
       workflowTitle="3. Choose Theme"
-      workflowSubtitle="Onboarding Step 1 of 3"
-      currentUrlPath={`/onboarding/theme?theme=${selectedTheme}`}
+      workflowSubtitle="Onboarding Step 2 of 3"
+      currentUrlPath={`/onboarding/theme?role=${role}&theme=${selectedTheme}`}
       desktopContent={desktopView}
       mobileContent={mobileView}
     />

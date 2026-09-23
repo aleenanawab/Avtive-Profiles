@@ -778,7 +778,7 @@ export function ProfileSectionEditor({
                           }`}
                         >
                           <Users className="w-3.5 h-3.5" />
-                          <span>Team / Org</span>
+                          <span>Company</span>
                         </button>
                       </div>
                     </div>

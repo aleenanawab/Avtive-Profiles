@@ -348,7 +348,7 @@ export function ProfileSwitcher({
                     }`}
                   >
                     <Users className="w-3 h-3" />
-                    <span>Team</span>
+                    <span>Company</span>
                   </button>
                 </div>
 

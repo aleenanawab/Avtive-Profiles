@@ -48,7 +48,7 @@ function CreateProfileContent() {
 
   // Shared Identity State
   const [profileName, setProfileName] = useState(
-    role === 'team' ? 'Team Profile' : 'Personal Profile'
+    role === 'team' ? 'Company Profile' : 'Personal Profile'
   );
   const [firstName, setFirstName] = useState('');
   const [secondName, setSecondName] = useState('');
@@ -247,7 +247,7 @@ function CreateProfileContent() {
         <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
-            onClick={() => router.push(`/onboarding/role?theme=${theme}&role=${role}`)}
+            onClick={() => router.push(`/onboarding/theme?theme=${theme}&role=${role}`)}
             className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors cursor-pointer"
           >
             Back
