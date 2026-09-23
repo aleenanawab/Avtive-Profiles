@@ -62,7 +62,7 @@ export function PhonePreview({
       <div 
         className="relative aspect-[375/760] rounded-[36px] sm:rounded-[44px] p-2 sm:p-[9px] bg-gradient-to-b from-neutral-800 via-neutral-900 to-black shadow-2xl ring-1 ring-black/50 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0 min-h-0"
         style={{ 
-          height: hideHeaderLabel ? 'calc(100vh - 100px)' : 'calc(100vh - 130px)',
+          height: hideHeaderLabel ? 'calc(100vh - 120px)' : 'calc(100vh - 130px)',
           maxHeight: '740px',
           minHeight: '400px',
           width: 'auto',

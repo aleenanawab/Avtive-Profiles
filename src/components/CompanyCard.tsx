@@ -18,7 +18,7 @@ export function CompanyCard({ companyInfo, onViewCompany, theme = getThemeConfig
         onClick={onViewCompany}
         className={`cursor-pointer group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} transition-all shadow-2xs hover:shadow-xs text-left`}
       >
-        <div className="flex items-center gap-3.5 min-w-0">
+        <div className="flex items-center gap-3.5 min-w-0 flex-1">
           <div className={`w-12 h-12 rounded-xl ${theme.cardBg} p-2 flex items-center justify-center shrink-0 border ${theme.cardBorder} shadow-2xs`}>
             <img
               src={companyInfo.logo || '/images/avtive-symbol.png'}
@@ -26,12 +26,12 @@ export function CompanyCard({ companyInfo, onViewCompany, theme = getThemeConfig
               className="w-full h-full object-contain"
             />
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h3 className={`text-sm font-bold ${theme.accentText} group-hover:underline transition-colors truncate`}>
                 {companyInfo.name}
               </h3>
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${theme.badgeBg} ${theme.badgeText} font-mono`}>
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${theme.badgeBg} ${theme.badgeText} font-mono shrink-0`}>
                 SaaS Platform
               </span>
             </div>

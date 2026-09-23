@@ -44,6 +44,7 @@ export interface DesktopProfileContentProps {
 export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfileContentProps) {
   const { 
     profile, 
+    liveProfile,
     setProfile, 
     updateField, 
     activeSection, 
@@ -1561,9 +1562,9 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
           </div>
 
           <PhonePreview
-            profile={{ ...profile, theme: activeTheme }}
+            profile={liveProfile}
             isDark={isDark}
-            canEdit={true}
+            canEdit={false}
             onOpenEdit={() => {}}
             onOpenShare={() => showToast('Share settings accessible in sidebar')}
             onOpenConnect={() => showToast('Connected!')}

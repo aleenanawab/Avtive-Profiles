@@ -184,19 +184,19 @@ export function HeroSection({
                 </span>
               )}
             </div>
-            <h1 className={`${isMobile ? 'text-xl font-bold' : 'text-2xl sm:text-3xl md:text-4xl font-bold'} tracking-tight text-slate-900 dark:text-white flex items-center gap-2`}>
-              <span>{profile.name}</span>
+            <h1 className={`${isMobile ? 'text-xl font-bold' : 'text-2xl sm:text-3xl md:text-4xl font-bold'} tracking-tight text-slate-900 dark:text-white flex items-center gap-2 flex-wrap break-words`}>
+              <span className="break-words">{profile.name}</span>
             </h1>
-            <p className={`${isMobile ? 'text-xs font-medium' : 'text-sm sm:text-base md:text-lg font-medium'} text-slate-500 dark:text-zinc-400`}>
+            <p className={`${isMobile ? 'text-xs font-medium' : 'text-sm sm:text-base md:text-lg font-medium'} text-slate-500 dark:text-zinc-400 break-words`}>
               {profile.profession || profile.designation || profile.profileName || 'Professional'}
             </p>
             {profile.tagline && (
-              <p className="text-xs font-medium text-slate-600 dark:text-zinc-300 italic pt-0.5">
+              <p className="text-xs font-medium text-slate-600 dark:text-zinc-300 italic pt-0.5 break-words">
                 &ldquo;{profile.tagline}&rdquo;
               </p>
             )}
             {profile.location && (
-              <p className="text-xs text-slate-400 dark:text-zinc-500">
+              <p className="text-xs text-slate-400 dark:text-zinc-500 break-words">
                 {profile.location}
               </p>
             )}
@@ -212,7 +212,7 @@ export function HeroSection({
             }`}
             title={canEdit ? 'Click to edit Bio in Studio' : undefined}
           >
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 leading-relaxed max-w-2xl break-words">
               {profile.shortBio}
             </p>
             {canEdit && (
@@ -231,7 +231,7 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
-                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-700 dark:border-white/20`}
+                className={`flex-1 min-w-0 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-700 dark:border-white/20`}
                 title="Edit Profile in Studio"
               >
                 <Pencil className="w-3.5 h-3.5 shrink-0 text-purple-400" />
@@ -241,7 +241,7 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={onOpenShare}
-                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/10`}
+                className={`flex-1 min-w-0 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/10`}
               >
                 <Share2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
                 <span className="truncate">Share Profile</span>
@@ -252,7 +252,7 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={onOpenConnect}
-                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/20`}
+                className={`flex-1 min-w-0 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/20`}
               >
                 <UserPlus className="w-3.5 h-3.5 shrink-0" />
                 <span className="truncate">Connect</span>
@@ -261,7 +261,7 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={onOpenShare}
-                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-700 dark:border-white/10`}
+                className={`flex-1 min-w-0 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-700 dark:border-white/10`}
               >
                 <Share2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span className="truncate">Share</span>

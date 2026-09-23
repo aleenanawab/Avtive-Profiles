@@ -9,7 +9,7 @@ import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditor
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
 import { DesktopProfileContent } from '@/components/profiles/DesktopProfileContent';
-import { MobileSliderProfileView } from '@/components/profiles/MobileSliderProfileView';
+import { PhonePreview } from '@/components/PhonePreview';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { 
   ArrowLeft, 
@@ -17,14 +17,11 @@ import {
   ExternalLink, 
   Save, 
   Loader2, 
-  Signal, 
-  Wifi, 
-  Battery,
-  LogOut,
-  Menu,
-  X,
-  Sun,
-  Moon
+  LogOut, 
+  Menu, 
+  X, 
+  Sun, 
+  Moon 
 } from 'lucide-react';
 
 interface EditProfileClientProps {
@@ -47,6 +44,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
   const { isDark, toggleDarkMode } = usePortfolioTheme();
   const { 
     profile, 
+    liveProfile,
     isSaving, 
     saveProfile, 
     handleSaveChanges, 
@@ -292,53 +290,19 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
         </section>
 
         {/* ======================================================================= */}
-        {/* WORKING SCREEN 2: MOBILE SMARTPHONE WORKING EDITOR                      */}
+        {/* WORKING SCREEN 2: MOBILE SMARTPHONE LIVE PREVIEW                       */}
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
           className="w-auto shrink-0 h-full flex flex-col items-center justify-center min-h-0"
         >
-          {/* Smartphone Chassis Frame */}
-          <div 
-            className="relative aspect-[375/760] rounded-[38px] sm:rounded-[44px] border-[7px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden ring-1 ring-white/10 shrink-0 min-h-0"
-            style={{ 
-              height: 'calc(100vh - 100px)',
-              maxHeight: '740px',
-              minHeight: '400px',
-              width: 'auto',
-              maxWidth: 'min(375px, 100%)'
-            }}
-          >
-            
-            {/* Phone Status Bar (9:41, Wifi, Battery) */}
-            <div className="w-full bg-[#090E1B] pt-2 px-5 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-300 shrink-0 border-b border-white/5 select-none">
-              <span>9:41</span>
-              <div className="w-20 h-4 rounded-full bg-black border border-white/10 flex items-center justify-center">
-                <span className="w-2 h-2 rounded-full bg-slate-900 border border-white/20" />
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-400">
-                <Signal className="w-3 h-3" />
-                <Wifi className="w-3 h-3" />
-                <Battery className="w-3.5 h-3.5" />
-              </div>
-            </div>
-
-            {/* Mobile Editor Canvas: Fixed 375px internal website design viewport */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-100 dark:bg-[#050811] transition-colors">
-              <div className="w-[375px] min-w-[375px] max-w-[375px] flex-1 flex flex-col overflow-x-hidden">
-                <MobileSliderProfileView 
-                  onSave={onGlobalSave} 
-                  onNext={() => router.push(`/profile/${identifier}`)}
-                />
-              </div>
-            </div>
-
-            {/* Phone Bottom Home Bar */}
-            <div className="w-full py-2 bg-[#090E1B] flex items-center justify-center shrink-0 border-t border-white/5">
-              <div className="w-32 h-1 rounded-full bg-white/30" />
-            </div>
-
-          </div>
+          <PhonePreview
+            profile={liveProfile}
+            isDark={isDark}
+            canEdit={false}
+            hideHeaderLabel={false}
+            headerTitle="Mobile Screen · Live Preview"
+          />
         </aside>
 
       </main>

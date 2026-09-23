@@ -30,12 +30,12 @@ export function EducationSection({ profile, theme = getThemeConfig(profile.theme
             key={edu.id}
             className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-1.5 shadow-2xs`}
           >
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className={`text-sm font-bold ${theme.textPrimary}`}>
+            <div className="flex items-start justify-between gap-2 min-w-0">
+              <div className="min-w-0 flex-1">
+                <h3 className={`text-sm font-bold ${theme.textPrimary} break-words`}>
                   {edu.degree}
                 </h3>
-                <p className={`text-xs font-semibold ${theme.accentText} mt-0.5`}>
+                <p className={`text-xs font-semibold ${theme.accentText} mt-0.5 break-words`}>
                   {edu.institution}
                 </p>
               </div>
@@ -48,7 +48,7 @@ export function EducationSection({ profile, theme = getThemeConfig(profile.theme
             </div>
 
             {edu.description && (
-              <p className={`text-xs ${theme.textSecondary} leading-relaxed pt-1`}>
+              <p className={`text-xs ${theme.textSecondary} leading-relaxed pt-1 break-words`}>
                 {edu.description}
               </p>
             )}
