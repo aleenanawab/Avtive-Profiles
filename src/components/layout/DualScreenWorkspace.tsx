@@ -48,7 +48,7 @@ export function DualScreenWorkspace({
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col justify-center bg-slate-100 dark:bg-[#070B14] text-slate-800 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-auto transition-colors ${className}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-center bg-slate-100 dark:bg-[#070B14] text-slate-800 dark:text-slate-100 font-sans selection:bg-slate-300 dark:selection:bg-white/20 selection:text-slate-900 dark:selection:text-white overflow-x-auto transition-colors ${className}`}>
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
@@ -77,7 +77,7 @@ export function DualScreenWorkspace({
             <div className="flex-1 max-w-sm mx-auto hidden sm:flex items-center justify-center gap-2 px-3 py-1 rounded-xl bg-slate-200/70 dark:bg-black/40 border border-slate-300 dark:border-white/10 text-[11px] font-mono text-slate-700 dark:text-slate-300">
               <Lock className="w-3 h-3 text-emerald-500 dark:text-emerald-400 shrink-0" />
               <span className="text-slate-500 dark:text-slate-400">https://</span>
-              <span className="text-cyan-600 dark:text-cyan-300 font-semibold truncate">avtive.platform{currentUrlPath}</span>
+              <span className="text-slate-900 dark:text-white font-semibold truncate">avtive.platform{currentUrlPath}</span>
             </div>
 
             {/* Desktop Inside Functional Actions Toolbar */}
