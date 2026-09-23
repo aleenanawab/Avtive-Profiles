@@ -48,7 +48,7 @@ export function DualScreenWorkspace({
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col justify-center bg-[#070B14] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-auto ${className}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-center bg-slate-100 dark:bg-[#070B14] text-slate-800 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-auto transition-colors ${className}`}>
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
@@ -61,10 +61,10 @@ export function DualScreenWorkspace({
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[540px] max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-white/10 bg-[#0A101E] shadow-2xl shadow-black/60 overflow-hidden"
+          className="flex-1 min-w-[540px] max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-2xl shadow-slate-300/40 dark:shadow-black/60 overflow-hidden transition-colors"
         >
           {/* Desktop Browser Window Header Frame */}
-          <div className="w-full bg-[#0E1528] border-b border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0">
+          <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
             
             {/* macOS Window Controls (Clean dots: No text inside or beside red dot) */}
             <div className="flex items-center gap-2 shrink-0">
@@ -74,10 +74,10 @@ export function DualScreenWorkspace({
             </div>
 
             {/* Desktop URL Address Bar */}
-            <div className="flex-1 max-w-sm mx-auto hidden sm:flex items-center justify-center gap-2 px-3 py-1 rounded-xl bg-black/40 border border-white/10 text-[11px] font-mono text-slate-300">
-              <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
-              <span className="text-slate-400">https://</span>
-              <span className="text-cyan-300 font-semibold truncate">avtive.platform{currentUrlPath}</span>
+            <div className="flex-1 max-w-sm mx-auto hidden sm:flex items-center justify-center gap-2 px-3 py-1 rounded-xl bg-slate-200/70 dark:bg-black/40 border border-slate-300 dark:border-white/10 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+              <Lock className="w-3 h-3 text-emerald-500 dark:text-emerald-400 shrink-0" />
+              <span className="text-slate-500 dark:text-slate-400">https://</span>
+              <span className="text-cyan-600 dark:text-cyan-300 font-semibold truncate">avtive.platform{currentUrlPath}</span>
             </div>
 
             {/* Desktop Inside Functional Actions Toolbar */}
@@ -88,7 +88,7 @@ export function DualScreenWorkspace({
                 href="/dashboard"
                 title="Workspaces Dashboard"
                 aria-label="Dashboard"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-200/70 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-300 dark:border-white/10 transition-colors cursor-pointer"
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
               </Link>
@@ -98,9 +98,9 @@ export function DualScreenWorkspace({
                 onClick={toggleDarkMode}
                 title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
                 aria-label="Toggle Theme"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-200/70 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-300 dark:border-white/10 transition-colors cursor-pointer"
               >
-                {isDark ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5" />}
+                {isDark ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-slate-700" />}
               </button>
 
               <button
@@ -108,7 +108,7 @@ export function DualScreenWorkspace({
                 onClick={handleLogout}
                 title="Sign Out"
                 aria-label="Logout"
-                className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/15 border border-rose-500/20 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-colors cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -116,7 +116,7 @@ export function DualScreenWorkspace({
           </div>
 
           {/* Desktop Screen Canvas Workspace */}
-          <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col bg-[#070D1A]">
+          <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col bg-slate-50 dark:bg-[#070D1A] transition-colors">
             {desktopContent}
           </div>
         </section>
@@ -146,7 +146,7 @@ export function DualScreenWorkspace({
             </div>
 
             {/* Mobile Screen Content Canvas: Fixed 375px internal website design viewport */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-[#050913]">
+            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-100 dark:bg-[#050913] transition-colors">
               <div className="w-[375px] min-w-[375px] max-w-[375px] flex-1 flex flex-col overflow-x-hidden">
                 {mobileContent}
               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Camera, 
   Plus, 
@@ -21,7 +22,8 @@ import {
   RotateCcw, 
   Save, 
   CheckCircle2, 
-  Smartphone 
+  Smartphone,
+  ArrowRight
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { PhonePreview } from '@/components/PhonePreview';
@@ -53,6 +55,18 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
     setActiveTheme,
     isDark
   } = useProfileEditor();
+
+  const router = useRouter();
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSaveSection = async () => {
+    try {
+      await saveProfile();
+      setIsSaved(true);
+    } catch {
+      // toast shown by saveProfile
+    }
+  };
 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
@@ -320,7 +334,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
   };
 
   return (
-    <div className="flex-1 h-full flex overflow-hidden bg-[#080D1A]">
+    <div className="flex-1 h-full flex overflow-hidden bg-slate-50 dark:bg-[#080D1A] transition-colors">
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* LEFT / CENTER: Active Section Edit Panel (Scrolls independently)           */}
@@ -328,9 +342,9 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
       <div className="flex-1 h-full overflow-y-auto p-5 sm:p-7 xl:p-8 scrollbar-thin scrollbar-thumb-white/10 space-y-6">
         
         {/* Top Section Header with Title, Visibility Toggle & Quick Save */}
-        <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10">
+        <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10">
           <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight capitalize">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight capitalize">
               {activeSection === 'profile' && 'Profile & Identity'}
               {activeSection === 'personalDetails' && 'Personal Details'}
               {activeSection === 'skills' && 'Skills & Expertise'}
@@ -346,7 +360,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
               {activeSection === 'security' && 'Security & Verification'}
               {activeSection === 'settings' && 'Settings & Profile Configuration'}
             </h1>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Customize your digital card details. All updates sync to the live preview instantly.
             </p>
           </div>
@@ -360,18 +374,18 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                 title={(profile.sectionVisibility?.[activeSection] !== false) ? "Section is visible on card (Click to hide)" : "Section is hidden from card (Click to show)"}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                   (profile.sectionVisibility?.[activeSection] !== false)
-                    ? 'bg-white/5 hover:bg-white/10 text-slate-200 border-white/10'
-                    : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border-amber-500/30'
+                    ? 'bg-slate-200/70 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-white/10'
+                    : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 border-amber-500/30'
                 }`}
               >
                 {(profile.sectionVisibility?.[activeSection] !== false) ? (
                   <>
-                    <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                    <Eye className="w-3.5 h-3.5 text-cyan-500" />
                     <span className="hidden sm:inline">Visible</span>
                   </>
                 ) : (
                   <>
-                    <EyeOff className="w-3.5 h-3.5 text-amber-400" />
+                    <EyeOff className="w-3.5 h-3.5 text-amber-500" />
                     <span className="hidden sm:inline">Hidden</span>
                   </>
                 )}
@@ -380,13 +394,24 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
 
             <button
               type="button"
-              onClick={() => saveProfile()}
+              onClick={handleSaveSection}
               disabled={isSaving}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50"
             >
               {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
               <span>Save Section</span>
             </button>
+
+            {isSaved && (
+              <button
+                type="button"
+                onClick={() => router.push(`/profile/${profile.slug || profile.id}`)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/25 transition-all cursor-pointer animate-in fade-in"
+              >
+                <span>Next: View Profile</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 

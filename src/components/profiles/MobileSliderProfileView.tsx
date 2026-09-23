@@ -643,22 +643,22 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
           {/* ===================================================================== */}
           {/* BOTTOM ACTION BAR: SAVE (LEFT) & NEXT (RIGHT)                         */}
           {/* ===================================================================== */}
-          <div className="relative z-40 w-full bg-[#080E1A]/95 backdrop-blur-md border-t border-[#1F334F] py-2.5 px-4 flex items-center justify-between gap-3 shrink-0">
+          <div className="relative z-40 w-full bg-slate-50/95 dark:bg-[#080E1A]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#1F334F] py-2.5 px-4 flex items-center justify-between gap-3 shrink-0">
             {/* Save Button */}
             <button
               type="button"
               onClick={handleSaveTrigger}
               disabled={isSaving}
-              className="flex-1 py-2 px-4 rounded-xl text-xs font-bold bg-[#142338] hover:bg-[#1C3250] active:bg-[#111D2E] text-white border border-[#274164] transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="flex-1 py-2 px-4 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 dark:bg-[#142338] dark:hover:bg-[#1C3250] text-slate-900 dark:text-white border border-slate-300 dark:border-[#274164] transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               {isSaving ? (
                 <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-500" />
                   <span>Saving...</span>
                 </>
               ) : (
                 <>
-                  <Check className="w-3.5 h-3.5 text-cyan-400" />
+                  <Check className="w-3.5 h-3.5 text-cyan-500" />
                   <span>Save</span>
                 </>
               )}
@@ -676,10 +676,10 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   showToast?.('Switched view perspective');
                 }
               }}
-              className="flex-1 py-2 px-4 rounded-xl text-xs font-bold bg-[#142338] hover:bg-[#1C3250] active:bg-[#111D2E] text-white border border-[#274164] transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+              className="flex-1 py-2 px-4 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 dark:bg-[#142338] dark:hover:bg-[#1C3250] text-slate-900 dark:text-white border border-slate-300 dark:border-[#274164] transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Next</span>
-              <ChevronRight className="w-3.5 h-3.5 text-cyan-400" />
+              <ChevronRight className="w-3.5 h-3.5 text-cyan-500" />
             </button>
           </div>
         </div>

@@ -14,6 +14,7 @@ import { getThemeConfig } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
 import { SlidingEditorPanel } from '@/components/profiles/SlidingEditorPanel';
 import { ProfileEditorProvider } from '@/context/ProfileEditorContext';
+import { usePortfolioTheme } from '@/context/ThemeContext';
 import { 
   Share2, 
   Home, 
@@ -23,7 +24,9 @@ import {
   Smartphone,
   Sparkles,
   ExternalLink,
-  Lock
+  Lock,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface PublicProfileClientProps {
@@ -58,7 +61,7 @@ function PublicProfileClientInner({
   const [activeTheme, setActiveTheme] = useState<ProfileTheme>(
     initialProfile.theme && initialProfile.theme !== 'default' ? initialProfile.theme : 'editorial'
   );
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = usePortfolioTheme();
   const [viewMode, setViewMode] = useState<'standard' | 'web'>('standard');
   const [isEditing, setIsEditing] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -71,11 +74,6 @@ function PublicProfileClientInner({
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
-
-  useEffect(() => {
-    const hasDark = document.documentElement.classList.contains('dark');
-    setIsDark(hasDark);
-  }, []);
 
   const handleSaveEdits = async (updatedData: ProfileData) => {
     try {
@@ -149,6 +147,22 @@ function PublicProfileClientInner({
                 <span className="hidden sm:inline">Studio Editor</span>
               </Link>
             )}
+
+            {/* Dark / Light Mode Toggle */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-700 transition-colors shadow-2xs cursor-pointer shrink-0"
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-slate-700" />
+              )}
+              <span className="hidden sm:inline">{isDark ? 'Light' : 'Dark'}</span>
+            </button>
 
             <button
               type="button"

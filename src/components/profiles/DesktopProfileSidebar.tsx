@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Reorder } from 'framer-motion';
 import { 
   User, 
@@ -13,7 +14,7 @@ import {
   Link2, 
   Briefcase, 
   Sparkles, 
-  Eye,
+  Eye, 
   EyeOff, 
   UserCheck, 
   Archive, 
@@ -23,7 +24,8 @@ import {
   Save,
   Loader2,
   GripVertical,
-  X
+  X,
+  ArrowRight
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { AvtiveLogoIcon } from '@/components/DesktopWindowPreview';
@@ -64,12 +66,15 @@ export interface DesktopProfileSidebarProps {
 }
 
 export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
+  const router = useRouter();
+  const [isSaved, setIsSaved] = useState(false);
+
   const { 
     profile, 
     activeSection, 
     setActiveSection, 
     isSaving, 
-    saveProfile, 
+    saveProfile,
     currentIdentifier,
     userProfiles,
     handleSwitchPersona,
@@ -78,6 +83,15 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
     sectionVisibility,
     handleToggleSectionVisibility
   } = useProfileEditor();
+
+  const handleSave = async () => {
+    try {
+      await saveProfile();
+      setIsSaved(true);
+    } catch {
+      // Handled by saveProfile
+    }
+  };
 
   const skillsCount = Array.isArray(profile.skills) ? profile.skills.length : 0;
   const projectsCount = Array.isArray(profile.projects) ? profile.projects.length : 0;
@@ -145,10 +159,10 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
   };
 
   return (
-    <aside className="w-[300px] xl:w-[330px] shrink-0 h-full bg-[#080D1A] border-r border-white/10 flex flex-col select-none relative z-30 shadow-2xl">
+    <aside className="w-[300px] xl:w-[330px] shrink-0 h-full bg-white dark:bg-[#080D1A] border-r border-slate-200 dark:border-white/10 flex flex-col select-none relative z-30 shadow-2xl transition-colors">
       
       {/* 1. Header with Avtive Branding & Close Button */}
-      <div className="p-4 border-b border-white/10 flex items-center justify-between gap-3 shrink-0">
+      <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 shrink-0">
         <Link 
           href={`/profile/${currentIdentifier}`} 
           className="flex items-center gap-2.5 group"
@@ -159,12 +173,12 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-extrabold text-white tracking-tight">avtive</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-cyan-500/15 text-cyan-400 font-mono font-bold border border-cyan-500/30">
+              <span className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">avtive</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-mono font-bold border border-cyan-500/30">
                 STUDIO
               </span>
             </div>
-            <span className="text-[10px] text-slate-400">Desktop Profile Editor</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400">Desktop Profile Editor</span>
           </div>
         </Link>
 
@@ -175,7 +189,7 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
             onClick={onClose}
             aria-label="Close navigation panel"
             title="Close panel"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -183,7 +197,7 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
       </div>
 
       {/* 2. User Profile Summary Card / Persona Switcher */}
-      <div className="px-3.5 py-3 border-b border-white/10 bg-white/[0.02] shrink-0">
+      <div className="px-3.5 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] shrink-0">
         <div className="flex items-center gap-3">
           <div className="relative w-10 h-10 rounded-full border-2 border-cyan-500/40 overflow-hidden bg-slate-800 shrink-0 shadow-sm">
             <img 
@@ -191,12 +205,12 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
               alt={profile.name}
               className="w-full h-full object-cover"
             />
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#080D1A]" />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-[#080D1A]" />
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-1">
-              <h3 className="text-xs font-bold text-white truncate">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                 {profile.name || 'Your Profile'}
               </h3>
               {userProfiles && userProfiles.length > 1 && (
@@ -207,7 +221,7 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
                 />
               )}
             </div>
-            <p className="text-[11px] text-slate-400 truncate">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
               {profile.professionalTitle || profile.designation || 'Professional'}
             </p>
           </div>
@@ -416,10 +430,10 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
       </div>
 
       {/* 4. Bottom Sticky Action Footer */}
-      <div className="p-3.5 border-t border-white/10 bg-[#080D1A]/95 backdrop-blur-md space-y-2 shrink-0">
+      <div className="p-3.5 border-t border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-[#080D1A]/95 backdrop-blur-md space-y-2 shrink-0">
         <button
           type="button"
-          onClick={() => saveProfile()}
+          onClick={handleSave}
           disabled={isSaving}
           className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 active:scale-98"
         >
@@ -436,14 +450,25 @@ export function DesktopProfileSidebar({ onClose }: DesktopProfileSidebarProps) {
           )}
         </button>
 
+        {isSaved && (
+          <button
+            type="button"
+            onClick={() => router.push(`/profile/${currentIdentifier}`)}
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/25 transition-all cursor-pointer active:scale-98 animate-in fade-in"
+          >
+            <span>Next: View Profile</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        )}
+
         <Link
           href={`/profile/${currentIdentifier}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors shadow-2xs"
+          className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-200/60 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-300 dark:border-white/10 transition-colors shadow-2xs"
           title="Open Public Card in New Tab"
         >
-          <ExternalLink className="w-3 h-3 text-cyan-400" />
+          <ExternalLink className="w-3 h-3 text-cyan-500" />
           <span>View Public Profile</span>
         </Link>
       </div>
