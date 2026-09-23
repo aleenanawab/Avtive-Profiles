@@ -194,13 +194,13 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
   const filteredSkills = skills.length > 0 ? skills : defaultSkillChips;
 
   return (
-    <div className={`w-full flex flex-col items-center select-none ${className}`}>
+    <div className={`w-[375px] min-w-[375px] max-w-[375px] h-full flex flex-col select-none overflow-hidden ${className}`}>
       
       {/* Top Slider Control Presets Bar */}
-      <div className="w-full max-w-[375px] mb-2 px-1 flex items-center justify-between text-[11px] text-slate-400">
+      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-400 bg-[#0E1528] border-b border-white/10 shrink-0">
         <span className="flex items-center gap-1.5 font-bold text-cyan-400">
           <Smartphone className="w-3.5 h-3.5" />
-          <span>PDF Mobile View</span>
+          <span>Mobile View</span>
         </span>
 
         {/* Quick Split Presets */}
@@ -211,9 +211,9 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors cursor-pointer ${
               Math.round(sliderPos) === 50 ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30' : 'text-slate-400 hover:text-white'
             }`}
-            title="Split 50% (As in PDF)"
+            title="Split 50%"
           >
-            PDF Split
+            Split
           </button>
           <button
             type="button"
@@ -238,73 +238,53 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
         </div>
       </div>
 
-      {/* Realistic Smartphone Chassis matching PDF Screen */}
+      {/* Main Inner Display Viewport */}
       <div 
-        className="relative w-full max-w-[375px] h-[760px] rounded-[44px] p-2.5 bg-gradient-to-b from-[#1C2533] via-[#0E1522] to-[#080D1A] shadow-2xl ring-1 ring-white/10 border border-white/15 flex flex-col transition-all overflow-hidden shrink-0"
+        ref={containerRef}
+        className="relative w-full flex-1 overflow-hidden bg-[#0A101D] flex flex-col select-text"
       >
-        {/* Inner Screen Display */}
-        <div 
-          ref={containerRef}
-          className="relative w-full h-full rounded-[36px] overflow-hidden bg-[#0A101D] flex flex-col border border-white/10 select-text"
-        >
-          {/* iOS Status Bar (Transparent Over Cover) */}
-          <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-5 pt-3 pb-1 text-[10px] font-semibold text-white/90 select-none bg-transparent">
-            <span className="tabular-nums font-mono text-[11px]">9:41</span>
-            
-            {/* Camera / Dynamic Island Notch */}
-            <div className="w-20 h-4 bg-black/80 backdrop-blur-md rounded-full flex items-center justify-end px-2 gap-1 shadow-sm">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        {/* Top Background Cover Header */}
+        <div className="relative h-36 w-full shrink-0 overflow-hidden bg-[#0D1626]">
+          <img
+            src={coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop'}
+            alt="Mountain Landscape Cover"
+            className="w-full h-full object-cover opacity-80"
+          />
+          {/* Dark gradient fade into body */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0A101D]/50 to-[#0A101D]" />
+
+          {/* User Title & Avatar Overlay matching PDF */}
+          <div className="absolute bottom-2 left-3 right-3 flex items-center gap-2.5">
+            <div className="relative w-12 h-12 rounded-full border-2 border-[#1E2D44] overflow-hidden bg-[#131F33] shrink-0 shadow-lg">
+              <img
+                src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'}
+                alt={fullName || 'Aleena Nawab'}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            <div className="flex items-center gap-1">
-              <Signal className="w-3 h-3" />
-              <Wifi className="w-3 h-3" />
-              <Battery className="w-3.5 h-3.5" />
-            </div>
-          </div>
-
-          {/* Top Background Cover Header matching PDF */}
-          <div className="relative h-44 w-full shrink-0 overflow-hidden bg-[#0D1626]">
-            <img
-              src={coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop'}
-              alt="Mountain Landscape Cover"
-              className="w-full h-full object-cover opacity-80"
-            />
-            {/* Dark gradient fade into body */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0A101D]/50 to-[#0A101D]" />
-
-            {/* User Title & Avatar Overlay matching PDF */}
-            <div className="absolute bottom-2 left-4 right-4 flex items-center gap-3">
-              <div className="relative w-14 h-14 rounded-full border-2 border-[#1E2D44] overflow-hidden bg-[#131F33] shrink-0 shadow-lg">
-                <img
-                  src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'}
-                  alt={fullName || 'Aleena Nawab'}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <h2 className="text-base font-bold text-white tracking-tight truncate">
-                  {fullName || 'Aleena Nawab'}
-                </h2>
-                <p className="text-[11px] text-slate-300 font-medium truncate">
-                  {professionalTitle || 'Full Stack Engineer'}
-                </p>
-                {/* Micro skill tags */}
-                <div className="flex items-center gap-1 mt-1 overflow-hidden">
-                  {skills.slice(0, 3).map((s, idx) => (
-                    <span key={idx} className="text-[9px] px-1.5 py-0.2 rounded bg-black/40 text-cyan-300 border border-cyan-500/20 shrink-0">
-                      {s}
-                    </span>
-                  ))}
-                </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-sm font-bold text-white tracking-tight truncate">
+                {fullName || 'Aleena Nawab'}
+              </h2>
+              <p className="text-[11px] text-slate-300 font-medium truncate">
+                {professionalTitle || 'Full Stack Engineer'}
+              </p>
+              {/* Micro skill tags */}
+              <div className="flex items-center gap-1 mt-0.5 overflow-hidden">
+                {skills.slice(0, 3).map((s, idx) => (
+                  <span key={idx} className="text-[9px] px-1.5 py-0.2 rounded bg-black/40 text-cyan-300 border border-cyan-500/20 shrink-0">
+                    {s}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
+        </div>
 
-          {/* ===================================================================== */}
-          {/* SLIDER VIEWPORT: SPLIT BETWEEN LEFT FORM & RIGHT FROSTED DRAWER       */}
-          {/* ===================================================================== */}
+        {/* ===================================================================== */}
+        {/* SLIDER VIEWPORT: SPLIT BETWEEN LEFT FORM & RIGHT FROSTED DRAWER       */}
+        {/* ===================================================================== */}
           <div className="relative flex-1 w-full overflow-hidden flex">
             
             {/* ─────────────────────────────────────────────────────────────────── */}
@@ -324,13 +304,23 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <div className="rounded-xl bg-[#111C2C]/90 border border-[#22354F] p-3 space-y-2 shadow-sm">
                   <div className="flex items-center justify-between text-xs font-bold text-white border-b border-[#22354F]/80 pb-1.5">
                     <span className="tracking-wide">Profile</span>
-                    <button 
-                      type="button" 
-                      onClick={() => setExpandedLeftCard(expandedLeftCard === 'profile' ? null : 'profile')}
-                      className="text-slate-400 hover:text-white"
-                    >
-                      {expandedLeftCard === 'profile' ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSectionVisibility('profile')}
+                        title={isSectionVisible('profile') ? "Hide Profile" : "Show Profile"}
+                        className="text-slate-400 hover:text-cyan-400 p-0.5"
+                      >
+                        {isSectionVisible('profile') ? <Eye className="w-3.5 h-3.5 text-cyan-400" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setExpandedLeftCard(expandedLeftCard === 'profile' ? null : 'profile')}
+                        className="text-slate-400 hover:text-white"
+                      >
+                        {expandedLeftCard === 'profile' ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="space-y-1">
@@ -364,7 +354,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <div className="rounded-xl bg-[#111C2C]/90 border border-[#22354F] p-3 space-y-2 shadow-sm">
                   <div className="flex items-center justify-between text-xs font-bold text-white border-b border-[#22354F]/80 pb-1.5">
                     <span className="tracking-wide">Personal Details</span>
-                    <Pencil className="w-3 h-3 text-slate-400" />
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSectionVisibility('personalDetails')}
+                        title={isSectionVisible('personalDetails') ? "Hide Personal Details" : "Show Personal Details"}
+                        className="text-slate-400 hover:text-cyan-400 p-0.5"
+                      >
+                        {isSectionVisible('personalDetails') ? <Eye className="w-3.5 h-3.5 text-cyan-400" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
+                      </button>
+                      <Pencil className="w-3 h-3 text-slate-400" />
+                    </div>
                   </div>
 
                   <div className="space-y-1">
@@ -394,7 +394,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <div className="rounded-xl bg-[#111C2C]/90 border border-[#22354F] p-3 space-y-2 shadow-sm">
                   <div className="flex items-center justify-between text-xs font-bold text-white border-b border-[#22354F]/80 pb-1.5">
                     <span className="tracking-wide">Skills</span>
-                    <Code className="w-3 h-3 text-slate-400" />
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSectionVisibility('skills')}
+                        title={isSectionVisible('skills') ? "Hide Skills" : "Show Skills"}
+                        className="text-slate-400 hover:text-cyan-400 p-0.5"
+                      >
+                        {isSectionVisible('skills') ? <Eye className="w-3.5 h-3.5 text-cyan-400" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
+                      </button>
+                      <Code className="w-3 h-3 text-slate-400" />
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -469,7 +479,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <div className="rounded-xl bg-[#111C2C]/90 border border-[#22354F] p-3 space-y-1.5 shadow-sm">
                   <div className="flex items-center justify-between text-xs font-bold text-white border-b border-[#22354F]/80 pb-1.5">
                     <span className="tracking-wide">Projects</span>
-                    <FolderGit2 className="w-3 h-3 text-slate-400" />
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSectionVisibility('projects')}
+                        title={isSectionVisible('projects') ? "Hide Projects" : "Show Projects"}
+                        className="text-slate-400 hover:text-cyan-400 p-0.5"
+                      >
+                        {isSectionVisible('projects') ? <Eye className="w-3.5 h-3.5 text-cyan-400" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
+                      </button>
+                      <FolderGit2 className="w-3 h-3 text-slate-400" />
+                    </div>
                   </div>
                   <p className="text-[10px] text-slate-400 italic">add your projects here</p>
                   
@@ -496,7 +516,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <div className="rounded-xl bg-[#111C2C]/70 border border-[#22354F]/70 p-3 space-y-1 shadow-sm opacity-90">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-[#22354F]/60 pb-1.5">
                     <span className="tracking-wide">Education</span>
-                    <GraduationCap className="w-3 h-3 text-slate-400" />
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSectionVisibility('education')}
+                        title={isSectionVisible('education') ? "Hide Education" : "Show Education"}
+                        className="text-slate-400 hover:text-cyan-400 p-0.5"
+                      >
+                        {isSectionVisible('education') ? <Eye className="w-3.5 h-3.5 text-cyan-400" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
+                      </button>
+                      <GraduationCap className="w-3 h-3 text-slate-400" />
+                    </div>
                   </div>
                   <p className="text-[10px] text-slate-400 italic">add your education details</p>
                 </div>
@@ -505,7 +535,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <div className="rounded-xl bg-[#111C2C]/70 border border-[#22354F]/70 p-3 space-y-1 shadow-sm opacity-90">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-[#22354F]/60 pb-1.5">
                     <span className="tracking-wide">Social Links</span>
-                    <Link2 className="w-3 h-3 text-slate-400" />
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSectionVisibility('socialLinks')}
+                        title={isSectionVisible('socialLinks') ? "Hide Social Links" : "Show Social Links"}
+                        className="text-slate-400 hover:text-cyan-400 p-0.5"
+                      >
+                        {isSectionVisible('socialLinks') ? <Eye className="w-3.5 h-3.5 text-cyan-400" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
+                      </button>
+                      <Link2 className="w-3 h-3 text-slate-400" />
+                    </div>
                   </div>
                   <p className="text-[10px] text-slate-400 italic">add your social links</p>
                 </div>
@@ -547,7 +587,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                       </span>
                     </div>
 
-                    {/* Right: Toggle Switch & Chevron / Edit Pencil */}
+                    {/* Right: Eye/EyeOff Toggle Switch & Chevron / Edit Pencil */}
                     <div className="flex items-center gap-1.5 shrink-0">
                       {sec.hasToggle ? (
                         <button
@@ -556,16 +596,12 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                             e.stopPropagation();
                             handleToggleSectionVisibility(sec.key);
                           }}
-                          className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                            isVis ? 'bg-cyan-500' : 'bg-[#1E2D44]'
+                          className={`p-1 rounded-lg transition-colors cursor-pointer ${
+                            isVis ? 'text-cyan-400 hover:bg-cyan-500/15' : 'text-slate-500 hover:text-amber-400 hover:bg-amber-500/15'
                           }`}
                           title={isVis ? 'Hide section' : 'Show section'}
                         >
-                          <span
-                            className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-0.5 ${
-                              isVis ? 'translate-x-3.5' : 'translate-x-0.5'
-                            }`}
-                          />
+                          {isVis ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
                         </button>
                       ) : sec.isEdit ? (
                         <span className="p-0.5 text-slate-400">
@@ -646,13 +682,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               <ChevronRight className="w-3.5 h-3.5 text-cyan-400" />
             </button>
           </div>
-
         </div>
       </div>
-
-      <p className="text-[11px] text-slate-400 text-center mt-2.5 max-w-[340px]">
-        Drag the glowing vertical slider bar horizontally to reveal the form or the section drawer.
-      </p>
-    </div>
   );
 }

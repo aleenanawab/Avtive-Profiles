@@ -288,6 +288,27 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
     return found ? found.url : '';
   };
 
+  const isSocialVisible = (platform: string) => {
+    const currentLinks = Array.isArray(profile.socialLinks) ? profile.socialLinks : [];
+    const found = currentLinks.find(l => l.platform === platform) as any;
+    return found ? found.visible !== false : true;
+  };
+
+  const toggleSocialVisibility = (platform: string) => {
+    const currentLinks = Array.isArray(profile.socialLinks) ? profile.socialLinks : [];
+    const existingIndex = currentLinks.findIndex(l => l.platform === platform);
+    if (existingIndex >= 0) {
+      const copy = [...currentLinks];
+      const curVis = (copy[existingIndex] as any).visible !== false;
+      copy[existingIndex] = { ...copy[existingIndex], visible: !curVis };
+      updateField('socialLinks', copy);
+      showToast(`${platform} link is now ${!curVis ? 'Visible' : 'Hidden'}`);
+    } else {
+      updateField('socialLinks', [...currentLinks, { platform: platform as SocialLink['platform'], url: '', visible: false }]);
+      showToast(`${platform} link is now Hidden`);
+    }
+  };
+
   // Sharing Settings Handlers
   const toggleSharingSetting = (key: keyof NonNullable<typeof profile.sharingSettings>) => {
     const current = profile.sharingSettings || {};
@@ -306,7 +327,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
       {/* ────────────────────────────────────────────────────────────────────────── */}
       <div className="flex-1 h-full overflow-y-auto p-5 sm:p-7 xl:p-8 scrollbar-thin scrollbar-thumb-white/10 space-y-6">
         
-        {/* Top Section Header with Title & Quick Save */}
+        {/* Top Section Header with Title, Visibility Toggle & Quick Save */}
         <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10">
           <div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight capitalize">
@@ -330,15 +351,43 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => saveProfile()}
-            disabled={isSaving}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50"
-          >
-            {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-            <span>Save Section</span>
-          </button>
+          <div className="flex items-center gap-2.5">
+            {/* Section Visibility Toggle for Active Section */}
+            {['profile', 'personalDetails', 'skills', 'projects', 'education', 'contactInfo', 'socialLinks', 'experience', 'enhanceProfile'].includes(activeSection) && (
+              <button
+                type="button"
+                onClick={() => toggleSectionVisibility(activeSection)}
+                title={(profile.sectionVisibility?.[activeSection] !== false) ? "Section is visible on card (Click to hide)" : "Section is hidden from card (Click to show)"}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                  (profile.sectionVisibility?.[activeSection] !== false)
+                    ? 'bg-white/5 hover:bg-white/10 text-slate-200 border-white/10'
+                    : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border-amber-500/30'
+                }`}
+              >
+                {(profile.sectionVisibility?.[activeSection] !== false) ? (
+                  <>
+                    <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                    <span className="hidden sm:inline">Visible</span>
+                  </>
+                ) : (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="hidden sm:inline">Hidden</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => saveProfile()}
+              disabled={isSaving}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50"
+            >
+              {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+              <span>Save Section</span>
+            </button>
+          </div>
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════════════ */}
@@ -1083,6 +1132,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                 { platform: 'website', label: 'Personal Website', icon: Globe, placeholder: 'https://yourwebsite.com' }
               ].map((item) => {
                 const Icon = item.icon;
+                const isVisible = isSocialVisible(item.platform);
                 return (
                   <div key={item.platform} className="p-3.5 rounded-xl bg-[#080D1A] border border-white/10 flex items-center gap-3">
                     <Icon className="w-4 h-4 text-cyan-400 shrink-0" />
@@ -1094,6 +1144,19 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                       className="flex-1 px-3 py-1.5 rounded-lg bg-[#0E1526] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500"
                       placeholder={item.placeholder}
                     />
+                    <button
+                      type="button"
+                      onClick={() => toggleSocialVisibility(item.platform)}
+                      title={isVisible ? "Link is visible on digital card (Click to hide)" : "Link is hidden from digital card (Click to show)"}
+                      aria-label={isVisible ? `Hide ${item.label}` : `Show ${item.label}`}
+                      className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
+                        isVisible
+                          ? 'bg-white/5 hover:bg-white/10 text-cyan-400 border-white/10'
+                          : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border-amber-500/30'
+                      }`}
+                    >
+                      {isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                 );
               })}
@@ -1315,11 +1378,12 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                       <button
                         type="button"
                         onClick={() => handleToggleCustomField(cf.id)}
-                        className={`text-[10px] font-bold px-2 py-1 rounded-lg border ${
-                          cf.visible !== false ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'
+                        className={`text-[10px] font-bold px-2 py-1 rounded-lg border flex items-center gap-1 cursor-pointer transition-colors ${
+                          cf.visible !== false ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25' : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
                         }`}
                       >
-                        {cf.visible !== false ? 'Visible' : 'Hidden'}
+                        {cf.visible !== false ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3 text-amber-400" />}
+                        <span>{cf.visible !== false ? 'Visible' : 'Hidden'}</span>
                       </button>
                       <button
                         type="button"

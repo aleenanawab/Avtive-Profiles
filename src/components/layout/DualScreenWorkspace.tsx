@@ -145,9 +145,11 @@ export function DualScreenWorkspace({
               </div>
             </div>
 
-            {/* Mobile Screen Content Canvas */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col bg-[#050913]">
-              {mobileContent}
+            {/* Mobile Screen Content Canvas: Fixed 375px internal website design viewport */}
+            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-[#050913]">
+              <div className="w-[375px] min-w-[375px] max-w-[375px] flex-1 flex flex-col overflow-x-hidden">
+                {mobileContent}
+              </div>
             </div>
 
             {/* Phone Bottom Home Indicator Bar */}

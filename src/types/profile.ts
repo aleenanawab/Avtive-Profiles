@@ -146,6 +146,7 @@ export interface SocialLink {
   url: string;
   label?: string;
   handle?: string;
+  visible?: boolean;
 }
 
 export interface MetricHighlight {
@@ -405,7 +406,7 @@ export interface ProfileData {
 
   // Socials
   socials: SocialLink[];
-  socialLinks?: { platform: string; url: string; label?: string }[];
+  socialLinks?: { platform: string; url: string; label?: string; visible?: boolean }[];
 
   // Multi-Profile Identity & Metadata
   profileName?: string;
