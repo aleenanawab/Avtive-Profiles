@@ -53,15 +53,17 @@ export function DualScreenWorkspace({
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
       {/* Clean, minimalist window presentation with zero floating external text     */}
-      {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex-1 w-full p-4 sm:p-6 lg:p-8 flex flex-row items-stretch justify-center gap-6 min-w-[1100px] xl:min-w-0 max-w-[1920px] mx-auto my-auto">
+      <div 
+        className="flex-1 w-full p-3 sm:p-4 lg:p-5 flex flex-row items-center justify-center gap-4 sm:gap-6 min-w-[1100px] xl:min-w-0 max-w-[1920px] mx-auto min-h-0 overflow-hidden"
+        style={{ height: 'calc(100vh - 40px)', maxHeight: 'calc(100vh - 40px)' }}
+      >
         
         {/* ======================================================================= */}
         {/* SCREEN 1: DESKTOP WORKING SCREEN (Clean Minimalist Window)              */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[540px] max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-2xl shadow-slate-300/40 dark:shadow-black/60 overflow-hidden transition-colors"
+          className="flex-1 min-w-[540px] max-w-[1240px] h-full flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-2xl shadow-slate-300/40 dark:shadow-black/60 overflow-hidden transition-colors min-h-0"
         >
           {/* Desktop Browser Window Header Frame */}
           <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
@@ -126,10 +128,19 @@ export function DualScreenWorkspace({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[390px] min-w-[370px] max-w-[420px] shrink-0 flex flex-col items-center justify-center"
+          className="w-auto shrink-0 h-full flex flex-col items-center justify-center min-h-0"
         >
           {/* Smartphone Chassis Frame */}
-          <div className="w-full flex-1 rounded-[42px] border-[7px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-white/10 min-h-[700px] max-h-[880px]">
+          <div 
+            className="relative aspect-[375/760] rounded-[38px] sm:rounded-[44px] border-[7px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden ring-1 ring-white/10 shrink-0 min-h-0"
+            style={{ 
+              height: 'calc(100vh - 80px)',
+              maxHeight: '740px',
+              minHeight: '400px',
+              width: 'auto',
+              maxWidth: 'min(375px, 100%)'
+            }}
+          >
             
             {/* Phone Top Notch / Dynamic Island + 9:41 Status Bar */}
             <div className="w-full bg-[#090E1B] pt-2 px-5 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-300 shrink-0 border-b border-white/5 select-none">

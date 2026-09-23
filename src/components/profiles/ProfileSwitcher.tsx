@@ -27,13 +27,15 @@ interface ProfileSwitcherProps {
   initialProfiles?: ProfileData[];
   onSelectProfile?: (profile: ProfileData) => void;
   className?: string;
+  compact?: boolean;
 }
 
 export function ProfileSwitcher({
   currentProfileIdOrSlug,
   initialProfiles,
   onSelectProfile,
-  className = ''
+  className = '',
+  compact = false
 }: ProfileSwitcherProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -186,22 +188,24 @@ export function ProfileSwitcher({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/15 transition-all text-xs font-semibold text-slate-800 dark:text-slate-100 shadow-2xs group cursor-pointer"
+        className={`flex items-center ${compact ? 'gap-1 px-2 py-1 rounded-lg text-[11px]' : 'gap-2 px-3 py-1.5 rounded-xl text-xs'} bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/15 transition-all font-semibold text-slate-800 dark:text-slate-100 shadow-2xs group cursor-pointer max-w-full`}
         aria-expanded={isOpen}
         title="Switch active professional profile or create new"
       >
-        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal hidden md:inline">
-          Profile:
-        </span>
-        <span className="font-bold truncate max-w-[130px] sm:max-w-[180px]">
+        {!compact && (
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal hidden md:inline">
+            Profile:
+          </span>
+        )}
+        <span className={`font-bold truncate ${compact ? 'max-w-[85px] sm:max-w-[100px]' : 'max-w-[130px] sm:max-w-[180px]'}`}>
           {activeProfile?.profileName || activeProfile?.name || 'Profiles'}
         </span>
-        {activeThemeBadge && (
+        {activeThemeBadge && !compact && (
           <span className={`hidden sm:inline-flex items-center gap-1 text-[10px] px-1.5 py-0.2 rounded-md border font-mono ${activeThemeBadge.bg}`}>
             {activeThemeBadge.label}
           </span>
         )}
-        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`${compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Dropdown Menu */}

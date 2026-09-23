@@ -88,7 +88,7 @@ interface AvtiveDigitalCardProps {
   onSendMessage?: (data: { name: string; email: string; message: string }) => void;
   onOpenMyCard?: () => void;
   isDark: boolean;
-  viewMode?: 'standard' | 'web';
+  viewMode?: 'standard' | 'mobile' | 'web';
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
@@ -301,6 +301,7 @@ export function AvtiveDigitalCard({
           onNavigateBack={onNavigateBack}
           theme={theme}
           onSelectSection={onSelectSection}
+          viewMode={viewMode}
         />
 
         {/* ========================================================================= */}

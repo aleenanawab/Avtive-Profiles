@@ -40,15 +40,12 @@ export function PhonePreview({
   headerTitle = 'Live Mobile Preview',
   onSelectSection
 }: PhonePreviewProps) {
-  const responsiveChassisWidth = 'min(375px, calc(100vw - 2rem), calc((82vh - 2.5rem) * (375 / 760)))';
-
   return (
-    <div className="w-full flex flex-col items-center select-none px-2 sm:px-0">
+    <div className="w-full h-full flex flex-col items-center justify-center select-none min-h-0">
       {/* Phone Header Label */}
       {!hideHeaderLabel && (
         <div 
-          className="w-full flex items-center justify-between pb-2 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all"
-          style={{ width: responsiveChassisWidth, maxWidth: '100%' }}
+          className="w-full flex items-center justify-between pb-1.5 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all shrink-0 max-w-[375px]"
         >
           <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px] truncate">
             <Smartphone className="w-3.5 h-3.5 shrink-0" />
@@ -61,14 +58,20 @@ export function PhonePreview({
         </div>
       )}
 
-      {/* Realistic Smartphone Chassis - Strict 375:760 Aspect Ratio & Viewport-Fitting */}
+      {/* Realistic Smartphone Chassis - Strict 375:760 Aspect Ratio & Screen-Viewport Fitting */}
       <div 
-        className="relative aspect-[375/760] max-h-[82vh] rounded-[36px] sm:rounded-[48px] p-2 sm:p-[9px] bg-gradient-to-b from-neutral-800 via-neutral-900 to-black shadow-2xl ring-1 ring-black/50 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0"
-        style={{ width: responsiveChassisWidth, maxWidth: '100%' }}
+        className="relative aspect-[375/760] rounded-[36px] sm:rounded-[44px] p-2 sm:p-[9px] bg-gradient-to-b from-neutral-800 via-neutral-900 to-black shadow-2xl ring-1 ring-black/50 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0 min-h-0"
+        style={{ 
+          height: hideHeaderLabel ? 'calc(100vh - 100px)' : 'calc(100vh - 130px)',
+          maxHeight: '740px',
+          minHeight: '400px',
+          width: 'auto',
+          maxWidth: 'min(375px, 100%)'
+        }}
       >
         
         {/* Screen Frame */}
-        <div className="relative w-full h-full rounded-[28px] sm:rounded-[40px] overflow-hidden bg-white dark:bg-[#111319] flex flex-col border border-black/40 select-text">
+        <div className="relative w-full h-full rounded-[28px] sm:rounded-[36px] overflow-hidden bg-white dark:bg-[#111319] flex flex-col border border-black/40 select-text">
           
           {/* iOS Status Bar */}
           <div className="relative z-30 flex items-center justify-between px-4 sm:px-6 pt-2.5 sm:pt-3 pb-1 text-[10px] sm:text-[11px] font-semibold text-slate-800 dark:text-white select-none bg-transparent shrink-0">
@@ -107,7 +110,7 @@ export function PhonePreview({
               onSelectTeamMember={onSelectTeamMember || (() => {})}
               onViewCompany={onViewCompany || (() => {})}
               isDark={isDark}
-              viewMode="standard"
+              viewMode="mobile"
               onSelectSection={onSelectSection}
             />
           </div>

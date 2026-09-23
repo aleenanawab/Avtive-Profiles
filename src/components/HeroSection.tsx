@@ -25,6 +25,7 @@ interface HeroSectionProps {
   onNavigateBack?: () => void;
   onOpenVirtualCard?: () => void;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
+  viewMode?: 'standard' | 'mobile' | 'web';
 }
 
 export function HeroSection({
@@ -34,9 +35,11 @@ export function HeroSection({
   onOpenEdit,
   onOpenShare,
   onOpenConnect,
-  onSelectSection
+  onSelectSection,
+  viewMode = 'standard'
 }: HeroSectionProps) {
   const router = useRouter();
+  const isMobile = viewMode === 'mobile';
 
   const coverUrl = profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop';
   const avatarUrl = profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop';
@@ -95,7 +98,7 @@ export function HeroSection({
       {/* 1. Cover Image Banner */}
       <div 
         onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'cover') : onOpenEdit?.())}
-        className={`relative h-44 sm:h-56 md:h-64 lg:h-72 w-full overflow-hidden bg-slate-900 ${
+        className={`relative ${isMobile ? 'h-36 sm:h-36' : 'h-44 sm:h-56 md:h-64 lg:h-72'} w-full overflow-hidden bg-slate-900 ${
           canEdit ? 'cursor-pointer group/cover hover:brightness-105 transition-all' : ''
         }`}
         title={canEdit ? 'Click to edit Cover Banner in Studio' : undefined}
@@ -118,8 +121,8 @@ export function HeroSection({
         )}
 
         {/* Cover Header Controls: Multi-Role Persona Switcher & Edit Icon */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-5 flex items-center gap-2 z-20">
-          <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} />
+        <div className={`absolute ${isMobile ? 'top-2 right-2' : 'top-3 right-3 sm:top-4 sm:right-5'} flex items-center gap-1.5 z-20`}>
+          <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} compact={isMobile} />
           {canEdit && (
             <button
               type="button"
@@ -127,22 +130,22 @@ export function HeroSection({
                 e.stopPropagation();
                 onSelectSection ? onSelectSection('basicInfo', 'cover') : onOpenEdit?.();
               }}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              className={`${isMobile ? 'w-7 h-7' : 'w-8 h-8 sm:w-9 sm:h-9'} rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0`}
               title="Edit Cover in Studio"
             >
-              <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+              <Pencil className={`${isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5 sm:w-4 sm:h-4'} text-white`} />
             </button>
           )}
         </div>
       </div>
 
       {/* 2. Identity Header */}
-      <div className="px-5 sm:px-8 lg:px-10 pb-6 -mt-12 sm:-mt-16 md:-mt-20 relative z-10 space-y-4">
+      <div className={`${isMobile ? 'px-4 pb-4 -mt-10' : 'px-5 sm:px-8 lg:px-10 pb-6 -mt-12 sm:-mt-16 md:-mt-20'} relative z-10 space-y-3`}>
         {/* Profile Photo */}
         {sharing.photo !== false && (
           <div 
             onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'avatar') : onOpenEdit?.())}
-            className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white dark:border-[#18181B] shadow-md bg-slate-100 dark:bg-zinc-800 shrink-0 ${
+            className={`relative ${isMobile ? 'w-20 h-20' : 'w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36'} rounded-full overflow-hidden border-4 border-white dark:border-[#18181B] shadow-md bg-slate-100 dark:bg-zinc-800 shrink-0 ${
               canEdit ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-purple-500/50 transition-all' : ''
             }`}
             title={canEdit ? 'Click to edit Profile Photo in Studio' : undefined}
@@ -154,8 +157,8 @@ export function HeroSection({
             />
             {canEdit && (
               <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
-                <Camera className="w-5 h-5 drop-shadow-md text-purple-300" />
-                <span className="text-[10px] font-bold mt-0.5">Edit</span>
+                <Camera className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'} drop-shadow-md text-purple-300`} />
+                <span className="text-[9px] font-bold mt-0.5">Edit</span>
               </div>
             )}
           </div>
@@ -165,35 +168,35 @@ export function HeroSection({
         {sharing.nameAndTitle !== false && (
           <div 
             onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'name') : onOpenEdit?.())}
-            className={`space-y-1 pt-1 ${
-              canEdit ? 'cursor-pointer group/name rounded-2xl p-2 -ml-2 hover:bg-purple-500/[0.06] dark:hover:bg-purple-500/10 hover:ring-1 hover:ring-purple-500/30 transition-all' : ''
+            className={`space-y-0.5 pt-0.5 ${
+              canEdit ? 'cursor-pointer group/name rounded-2xl p-1.5 -ml-1.5 hover:bg-purple-500/[0.06] dark:hover:bg-purple-500/10 hover:ring-1 hover:ring-purple-500/30 transition-all' : ''
             }`}
             title={canEdit ? 'Click to edit Identity in Studio' : undefined}
           >
-            <div className="flex items-center gap-2">
-              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-zinc-300 border border-black/5 dark:border-white/10">
+            <div className="flex items-center gap-1.5">
+              <div className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-zinc-300 border border-black/5 dark:border-white/10">
                 {typeBadgeLabel}
               </div>
               {canEdit && (
                 <span className="opacity-0 group-hover/name:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
                   <Pencil className="w-2.5 h-2.5" />
-                  Edit Identity
+                  Edit
                 </span>
               )}
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <h1 className={`${isMobile ? 'text-xl font-bold' : 'text-2xl sm:text-3xl md:text-4xl font-bold'} tracking-tight text-slate-900 dark:text-white flex items-center gap-2`}>
               <span>{profile.name}</span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg font-medium text-slate-500 dark:text-zinc-400">
+            <p className={`${isMobile ? 'text-xs font-medium' : 'text-sm sm:text-base md:text-lg font-medium'} text-slate-500 dark:text-zinc-400`}>
               {profile.profession || profile.designation || profile.profileName || 'Professional'}
             </p>
             {profile.tagline && (
-              <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-zinc-300 italic pt-0.5">
+              <p className="text-xs font-medium text-slate-600 dark:text-zinc-300 italic pt-0.5">
                 &ldquo;{profile.tagline}&rdquo;
               </p>
             )}
             {profile.location && (
-              <p className="text-xs sm:text-sm text-slate-400 dark:text-zinc-500">
+              <p className="text-xs text-slate-400 dark:text-zinc-500">
                 {profile.location}
               </p>
             )}
@@ -205,11 +208,11 @@ export function HeroSection({
           <div
             onClick={() => canEdit && (onSelectSection ? onSelectSection('about', 'about') : onOpenEdit?.())}
             className={`${
-              canEdit ? 'cursor-pointer group/bio rounded-2xl p-2 -ml-2 hover:bg-purple-500/[0.06] dark:hover:bg-purple-500/10 hover:ring-1 hover:ring-purple-500/30 transition-all' : ''
+              canEdit ? 'cursor-pointer group/bio rounded-2xl p-1.5 -ml-1.5 hover:bg-purple-500/[0.06] dark:hover:bg-purple-500/10 hover:ring-1 hover:ring-purple-500/30 transition-all' : ''
             }`}
             title={canEdit ? 'Click to edit Bio in Studio' : undefined}
           >
-            <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
               {profile.shortBio}
             </p>
             {canEdit && (
@@ -222,25 +225,25 @@ export function HeroSection({
         )}
 
         {/* Action Buttons Below Avatar */}
-        <div className="flex items-center gap-2 sm:gap-3 pt-2 max-w-md w-full">
+        <div className={`flex items-center ${isMobile ? 'gap-2 pt-1' : 'gap-2 sm:gap-3 pt-2'} max-w-md w-full`}>
           {canEdit ? (
             <>
               <button
                 type="button"
                 onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-700 dark:border-white/20"
+                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-700 dark:border-white/20`}
                 title="Edit Profile in Studio"
               >
-                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-purple-400" />
+                <Pencil className="w-3.5 h-3.5 shrink-0 text-purple-400" />
                 <span className="truncate">Edit Profile</span>
               </button>
 
               <button
                 type="button"
                 onClick={onOpenShare}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-200 dark:border-white/10"
+                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/10`}
               >
-                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 dark:text-amber-400 shrink-0" />
+                <Share2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
                 <span className="truncate">Share Profile</span>
               </button>
             </>
@@ -249,18 +252,18 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={onOpenConnect}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-200 dark:border-white/20"
+                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/20`}
               >
-                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <UserPlus className="w-3.5 h-3.5 shrink-0" />
                 <span className="truncate">Connect</span>
               </button>
 
               <button
                 type="button"
                 onClick={onOpenShare}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-700 dark:border-white/10"
+                className={`flex-1 ${isMobile ? 'py-1.5 px-2.5 text-[11px]' : 'py-2 sm:py-2.5 px-3 sm:px-5 text-xs'} rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-700 dark:border-white/10`}
               >
-                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
+                <Share2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                 <span className="truncate">Share</span>
               </button>
             </>

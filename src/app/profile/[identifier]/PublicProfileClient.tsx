@@ -182,14 +182,17 @@ function PublicProfileClientInner({
       {/* PERMANENT TWIN-SCREEN VIEWPORT                                             */}
       {/* Both Desktop Screen and Mobile Screen are permanently mounted & visible.   */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <main className="flex-1 w-full p-3 sm:p-5 lg:p-6 flex flex-row items-start justify-center gap-4 sm:gap-6 min-w-[1100px] xl:min-w-0 max-w-[1920px] mx-auto">
+      <main 
+        className="flex-1 w-full p-3 sm:p-4 lg:p-5 flex flex-row items-center justify-center gap-4 sm:gap-6 min-w-[1100px] xl:min-w-0 max-w-[1920px] mx-auto min-h-0 overflow-hidden"
+        style={{ height: 'calc(100vh - 56px)', maxHeight: 'calc(100vh - 56px)' }}
+      >
         
         {/* ======================================================================= */}
         {/* WORKING SCREEN 1: DESKTOP PUBLIC PROFILE CARD                          */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[560px] max-w-[1240px] flex flex-col rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1528] shadow-2xl shadow-black/30 overflow-hidden"
+          className="flex-1 min-w-[560px] max-w-[1240px] h-full flex flex-col rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1528] shadow-2xl shadow-black/30 overflow-hidden min-h-0"
         >
           {/* Desktop Frame Window Header */}
           <div className="w-full bg-slate-100 dark:bg-[#0A101E] border-b border-slate-200 dark:border-white/10 px-4 py-2 flex items-center justify-between gap-3 shrink-0">
@@ -245,10 +248,10 @@ function PublicProfileClientInner({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[410px] min-w-[390px] max-w-[430px] shrink-0 flex flex-col items-center"
+          className="w-auto shrink-0 h-full flex flex-col items-center justify-center min-h-0"
         >
           {/* Top Label */}
-          <div className="w-full flex items-center justify-between px-2 mb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
+          <div className="w-full flex items-center justify-between px-2 mb-1.5 text-[11px] font-mono text-slate-500 dark:text-slate-400 shrink-0 max-w-[375px]">
             <span className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
               <Smartphone className="w-3.5 h-3.5 text-cyan-500" />
               <span>Mobile Screen &middot; Interactive Pass</span>
@@ -260,7 +263,7 @@ function PublicProfileClientInner({
           </div>
 
           {/* Smartphone Chassis Frame */}
-          <div className="w-full">
+          <div className="flex-1 min-h-0 flex items-center justify-center">
             <PhonePreview
               profile={{ ...profile, theme: activeTheme }}
               isDark={isDark}
