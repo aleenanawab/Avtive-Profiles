@@ -108,11 +108,11 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center bg-slate-100 dark:bg-[#070D18] text-slate-800 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-auto transition-colors">
+    <div className="min-h-screen w-full flex flex-col justify-center bg-slate-100 dark:bg-[#070D18] text-slate-800 dark:text-slate-100 font-sans selection:bg-slate-300 dark:selection:bg-white/20 selection:text-slate-900 dark:selection:text-white relative overflow-x-auto transition-colors">
       
       {/* Toast Notification Banner */}
       {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-cyan-500/30 backdrop-blur-md animate-in fade-in slide-in-from-top-3 flex items-center gap-2">
+        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-slate-300 dark:border-white/10 backdrop-blur-md animate-in fade-in slide-in-from-top-3 flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>{toastMessage}</span>
         </div>
@@ -150,9 +150,9 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-slate-200/70 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-white/10 transition-all cursor-pointer active:scale-95 shadow-xs"
               >
                 {isSidebarOpen ? (
-                  <X className="w-3.5 h-3.5 text-cyan-500" />
+                  <X className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
                 ) : (
-                  <Menu className="w-3.5 h-3.5 text-cyan-500" />
+                  <Menu className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
                 )}
                 <span className="hidden sm:inline text-[11px] font-medium">Sections</span>
               </button>
@@ -201,7 +201,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 disabled={isSaving}
                 aria-label="Save All"
                 title="Save All"
-                className="p-1.5 px-3 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all active:scale-95"
+                className="p-1.5 px-3 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all active:scale-95"
               >
                 {isSaving ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -218,7 +218,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                   onClick={() => router.push(`/profile/${identifier}`)}
                   aria-label="Next: View Profile"
                   title="Next: View Profile"
-                  className="p-1.5 px-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 animate-in fade-in"
+                  className="p-1.5 px-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 animate-in fade-in"
                 >
                   <span>Next</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -233,7 +233,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 title="Open public profile in new tab"
                 className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-200/70 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-300 dark:border-white/10 transition-colors shrink-0"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-cyan-500" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               </Link>
 
               <button

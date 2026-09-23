@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { motion, Reorder, AnimatePresence } from 'framer-motion';
 import {
   User,
   Mail,
@@ -33,7 +33,8 @@ import {
   SlidersHorizontal,
   Smartphone,
   Eye,
-  Columns
+  Columns,
+  GripVertical
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { ProjectItem, ExperienceItem, EducationItem } from '@/types/profile';
@@ -62,6 +63,8 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     customFields, setCustomFields,
     sectionVisibility,
     handleToggleSectionVisibility,
+    sectionOrder,
+    setSectionOrder,
     fullName,
     isSaving,
     handleSaveChanges,
@@ -84,8 +87,36 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
   const [emailValue, setEmailValue] = useState(profile.email || 'user@example.com');
   const [phoneValue, setPhoneValue] = useState(profile.phone || '+1 (555) 000-0000');
 
-  // Expanded cards on the left form
-  const [expandedLeftCard, setExpandedLeftCard] = useState<string | null>('profile');
+  // Expanded cards on the left form: accordion dropdown open and close state
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({
+    profile: true,
+    personalDetails: true,
+    skills: true,
+    projects: false,
+    education: false,
+    socialLinks: false,
+    experience: false,
+    contactInfo: false,
+  });
+
+  const toggleCardExpand = (key: string) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  // Section items supported in the mobile form
+  const ALL_MOBILE_SECTIONS = useMemo(() => [
+    { key: 'profile', label: 'Profile', icon: User },
+    { key: 'personalDetails', label: 'Personal Details', icon: Pencil },
+    { key: 'skills', label: 'Skills', icon: Code },
+    { key: 'projects', label: 'Projects', icon: FolderGit2 },
+    { key: 'education', label: 'Education', icon: GraduationCap },
+    { key: 'socialLinks', label: 'Social Links', icon: Link2 },
+    { key: 'experience', label: 'Experience', icon: Briefcase },
+    { key: 'contactInfo', label: 'Contact Info', icon: Phone },
+  ], []);
 
   // Active drawer section for highlight
   const [selectedDrawerSection, setSelectedDrawerSection] = useState<string>('profile');
@@ -189,9 +220,269 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     return true;
   };
 
-  // Predefined popular skill suggestions
+  const orderedSections = useMemo(() => {
+    if (!sectionOrder || sectionOrder.length === 0) return ALL_MOBILE_SECTIONS;
+    const normalizeKey = (k: string) => {
+      if (k === 'about') return 'personalDetails';
+      if (k === 'contact') return 'contactInfo';
+      if (k === 'services') return 'skills';
+      return k;
+    };
+    const ordered: typeof ALL_MOBILE_SECTIONS = [];
+    for (const k of sectionOrder) {
+      const norm = normalizeKey(k);
+      const found = ALL_MOBILE_SECTIONS.find(s => s.key === norm || s.key === k);
+      if (found && !ordered.some(o => o.key === found.key)) {
+        ordered.push(found);
+      }
+    }
+    for (const s of ALL_MOBILE_SECTIONS) {
+      if (!ordered.some(o => o.key === s.key)) {
+        ordered.push(s);
+      }
+    }
+    return ordered;
+  }, [sectionOrder, ALL_MOBILE_SECTIONS]);
+
+  const visibleSections = useMemo(() => {
+    return orderedSections.filter(s => isSectionVisible(s.key));
+  }, [orderedSections, sectionVisibility]);
+
+  const hiddenSections = useMemo(() => {
+    return orderedSections.filter(s => !isSectionVisible(s.key));
+  }, [orderedSections, sectionVisibility]);
+
+  const handleReorderVisible = (newItems: typeof ALL_MOBILE_SECTIONS) => {
+    const newKeys = newItems.map(item => item.key);
+    const hiddenKeys = hiddenSections.map(item => item.key);
+    const otherKeys = (sectionOrder || []).filter(k => !newKeys.includes(k) && !hiddenKeys.includes(k));
+    setSectionOrder([...newKeys, ...hiddenKeys, ...otherKeys]);
+  };
+
   const defaultSkillChips = ['HTML', 'CSS', 'React', 'NextTs', 'NodeJs', 'TypeScript'];
-  const filteredSkills = skills.length > 0 ? skills : defaultSkillChips;
+  const filteredSkills: string[] = skills.length > 0 ? skills : defaultSkillChips;
+
+  const renderCardContent = (key: string) => {
+    switch (key) {
+      case 'profile':
+        return (
+          <>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Name</label>
+              <input
+                type="text"
+                value={fullName || 'User Profile'}
+                onChange={(e) => {
+                  const parts = e.target.value.split(' ');
+                  setFirstName(parts[0] || '');
+                  setSecondName(parts.slice(1).join(' '));
+                }}
+                placeholder="Enter your name"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Bio</label>
+              <textarea
+                rows={2}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Full Stack Engineer | Product Enthusiast"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 resize-none"
+              />
+            </div>
+          </>
+        );
+
+      case 'personalDetails':
+        return (
+          <>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Email</label>
+              <input
+                type="email"
+                value={emailValue}
+                onChange={(e) => setEmailValue(e.target.value)}
+                placeholder="enter your email"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Phone Number</label>
+              <input
+                type="tel"
+                value={phoneValue}
+                onChange={(e) => setPhoneValue(e.target.value)}
+                placeholder="enter your phone number"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+              />
+            </div>
+          </>
+        );
+
+      case 'skills':
+        return (
+          <>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Skills Cloud</label>
+              <button
+                type="button"
+                onClick={() => setIsAddingNewSkill(!isAddingNewSkill)}
+                className="text-[10px] font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-0.5 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Add</span>
+              </button>
+            </div>
+
+            {isAddingNewSkill ? (
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="text"
+                  value={newSkillInput}
+                  onChange={(e) => setNewSkillInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddSkillTag(newSkillInput);
+                    }
+                  }}
+                  placeholder="Skill name & press Enter"
+                  className="flex-1 px-2 py-1 rounded bg-slate-50 dark:bg-[#0A101D] border border-slate-300 dark:border-slate-500 text-slate-900 dark:text-white text-[10px]"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAddSkillTag(newSkillInput)}
+                  className="px-2 py-1 rounded bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-bold cursor-pointer"
+                >
+                  Add
+                </button>
+              </div>
+            ) : (
+              <input
+                type="text"
+                value={skillSearchQuery}
+                onChange={(e) => setSkillSearchQuery(e.target.value)}
+                placeholder="Search skills..."
+                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+              />
+            )}
+
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {filteredSkills
+                .filter(s => !skillSearchQuery || s.toLowerCase().includes(skillSearchQuery.toLowerCase()))
+                .map((skill) => (
+                  <span
+                    key={skill}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 dark:bg-[#162438] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#283E5E] group transition-colors"
+                  >
+                    <span>{skill}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSkillTag(skill)}
+                      className="opacity-40 group-hover:opacity-100 hover:text-rose-500 transition-opacity cursor-pointer"
+                      aria-label={`Remove ${skill}`}
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+            </div>
+          </>
+        );
+
+      case 'projects':
+        return (
+          <>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">Featured work & repository links</p>
+            {projects.length > 0 ? (
+              <div className="space-y-1 pt-1">
+                {projects.slice(0, 3).map((p) => (
+                  <div key={p.id} className="p-1.5 rounded bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] flex items-center justify-between text-[10px]">
+                    <span className="font-semibold text-slate-900 dark:text-white truncate">{p.title}</span>
+                    <span className="text-slate-500 text-[9px]">{p.tags?.slice(0, 1).join('')}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[10px] text-slate-400 italic">No projects added.</p>
+            )}
+          </>
+        );
+
+      case 'education':
+        return (
+          <>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">Academic credentials</p>
+            {education.length > 0 ? (
+              <div className="space-y-1 pt-1">
+                {education.map((e) => (
+                  <div key={e.id} className="p-1.5 rounded bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-[10px]">
+                    <span className="font-semibold text-slate-900 dark:text-white">{e.degree || 'Degree'}</span>
+                    <span className="text-slate-500 ml-1">• {e.institution || 'School'}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[10px] text-slate-400 italic">No education credentials.</p>
+            )}
+          </>
+        );
+
+      case 'socialLinks':
+        return (
+          <>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">External web profiles</p>
+            {socialLinks.length > 0 ? (
+              <div className="space-y-1 pt-1">
+                {socialLinks.slice(0, 3).map((l) => (
+                  <div key={l.id} className="p-1.5 rounded bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] flex items-center justify-between text-[10px]">
+                    <span className="font-semibold text-slate-900 dark:text-white capitalize">{l.platform}</span>
+                    <span className="text-slate-500 truncate max-w-[130px]">{l.url}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[10px] text-slate-400 italic">No social links added.</p>
+            )}
+          </>
+        );
+
+      case 'experience':
+        return (
+          <>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">Professional work history</p>
+            {experiences.length > 0 ? (
+              <div className="space-y-1 pt-1">
+                {experiences.slice(0, 3).map((exp) => (
+                  <div key={exp.id} className="p-1.5 rounded bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-[10px]">
+                    <span className="font-semibold text-slate-900 dark:text-white">{exp.role}</span>
+                    <span className="text-slate-500 ml-1">• {exp.company}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[10px] text-slate-400 italic">No experience records.</p>
+            )}
+          </>
+        );
+
+      case 'contactInfo':
+        return (
+          <>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">Direct contact details</p>
+            <div className="space-y-1 pt-1 text-[10px] text-slate-600 dark:text-slate-300">
+              <div>Email: {profile.email || 'None'}</div>
+              <div>Phone: {profile.phone || 'None'}</div>
+            </div>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={`w-[375px] min-w-[375px] max-w-[375px] h-full flex flex-col select-none overflow-hidden transition-colors ${className}`}>
@@ -294,263 +585,182 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             className="h-full overflow-y-auto overflow-x-hidden p-3 space-y-3.5 scrollbar-none overscroll-contain"
             style={{ width: `${sliderPos}%` }}
           >
-            {/* ── VISIBLE SECTION ────────────────────────────────────────────── */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-wide">Visible</h3>
+            {/* ── VISIBLE SECTION (With Drag & Drop & Accordion Open/Close) ──── */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between px-0.5">
+                <h3 className="text-xs font-extrabold text-slate-900 dark:text-white tracking-wide uppercase font-mono">Visible</h3>
+                <span className="text-[10px] text-slate-400 font-mono lowercase">drag & drop</span>
               </div>
 
-              {/* 1. Profile (Name & Bio) Card */}
-              <div className="rounded-xl bg-white dark:bg-[#111C2C]/90 border border-slate-200 dark:border-[#22354F] p-3 space-y-2 shadow-xs transition-colors">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-[#22354F]/80 pb-1.5">
-                  <span className="tracking-wide">Profile</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleSectionVisibility('profile')}
-                      title={isSectionVisible('profile') ? "Hide Profile" : "Show Profile"}
-                      className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-0.5"
+              <Reorder.Group
+                axis="y"
+                values={visibleSections}
+                onReorder={handleReorderVisible}
+                className="space-y-2.5"
+              >
+                {visibleSections.map((sec) => {
+                  const Icon = sec.icon;
+                  const isExpanded = expandedCards[sec.key] ?? false;
+
+                  return (
+                    <Reorder.Item
+                      key={sec.key}
+                      value={sec}
+                      className="rounded-xl bg-white dark:bg-[#111C2C]/90 border border-slate-200 dark:border-[#22354F] overflow-hidden shadow-xs transition-colors select-none group"
                     >
-                      {isSectionVisible('profile') ? <Eye className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => setExpandedLeftCard(expandedLeftCard === 'profile' ? null : 'profile')}
-                      className="text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                    >
-                      {expandedLeftCard === 'profile' ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Name</label>
-                  <input
-                    type="text"
-                    value={fullName || 'User Profile'}
-                    onChange={(e) => {
-                      const parts = e.target.value.split(' ');
-                      setFirstName(parts[0] || '');
-                      setSecondName(parts.slice(1).join(' '));
-                    }}
-                    placeholder="Enter your name"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Bio</label>
-                  <textarea
-                    rows={2}
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Full Stack Engineer | Product Enthusiast"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 resize-none"
-                  />
-                </div>
-              </div>
-
-              {/* 2. Personal Details Card */}
-              <div className="rounded-xl bg-white dark:bg-[#111C2C]/90 border border-slate-200 dark:border-[#22354F] p-3 space-y-2 shadow-xs transition-colors">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-[#22354F]/80 pb-1.5">
-                  <span className="tracking-wide">Personal Details</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleSectionVisibility('personalDetails')}
-                      title={isSectionVisible('personalDetails') ? "Hide Personal Details" : "Show Personal Details"}
-                      className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-0.5"
-                    >
-                      {isSectionVisible('personalDetails') ? <Eye className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
-                    </button>
-                    <Pencil className="w-3 h-3 text-slate-400" />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Email</label>
-                  <input
-                    type="email"
-                    value={emailValue}
-                    onChange={(e) => setEmailValue(e.target.value)}
-                    placeholder="enter your email"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Phone Number</label>
-                  <input
-                    type="tel"
-                    value={phoneValue}
-                    onChange={(e) => setPhoneValue(e.target.value)}
-                    placeholder="enter your phone number"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-                  />
-                </div>
-              </div>
-
-              {/* 3. Skills Card */}
-              <div className="rounded-xl bg-white dark:bg-[#111C2C]/90 border border-slate-200 dark:border-[#22354F] p-3 space-y-2 shadow-xs transition-colors">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-[#22354F]/80 pb-1.5">
-                  <span className="tracking-wide">Skills</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleSectionVisibility('skills')}
-                      title={isSectionVisible('skills') ? "Hide Skills" : "Show Skills"}
-                      className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-0.5"
-                    >
-                      {isSectionVisible('skills') ? <Eye className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
-                    </button>
-                    <Code className="w-3 h-3 text-slate-400" />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-semibold text-slate-600 dark:text-slate-400">Skills Cloud</label>
-                  <button
-                    type="button"
-                    onClick={() => setIsAddingNewSkill(!isAddingNewSkill)}
-                    className="text-[10px] font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-0.5 cursor-pointer"
-                  >
-                    <Plus className="w-3 h-3" />
-                    <span>Add</span>
-                  </button>
-                </div>
-
-                {isAddingNewSkill ? (
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="text"
-                      value={newSkillInput}
-                      onChange={(e) => setNewSkillInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleAddSkillTag(newSkillInput);
-                        }
-                      }}
-                      placeholder="Skill name & press Enter"
-                      className="flex-1 px-2 py-1 rounded bg-slate-50 dark:bg-[#0A101D] border border-slate-300 dark:border-slate-500 text-slate-900 dark:text-white text-[10px]"
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleAddSkillTag(newSkillInput)}
-                      className="px-2 py-1 rounded bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-bold cursor-pointer"
-                    >
-                      Add
-                    </button>
-                  </div>
-                ) : (
-                  <input
-                    type="text"
-                    value={skillSearchQuery}
-                    onChange={(e) => setSkillSearchQuery(e.target.value)}
-                    placeholder="Search skills..."
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] text-slate-900 dark:text-white text-[11px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-                  />
-                )}
-
-                {/* Skill Chips */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {filteredSkills
-                    .filter(s => !skillSearchQuery || s.toLowerCase().includes(skillSearchQuery.toLowerCase()))
-                    .map((skill) => (
-                      <span
-                        key={skill}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium bg-slate-100 dark:bg-[#162438] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#283E5E] group transition-colors"
+                      {/* Card Header: Click to Open/Close Dropdown, Drag handle on left */}
+                      <div 
+                        onClick={() => toggleCardExpand(sec.key)}
+                        className="flex items-center justify-between p-2.5 px-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
                       >
-                        <span>{skill}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSkillTag(skill)}
-                          className="opacity-40 group-hover:opacity-100 hover:text-rose-500 transition-opacity cursor-pointer"
-                          aria-label={`Remove ${skill}`}
-                        >
-                          &times;
-                        </button>
-                      </span>
-                    ))}
-                </div>
-              </div>
+                        <div className="flex items-center gap-2 min-w-0">
+                          {/* Drag Handle */}
+                          <div 
+                            title="Drag to reorder"
+                            className="p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-grab active:cursor-grabbing shrink-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <GripVertical className="w-3.5 h-3.5" />
+                          </div>
 
-              {/* 4. Projects Card */}
-              <div className="rounded-xl bg-white dark:bg-[#111C2C]/90 border border-slate-200 dark:border-[#22354F] p-3 space-y-1.5 shadow-xs transition-colors">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-[#22354F]/80 pb-1.5">
-                  <span className="tracking-wide">Projects</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleSectionVisibility('projects')}
-                      title={isSectionVisible('projects') ? "Hide Projects" : "Show Projects"}
-                      className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-0.5"
-                    >
-                      {isSectionVisible('projects') ? <Eye className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
-                    </button>
-                    <FolderGit2 className="w-3 h-3 text-slate-400" />
-                  </div>
-                </div>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400">Featured work & repository links</p>
-                
-                {projects.length > 0 && (
-                  <div className="space-y-1 pt-1">
-                    {projects.slice(0, 2).map((p) => (
-                      <div key={p.id} className="p-1.5 rounded bg-slate-50 dark:bg-[#0A101D] border border-slate-200 dark:border-[#22354F] flex items-center justify-between text-[10px]">
-                        <span className="font-semibold text-slate-900 dark:text-white truncate">{p.title}</span>
-                        <span className="text-slate-500 text-[9px]">{p.tags?.slice(0, 1).join('')}</span>
+                          <Icon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
+                          <span className="text-xs font-bold text-slate-900 dark:text-white tracking-wide truncate">
+                            {sec.label}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {/* Visibility Eye Toggle */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleSectionVisibility(sec.key);
+                              if (sec.key === 'personalDetails') handleToggleSectionVisibility('about');
+                              if (sec.key === 'contactInfo') handleToggleSectionVisibility('contact');
+                            }}
+                            title="Hide section"
+                            className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
+                          </button>
+
+                          {/* Open / Close Chevron Toggle */}
+                          <button 
+                            type="button" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleCardExpand(sec.key);
+                            }}
+                            title={isExpanded ? "Close" : "Open"}
+                            className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                          >
+                            {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+
+                      {/* Card Content Dropdown (Animated Open / Close) */}
+                      <AnimatePresence initial={false}>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="p-3 pt-2 space-y-2 border-t border-slate-100 dark:border-[#22354F]/80">
+                              {renderCardContent(sec.key)}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </Reorder.Item>
+                  );
+                })}
+              </Reorder.Group>
             </div>
 
             {/* ── HIDDEN SECTION ────────────────────────────────────────────── */}
-            <div className="space-y-2.5 pt-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-wide">Hidden</h3>
-              </div>
-
-              {/* Education Card */}
-              <div className="rounded-xl bg-white/70 dark:bg-[#111C2C]/70 border border-slate-200 dark:border-[#22354F]/70 p-3 space-y-1 shadow-xs transition-colors opacity-90">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-[#22354F]/60 pb-1.5">
-                  <span className="tracking-wide">Education</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleSectionVisibility('education')}
-                      title={isSectionVisible('education') ? "Hide Education" : "Show Education"}
-                      className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-0.5"
-                    >
-                      {isSectionVisible('education') ? <Eye className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
-                    </button>
-                    <GraduationCap className="w-3 h-3 text-slate-400" />
-                  </div>
+            {hiddenSections.length > 0 && (
+              <div className="space-y-2 pt-3">
+                <div className="flex items-center justify-between px-0.5">
+                  <h3 className="text-xs font-extrabold text-slate-500 dark:text-slate-400 tracking-wide uppercase font-mono">Hidden</h3>
+                  <span className="text-[10px] text-slate-400 font-mono">click eye to show</span>
                 </div>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400">Academic credentials</p>
-              </div>
 
-              {/* Social Links Card */}
-              <div className="rounded-xl bg-white/70 dark:bg-[#111C2C]/70 border border-slate-200 dark:border-[#22354F]/70 p-3 space-y-1 shadow-xs transition-colors opacity-90">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-[#22354F]/60 pb-1.5">
-                  <span className="tracking-wide">Social Links</span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleSectionVisibility('socialLinks')}
-                      title={isSectionVisible('socialLinks') ? "Hide Social Links" : "Show Social Links"}
-                      className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-0.5"
-                    >
-                      {isSectionVisible('socialLinks') ? <Eye className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
-                    </button>
-                    <Link2 className="w-3 h-3 text-slate-400" />
-                  </div>
+                <div className="space-y-2">
+                  {hiddenSections.map((sec) => {
+                    const Icon = sec.icon;
+                    const isExpanded = expandedCards[sec.key] ?? false;
+
+                    return (
+                      <div
+                        key={sec.key}
+                        className="rounded-xl bg-white/70 dark:bg-[#111C2C]/70 border border-slate-200 dark:border-[#22354F]/70 overflow-hidden shadow-xs transition-colors opacity-80 select-none"
+                      >
+                        <div 
+                          onClick={() => toggleCardExpand(sec.key)}
+                          className="flex items-center justify-between p-2.5 px-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Icon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 line-through truncate">
+                              {sec.label}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleSectionVisibility(sec.key);
+                                if (sec.key === 'personalDetails') handleToggleSectionVisibility('about');
+                                if (sec.key === 'contactInfo') handleToggleSectionVisibility('contact');
+                              }}
+                              title="Show section"
+                              className="text-amber-500 hover:text-amber-400 p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                            >
+                              <EyeOff className="w-3.5 h-3.5 text-amber-500" />
+                            </button>
+
+                            <button 
+                              type="button" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCardExpand(sec.key);
+                              }}
+                              title={isExpanded ? "Close" : "Open"}
+                              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
+                            >
+                              {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <AnimatePresence initial={false}>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="p-3 pt-2 space-y-2 border-t border-slate-100 dark:border-[#22354F]/50">
+                                {renderCardContent(sec.key)}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
                 </div>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400">External web profiles</p>
               </div>
-            </div>
+            )}
 
             <div className="h-12" /> {/* Bottom clearance */}
           </div>
