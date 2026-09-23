@@ -22,7 +22,6 @@ import {
   Edit3, 
   Monitor, 
   Smartphone,
-  Sparkles,
   ExternalLink,
   Lock,
   Sun,
@@ -113,28 +112,10 @@ function PublicProfileClientInner({
         </div>
       )}
 
-      {/* Sticky Top Status Toolbar */}
-      <div className="sticky top-[53px] z-30 w-full bg-white/90 dark:bg-[#0B0D13]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 transition-colors py-2 px-3 sm:px-6 shadow-2xs shrink-0">
-        <div className="max-w-[1920px] mx-auto flex items-center justify-between gap-3">
+      {/* Top Status Toolbar */}
+      <div className="w-full bg-white/90 dark:bg-[#0B0D13]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 transition-colors py-2 px-3 sm:px-6 shadow-2xs shrink-0 z-30">
+        <div className="max-w-[1920px] mx-auto flex items-center justify-end gap-3">
           
-          {/* Left: Brand / Persona Info */}
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="text-xs font-bold text-slate-900 dark:text-white font-mono uppercase tracking-wider">
-              {profile.profileName || profile.name}
-            </span>
-            <span className="text-[11px] text-slate-400 hidden sm:inline">
-              &middot; {profile.designation || 'Verified Pass'}
-            </span>
-          </div>
-
-          {/* Center: Live Twin-Screen Synchronization Indicator */}
-          <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-cyan-950/20 border border-cyan-500/30 text-cyan-600 dark:text-cyan-300 text-xs font-semibold shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden sm:inline">Twin-Screen Platform &middot; </span>
-            <span>Desktop ⇄ Mobile Simultaneous Working View</span>
-          </div>
-
           {/* Right Toolbar Actions */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             {isOwner && (
