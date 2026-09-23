@@ -8,15 +8,19 @@ import {
   Pencil, 
   Loader2, 
   AlertCircle, 
-  Check,
-  Camera,
-  Sparkles,
-  Terminal,
-  Gem
+  Check, 
+  Camera, 
+  Sparkles, 
+  Terminal, 
+  Gem,
+  ArrowRight,
+  User,
+  Users,
+  Save,
+  Upload
 } from 'lucide-react';
-import { ProfileTheme, UserSession, ProfileType } from '@/types/profile';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ProfileTypeSelector } from '@/components/profiles/ProfileTypeSelector';
+import { ProfileTheme, UserSession, ProfileType, normalizeProfileType } from '@/types/profile';
+import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 interface CreateProfileClientProps {
   user: UserSession;
@@ -28,9 +32,7 @@ interface ThemeCardData {
   subtitle: string;
   accent: string;
   thumbnailBg: string;
-  previewCardBg: string;
   previewBorder: string;
-  previewAccent: string;
 }
 
 const THEME_CARDS: ThemeCardData[] = [
@@ -40,9 +42,7 @@ const THEME_CARDS: ThemeCardData[] = [
     subtitle: 'Clean · Classy · Professional',
     accent: '#C2410C',
     thumbnailBg: 'bg-[#FAFAF9]',
-    previewCardBg: 'bg-white',
-    previewBorder: 'border-stone-200',
-    previewAccent: 'bg-[#C2410C]'
+    previewBorder: 'border-stone-200'
   },
   {
     id: 'cyber',
@@ -50,9 +50,7 @@ const THEME_CARDS: ThemeCardData[] = [
     subtitle: 'Dark · Techy · Modern',
     accent: '#10B981',
     thumbnailBg: 'bg-[#09090B]',
-    previewCardBg: 'bg-[#18181B]',
-    previewBorder: 'border-zinc-800',
-    previewAccent: 'bg-[#10B981]'
+    previewBorder: 'border-emerald-500/30'
   },
   {
     id: 'luxe',
@@ -60,9 +58,7 @@ const THEME_CARDS: ThemeCardData[] = [
     subtitle: 'Rich · Bold · Premium',
     accent: '#FB7185',
     thumbnailBg: 'bg-[#0D0509]',
-    previewCardBg: 'bg-[#1A0C14]',
-    previewBorder: 'border-[#4C1D38]',
-    previewAccent: 'bg-[#FB7185]'
+    previewBorder: 'border-rose-500/30'
   }
 ];
 
@@ -70,10 +66,10 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Step 1: Choose Theme (1/3), Step 2: Select Profile Type (2/3), Step 3: Add Profile Details (3/3)
+  // Shared 3-step wizard state between Desktop and Mobile screens
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
-  // Form State
+  // Shared Form State
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>('editorial');
   const [profileType, setProfileType] = useState<ProfileType>('individual');
   const [profileName, setProfileName] = useState('MERN Developer');
@@ -82,91 +78,26 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
   const [bio, setBio] = useState('Passionate developer with a love for building modern web applications with clean code and intuitive user experiences.');
   const [avatar, setAvatar] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
 
-  const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Guard: Active session check on mount, focus, visibilitychange, and pageshow (to prevent stale state after logout)
-  useEffect(() => {
-    const verifyActiveSession = async () => {
-      try {
-        const res = await fetch('/api/auth/me', { cache: 'no-store' });
-        const data = await res.json();
-        if (!data.user) {
-          window.location.replace('/login');
-        }
-      } catch {
-        window.location.replace('/login');
-      }
-    };
-
-    verifyActiveSession();
-
-    const handleVisibilityOrFocus = () => {
-      if (document.visibilityState === 'visible') {
-        verifyActiveSession();
-      }
-    };
-
-    const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) {
-        verifyActiveSession();
-      }
-    };
-
-    window.addEventListener('visibilitychange', handleVisibilityOrFocus);
-    window.addEventListener('pageshow', handlePageShow);
-    window.addEventListener('focus', handleVisibilityOrFocus);
-
-    return () => {
-      window.removeEventListener('visibilitychange', handleVisibilityOrFocus);
-      window.removeEventListener('pageshow', handlePageShow);
-      window.removeEventListener('focus', handleVisibilityOrFocus);
-    };
-  }, []);
-
-  // Handle Photo Upload
-  const handlePhotoUpload = async (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      setErrorMessage('Please upload a valid image file.');
-      return;
-    }
-    setErrorMessage(null);
-
-    // Instant local preview
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.result) setAvatar(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Upload to server
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        setAvatar(data.url);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsUploading(false);
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result) setAvatar(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  // Submit Profile Creation
-  const handleCreateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setErrorMessage(null);
 
     if (!profileName.trim() || !fullName.trim()) {
-      setErrorMessage('Please provide both a profile name and your full name.');
+      setErrorMessage('Please fill in both your profile persona name and your full name.');
       return;
     }
 
@@ -177,11 +108,12 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profileName: profileName.trim(),
           name: fullName.trim(),
-          profession: professionalTitle.trim() || profileName.trim(),
-          designation: professionalTitle.trim() || profileName.trim(),
+          profileName: profileName.trim(),
+          profession: professionalTitle.trim(),
+          designation: professionalTitle.trim(),
           shortBio: bio.trim(),
+          fullBio: bio.trim(),
           avatar,
           theme: selectedTheme,
           type: profileType
@@ -196,357 +128,414 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
         return;
       }
 
-      // Success: redirect directly to the editing profile page
       const targetSlug = data.profile?.slug || data.profile?.id;
-      if (targetSlug) {
-        router.push(`/profile/${targetSlug}/edit`);
-      } else {
-        router.push('/profile/edit');
-      }
+      router.push(`/profile/${targetSlug}`);
       router.refresh();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setErrorMessage('Network error while creating profile.');
+      setErrorMessage('Network error creating profile.');
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-7 shadow-sm text-slate-900 dark:text-white transition-colors">
-      <AnimatePresence mode="wait">
-        {step === 1 ? (
-          /* ========================================================================= */
-          /* SCREEN 2: CHOOSE THEME                                                    */
-          /* ========================================================================= */
-          <motion.div
-            key="step1"
-            initial={{ opacity: 0, x: -16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 16 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-6"
-          >
-            {/* Top Bar: Back & Step Indicator */}
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back"
+  // ──────────────────────────────────────────────────────────────────────────
+  // DESKTOP WORKING SCREEN REPRESENTATION
+  // ──────────────────────────────────────────────────────────────────────────
+  const desktopView = (
+    <div className="w-full max-w-5xl mx-auto my-auto py-6 space-y-6 text-left">
+      <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" />
+
+      {/* Header & Step Tracker */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
+            <span>Create Profile Studio</span>
+            <span>&middot;</span>
+            <span>Step {step} of 3</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            {step === 1 && 'Choose Your Theme'}
+            {step === 2 && 'Select Profile Type'}
+            {step === 3 && 'Add Profile Details'}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            {step === 1 && 'Select a typography and visual styling foundation.'}
+            {step === 2 && 'Choose between individual digital identity or team organization pass.'}
+            {step === 3 && 'Configure your name, designation, and bio.'}
+          </p>
+        </div>
+
+        {/* Step Navigation Pills */}
+        <div className="flex items-center gap-2">
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={() => setStep((s) => (s - 1) as any)}
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors"
+            >
+              Back
+            </button>
+          )}
+
+          {step < 3 ? (
+            <button
+              type="button"
+              onClick={() => setStep((s) => (s + 1) as any)}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all"
+            >
+              <span>Continue</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => handleSubmit()}
+              disabled={isLoading}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all disabled:opacity-50"
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span>Finish &amp; Create Profile</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {errorMessage && (
+        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* STEP 1 DESKTOP: THEMES */}
+      {step === 1 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {THEME_CARDS.map((tc) => {
+            const isSel = selectedTheme === tc.id;
+            return (
+              <div
+                key={tc.id}
+                onClick={() => setSelectedTheme(tc.id)}
+                className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                  isSel ? 'bg-cyan-950/20 border-cyan-400 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-500/40' : 'bg-[#0E1528] border-white/10 hover:border-white/20'
+                }`}
               >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                1/3
-              </span>
-            </div>
-
-            {/* Header */}
-            <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Choose Your Theme
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Pick a style that matches your vibe. You can change it later.
-              </p>
-            </div>
-
-            {/* Theme Cards List */}
-            <div className="space-y-3 pt-1">
-              {THEME_CARDS.map((theme) => {
-                const isSelected = selectedTheme === theme.id;
-                return (
-                  <button
-                    key={theme.id}
-                    type="button"
-                    onClick={() => setSelectedTheme(theme.id)}
-                    className={`w-full text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3.5 ${
-                      isSelected
-                        ? 'border-slate-900 dark:border-white shadow-xs ring-1 ring-slate-900/10 dark:ring-white/20 bg-slate-50/50 dark:bg-zinc-800/30'
-                        : 'border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-[#18181B]'
-                    }`}
-                  >
-                    {/* Left: Thumbnail Preview & Metadata */}
-                    <div className="flex items-center gap-3.5">
-                      {/* Mini Preview Thumbnail */}
-                      <div className={`w-14 h-11 rounded-lg ${theme.thumbnailBg} border ${theme.previewBorder} p-1.5 flex flex-col justify-between shrink-0 shadow-2xs overflow-hidden`}>
-                        <div className="flex items-center gap-1">
-                          <div className={`w-2.5 h-2.5 rounded-full ${theme.previewAccent}`} />
-                          <div className="w-5 h-1 rounded-full bg-slate-400/40" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <div className="w-7 h-1 rounded-full bg-slate-400/30" />
-                          <div className="w-4 h-1 rounded-full bg-slate-400/20" />
-                        </div>
-                      </div>
-
-                      {/* Labels */}
-                      <div className="space-y-0.5">
-                        <div className="text-sm font-bold text-slate-900 dark:text-white">
-                          {theme.title}
-                        </div>
-                        <div className="text-[11px] text-slate-500 dark:text-zinc-400">
-                          {theme.subtitle}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right: Radio Selector */}
-                    <div className="shrink-0 pr-1">
-                      <div
-                        className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                          isSelected
-                            ? 'border-2'
-                            : 'border border-slate-300 dark:border-zinc-600'
-                        }`}
-                        style={{
-                          borderColor: isSelected ? theme.accent : undefined
-                        }}
-                      >
-                        {isSelected && (
-                          <div
-                            className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: theme.accent }}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Bottom Action: Next */}
-            <div className="pt-4">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm transition-all active:scale-[0.99] shadow-sm"
-              >
-                Next
-              </button>
-            </div>
-          </motion.div>
-        ) : step === 2 ? (
-          /* ========================================================================= */
-          /* SCREEN 6: SELECT PROFILE TYPE                                             */
-          /* ========================================================================= */
-          <motion.div
-            key="step2"
-            initial={{ opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -16 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-6"
-          >
-            {/* Top Bar: Back & Step Indicator */}
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back to theme selection"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                2/3
-              </span>
-            </div>
-
-            {/* Header */}
-            <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Select Profile Type
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Choose the type that best fits your journey.
-              </p>
-            </div>
-
-            {/* Profile Type Radio Selector */}
-            <ProfileTypeSelector
-              selectedType={profileType}
-              onChange={(t) => setProfileType(t)}
-            />
-
-            {/* Bottom Action: Next */}
-            <div className="pt-4">
-              <button
-                type="button"
-                onClick={() => setStep(3)}
-                className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm transition-all active:scale-[0.99] shadow-sm"
-              >
-                Next
-              </button>
-            </div>
-          </motion.div>
-        ) : (
-          /* ========================================================================= */
-          /* SCREEN 3: CREATE YOUR PROFILE                                             */
-          /* ========================================================================= */
-          <motion.div
-            key="step3"
-            initial={{ opacity: 0, x: 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -16 }}
-            transition={{ duration: 0.2 }}
-            className="space-y-6"
-          >
-            {/* Top Bar: Back & Step Indicator */}
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                title="Back to profile type selection"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <span className="text-xs font-semibold text-slate-400 dark:text-zinc-500">
-                3/3
-              </span>
-            </div>
-
-            {/* Header */}
-            <div className="space-y-1">
-              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Create Your Profile
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
-                Add your basic information to get started.
-              </p>
-            </div>
-
-            {/* Error Message */}
-            {errorMessage && (
-              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
-            {/* Avatar with Edit Badge */}
-            <div className="flex justify-center pt-1 pb-2">
-              <div className="relative group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-slate-200 dark:border-zinc-700 shadow-sm bg-slate-100 dark:bg-zinc-800">
-                  <img
-                    src={avatar}
-                    alt={fullName}
-                    className="w-full h-full object-cover"
-                  />
-                  {isUploading && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    </div>
-                  )}
+                <div>
+                  <div className={`w-full h-24 rounded-xl mb-4 p-3 border ${tc.thumbnailBg} ${tc.previewBorder}`}>
+                    <div className="w-full h-2 rounded bg-slate-400/40 mb-2" />
+                    <div className="w-20 h-2 rounded bg-slate-400/30" />
+                  </div>
+                  <h3 className="text-base font-bold text-white">{tc.title}</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">{tc.subtitle}</p>
                 </div>
+                <div className="pt-4 mt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                  <span className="font-mono text-[11px] text-slate-400">Accent: {tc.accent}</span>
+                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSel ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-white/20'}`}>
+                    {isSel && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-                {/* Edit Pencil Icon Badge */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 shadow-sm flex items-center justify-center text-slate-700 dark:text-zinc-200 hover:scale-105 transition-transform"
-                  title="Upload profile photo"
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                </button>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handlePhotoUpload(file);
-                  }}
-                />
+      {/* STEP 2 DESKTOP: ROLE */}
+      {step === 2 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div
+            onClick={() => setProfileType('individual')}
+            className={`p-6 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between ${
+              profileType === 'individual' ? 'bg-cyan-950/20 border-cyan-400 shadow-lg ring-1 ring-cyan-500/40' : 'bg-[#0E1528] border-white/10'
+            }`}
+          >
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-cyan-400 mb-3">
+                <User className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">Individual Profile</h3>
+              <p className="text-xs text-slate-300 mt-1">Personal verified portfolio pass for professionals and freelancers.</p>
+            </div>
+            <div className="pt-4 mt-4 border-t border-white/10 flex justify-end">
+              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-white/20'}`}>
+                {profileType === 'individual' && <Check className="w-4 h-4 stroke-[3]" />}
               </div>
             </div>
+          </div>
 
-            {/* Form */}
-            <form onSubmit={handleCreateProfile} className="space-y-4">
-              {/* Profile Name */}
-              <div className="space-y-1.5 text-left">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                  Profile Name
-                </label>
+          <div
+            onClick={() => setProfileType('team')}
+            className={`p-6 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between ${
+              profileType === 'team' ? 'bg-cyan-950/20 border-cyan-400 shadow-lg ring-1 ring-cyan-500/40' : 'bg-[#0E1528] border-white/10'
+            }`}
+          >
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-cyan-400 mb-3">
+                <Users className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">Team / Organization</h3>
+              <p className="text-xs text-slate-300 mt-1">Collaborative team presence, organization roster, and company services.</p>
+            </div>
+            <div className="pt-4 mt-4 border-t border-white/10 flex justify-end">
+              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-white/20'}`}>
+                {profileType === 'team' && <Check className="w-4 h-4 stroke-[3]" />}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 3 DESKTOP: DETAILS */}
+      {step === 3 && (
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-4 p-5 rounded-3xl bg-[#0E1528] border border-white/10 flex flex-col items-center justify-center text-center space-y-3">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-cyan-400 group">
+              <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white cursor-pointer"
+              >
+                <Camera className="w-6 h-6" />
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 cursor-pointer"
+            >
+              Upload Photo
+            </button>
+          </div>
+
+          <div className="md:col-span-8 p-6 rounded-3xl bg-[#0E1528] border border-white/10 space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-300">Profile Persona Name</label>
                 <input
                   type="text"
-                  required
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
                   placeholder="e.g. MERN Developer"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500"
+                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
-
-              {/* Full Name */}
-              <div className="space-y-1.5 text-left">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                  Full Name
-                </label>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-slate-300">Full Name</label>
                 <input
                   type="text"
-                  required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Aleena Nawab"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500"
+                  placeholder="Aleena Nawab"
+                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
+            </div>
 
-              {/* Professional Title */}
-              <div className="space-y-1.5 text-left">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                  Professional Title
-                </label>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300">Professional Title</label>
+              <input
+                type="text"
+                value={professionalTitle}
+                onChange={(e) => setProfessionalTitle(e.target.value)}
+                placeholder="Senior Systems Architect"
+                className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-300">Short Bio</label>
+              <textarea
+                rows={3}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="A brief summary..."
+                className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 resize-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // MOBILE WORKING SCREEN REPRESENTATION
+  // ──────────────────────────────────────────────────────────────────────────
+  const mobileView = (
+    <div className="w-full flex-1 flex flex-col justify-between py-1 text-left">
+      <div>
+        <div className="flex items-center justify-between text-slate-400 mb-3">
+          {step > 1 ? (
+            <button
+              type="button"
+              onClick={() => setStep((s) => (s - 1) as any)}
+              className="p-1 -ml-1 text-slate-300 hover:text-white"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          ) : <div />}
+          <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
+            Step {step}/3
+          </span>
+        </div>
+
+        {/* STEP 1 MOBILE */}
+        {step === 1 && (
+          <div className="space-y-2.5">
+            <h2 className="text-lg font-bold text-white">Choose Theme</h2>
+            <div className="space-y-2">
+              {THEME_CARDS.map((tc) => (
+                <div
+                  key={tc.id}
+                  onClick={() => setSelectedTheme(tc.id)}
+                  className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                    selectedTheme === tc.id ? 'bg-[#151D30] border-cyan-400 shadow-xs' : 'bg-[#0E1528] border-white/10'
+                  }`}
+                >
+                  <div>
+                    <h3 className="text-xs font-bold text-white">{tc.title}</h3>
+                    <p className="text-[10px] text-slate-400">{tc.subtitle}</p>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedTheme === tc.id ? 'border-white bg-white text-black' : 'border-zinc-700'}`}>
+                    {selectedTheme === tc.id && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 2 MOBILE */}
+        {step === 2 && (
+          <div className="space-y-2.5">
+            <h2 className="text-lg font-bold text-white">Select Profile Type</h2>
+            <div className="space-y-2">
+              <div
+                onClick={() => setProfileType('individual')}
+                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                  profileType === 'individual' ? 'bg-[#151D30] border-cyan-400 shadow-xs' : 'bg-[#0E1528] border-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <User className="w-4 h-4 text-cyan-400" />
+                  <div>
+                    <h3 className="text-xs font-bold text-white">Individual</h3>
+                    <p className="text-[10px] text-slate-400">Personal Identity</p>
+                  </div>
+                </div>
+                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-white bg-white text-black' : 'border-zinc-700'}`}>
+                  {profileType === 'individual' && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                </div>
+              </div>
+
+              <div
+                onClick={() => setProfileType('team')}
+                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                  profileType === 'team' ? 'bg-[#151D30] border-cyan-400 shadow-xs' : 'bg-[#0E1528] border-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4 text-cyan-400" />
+                  <div>
+                    <h3 className="text-xs font-bold text-white">Team</h3>
+                    <p className="text-[10px] text-slate-400">Group / Organization</p>
+                  </div>
+                </div>
+                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-white bg-white text-black' : 'border-zinc-700'}`}>
+                  {profileType === 'team' && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3 MOBILE */}
+        {step === 3 && (
+          <div className="space-y-2.5">
+            <h2 className="text-lg font-bold text-white">Profile Details</h2>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white/5 border border-white/10">
+                <img src={avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-cyan-400" />
+                <div>
+                  <div className="text-xs font-bold text-white">{fullName}</div>
+                  <div className="text-[10px] text-slate-400">{professionalTitle}</div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-400">Full Name</label>
                 <input
                   type="text"
-                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-400">Professional Title</label>
+                <input
+                  type="text"
                   value={professionalTitle}
                   onChange={(e) => setProfessionalTitle(e.target.value)}
-                  placeholder="e.g. Full Stack Developer"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500"
+                  className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
                 />
               </div>
 
-              {/* Bio */}
-              <div className="space-y-1.5 text-left">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                  Bio
-                </label>
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-400">Bio</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  placeholder="Passionate developer with a love for building modern web applications..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-xs font-medium bg-slate-50/50 dark:bg-zinc-900/60 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400 dark:focus:ring-zinc-500 resize-none"
+                  className="figma-input w-full px-2.5 py-1 text-xs text-white resize-none"
                 />
               </div>
-
-              {/* Bottom Action: Next / Create */}
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3.5 px-6 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.99] shadow-sm disabled:opacity-50"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Creating Profile...</span>
-                    </>
-                  ) : (
-                    <span>Next</span>
-                  )}
-                </button>
-              </div>
-            </form>
-          </motion.div>
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
+
+      {/* Mobile Action Pill Button */}
+      <div className="pt-3">
+        {step < 3 ? (
+          <button
+            type="button"
+            onClick={() => setStep((s) => (s + 1) as any)}
+            className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          >
+            <span>Continue</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => handleSubmit()}
+            disabled={isLoading}
+            className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Creating Profile...</span>
+              </>
+            ) : (
+              <span>Finish &amp; View Pass</span>
+            )}
+          </button>
+        )}
+      </div>
     </div>
+  );
+
+  return (
+    <DualScreenWorkspace
+      workflowTitle="Create Profile"
+      workflowSubtitle="Step-by-Step Profile Creator"
+      currentUrlPath="/create-profile"
+      desktopContent={desktopView}
+      mobileContent={mobileView}
+    />
   );
 }

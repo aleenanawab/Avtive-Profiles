@@ -2,9 +2,9 @@
 
 import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, ArrowRight, ArrowLeft, User, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Check, ArrowRight, ArrowLeft, User, Users, Shield, Sparkles, Building2 } from 'lucide-react';
 import { ProfileType, ProfileTheme, normalizeProfileType } from '@/types/profile';
+import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 interface RoleCardData {
   id: ProfileType;
@@ -22,7 +22,12 @@ const ROLE_OPTIONS: RoleCardData[] = [
     badge: 'Personal Profile',
     icon: User,
     description: 'Personal digital identity, showcase projects, skills, and private sharing.',
-    features: ['Personal portfolio & projects', 'Direct contact & social links', 'Granular privacy controls']
+    features: [
+      'Personal portfolio & project showcases',
+      'Direct contact & social link hubs',
+      'Granular privacy controls & custom NFC pass',
+      'Multi-persona switching between identities'
+    ]
   },
   {
     id: 'team',
@@ -30,7 +35,12 @@ const ROLE_OPTIONS: RoleCardData[] = [
     badge: 'Group / Organization',
     icon: Users,
     description: 'Collaborative team presence, organization roster, services showcase, and company identity.',
-    features: ['Team roster & collaborative showcase', 'Products, services & credentials', 'Unified team contact channels']
+    features: [
+      'Team roster & collaborative showcases',
+      'Products, services & organization credentials',
+      'Unified team contact & inquiry channels',
+      'Organization branding & employee passes'
+    ]
   }
 ];
 
@@ -40,6 +50,7 @@ function RoleStepContent() {
   const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
   const initialRole = normalizeProfileType(searchParams.get('role') || 'individual');
 
+  // Shared state between Desktop and Mobile screens
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
 
   const handleBack = () => {
@@ -50,53 +61,49 @@ function RoleStepContent() {
     router.push(`/onboarding/create?theme=${theme}&role=${selectedRole}`);
   };
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.2 }}
-      className="figma-phone-frame w-full max-w-[390px] p-6 sm:p-7 flex flex-col justify-between relative"
-    >
-      {/* Mobile Top Status Bar (9:41, Wifi, Battery) */}
-      <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-zinc-400 mb-4 px-1 font-mono">
-        <span>9:41</span>
-        <div className="flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" />
-          </svg>
-          <div className="w-5 h-2.5 border border-current rounded-xs p-0.5 flex items-center">
-            <div className="w-full h-full bg-current rounded-2xs" />
+  // ──────────────────────────────────────────────────────────────────────────
+  // DESKTOP WORKING SCREEN REPRESENTATION
+  // ──────────────────────────────────────────────────────────────────────────
+  const desktopView = (
+    <div className="w-full max-w-5xl mx-auto my-auto py-6 space-y-6 text-left">
+      
+      {/* Desktop Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
+            <span>Onboarding Flow</span>
+            <span>&middot;</span>
+            <span>Step 2 of 3</span>
           </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Select Your Profile Type
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Choose whether this workspace represents an individual identity or an organization hub.
+          </p>
         </div>
-      </div>
 
-      {/* Screen 4 Header: Back Arrow, Title & Subtitle */}
-      <div className="space-y-2 mb-5">
-        <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+        <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
             onClick={handleBack}
-            className="p-1 -ml-1 text-slate-700 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white cursor-pointer"
-            aria-label="Go back"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors cursor-pointer"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-            </svg>
+            Back
           </button>
-        </div>
-
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Select Profile Type
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 leading-normal">
-            Select the type that matches for your profile.
-          </p>
+          <button
+            type="button"
+            onClick={handleNext}
+            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+          >
+            <span>Next: Profile Details</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
-      {/* Role Cards List matching Figma Screen 4 */}
-      <div className="space-y-3 mb-6">
+      {/* 2 Widescreen Role Studio Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {ROLE_OPTIONS.map((role) => {
           const isSelected = selectedRole === role.id;
           const Icon = role.icon;
@@ -105,59 +112,179 @@ function RoleStepContent() {
             <div
               key={role.id}
               onClick={() => setSelectedRole(role.id)}
-              className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+              className={`p-6 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden group ${
                 isSelected
-                  ? 'bg-slate-50 dark:bg-[#1B1E28] border-slate-900 dark:border-white/30 shadow-xs ring-1 ring-slate-900/10 dark:ring-white/20'
-                  : 'bg-white dark:bg-[#151821] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                  ? 'bg-cyan-950/20 border-cyan-400/80 shadow-xl shadow-cyan-500/10 ring-1 ring-cyan-500/40'
+                  : 'bg-[#0E1528] border-white/10 hover:border-white/25 hover:bg-[#121B32]'
               }`}
             >
-              <div className="flex items-center gap-3.5">
-                {/* Circular Icon matching Figma Screen 4 */}
-                <div className="w-11 h-11 rounded-full bg-slate-100 dark:bg-[#1E222D] border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0">
-                  <Icon className="w-5 h-5 text-slate-800 dark:text-white" />
+              {isSelected && (
+                <div className="absolute top-4 right-4 px-2.5 py-1 rounded-md bg-cyan-400 text-slate-950 font-mono text-[10px] font-extrabold tracking-wider">
+                  SELECTED
                 </div>
-                <div className="text-left">
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
-                    {role.title}
-                  </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">
-                    {role.badge}
-                  </p>
+              )}
+
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
+                    isSelected ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/30' : 'bg-white/5 text-cyan-400 border border-white/10'
+                  }`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-wide block">
+                      {role.badge}
+                    </span>
+                    <h3 className="text-xl font-bold text-white">{role.title}</h3>
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed mb-5">
+                  {role.description}
+                </p>
+
+                {/* Features list */}
+                <div className="space-y-2.5 pt-2 border-t border-white/10">
+                  {role.features.map((f, i) => (
+                    <div key={i} className="flex items-center gap-2.5 text-xs text-slate-300">
+                      <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      </div>
+                      <span>{f}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Radio Indicator */}
-              <div
-                className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                  isSelected
-                    ? 'border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-black'
-                    : 'border-slate-300 dark:border-zinc-700 bg-transparent'
-                }`}
-              >
-                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+              {/* Card Footer Radio */}
+              <div className="pt-6 mt-4 border-t border-white/10 flex items-center justify-between text-xs">
+                <span className="text-slate-400 font-medium">
+                  {isSelected ? 'Currently Selected' : 'Click to select this type'}
+                </span>
+                <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
+                  isSelected ? 'border-cyan-400 bg-cyan-400 text-slate-950 font-bold' : 'border-white/20'
+                }`}>
+                  {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Primary Action Button: White Pill Button */}
+    </div>
+  );
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // MOBILE WORKING SCREEN REPRESENTATION
+  // ──────────────────────────────────────────────────────────────────────────
+  const mobileView = (
+    <div className="w-full flex-1 flex flex-col justify-between py-1 text-left">
+      
       <div>
+        <div className="space-y-1.5 mb-4">
+          <div className="flex items-center justify-between text-slate-400">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="p-1 -ml-1 text-slate-300 hover:text-white cursor-pointer"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
+              3/3
+            </span>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-white">
+              Select Profile Type
+            </h2>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Select the type that matches your profile purpose.
+            </p>
+          </div>
+        </div>
+
+        {/* Role Cards List matching Figma Screen 4 */}
+        <div className="space-y-3 mb-4">
+          {ROLE_OPTIONS.map((role) => {
+            const isSelected = selectedRole === role.id;
+            const Icon = role.icon;
+
+            return (
+              <div
+                key={role.id}
+                onClick={() => setSelectedRole(role.id)}
+                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-2.5 ${
+                  isSelected
+                    ? 'bg-[#151D30] border-cyan-400/80 shadow-xs ring-1 ring-cyan-500/40'
+                    : 'bg-[#0E1528] border-white/10 hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-cyan-400">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-white leading-tight">
+                        {role.title}
+                      </h3>
+                      <span className="text-[10px] text-cyan-400 font-mono">
+                        {role.badge}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                      isSelected
+                        ? 'border-white bg-white text-black'
+                        : 'border-zinc-700 bg-transparent'
+                    }`}
+                  >
+                    {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-300 leading-normal">
+                  {role.description}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="pt-2">
         <button
           type="button"
           onClick={handleNext}
-          className="figma-pill-primary w-full py-3.5 px-6 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
         >
           <span>Next</span>
         </button>
       </div>
-    </motion.div>
+
+    </div>
+  );
+
+  return (
+    <DualScreenWorkspace
+      workflowTitle="4. Select Profile Type"
+      workflowSubtitle="Onboarding Step 2 of 3"
+      currentUrlPath={`/onboarding/role?theme=${theme}&role=${selectedRole}`}
+      desktopContent={desktopView}
+      mobileContent={mobileView}
+    />
   );
 }
 
 export default function OnboardingRolePage() {
   return (
-    <Suspense fallback={<div className="text-center p-8 text-sm">Loading roles...</div>}>
+    <Suspense fallback={<div className="text-center p-8 text-sm">Loading role options...</div>}>
       <RoleStepContent />
     </Suspense>
   );
