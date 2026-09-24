@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, ArrowRight, Sparkles, Terminal, Gem, ArrowLeft } from 'lucide-react';
 import { ProfileTheme } from '@/types/profile';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
+import { usePortfolioTheme, PortfolioTheme } from '@/context/ThemeContext';
 
 interface ThemeCardData {
   id: ProfileTheme;
@@ -62,6 +63,7 @@ function ThemeStepContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTheme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
+  const { setTheme: setContextTheme } = usePortfolioTheme();
 
   // Shared theme state between Desktop and Mobile screens
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>(initialTheme);
@@ -82,8 +84,20 @@ function ThemeStepContent() {
       .catch(() => {});
   }, [router]);
 
+  const handleSelectTheme = (themeId: ProfileTheme) => {
+    setSelectedTheme(themeId);
+    setContextTheme(themeId as PortfolioTheme);
+  };
+
   const handleNext = () => {
+    setContextTheme(selectedTheme as PortfolioTheme);
     router.push(`/onboarding/role?theme=${selectedTheme}`);
+  };
+
+  const handleSkip = () => {
+    // Preserve default theme without saving invalid data or corrupting state
+    setContextTheme('editorial');
+    router.push(`/onboarding/role?theme=editorial`);
   };
 
   const handleBack = () => {
@@ -94,25 +108,32 @@ function ThemeStepContent() {
   // DESKTOP WORKING SCREEN REPRESENTATION
   // ──────────────────────────────────────────────────────────────────────────
   const desktopView = (
-    <div className="w-full max-w-5xl mx-auto my-auto py-6 space-y-6 text-left">
+    <div className="w-full max-w-5xl mx-auto my-auto py-6 px-4 sm:px-6 space-y-6 text-left box-border">
       
       {/* Desktop Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider mb-1">
             <span>Onboarding Flow</span>
             <span>&middot;</span>
             <span>Step 1 of 3</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Choose Your Design Theme
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Pick a foundation that matches your vibe. Your cards, typography, and badges will adapt seamlessly.
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={handleSkip}
+            className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+          >
+            Skip
+          </button>
           <button
             type="button"
             onClick={handleNext}
@@ -133,15 +154,15 @@ function ThemeStepContent() {
           return (
             <div
               key={item.id}
-              onClick={() => setSelectedTheme(item.id)}
+              onClick={() => handleSelectTheme(item.id)}
               className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden group ${
                 isSelected
-                  ? 'bg-cyan-950/20 border-cyan-400/80 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-500/40'
-                  : 'bg-[#0E1528] border-white/10 hover:border-white/25 hover:bg-[#121B32]'
+                  ? 'bg-cyan-50/50 dark:bg-cyan-950/20 border-cyan-500 dark:border-cyan-400/80 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-500/40'
+                  : 'bg-white dark:bg-[#0E1528] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/25 hover:bg-slate-50 dark:hover:bg-[#121B32]'
               }`}
             >
               {isSelected && (
-                <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-cyan-400 text-slate-950 font-mono text-[10px] font-extrabold tracking-wider">
+                <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-cyan-500 dark:bg-cyan-400 text-white dark:text-slate-950 font-mono text-[10px] font-extrabold tracking-wider">
                   ACTIVE
                 </div>
               )}
@@ -150,7 +171,7 @@ function ThemeStepContent() {
                 {/* Visual Canvas Demo Box */}
                 <div className={`w-full h-28 rounded-xl p-3 mb-4 flex flex-col justify-between border ${item.previewBg} ${item.previewBorder}`}>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/40 text-white">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-black/50 text-white">
                       {item.fontTag}
                     </span>
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.accentColor }} />
@@ -162,25 +183,25 @@ function ThemeStepContent() {
                 </div>
 
                 <div className="flex items-center gap-2.5 mb-1.5">
-                  <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-cyan-400">
+                  <div className="p-2 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-cyan-600 dark:text-cyan-400">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">{item.title}</h3>
-                    <p className="text-[11px] text-slate-400">{item.subtitle}</p>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{item.title}</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">{item.subtitle}</p>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
                   {item.description}
                 </p>
               </div>
 
               {/* Bottom selection bar */}
-              <div className="pt-4 mt-3 border-t border-white/10 flex items-center justify-between text-xs">
-                <span className="font-mono text-[11px] text-slate-400">Accent: {item.accentColor}</span>
+              <div className="pt-4 mt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400">Accent: {item.accentColor}</span>
                 <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                  isSelected ? 'border-cyan-400 bg-cyan-400 text-slate-950 font-bold' : 'border-white/20'
+                  isSelected ? 'border-cyan-500 bg-cyan-500 text-white dark:border-cyan-400 dark:bg-cyan-400 dark:text-slate-950 font-bold' : 'border-slate-300 dark:border-white/20'
                 }`}>
                   {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                 </div>
@@ -197,52 +218,61 @@ function ThemeStepContent() {
   // MOBILE WORKING SCREEN REPRESENTATION
   // ──────────────────────────────────────────────────────────────────────────
   const mobileView = (
-    <div className="w-full flex-1 flex flex-col justify-between py-1 text-left">
+    <div className="w-full max-w-full box-border px-4 py-2 flex-1 flex flex-col justify-between text-left overflow-x-hidden">
       
-      <div>
-        {/* Screen 3 Header: Back Arrow, Step 2/3, Title & Subtitle */}
-        <div className="space-y-1.5 mb-4">
-          <div className="flex items-center justify-between text-slate-400">
+      <div className="w-full max-w-full box-border">
+        {/* Screen Header: Back Arrow, Skip button, Step Indicator, Title & Subtitle */}
+        <div className="space-y-1.5 mb-3 w-full box-border">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 w-full box-border">
             <button
               type="button"
               onClick={handleBack}
-              className="p-1 -ml-1 text-slate-300 hover:text-white cursor-pointer"
+              className="p-1 -ml-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white cursor-pointer"
               aria-label="Go back"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
-              2/3
-            </span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleSkip}
+                className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
+              >
+                Skip
+              </button>
+              <span className="text-xs font-mono font-medium tracking-wider text-slate-500 dark:text-slate-400">
+                1/3
+              </span>
+            </div>
           </div>
 
           <div>
-            <h2 className="text-lg font-bold tracking-tight text-white">
+            <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
               Choose Theme
             </h2>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
               Pick a style that matches your vibe. You can change it anytime.
             </p>
           </div>
         </div>
 
-        {/* Theme Cards List matching Figma Screen 3 */}
-        <div className="space-y-2.5 mb-4">
+        {/* Theme Cards List */}
+        <div className="space-y-2.5 mb-3 w-full max-w-full box-border">
           {THEME_OPTIONS.map((item) => {
             const isSelected = selectedTheme === item.id;
 
             return (
               <div
                 key={item.id}
-                onClick={() => setSelectedTheme(item.id)}
-                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                onClick={() => handleSelectTheme(item.id)}
+                className={`w-full max-w-full box-border p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                   isSelected
-                    ? 'bg-[#151D30] border-cyan-400/80 shadow-xs ring-1 ring-cyan-500/40'
-                    : 'bg-[#0E1528] border-white/10 hover:border-white/20'
+                    ? 'bg-cyan-50/50 dark:bg-[#151D30] border-cyan-500 dark:border-cyan-400/80 shadow-xs ring-1 ring-cyan-500/40'
+                    : 'bg-white dark:bg-[#0E1528] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  {/* Visual Thumbnail Preview matching Figma */}
+                  {/* Visual Thumbnail Preview */}
                   <div 
                     className={`w-12 h-10 rounded-xl p-1.5 flex flex-col justify-between shrink-0 border ${
                       item.id === 'editorial'
@@ -260,10 +290,10 @@ function ThemeStepContent() {
                   </div>
 
                   <div className="min-w-0">
-                    <h3 className="text-xs font-bold text-white truncate leading-tight">
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate leading-tight">
                       {item.title}
                     </h3>
-                    <p className="text-[10px] text-slate-400 truncate mt-0.5">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                       {item.subtitle}
                     </p>
                   </div>
@@ -273,8 +303,8 @@ function ThemeStepContent() {
                 <div
                   className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
                     isSelected
-                      ? 'border-white bg-white text-black'
-                      : 'border-zinc-700 bg-transparent'
+                      ? 'border-cyan-500 bg-cyan-500 text-white dark:border-cyan-400 dark:bg-cyan-400 dark:text-slate-950 font-bold'
+                      : 'border-slate-300 dark:border-zinc-700 bg-transparent'
                   }`}
                 >
                   {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -285,12 +315,19 @@ function ThemeStepContent() {
         </div>
       </div>
 
-      {/* Primary Action Button */}
-      <div className="pt-2">
+      {/* Action Buttons: Skip and Next */}
+      <div className="pt-2 flex items-center gap-2 w-full max-w-full box-border">
+        <button
+          type="button"
+          onClick={handleSkip}
+          className="py-2.5 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
+        >
+          Skip
+        </button>
         <button
           type="button"
           onClick={handleNext}
-          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+          className="flex-1 py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <span>Continue</span>
           <ArrowRight className="w-3.5 h-3.5" />
