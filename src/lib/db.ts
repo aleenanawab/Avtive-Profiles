@@ -600,6 +600,23 @@ export async function createProfileForUser(
   }
   saveDb(db);
 
+  // Sync profile to Supabase so it is accessible across serverless lambdas
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('profiles').upsert({
+        id: newProfile.id,
+        user_id: newProfile.userId,
+        slug: newProfile.slug,
+        name: newProfile.name,
+        email: newProfile.email,
+        type: newProfile.type,
+        theme: newProfile.theme,
+        data: newProfile,
+        created_at: newProfile.createdAt
+      })
+    );
+  } catch {}
+
   return newProfile;
 }
 
@@ -654,6 +671,32 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
   // Fallback: check if idOrSlug matches a userId
   const byUser = Object.values(db.profiles).find((p) => p.userId === idOrSlug);
   if (byUser) return byUser;
+
+  // Supabase lookup fallback across serverless lambdas
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .or(`id.eq.${idOrSlug},slug.eq.${idOrSlug},slug.eq.${clean},user_id.eq.${idOrSlug}`)
+      .maybeSingle();
+
+    if (data && !error) {
+      const sp: ProfileData = {
+        ...(data.data || {}),
+        id: data.id,
+        userId: data.user_id,
+        slug: data.slug,
+        name: data.name,
+        email: data.email,
+        type: data.type || 'individual',
+        theme: data.theme || 'editorial'
+      };
+      normalizeProfiles({ [sp.id]: sp });
+      db.profiles[sp.id] = sp;
+      db.profiles[sp.slug] = sp;
+      return sp;
+    }
+  } catch {}
 
   // Cookie fallback for newly created/updated profiles across serverless lambdas
   try {
@@ -712,6 +755,32 @@ export async function getProfilesByUserId(userId: string): Promise<ProfileData[]
   }
 
   if (unique.size === 0) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (data && !error && data.length > 0) {
+        for (const item of data) {
+          const sp: ProfileData = {
+            ...(item.data || {}),
+            id: item.id,
+            userId: item.user_id,
+            slug: item.slug,
+            name: item.name,
+            email: item.email,
+            type: item.type || 'individual',
+            theme: item.theme || 'editorial'
+          };
+          normalizeProfiles({ [sp.id]: sp });
+          db.profiles[sp.id] = sp;
+          db.profiles[sp.slug] = sp;
+          unique.set(sp.id, sp);
+        }
+      }
+    } catch {}
+
     try {
       const { cookies } = await import('next/headers');
       const cookieStore = await cookies();

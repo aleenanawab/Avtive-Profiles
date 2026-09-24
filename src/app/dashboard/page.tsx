@@ -19,9 +19,6 @@ export default async function DashboardPage() {
   }
 
   const profiles = await getProfilesByUserId(session.id);
-  if (profiles.length === 0) {
-    redirect('/create-profile');
-  }
 
   return (
     <ProfileDashboard

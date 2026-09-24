@@ -50,6 +50,33 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
 
   const activeProfile = profiles.find((p) => p.id === activeProfileId) || profiles[0] || initialProfiles[0];
 
+  useEffect(() => {
+    if (profiles.length === 0) {
+      try {
+        const lastSaved = localStorage.getItem('avtive_last_saved_profile');
+        if (lastSaved) {
+          const parsed = JSON.parse(lastSaved);
+          if (parsed && parsed.id) {
+            setProfiles([parsed]);
+            setActiveProfileId(parsed.id);
+          }
+        }
+      } catch {}
+      fetch('/api/auth/me')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.profiles && data.profiles.length > 0) {
+            setProfiles(data.profiles);
+            setActiveProfileId(data.profiles[0].id);
+          } else if (data.profile) {
+            setProfiles([data.profile]);
+            setActiveProfileId(data.profile.id);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [profiles.length]);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
@@ -159,8 +186,20 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
       </div>
 
       {/* Profiles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {profiles.map((p) => {
+      {profiles.length === 0 ? (
+        <div className="p-10 text-center border border-white/10 rounded-3xl bg-[#0E1528] space-y-4">
+          <p className="text-slate-400 text-sm">No profiles found in your workspace yet.</p>
+          <Link
+            href="/create-profile"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Create Your First Profile</span>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {profiles.map((p) => {
           const isActive = p.id === activeProfile?.id;
 
           return (
@@ -237,8 +276,8 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
             </div>
           );
         })}
-      </div>
-
+        </div>
+      )}
     </div>
   );
 
@@ -256,8 +295,20 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
         </div>
 
         {/* Mobile Profiles List */}
-        <div className="space-y-2.5 max-h-[500px] overflow-y-auto">
-          {profiles.map((p) => {
+        {profiles.length === 0 ? (
+          <div className="p-6 text-center border border-white/10 rounded-2xl bg-[#0E1528] space-y-3">
+            <p className="text-xs text-slate-400">No profile cards found.</p>
+            <Link
+              href="/create-profile"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 text-white"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Profile</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-2.5 max-h-[500px] overflow-y-auto">
+            {profiles.map((p) => {
             const isActive = p.id === activeProfile?.id;
             return (
               <div
@@ -304,7 +355,8 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
