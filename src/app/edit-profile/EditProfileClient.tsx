@@ -95,6 +95,9 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
+      try {
+        sessionStorage.removeItem('avtive_active_session');
+      } catch {}
       window.location.replace('/login');
     }
   };

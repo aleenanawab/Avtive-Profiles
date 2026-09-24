@@ -60,7 +60,7 @@ export default function LoginClient() {
         return;
       }
       try {
-        localStorage.setItem('avtive_returning_user', 'true');
+        sessionStorage.setItem('avtive_active_session', 'true');
       } catch {}
 
       if (data.hasProfile) {
@@ -110,7 +110,7 @@ export default function LoginClient() {
       }
 
       try {
-        localStorage.setItem('avtive_returning_user', 'true');
+        sessionStorage.setItem('avtive_active_session', 'true');
       } catch {}
 
       const returnUrl = getReturnUrl();
@@ -227,6 +227,12 @@ export default function LoginClient() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-300">Password</label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
+                  Forgot password?
+                </Link>
               </div>
               <div className="relative">
                 <input
@@ -260,7 +266,7 @@ export default function LoginClient() {
                 </>
               ) : (
                 <>
-                  <span>Sign In (Desktop Screen)</span>
+                  <span>Sign In</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -297,73 +303,99 @@ export default function LoginClient() {
   // MOBILE WORKING SCREEN REPRESENTATION
   // ──────────────────────────────────────────────────────────────────────────
   const mobileView = (
-    <div className="w-full flex-1 flex flex-col justify-between py-2 text-left">
+    <div className="w-full flex-1 flex flex-col justify-between p-3.5 sm:p-4 text-left overflow-y-auto">
       
-      <div>
-        <div className="flex flex-col items-center justify-center pt-2 pb-5 text-center">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-bold text-base shadow-sm font-sans">
-              A
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-white">Avtive</h2>
+      <div className="space-y-3">
+        {/* Mobile Centered Brand Header */}
+        <div className="flex flex-col items-center justify-center pt-1 pb-1 text-center">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-semibold mb-2">
+            <Sparkles className="w-3 h-3 text-cyan-400" />
+            <span>Avtive Mobile Pass</span>
           </div>
-          <p className="text-[11px] text-slate-400">Welcome Back &middot; Sign in to Mobile Pass</p>
+
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-extrabold text-white text-lg shadow-lg shadow-cyan-500/25 mb-1.5">
+            A
+          </div>
+          <h2 className="text-lg font-extrabold tracking-tight text-white">Welcome Back</h2>
+          <p className="text-[11px] text-slate-300 mt-0.5">Sign in to access your pass &amp; profile studio</p>
+
+          {/* Micro Trust Pills */}
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className="inline-flex items-center gap-1 text-[9px] font-medium text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-full">
+              <ShieldCheck className="w-2.5 h-2.5 text-cyan-400" />
+              <span>Encrypted</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+              <UserCheck className="w-2.5 h-2.5 text-emerald-400" />
+              <span>Multi-Pass</span>
+            </span>
+          </div>
         </div>
 
+        {/* Notifications */}
         {successMessage && (
-          <div className="mb-3 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+          <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
             <span className="text-[11px]">{successMessage}</span>
           </div>
         )}
 
         {errorMessage && (
-          <div className="mb-3 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span className="text-[11px]">{errorMessage}</span>
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-3">
-          <div className="space-y-1">
-            <label className="text-[11px] font-medium text-slate-300 ml-1">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. aleena@example.com"
-              className="figma-input w-full px-3.5 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-white/40 transition-all"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[11px] font-medium text-slate-300 ml-1">Password</label>
-            <div className="relative">
+        {/* Mobile Form Card */}
+        <div className="p-3.5 rounded-2xl bg-[#0E1528] border border-white/10 shadow-lg space-y-3">
+          <form onSubmit={handleLogin} className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Email Address</label>
               <input
-                type={showPassword ? 'text' : 'password'}
+                type="email"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="figma-input w-full pl-3.5 pr-10 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-white/40 transition-all"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="e.g. aleena@example.com"
+                className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
-                aria-label="Toggle password visibility"
-              >
-                {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-              </button>
             </div>
-          </div>
 
-          <div className="pt-2">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Password</label>
+                <Link
+                  href="/forgot-password"
+                  className="text-[10px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full pl-3 pr-9 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={isLoading}
-              className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               {isLoading ? (
                 <>
@@ -371,20 +403,26 @@ export default function LoginClient() {
                   <span>Signing In...</span>
                 </>
               ) : (
-                <span>Login</span>
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
               )}
             </button>
-          </div>
-        </form>
+          </form>
 
-        <div className="pt-2.5">
+          <div className="relative flex items-center justify-center my-1.5">
+            <div className="border-t border-white/10 w-full" />
+            <span className="bg-[#0E1528] px-2 text-[10px] text-slate-500 uppercase tracking-wider font-mono">or</span>
+          </div>
+
           <button
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="figma-pill-secondary w-full py-2.5 px-4 text-xs font-medium flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
           >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
               <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
               <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
@@ -395,10 +433,11 @@ export default function LoginClient() {
         </div>
       </div>
 
-      <div className="pt-4 pb-1 text-center text-[11px] text-slate-400">
-        <span>Don&apos;t have an account? </span>
-        <Link href="/register" className="font-bold text-white hover:underline ml-1">
-          Sign up
+      {/* Footer Link */}
+      <div className="pt-3 pb-1 text-center text-[11px] text-slate-400">
+        <span>New to Avtive? </span>
+        <Link href="/register" className="font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-4 ml-1">
+          Create an account
         </Link>
       </div>
 

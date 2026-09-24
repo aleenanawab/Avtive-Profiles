@@ -5,11 +5,15 @@ import type { NextRequest } from 'next/server';
 const PUBLIC_PATHS = [
   '/login',
   '/register',
+  '/forgot-password',
+  '/reset-password',
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/social',
   '/api/auth/logout',
-  '/api/auth/me'
+  '/api/auth/me',
+  '/api/auth/forgot-password',
+  '/api/auth/reset-password'
 ];
 
 export function middleware(request: NextRequest) {

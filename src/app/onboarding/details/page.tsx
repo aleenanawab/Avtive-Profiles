@@ -438,14 +438,20 @@ function DetailsStepContent() {
           type="button"
           onClick={() => handleCreateProfile()}
           disabled={isLoading}
-          aria-label="Save Profile"
-          title="Save Profile"
-          className="figma-pill-primary w-full py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+          aria-label="Create Profile"
+          title="Create Profile"
+          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
           {isLoading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Creating Profile...</span>
+            </>
           ) : (
-            <Save className="w-3.5 h-3.5" />
+            <>
+              <Save className="w-3.5 h-3.5" />
+              <span>Finish &amp; View Pass</span>
+            </>
           )}
         </button>
       </div>

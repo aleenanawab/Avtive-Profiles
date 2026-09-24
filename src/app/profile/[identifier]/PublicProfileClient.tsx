@@ -101,6 +101,9 @@ function PublicProfileClientInner({
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
+      try {
+        sessionStorage.removeItem('avtive_active_session');
+      } catch {}
       setCurrentUser(null);
       window.location.replace('/login');
     }

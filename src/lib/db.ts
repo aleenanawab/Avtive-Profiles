@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import { supabaseAdmin } from '@/lib/supabase';
 import { ProfileData, UserRecord, ProfileTheme, UserConnection, SharingSettings, normalizeProfileType } from '@/types/profile';
 import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
 
@@ -23,6 +24,12 @@ interface DatabaseSchema {
 }
 
 const globalForDb = globalThis as unknown as { __AVTIVE_DB__?: DatabaseSchema };
+
+async function asyncSyncSupabase(action: PromiseLike<any>) {
+  try {
+    await action;
+  } catch {}
+}
 
 function getWritableDbPath(): string {
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
@@ -260,6 +267,29 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
   const user = db.users.find((u) => u.email.toLowerCase().trim() === normalizedEmail);
   if (user) return user;
 
+  // Supabase lookup fallback
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', normalizedEmail)
+      .maybeSingle();
+
+    if (data && !error) {
+      const su: UserRecord = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        passwordHash: data.password_hash || data.passwordHash,
+        resetToken: data.reset_token || data.resetToken,
+        resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
+        createdAt: data.created_at || data.createdAt || new Date().toISOString()
+      };
+      db.users.push(su);
+      return su;
+    }
+  } catch {}
+
   try {
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
@@ -292,7 +322,32 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
 export async function getUserById(id: string): Promise<UserRecord | null> {
   const db = loadDb();
   const user = db.users.find((u) => u.id === id);
-  return user || null;
+  if (user) return user;
+
+  // Supabase lookup fallback
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (data && !error) {
+      const su: UserRecord = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        passwordHash: data.password_hash || data.passwordHash,
+        resetToken: data.reset_token || data.resetToken,
+        resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
+        createdAt: data.created_at || data.createdAt || new Date().toISOString()
+      };
+      db.users.push(su);
+      return su;
+    }
+  } catch {}
+
+  return null;
 }
 
 export async function createUser(data: {
@@ -313,6 +368,19 @@ export async function createUser(data: {
   };
 
   db.users.push(newUser);
+
+  // Sync user to Supabase
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('users').upsert({
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        password_hash: newUser.passwordHash,
+        created_at: newUser.createdAt
+      })
+    );
+  } catch {}
 
   let newProfile: ProfileData | undefined;
   if (data.createProfile) {
@@ -343,10 +411,101 @@ export async function createUser(data: {
     };
     db.profiles[newProfile.id] = newProfile;
     db.profiles[newProfile.slug] = newProfile;
+
+    // Sync profile to Supabase
+    try {
+      asyncSyncSupabase(
+        supabaseAdmin.from('profiles').upsert({
+          id: newProfile.id,
+          user_id: newProfile.userId,
+          slug: newProfile.slug,
+          name: newProfile.name,
+          email: newProfile.email,
+          type: newProfile.type,
+          theme: newProfile.theme,
+          created_at: new Date().toISOString()
+        })
+      );
+    } catch {}
   }
 
   saveDb(db);
   return { user: newUser, profile: newProfile };
+}
+
+export async function createPasswordResetToken(email: string): Promise<{ token: string; user: UserRecord } | null> {
+  const db = loadDb();
+  const normalizedEmail = email.toLowerCase().trim();
+  let user = await getUserByEmail(normalizedEmail);
+  if (!user) return null;
+
+  const crypto = await import('crypto');
+  const token = crypto.randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour validity
+
+  user.resetToken = token;
+  user.resetTokenExpires = expires;
+
+  // Sync token update to Supabase
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('users').update({
+        reset_token: token,
+        reset_token_expires: expires
+      }).eq('email', normalizedEmail)
+    );
+  } catch {}
+
+  saveDb(db);
+  return { token, user };
+}
+
+export async function verifyPasswordResetToken(email: string, token: string): Promise<{ valid: boolean; error?: string; user?: UserRecord }> {
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = await getUserByEmail(normalizedEmail);
+
+  if (!user) {
+    return { valid: false, error: 'User not found.' };
+  }
+
+  if (!user.resetToken || user.resetToken !== token) {
+    return { valid: false, error: 'Invalid or expired password reset token.' };
+  }
+
+  if (!user.resetTokenExpires || new Date(user.resetTokenExpires).getTime() < Date.now()) {
+    return { valid: false, error: 'Password reset link has expired. Please request a new one.' };
+  }
+
+  return { valid: true, user };
+}
+
+export async function resetUserPassword(email: string, token: string, newPasswordHash: string): Promise<UserRecord | null> {
+  const db = loadDb();
+  const normalizedEmail = email.toLowerCase().trim();
+  const userIndex = db.users.findIndex((u) => u.email.toLowerCase().trim() === normalizedEmail);
+
+  let user = userIndex !== -1 ? db.users[userIndex] : await getUserByEmail(normalizedEmail);
+  if (!user) return null;
+  if (!user.resetToken || user.resetToken !== token) return null;
+  if (!user.resetTokenExpires || new Date(user.resetTokenExpires).getTime() < Date.now()) return null;
+
+  user.passwordHash = newPasswordHash;
+  delete user.resetToken;
+  delete user.resetTokenExpires;
+
+  // Sync password reset to Supabase
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('users').update({
+        password_hash: newPasswordHash,
+        reset_token: null,
+        reset_token_expires: null
+      }).eq('email', normalizedEmail)
+    );
+  } catch {}
+
+  saveDb(db);
+  return user;
 }
 
 export async function createProfileForUser(

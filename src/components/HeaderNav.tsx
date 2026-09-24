@@ -285,6 +285,9 @@ export function HeaderNav({
                     try {
                       await fetch('/api/auth/logout', { method: 'POST' });
                     } catch {}
+                    try {
+                      sessionStorage.removeItem('avtive_active_session');
+                    } catch {}
                     window.location.replace('/login');
                   }
                 }}

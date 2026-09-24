@@ -283,64 +283,81 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
   );
 
   // ──────────────────────────────────────────────────────────────────────────
-  // MOBILE WORKING SCREEN REPRESENTATION
+  // MOBILE WORKING SCREEN REPRESENTATION (Synchronized Twin Preview)
   // ──────────────────────────────────────────────────────────────────────────
   const mobileView = (
-    <div className="w-full flex-1 flex flex-col justify-between py-1 text-left">
-      <div>
-        <div className="flex items-center justify-between text-slate-400 mb-3">
+    <div className="w-full flex-1 flex flex-col justify-between p-3.5 sm:p-4 text-left overflow-y-auto">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-slate-400 pb-1 border-b border-white/10">
           {step > 1 ? (
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="p-1 -ml-1 text-slate-300 hover:text-white"
+              className="p-1 -ml-1 text-slate-300 hover:text-white flex items-center gap-1 text-xs cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back</span>
             </button>
-          ) : <div />}
-          <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
-            Step {step}/2
+          ) : (
+            <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider">
+              Profile Wizard
+            </span>
+          )}
+          <span className="text-[11px] font-mono font-medium tracking-wider text-slate-400">
+            Step {step} of 2
           </span>
         </div>
 
         {/* STEP 1 MOBILE */}
         {step === 1 && (
-          <div className="space-y-2.5">
-            <h2 className="text-lg font-bold text-white">Select Profile Type</h2>
-            <div className="space-y-2">
+          <div className="space-y-3">
+            <div>
+              <h2 className="text-base font-extrabold text-white">Select Profile Type</h2>
+              <p className="text-[11px] text-slate-400">Choose between individual persona or team pass</p>
+            </div>
+
+            <div className="space-y-2.5">
               <div
                 onClick={() => setProfileType('individual')}
-                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                  profileType === 'individual' ? 'bg-[#151D30] border-cyan-400 shadow-xs' : 'bg-[#0E1528] border-white/10'
+                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                  profileType === 'individual'
+                    ? 'bg-[#142338] border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
+                    : 'bg-[#0E1528] border-white/10 hover:bg-white/5'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <User className="w-4 h-4 text-cyan-400" />
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <User className="w-4 h-4" />
+                  </div>
                   <div>
                     <h3 className="text-xs font-bold text-white">Individual</h3>
-                    <p className="text-[10px] text-slate-400">Personal Identity</p>
+                    <p className="text-[10px] text-slate-400">Personal Identity &amp; Portfolio</p>
                   </div>
                 </div>
-                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-white bg-white text-black' : 'border-zinc-700'}`}>
-                  {profileType === 'individual' && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-slate-600'}`}>
+                  {profileType === 'individual' && <Check className="w-3 h-3 stroke-[3]" />}
                 </div>
               </div>
 
               <div
                 onClick={() => setProfileType('team')}
-                className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                  profileType === 'team' ? 'bg-[#151D30] border-cyan-400 shadow-xs' : 'bg-[#0E1528] border-white/10'
+                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                  profileType === 'team'
+                    ? 'bg-[#142338] border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
+                    : 'bg-[#0E1528] border-white/10 hover:bg-white/5'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Users className="w-4 h-4 text-cyan-400" />
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                    <Users className="w-4 h-4" />
+                  </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white">Team</h3>
-                    <p className="text-[10px] text-slate-400">Group / Organization</p>
+                    <h3 className="text-xs font-bold text-white">Team / Organization</h3>
+                    <p className="text-[10px] text-slate-400">Group &amp; Company Services</p>
                   </div>
                 </div>
-                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-white bg-white text-black' : 'border-zinc-700'}`}>
-                  {profileType === 'team' && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-slate-600'}`}>
+                  {profileType === 'team' && <Check className="w-3 h-3 stroke-[3]" />}
                 </div>
               </div>
             </div>
@@ -349,63 +366,79 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
 
         {/* STEP 2 MOBILE */}
         {step === 2 && (
-          <div className="space-y-2.5">
-            <h2 className="text-lg font-bold text-white">Profile Details</h2>
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white/5 border border-white/10">
-                <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                  <img src={avatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-cyan-400" />
-                  <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera className="w-3 h-3 text-white" />
+          <div className="space-y-3">
+            <div>
+              <h2 className="text-base font-extrabold text-white">Profile Details</h2>
+              <p className="text-[11px] text-slate-400">Configure your public pass information</p>
+            </div>
+
+            <div className="space-y-2.5">
+              {/* Avatar Photo Preview & Upload Card */}
+              <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-[#0E1528] border border-white/10">
+                <div 
+                  className="relative group cursor-pointer w-12 h-12 rounded-full overflow-hidden border-2 border-cyan-400 shrink-0" 
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Upload profile photo"
+                >
+                  <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="w-3.5 h-3.5 text-white" />
                   </div>
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-white">{fullName || 'Your Name'}</div>
-                  <div className="text-[10px] text-slate-400">{professionalTitle || 'Professional Title'}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-white truncate">{fullName || 'Your Name'}</div>
+                  <div className="text-[10px] text-cyan-300 truncate">{professionalTitle || 'Professional Title'}</div>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[10px] text-cyan-400 hover:underline mt-0.5 cursor-pointer font-medium"
+                  >
+                    Change photo
+                  </button>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-400">Profile Persona Name</label>
+                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Profile Persona Name</label>
                 <input
                   type="text"
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
                   placeholder="e.g. MERN Developer"
-                  className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-400">Full Name</label>
+                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Full Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Full Name"
-                  className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-400">Professional Title</label>
+                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Professional Title</label>
                 <input
                   type="text"
                   value={professionalTitle}
                   onChange={(e) => setProfessionalTitle(e.target.value)}
                   placeholder="e.g. Full Stack Developer"
-                  className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-slate-400">Bio</label>
+                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Short Bio</label>
                 <textarea
                   rows={2}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Short bio description..."
-                  className="figma-input w-full px-2.5 py-1 text-xs text-white resize-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all resize-none"
                 />
               </div>
             </div>
@@ -413,22 +446,23 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
         )}
       </div>
 
-      {/* Mobile Action Pill Button */}
+      {/* Mobile Action Button */}
       <div className="pt-3">
         {step < 2 ? (
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+            className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <span>Continue</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         ) : (
           <button
             type="button"
             onClick={() => handleSubmit()}
             disabled={isLoading}
-            className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+            className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             {isLoading ? (
               <>
@@ -436,7 +470,10 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                 <span>Creating Profile...</span>
               </>
             ) : (
-              <span>Finish &amp; View Pass</span>
+              <>
+                <Save className="w-3.5 h-3.5" />
+                <span>Finish &amp; View Pass</span>
+              </>
             )}
           </button>
         )}
