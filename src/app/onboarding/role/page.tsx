@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, ArrowRight, ArrowLeft, User, Users, Shield, Sparkles, Building2 } from 'lucide-react';
 import { ProfileType, ProfileTheme, normalizeProfileType } from '@/types/profile';
@@ -31,14 +31,14 @@ const ROLE_OPTIONS: RoleCardData[] = [
   },
   {
     id: 'team',
-    title: 'Team',
-    badge: 'Group / Organization',
-    icon: Users,
-    description: 'Collaborative team presence, organization roster, services showcase, and company identity.',
+    title: 'Company',
+    badge: 'Company Profile',
+    icon: Building2,
+    description: 'Collaborative company presence, organization roster, services showcase, and business identity.',
     features: [
-      'Team roster & collaborative showcases',
+      'Company roster & collaborative showcases',
       'Products, services & organization credentials',
-      'Unified team contact & inquiry channels',
+      'Unified company contact & inquiry channels',
       'Organization branding & employee passes'
     ]
   }
@@ -52,6 +52,26 @@ function RoleStepContent() {
 
   // Shared state between Desktop and Mobile screens
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
+
+  // Route protection: If user already has a profile/role, redirect them so onboarding is not repeated
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
+          if (hasProfiles) {
+            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug;
+            if (targetSlug) {
+              router.replace(`/profile/${targetSlug}`);
+            } else {
+              router.replace('/dashboard');
+            }
+          }
+        }
+      })
+      .catch(() => {});
+  }, [router]);
 
   const handleBack = () => {
     router.push(`/onboarding/theme?theme=${theme}`);

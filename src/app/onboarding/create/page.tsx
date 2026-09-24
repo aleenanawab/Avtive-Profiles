@@ -208,8 +208,23 @@ function CreateProfileContent() {
         return;
       }
 
-      const targetSlug = data.profile?.slug || data.profile?.id;
-      router.push(`/profile/${targetSlug}`);
+      const targetSlug = data.profile?.slug || data.profile?.id || data.slug || data.id;
+      if (targetSlug) {
+        try {
+          if (data.profile) {
+            localStorage.setItem('avtive_last_saved_profile', JSON.stringify(data.profile));
+            if (data.profile.slug) {
+              localStorage.setItem(`avtive_profile_${data.profile.slug}`, JSON.stringify(data.profile));
+            }
+            if (data.profile.id) {
+              localStorage.setItem(`avtive_profile_${data.profile.id}`, JSON.stringify(data.profile));
+            }
+          }
+        } catch {}
+        router.push(`/profile/${targetSlug}`);
+      } else {
+        router.push('/dashboard');
+      }
       router.refresh();
     } catch (err) {
       console.error(err);
@@ -484,9 +499,9 @@ function CreateProfileContent() {
   // MOBILE WORKING SCREEN REPRESENTATION
   // ──────────────────────────────────────────────────────────────────────────
   const mobileView = (
-    <div className="w-full flex-1 flex flex-col justify-between py-1 text-left">
+    <div className="w-full flex-1 flex flex-col justify-between py-1 text-left overflow-hidden min-h-0">
       
-      <div>
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
         {/* Mobile Cover Banner */}
         <div className="relative h-24 w-full rounded-2xl bg-slate-900 overflow-hidden border border-white/10 mb-3 group">
           <img src={coverImage} alt="Banner" className="w-full h-full object-cover" />
@@ -523,7 +538,7 @@ function CreateProfileContent() {
         </div>
 
         {/* Mobile Form Fields (100% Synchronized State with Desktop) */}
-        <div className="space-y-2 text-xs max-h-[380px] overflow-y-auto pr-0.5 scrollbar-thin">
+        <div className="flex-1 min-h-0 space-y-2 text-xs max-h-[380px] overflow-y-auto pr-0.5 scrollbar-thin">
           {/* Profile Persona Title */}
           <div className="space-y-0.5">
             <label className="text-[10px] text-slate-400">Persona Title</label>
@@ -667,7 +682,7 @@ function CreateProfileContent() {
       </div>
 
       {/* Save Action Button */}
-      <div className="pt-2">
+      <div className="pt-2 shrink-0">
         <button
           type="button"
           onClick={() => handleSave()}

@@ -44,7 +44,7 @@ export default function RegisterClient() {
             const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug || data.user.id;
             router.replace(`/profile/${targetSlug}`);
           } else {
-            router.replace('/onboarding/theme');
+            router.replace('/onboarding/role');
           }
         }
       })
@@ -74,7 +74,7 @@ export default function RegisterClient() {
       if (data.hasProfile && data.profileSlug) {
         router.push(`/profile/${data.profileSlug}`);
       } else {
-        router.push('/onboarding/theme');
+        router.push('/onboarding/role');
       }
       router.refresh();
     } catch (err) {
@@ -130,12 +130,12 @@ export default function RegisterClient() {
         localStorage.setItem('avtive_returning_user', 'true');
       } catch {}
 
-      // First-time registered user: route to theme selection onboarding
+      // First-time registered user: route to role selection onboarding
       const targetSlug = data.profileSlug || data.profile?.slug || data.profile?.id;
       if (targetSlug) {
         router.push(`/profile/${targetSlug}`);
       } else {
-        router.push('/onboarding/theme');
+        router.push('/onboarding/role');
       }
       router.refresh();
     } catch (err) {

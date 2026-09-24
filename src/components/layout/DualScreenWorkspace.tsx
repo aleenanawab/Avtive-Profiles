@@ -207,8 +207,8 @@ export function DualScreenWorkspace({
             </div>
 
             {/* Mobile Screen Content Canvas: Fixed 375px internal website design viewport */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-white dark:bg-[#050913] transition-colors box-border">
-              <div className="w-full max-w-full flex-1 flex flex-col overflow-x-hidden box-border">
+            <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden flex flex-col items-center bg-white dark:bg-[#050913] transition-colors box-border">
+              <div className="w-full max-w-full flex-1 min-h-0 flex flex-col overflow-x-hidden box-border">
                 {mobileContent}
               </div>
             </div>

@@ -21,8 +21,8 @@ export default async function RegisterPage() {
       // Returning user with profile: redirect directly to profile without asking theme again
       redirect(`/profile/${profiles[0].slug || profiles[0].id}`);
     } else {
-      // First-time user without profile: route to theme selection
-      redirect('/onboarding/theme');
+      // First-time user without profile: route to role selection
+      redirect('/onboarding/role');
     }
   }
 
