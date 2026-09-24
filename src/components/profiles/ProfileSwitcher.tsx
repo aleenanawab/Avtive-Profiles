@@ -27,15 +27,13 @@ interface ProfileSwitcherProps {
   initialProfiles?: ProfileData[];
   onSelectProfile?: (profile: ProfileData) => void;
   className?: string;
-  compact?: boolean;
 }
 
 export function ProfileSwitcher({
   currentProfileIdOrSlug,
   initialProfiles,
   onSelectProfile,
-  className = '',
-  compact = false
+  className = ''
 }: ProfileSwitcherProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -92,33 +90,15 @@ export function ProfileSwitcher({
     (p) => p.id === currentProfileIdOrSlug || p.slug === currentProfileIdOrSlug
   ) || profiles[0] || null;
 
-  const getThemeBadge = (theme?: ProfileTheme) => {
-    switch (theme) {
-      case 'cyber':
-        return {
-          label: 'Cyber',
-          bg: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-          icon: <Terminal className="w-3 h-3 text-emerald-400" />
-        };
-      case 'luxe':
-        return {
-          label: 'Luxe',
-          bg: 'bg-rose-500/10 border-rose-500/30 text-rose-400',
-          icon: <Gem className="w-3 h-3 text-rose-400" />
-        };
-      case 'editorial':
-        return {
-          label: 'Editorial',
-          bg: 'bg-amber-600/10 border-amber-600/30 text-amber-600 dark:text-amber-400',
-          icon: <Sparkles className="w-3 h-3 text-amber-500" />
-        };
-      default:
-        return {
-          label: theme || 'Classic',
-          bg: 'bg-stone-500/10 border-stone-500/20 text-stone-600 dark:text-stone-300',
-          icon: <Briefcase className="w-3 h-3" />
-        };
-    }
+  const getTypeBadge = (type?: string) => {
+    const isTeam = type === 'team' || type === 'company';
+    return {
+      label: isTeam ? 'Team' : 'Personal',
+      bg: isTeam 
+        ? 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+        : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400',
+      icon: isTeam ? <Users className="w-3 h-3" /> : <User className="w-3 h-3" />
+    };
   };
 
   const handleSwitch = (profile: ProfileData) => {
@@ -180,7 +160,7 @@ export function ProfileSwitcher({
     }
   };
 
-  const activeThemeBadge = getThemeBadge(activeProfile?.theme);
+  const activeTypeBadge = getTypeBadge(activeProfile?.type);
 
   return (
     <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
@@ -188,24 +168,22 @@ export function ProfileSwitcher({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center ${compact ? 'gap-1 px-2 py-1 rounded-lg text-[11px]' : 'gap-2 px-3 py-1.5 rounded-xl text-xs'} bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/15 transition-all font-semibold text-slate-800 dark:text-slate-100 shadow-2xs group cursor-pointer max-w-full`}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/15 transition-all text-xs font-semibold text-slate-800 dark:text-slate-100 shadow-2xs group cursor-pointer"
         aria-expanded={isOpen}
         title="Switch active professional profile or create new"
       >
-        {!compact && (
-          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal hidden md:inline">
-            Profile:
-          </span>
-        )}
-        <span className={`font-bold truncate ${compact ? 'max-w-[85px] sm:max-w-[100px]' : 'max-w-[130px] sm:max-w-[180px]'}`}>
+        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal hidden md:inline">
+          Profile:
+        </span>
+        <span className="font-bold truncate max-w-[130px] sm:max-w-[180px]">
           {activeProfile?.profileName || activeProfile?.name || 'Profiles'}
         </span>
-        {activeThemeBadge && !compact && (
-          <span className={`hidden sm:inline-flex items-center gap-1 text-[10px] px-1.5 py-0.2 rounded-md border font-mono ${activeThemeBadge.bg}`}>
-            {activeThemeBadge.label}
+        {activeTypeBadge && (
+          <span className={`hidden sm:inline-flex items-center gap-1 text-[10px] px-1.5 py-0.2 rounded-md border font-mono ${activeTypeBadge.bg}`}>
+            {activeTypeBadge.label}
           </span>
         )}
-        <ChevronDown className={`${compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Dropdown Menu */}
@@ -230,7 +208,7 @@ export function ProfileSwitcher({
             ) : (
               profiles.map((p) => {
                 const isSelected = p.id === activeProfile?.id || p.slug === activeProfile?.slug;
-                const badge = getThemeBadge(p.theme);
+                const badge = getTypeBadge(p.type);
 
                 return (
                   <button
@@ -348,7 +326,7 @@ export function ProfileSwitcher({
                     }`}
                   >
                     <Users className="w-3 h-3" />
-                    <span>Company</span>
+                    <span>Team</span>
                   </button>
                 </div>
 

@@ -15,21 +15,6 @@ interface LoginPageProps {
   searchParams: Promise<{ returnUrl?: string; registered?: string }>;
 }
 
-export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const session = await getSession();
-  const { returnUrl } = await searchParams;
-
-  // Existing authenticated users should not see login form again
-  if (session) {
-    const profiles = await getProfilesByUserId(session.id);
-    if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-      redirect(returnUrl);
-    } else if (profiles && profiles.length > 0) {
-      redirect(`/profile/${profiles[0].slug || profiles[0].id}`);
-    } else {
-      redirect('/onboarding/theme');
-    }
-  }
-
+export default function LoginPage() {
   return <LoginClient />;
 }

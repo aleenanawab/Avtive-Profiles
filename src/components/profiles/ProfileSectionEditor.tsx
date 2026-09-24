@@ -19,7 +19,6 @@ import {
   MessageSquare,
   MapPin,
   Sparkles,
-  Palette,
   ExternalLink,
   ChevronDown,
   ChevronUp,
@@ -57,30 +56,6 @@ export interface ProfileSectionEditorProps {
   /** Extra class names */
   className?: string;
 }
-
-const THEME_PRESETS: { id: ProfileTheme; name: string; tag: string; border: string; accent: string }[] = [
-  {
-    id: 'editorial',
-    name: 'Editorial Minimal',
-    tag: 'Classic',
-    border: 'border-stone-300 dark:border-stone-700',
-    accent: 'text-amber-600 dark:text-amber-400'
-  },
-  {
-    id: 'cyber',
-    name: 'Developer Terminal',
-    tag: 'Cyber',
-    border: 'border-zinc-700 dark:border-emerald-800/60',
-    accent: 'text-emerald-500 dark:text-emerald-400'
-  },
-  {
-    id: 'luxe',
-    name: 'Luxe Velvet',
-    tag: 'Premium',
-    border: 'border-rose-300 dark:border-rose-900/60',
-    accent: 'text-rose-500 dark:text-rose-400'
-  }
-];
 
 export function ProfileSectionEditor({
   initialMode = 'edit',
@@ -175,7 +150,7 @@ export function ProfileSectionEditor({
   };
 
   // Subsections toggle inside the expandable editor
-  const [activeTab, setActiveTab] = useState<'basic' | 'bio' | 'contact' | 'theme'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'bio' | 'contact'>('basic');
 
   // Sync state whenever the external profile prop changes (e.g. user switched persona outside)
   useEffect(() => {
@@ -710,8 +685,7 @@ export function ProfileSectionEditor({
                 {[
                   { id: 'basic' as const, label: 'Identity & Info', icon: User },
                   { id: 'bio' as const, label: 'Bio & Org', icon: Building2 },
-                  { id: 'contact' as const, label: 'Contact Channels', icon: Phone },
-                  { id: 'theme' as const, label: 'Theme Preset', icon: Palette }
+                  { id: 'contact' as const, label: 'Contact Channels', icon: Phone }
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isCurrent = activeTab === tab.id;
@@ -778,7 +752,7 @@ export function ProfileSectionEditor({
                           }`}
                         >
                           <Users className="w-3.5 h-3.5" />
-                          <span>Company</span>
+                          <span>Team / Org</span>
                         </button>
                       </div>
                     </div>
@@ -1129,42 +1103,6 @@ export function ProfileSectionEditor({
                         />
                       </div>
                     )}
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: THEME PRESET */}
-              {activeTab === 'theme' && (
-                <div className="space-y-3 pt-1">
-                  <label className="block text-[11px] font-bold text-slate-600 dark:text-white/70 mb-1 flex items-center gap-1.5">
-                    <Palette className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Select Profile Card Theme</span>
-                  </label>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    {THEME_PRESETS.map((t) => {
-                      const isSelected = theme === t.id;
-                      return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => setTheme(t.id)}
-                          className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                            isSelected
-                              ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-slate-900 dark:border-white shadow-xs'
-                              : 'bg-white dark:bg-white/5 text-slate-700 dark:text-white/80 border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between w-full mb-1">
-                            <span className="text-xs font-bold">{t.name}</span>
-                            {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
-                          </div>
-                          <span className={`text-[10px] uppercase tracking-wider font-semibold ${isSelected ? 'opacity-80' : 'text-slate-400 dark:text-white/50'}`}>
-                            {t.tag}
-                          </span>
-                        </button>
-                      );
-                    })}
                   </div>
                 </div>
               )}

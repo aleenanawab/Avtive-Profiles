@@ -102,30 +102,6 @@ const SECTION_LABELS: Record<string, string> = {
   company: 'Company / Team Overview'
 };
 
-const THEME_OPTIONS: { id: ProfileTheme; name: string; thumbnailBg: string; border: string; accent: string }[] = [
-  {
-    id: 'editorial',
-    name: 'Editorial Minimal',
-    thumbnailBg: 'bg-[#FAFAF9]',
-    border: 'border-stone-200',
-    accent: 'text-amber-500'
-  },
-  {
-    id: 'cyber',
-    name: 'Developer Terminal',
-    thumbnailBg: 'bg-[#09090B]',
-    border: 'border-zinc-800',
-    accent: 'text-emerald-400'
-  },
-  {
-    id: 'luxe',
-    name: 'Luxe Velvet',
-    thumbnailBg: 'bg-[#180D15]',
-    border: 'border-rose-900/40',
-    accent: 'text-rose-400'
-  }
-];
-
 function buildSocialLinksFromProfile(p: ProfileData): DraggableLinkItem[] {
   const safeSocials = (Array.isArray(p.socials) && p.socials.length > 0)
     ? p.socials
@@ -677,7 +653,7 @@ export function SlidingEditorPanel({
           {/* Quick Section Jump Pills */}
           <div className="shrink-0 px-3 py-2 border-b border-slate-200/60 dark:border-white/5 bg-slate-50/70 dark:bg-black/20 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             {[
-              { key: 'basicInfo' as const, label: 'Identity & Theme', icon: User },
+              { key: 'basicInfo' as const, label: 'Identity & Profile', icon: User },
               { key: 'skills' as const, label: 'Skills', icon: Code },
               { key: 'about' as const, label: 'About', icon: FileText },
               { key: 'projects' as const, label: 'Projects', icon: FolderGit2 },

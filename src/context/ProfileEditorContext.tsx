@@ -933,7 +933,6 @@ export function ProfileEditorProvider({
     const checkDark = () => {
       setIsDark(document.documentElement.classList.contains('dark'));
     };
-    checkDark();
     const observer = new MutationObserver(checkDark);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return () => observer.disconnect();

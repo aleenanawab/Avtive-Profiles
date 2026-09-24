@@ -85,7 +85,7 @@ export function SkillsServicesSection({
           {profile.services?.map((service) => (
             <div
               key={service.id}
-              className={`p-3 rounded-xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} flex items-center justify-between gap-1 shadow-2xs transition-all min-w-0`}
+              className={`p-3 rounded-xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} flex items-center justify-between gap-1 shadow-2xs transition-all`}
             >
               {isEditing ? (
                 <div className="flex items-center justify-between w-full gap-1">
@@ -98,7 +98,7 @@ export function SkillsServicesSection({
                   <button
                     type="button"
                     onClick={() => handleRemoveService(service.id)}
-                    className="text-rose-500 hover:text-rose-700 p-0.5 shrink-0"
+                    className="text-rose-500 hover:text-rose-700 p-0.5"
                     title="Remove Service"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -106,11 +106,11 @@ export function SkillsServicesSection({
                 </div>
               ) : (
                 <>
-                  <span className={`text-xs font-bold ${theme.textPrimary} truncate min-w-0 flex-1`}>
+                  <span className={`text-xs font-bold ${theme.textPrimary}`}>
                     {service.title}
                   </span>
                   {service.badge && (
-                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-md ${theme.badgeBg} ${theme.badgeText} font-mono shrink-0`}>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-md ${theme.badgeBg} ${theme.badgeText} font-mono`}>
                       {service.badge}
                     </span>
                   )}

@@ -120,7 +120,7 @@ export function HeaderNav({
             <span className="xs:hidden sm:hidden">Me</span>
           </button>
           
-          {/* 2. Company */}
+          {/* 2. Team */}
           <button
             onClick={() => onSelectProfileType('team', 'team')}
             className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all ${
@@ -130,7 +130,7 @@ export function HeaderNav({
             }`}
           >
             <Users className="w-3.5 h-3.5 shrink-0" />
-            <span>Company</span>
+            <span>Team</span>
           </button>
         </div>
 
@@ -175,7 +175,7 @@ export function HeaderNav({
                   }`}
                 >
                   <span>👤</span>
-                  <span>Member (Hamza Malik)</span>
+                  <span>Team (Hamza Malik)</span>
                 </button>
                 <button
                   onClick={() => {
@@ -284,6 +284,9 @@ export function HeaderNav({
                   } else {
                     try {
                       await fetch('/api/auth/logout', { method: 'POST' });
+                    } catch {}
+                    try {
+                      sessionStorage.removeItem('avtive_active_session');
                     } catch {}
                     window.location.replace('/login');
                   }

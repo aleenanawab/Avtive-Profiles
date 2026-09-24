@@ -1,10 +1,5 @@
-# pyright: reportMissingImports=false
-try:
-    import pymupdf  # type: ignore
-    from PIL import Image  # type: ignore
-except ImportError:
-    pymupdf = None  # type: ignore
-    Image = None  # type: ignore
+import pymupdf
+from PIL import Image
 
 doc = pymupdf.open('desktop.pdf')
 page = doc[0]

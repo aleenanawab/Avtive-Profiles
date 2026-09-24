@@ -10,7 +10,6 @@ import {
   Save, 
   X, 
   Loader2, 
-  Palette, 
   Check, 
   AlertCircle,
   Tag 
@@ -53,18 +52,6 @@ export function getProfileThemeClasses(theme: ProfileTheme = 'elegant') {
   };
 }
 
-const THEME_SELECTION_LIST: { id: ProfileTheme; name: string; tag: string }[] = [
-  { id: 'editorial', name: 'Editorial', tag: 'Minimal' },
-  { id: 'cyber', name: 'Developer', tag: 'Terminal' },
-  { id: 'luxe', name: 'Luxe Velvet', tag: 'Executive' },
-  { id: 'elegant', name: 'Elegant', tag: 'Luxury' },
-  { id: 'dark', name: 'Dark', tag: 'Executive' },
-  { id: 'minimal', name: 'Minimal', tag: 'Pure' },
-  { id: 'professional', name: 'Professional', tag: 'Corporate' },
-  { id: 'modern', name: 'Modern', tag: 'Creative' },
-  { id: 'default', name: 'Clean Neutral', tag: 'Clean' }
-];
-
 interface AvtiveDigitalCardProps {
   profile: ProfileData;
   navigationOrigin?: NavigationOrigin;
@@ -88,7 +75,7 @@ interface AvtiveDigitalCardProps {
   onSendMessage?: (data: { name: string; email: string; message: string }) => void;
   onOpenMyCard?: () => void;
   isDark: boolean;
-  viewMode?: 'standard' | 'mobile' | 'web';
+  viewMode?: 'standard' | 'web';
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
@@ -239,42 +226,6 @@ export function AvtiveDigitalCard({
                 </div>
               </div>
             )}
-
-            {/* Theme Selector Strip: 6 Themes with Instant Live Preview */}
-            <div className={`px-4 sm:px-6 pb-3 pt-1 border-t ${theme.divider} flex flex-col gap-1.5`}>
-              <div className="flex items-center justify-between">
-                <div className={`flex items-center gap-1.5 text-[11px] font-bold ${theme.textMuted} uppercase font-mono`}>
-                  <Palette className={`w-3.5 h-3.5 ${theme.accentText}`} />
-                  <span>Choose Theme</span>
-                </div>
-                <span className={`text-[10px] font-mono ${theme.accentText} font-bold`}>
-                  ● Live Preview
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
-                {THEME_SELECTION_LIST.map((th) => {
-                  const isSelected = activeThemeKey === th.id;
-                  const thConfig = getThemeConfig(th.id);
-                  return (
-                    <button
-                      key={th.id}
-                      type="button"
-                      onClick={() => handleThemeChange(th.id)}
-                      className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1 ${
-                        isSelected
-                          ? `border-current shadow-sm scale-[1.02] ${thConfig.badgeBg} ${thConfig.accentText}`
-                          : `${theme.cardBorder} hover:opacity-80 ${theme.subCardBg} ${theme.textSecondary}`
-                      }`}
-                      title={thConfig.description}
-                    >
-                      {isSelected && <Check className="w-3 h-3 shrink-0" />}
-                      <span className="truncate">{th.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
         )}
 
@@ -301,7 +252,6 @@ export function AvtiveDigitalCard({
           onNavigateBack={onNavigateBack}
           theme={theme}
           onSelectSection={onSelectSection}
-          viewMode={viewMode}
         />
 
         {/* ========================================================================= */}

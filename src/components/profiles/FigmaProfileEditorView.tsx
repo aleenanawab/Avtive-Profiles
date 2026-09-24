@@ -61,12 +61,12 @@ export function FigmaProfileEditorView() {
             onClick={() => setViewMode('split')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               viewMode === 'split'
-                ? 'bg-white/15 text-white border border-white/20 shadow-xs'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
             }`}
             title="Side-by-Side View (Desktop Left + Mobile Slider Right)"
           >
-            <Columns className="w-3.5 h-3.5 text-white" />
+            <Columns className="w-3.5 h-3.5 text-cyan-400" />
             <span className="hidden sm:inline">Side-by-Side</span>
             <span className="sm:hidden">Split</span>
           </button>
@@ -76,7 +76,7 @@ export function FigmaProfileEditorView() {
             onClick={() => setViewMode('desktop')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               viewMode === 'desktop'
-                ? 'bg-white/15 text-white border border-white/20 shadow-xs'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
             }`}
             title="Desktop View Fullscreen"
@@ -91,21 +91,21 @@ export function FigmaProfileEditorView() {
             onClick={() => setViewMode('mobile')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               viewMode === 'mobile'
-                ? 'bg-white/15 text-white border border-white/20 shadow-xs'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
             }`}
             title="Mobile View with PDF Slider Bar"
           >
-            <Smartphone className="w-3.5 h-3.5 text-white" />
+            <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
             <span className="hidden sm:inline">Mobile (PDF Slider)</span>
             <span className="sm:hidden">Mobile</span>
           </button>
         </div>
 
         {/* Center: Live Sync Pill (visible on medium+ screens) */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-white/10 text-slate-300 text-xs font-semibold">
+        <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Realtime Sync</span>
+          <span>Realtime Synchronization (Desktop ⇄ Mobile)</span>
         </div>
 
         {/* Right: Actions */}
@@ -114,11 +114,10 @@ export function FigmaProfileEditorView() {
             type="button"
             onClick={onGlobalSave}
             disabled={isSaving}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-900 hover:bg-slate-100 active:bg-slate-200 shadow-sm transition-all cursor-pointer disabled:opacity-50"
-            title="Save"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 active:from-cyan-600 active:to-blue-700 text-white shadow-md shadow-cyan-500/20 transition-all cursor-pointer disabled:opacity-50"
           >
             {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-            <span>Save</span>
+            <span>Save All</span>
           </button>
 
           <Link
@@ -145,7 +144,7 @@ export function FigmaProfileEditorView() {
           <div className="w-full flex flex-col lg:flex-row h-[calc(100vh-108px)] overflow-hidden">
             
             {/* ── LEFT SIDE: DESKTOP PROFILE EDITOR (60-65% width on desktop) ───── */}
-            <div className="flex-1 h-full min-h-0 flex overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 min-w-0">
+            <div className="flex-1 h-full flex overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 min-w-0">
               <DesktopProfileSidebar />
               <DesktopProfileContent hideRightPreview={true} />
             </div>
@@ -162,7 +161,7 @@ export function FigmaProfileEditorView() {
         {/* 2. DESKTOP VIEW FULLSCREEN                                             */}
         {/* ======================================================================= */}
         {viewMode === 'desktop' && (
-          <div className="w-full h-[calc(100vh-108px)] min-h-0 flex flex-row overflow-hidden">
+          <div className="w-full h-[calc(100vh-108px)] flex flex-row overflow-hidden">
             <DesktopProfileSidebar />
             <DesktopProfileContent />
           </div>

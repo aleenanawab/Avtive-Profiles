@@ -49,6 +49,9 @@ export function AvtivePlatformHeader() {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
+      try {
+        sessionStorage.removeItem('avtive_active_session');
+      } catch {}
       setUser(null);
       setProfile(null);
       setProfiles([]);

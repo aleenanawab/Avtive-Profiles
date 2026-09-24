@@ -18,7 +18,7 @@ export default async function OnboardingLayout({
   const session = await getSession();
 
   if (!session) {
-    redirect('/login?returnUrl=/onboarding/role');
+    redirect('/login?returnUrl=/onboarding/theme');
   }
 
   return (

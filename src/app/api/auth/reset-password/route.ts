@@ -1,76 +1,70 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyPasswordResetToken, updateUserPassword, getUserByEmail } from '@/lib/db';
-import { hashPassword } from '@/lib/auth';
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { verifyPasswordResetToken, resetUserPassword, getProfileByUserId } from '@/lib/db';
+import { hashPassword, setSessionCookie } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, token, newPassword } = body;
+    const { email, token, password } = body;
 
-    if (!email || typeof email !== 'string') {
+    if (!email || !token || !password) {
       return NextResponse.json(
-        { error: 'Email address is required.' },
+        { error: 'Email, reset token, and new password are required.' },
+        { status: 400 }
+      );
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: 'New password must be at least 8 characters long.' },
         { status: 400 }
       );
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    if (!EMAIL_REGEX.test(normalizedEmail)) {
+
+    // Verify token validity and expiration
+    const verification = await verifyPasswordResetToken(normalizedEmail, token);
+    if (!verification.valid || !verification.user) {
       return NextResponse.json(
-        { error: 'Please enter a valid email address.' },
+        { error: verification.error || 'Invalid or expired password reset link.' },
         { status: 400 }
       );
     }
 
-    if (!token || typeof token !== 'string') {
-      return NextResponse.json(
-        { error: 'Password reset token is missing or invalid.' },
-        { status: 400 }
-      );
-    }
+    // Hash the new password
+    const newHash = await hashPassword(password);
 
-    if (!newPassword || typeof newPassword !== 'string') {
+    // Update user record in database
+    const updatedUser = await resetUserPassword(normalizedEmail, token, newHash);
+    if (!updatedUser) {
       return NextResponse.json(
-        { error: 'New password is required.' },
-        { status: 400 }
-      );
-    }
-
-    if (newPassword.length < 8) {
-      return NextResponse.json(
-        { error: 'Password must be at least 8 characters long.' },
-        { status: 400 }
-      );
-    }
-
-    // Verify token validity against database records
-    const isValidToken = await verifyPasswordResetToken(normalizedEmail, token.trim());
-    if (!isValidToken) {
-      return NextResponse.json(
-        { error: 'This password reset link is invalid or has expired. Please request a new link.' },
-        { status: 400 }
-      );
-    }
-
-    // Hash the new password securely using bcrypt
-    const passwordHash = await hashPassword(newPassword);
-
-    const updated = await updateUserPassword(normalizedEmail, passwordHash);
-    if (!updated) {
-      return NextResponse.json(
-        { error: 'Failed to update password. Please try again.' },
+        { error: 'Failed to update password. Please request a new reset link.' },
         { status: 500 }
       );
     }
 
-    console.log(`[PASSWORD RESET] Successfully updated password for user: ${normalizedEmail}`);
+    // Automatically authenticate the user upon successful reset
+    const sessionUser = {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email
+    };
 
-    return NextResponse.json({
+    const userProfile = await getProfileByUserId(updatedUser.id);
+
+    const response = NextResponse.json({
       success: true,
-      message: 'Your password has been successfully updated. You can now sign in.'
+      message: 'Your password has been successfully reset. You are now logged in.',
+      user: sessionUser,
+      hasProfile: Boolean(userProfile),
+      profileSlug: userProfile?.slug || userProfile?.id || null
     });
+
+    await setSessionCookie(sessionUser, response);
+
+    return response;
+
   } catch (error) {
     console.error('Reset Password API Error:', error);
     return NextResponse.json(

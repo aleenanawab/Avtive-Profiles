@@ -120,8 +120,8 @@ export async function setSessionCookie(user: UserSession, response?: any): Promi
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/',
-      maxAge: SESSION_DURATION_SECONDS
+      path: '/'
+      // Session cookie: omitted maxAge ensures deletion when browser tab/session closes
     });
   } catch {}
 
@@ -131,8 +131,7 @@ export async function setSessionCookie(user: UserSession, response?: any): Promi
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        path: '/',
-        maxAge: SESSION_DURATION_SECONDS
+        path: '/'
       });
     } catch {}
   }

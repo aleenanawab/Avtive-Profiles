@@ -36,11 +36,11 @@ function DetailsStepContent() {
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const [profileName, setProfileName] = useState(
-    role === 'team' ? 'Company Profile' : 'Personal Profile'
+    role === 'team' ? 'Team Profile' : 'Personal Profile'
   );
   const [fullName, setFullName] = useState('');
   const [professionalTitle, setProfessionalTitle] = useState(
-    role === 'team' ? 'Company' : 'Full Stack Developer'
+    role === 'team' ? 'Team / Organization' : 'Full Stack Developer'
   );
   const [company, setCompany] = useState(role === 'team' ? 'Avtive Inc.' : 'Avtive');
   const [bio, setBio] = useState(
@@ -376,6 +376,18 @@ function DetailsStepContent() {
 
         <div className="px-4 space-y-2 text-xs">
           <div>
+            <label className="text-[10px] text-slate-400 block mb-0.5">Persona Title</label>
+            <input
+              type="text"
+              value={profileName}
+              onChange={(e) => setProfileName(e.target.value)}
+              placeholder="e.g. MERN Developer"
+              className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] text-slate-400 block mb-0.5">Full Name</label>
             <input
               type="text"
               value={fullName}
@@ -385,19 +397,33 @@ function DetailsStepContent() {
             />
           </div>
 
-          <div>
-            <input
-              type="text"
-              value={professionalTitle}
-              onChange={(e) => setProfessionalTitle(e.target.value)}
-              placeholder="Title"
-              className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
-            />
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-[10px] text-slate-400 block mb-0.5">Title</label>
+              <input
+                type="text"
+                value={professionalTitle}
+                onChange={(e) => setProfessionalTitle(e.target.value)}
+                placeholder="Title"
+                className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-slate-400 block mb-0.5">Company</label>
+              <input
+                type="text"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="Company"
+                className="figma-input w-full px-2.5 py-1.5 text-xs text-white"
+              />
+            </div>
           </div>
 
           <div>
+            <label className="text-[10px] text-slate-400 block mb-0.5">Bio</label>
             <textarea
-              rows={3}
+              rows={2}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Bio..."
@@ -412,14 +438,20 @@ function DetailsStepContent() {
           type="button"
           onClick={() => handleCreateProfile()}
           disabled={isLoading}
-          aria-label="Save Profile"
-          title="Save Profile"
-          className="figma-pill-primary w-full py-2.5 px-4 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+          aria-label="Create Profile"
+          title="Create Profile"
+          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
           {isLoading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Creating Profile...</span>
+            </>
           ) : (
-            <Save className="w-3.5 h-3.5" />
+            <>
+              <Save className="w-3.5 h-3.5" />
+              <span>Finish &amp; View Pass</span>
+            </>
           )}
         </button>
       </div>

@@ -1,8 +1,8 @@
-import React from 'react';
+import { Metadata } from 'next';
 import ResetPasswordClient from './ResetPasswordClient';
 
-export const metadata = {
-  title: 'Reset Password | Avtive',
+export const metadata: Metadata = {
+  title: 'Reset Password | Avtive Identity Workspaces',
   description: 'Set a new password for your Avtive account.'
 };
 

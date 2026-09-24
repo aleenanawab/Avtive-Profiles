@@ -53,12 +53,12 @@ export function SocialLinksSection({ profile }: SocialLinksSectionProps) {
             rel="noopener noreferrer"
             className={`flex items-center justify-between p-3.5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} transition-colors group shadow-2xs`}
           >
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-3 min-w-0">
               <div className={`w-8 h-8 rounded-xl ${theme.badgeBg} flex items-center justify-center shrink-0 border ${theme.cardBorder} shadow-2xs`}>
                 {getPlatformIcon(item.platform)}
               </div>
-              <div className="min-w-0 text-left flex-1">
-                <p className={`text-xs font-bold ${theme.textPrimary} truncate`}>
+              <div className="min-w-0 text-left">
+                <p className={`text-xs font-bold ${theme.textPrimary}`}>
                   {item.label || item.platform}
                 </p>
                 <p className={`text-[11px] ${theme.textSecondary} truncate font-medium`}>

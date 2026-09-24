@@ -18,8 +18,10 @@ export default async function RegisterPage() {
   if (session) {
     const profiles = await getProfilesByUserId(session.id);
     if (profiles && profiles.length > 0) {
+      // Returning user with profile: redirect directly to profile without asking theme again
       redirect(`/profile/${profiles[0].slug || profiles[0].id}`);
     } else {
+      // First-time user without profile: route to theme selection
       redirect('/onboarding/theme');
     }
   }

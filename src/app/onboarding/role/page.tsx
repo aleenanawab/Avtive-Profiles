@@ -31,14 +31,14 @@ const ROLE_OPTIONS: RoleCardData[] = [
   },
   {
     id: 'team',
-    title: 'Company',
-    badge: 'Company Profile',
-    icon: Building2,
-    description: 'Collaborative company presence, organization roster, services showcase, and enterprise identity.',
+    title: 'Team',
+    badge: 'Group / Organization',
+    icon: Users,
+    description: 'Collaborative team presence, organization roster, services showcase, and company identity.',
     features: [
-      'Company roster & collaborative showcases',
+      'Team roster & collaborative showcases',
       'Products, services & organization credentials',
-      'Unified company contact & inquiry channels',
+      'Unified team contact & inquiry channels',
       'Organization branding & employee passes'
     ]
   }
@@ -47,31 +47,18 @@ const ROLE_OPTIONS: RoleCardData[] = [
 function RoleStepContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
   const initialRole = normalizeProfileType(searchParams.get('role') || 'individual');
 
   // Shared state between Desktop and Mobile screens
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
 
-  // Existing profile check: prevent prompting already completed users
-  React.useEffect(() => {
-    if (searchParams.get('new')) return;
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => {
-        const slug = data.profile?.slug || (data.profiles && data.profiles[0]?.slug);
-        if (slug) {
-          router.replace(`/profile/${slug}`);
-        }
-      })
-      .catch(() => {});
-  }, [router, searchParams]);
-
   const handleBack = () => {
-    router.push('/dashboard');
+    router.push(`/onboarding/theme?theme=${theme}`);
   };
 
   const handleNext = () => {
-    router.push(`/onboarding/theme?role=${selectedRole}`);
+    router.push(`/onboarding/create?theme=${theme}&role=${selectedRole}`);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -86,7 +73,7 @@ function RoleStepContent() {
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
             <span>Onboarding Flow</span>
             <span>&middot;</span>
-            <span>Step 1 of 3</span>
+            <span>Step 2 of 3</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Select Your Profile Type
@@ -109,7 +96,7 @@ function RoleStepContent() {
             onClick={handleNext}
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
           >
-            <span>Next: Choose Theme</span>
+            <span>Next: Profile Details</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -206,7 +193,7 @@ function RoleStepContent() {
               <ArrowLeft className="w-4 h-4" />
             </button>
             <span className="text-xs font-mono font-medium tracking-wider text-slate-400">
-              1/3
+              3/3
             </span>
           </div>
 
@@ -275,9 +262,10 @@ function RoleStepContent() {
         <button
           type="button"
           onClick={handleNext}
-          className="figma-pill-primary w-full py-3 px-5 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <span>Next</span>
+          <span>Continue</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -286,9 +274,9 @@ function RoleStepContent() {
 
   return (
     <DualScreenWorkspace
-      workflowTitle="2. Select Profile Type"
-      workflowSubtitle="Onboarding Step 1 of 3"
-      currentUrlPath={`/onboarding/role?role=${selectedRole}`}
+      workflowTitle="4. Select Profile Type"
+      workflowSubtitle="Onboarding Step 2 of 3"
+      currentUrlPath={`/onboarding/role?theme=${theme}&role=${selectedRole}`}
       desktopContent={desktopView}
       mobileContent={mobileView}
     />

@@ -124,8 +124,8 @@ export interface UserRecord {
   email: string;
   passwordHash: string;
   createdAt: string;
-  resetPasswordToken?: string;
-  resetPasswordExpires?: number;
+  resetToken?: string;
+  resetTokenExpires?: string;
 }
 
 export interface UserConnection {

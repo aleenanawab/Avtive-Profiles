@@ -43,13 +43,13 @@ export function ExperienceSection({
             key={exp.id}
             className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-1.5 shadow-2xs`}
           >
-            <div className="flex items-start justify-between gap-2 min-w-0">
-              <div className="min-w-0 flex-1">
-                <h3 className={`text-sm font-bold ${theme.textPrimary} break-words`}>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className={`text-sm font-bold ${theme.textPrimary}`}>
                   {exp.company}
                 </h3>
                 {exp.role && (
-                  <p className={`text-xs font-semibold ${theme.accentText} mt-0.5 break-words`}>
+                  <p className={`text-xs font-semibold ${theme.accentText} mt-0.5`}>
                     {exp.role}
                   </p>
                 )}
@@ -63,13 +63,13 @@ export function ExperienceSection({
             </div>
 
             {exp.location && (
-              <p className={`text-[11px] ${theme.textSecondary} font-medium break-words`}>
+              <p className={`text-[11px] ${theme.textSecondary} font-medium`}>
                 {exp.location}
               </p>
             )}
 
             {exp.description && (
-              <p className={`text-xs ${theme.textSecondary} leading-relaxed pt-1 break-words`}>
+              <p className={`text-xs ${theme.textSecondary} leading-relaxed pt-1`}>
                 {exp.description}
               </p>
             )}
