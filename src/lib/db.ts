@@ -295,6 +295,66 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
   return user || null;
 }
 
+export async function setUserPasswordResetToken(
+  email: string,
+  token: string,
+  expires: number
+): Promise<boolean> {
+  const user = await getUserByEmail(email);
+  if (!user) return false;
+
+  const db = loadDb();
+  const targetUser = db.users.find(
+    (u) => u.email.toLowerCase().trim() === email.toLowerCase().trim()
+  );
+
+  if (targetUser) {
+    targetUser.resetPasswordToken = token;
+    targetUser.resetPasswordExpires = expires;
+    saveDb(db);
+    return true;
+  }
+  return false;
+}
+
+export async function verifyPasswordResetToken(
+  email: string,
+  token: string
+): Promise<boolean> {
+  const user = await getUserByEmail(email);
+  if (!user || !user.resetPasswordToken || !user.resetPasswordExpires) {
+    return false;
+  }
+
+  if (user.resetPasswordExpires < Date.now()) {
+    return false; // Expired
+  }
+
+  return user.resetPasswordToken === token;
+}
+
+export async function updateUserPassword(
+  email: string,
+  passwordHash: string
+): Promise<boolean> {
+  const user = await getUserByEmail(email);
+  if (!user) return false;
+
+  const db = loadDb();
+  const targetUser = db.users.find(
+    (u) => u.email.toLowerCase().trim() === email.toLowerCase().trim()
+  );
+
+  if (targetUser) {
+    targetUser.passwordHash = passwordHash;
+    delete targetUser.resetPasswordToken;
+    delete targetUser.resetPasswordExpires;
+    saveDb(db);
+    return true;
+  }
+  return false;
+}
+
 export async function createUser(data: {
   name: string;
   email: string;

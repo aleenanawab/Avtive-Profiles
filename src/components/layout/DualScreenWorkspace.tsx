@@ -48,13 +48,24 @@ export function DualScreenWorkspace({
   };
 
   return (
-    <div className={`w-full h-screen max-h-screen h-[100dvh] max-h-[100dvh] flex flex-col justify-center bg-slate-100 dark:bg-[#070B14] text-slate-800 dark:text-slate-100 font-sans selection:bg-slate-300 dark:selection:bg-white/20 selection:text-slate-900 dark:selection:text-white overflow-hidden transition-colors ${className}`}>
+    <div className={`w-full min-h-screen min-h-[100dvh] flex flex-col justify-center bg-slate-100 dark:bg-[#070B14] text-slate-800 dark:text-slate-100 font-sans selection:bg-slate-300 dark:selection:bg-white/20 selection:text-slate-900 dark:selection:text-white overflow-x-hidden transition-colors ${className}`}>
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
+      {/* MOBILE / SMALL VIEWPORT PRESENTATION (< lg)                                */}
+      {/* Fits naturally into phone viewport: no overflow, no chassis clipping       */}
+      {/* ────────────────────────────────────────────────────────────────────────── */}
+      <main className="lg:hidden w-full min-h-screen min-h-[100dvh] flex flex-col items-center justify-center p-3 sm:p-6 overflow-y-auto overflow-x-hidden">
+        <div className="w-full max-w-[400px] mx-auto flex flex-col flex-1 justify-center py-4">
+          {mobileContent}
+        </div>
+      </main>
+
+      {/* ────────────────────────────────────────────────────────────────────────── */}
+      {/* PERMANENT TWIN-SCREEN STAGE CONTAINER (Desktop >= lg)                      */}
       {/* Clean, minimalist window presentation with zero floating external text     */}
+      {/* ────────────────────────────────────────────────────────────────────────── */}
       <div 
-        className="flex-1 w-full h-full min-h-0 p-2 sm:p-3 lg:p-4 flex flex-row items-center justify-center gap-3 sm:gap-5 min-w-0 max-w-[1920px] mx-auto overflow-hidden"
+        className="hidden lg:flex flex-1 w-full h-full min-h-0 p-2 sm:p-3 lg:p-4 flex-row items-center justify-center gap-3 sm:gap-5 min-w-0 max-w-[1920px] mx-auto overflow-hidden"
       >
         
         {/* ======================================================================= */}
@@ -62,7 +73,7 @@ export function DualScreenWorkspace({
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-0 max-w-[1240px] h-full flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-2xl shadow-slate-300/40 dark:shadow-black/60 overflow-hidden transition-colors min-h-0"
+          className="flex-1 min-w-0 max-w-[1240px] h-full flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl shadow-slate-300/40 dark:shadow-black/60 overflow-hidden transition-colors min-h-0"
         >
           {/* Desktop Browser Window Header Frame */}
           <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
@@ -131,7 +142,7 @@ export function DualScreenWorkspace({
         >
           {/* Smartphone Chassis Frame */}
           <div 
-            className="relative aspect-[375/760] rounded-[38px] sm:rounded-[44px] border-[7px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden ring-1 ring-white/10 shrink-0 min-h-0"
+            className="relative aspect-[375/760] rounded-[38px] sm:rounded-[44px] border-[7px] border-slate-800 bg-[#090E1B] shadow-xl shadow-black/80 flex flex-col overflow-hidden ring-1 ring-white/10 shrink-0 min-h-0"
             style={{ 
               height: 'calc(100vh - 80px)',
               maxHeight: '740px',
@@ -155,9 +166,9 @@ export function DualScreenWorkspace({
               </div>
             </div>
 
-            {/* Mobile Screen Content Canvas: Fixed 375px internal website design viewport */}
+            {/* Mobile Screen Content Canvas: Fluid responsive max-w-[375px] container */}
             <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-100 dark:bg-[#050913] transition-colors">
-              <div className="w-[375px] min-w-[375px] max-w-[375px] flex-1 flex flex-col overflow-x-hidden">
+              <div className="w-full max-w-[375px] flex-1 flex flex-col overflow-x-hidden px-4">
                 {mobileContent}
               </div>
             </div>
