@@ -321,15 +321,15 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
           className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center justify-center"
         >
           {/* Smartphone Chassis Frame (Standard 375px × 667px) */}
-          <div className="w-[375px] min-w-[375px] max-w-[375px] h-[667px] min-h-[667px] max-h-[667px] rounded-[40px] border-[6px] border-slate-800 bg-[#090E1B] shadow-2xl shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-white/10">
+          <div className="w-[375px] min-w-[375px] max-w-[375px] h-[667px] min-h-[667px] max-h-[667px] rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors">
             
             {/* Phone Status Bar (9:41, Wifi, Battery) */}
-            <div className="w-full bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-300 shrink-0 border-b border-white/5 select-none">
+            <div className="w-full bg-slate-100 dark:bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-700 dark:text-slate-300 shrink-0 border-b border-slate-200 dark:border-white/5 select-none transition-colors">
               <span>9:41</span>
-              <div className="w-20 h-4 rounded-full bg-black border border-white/10 flex items-center justify-center">
-                <span className="w-2 h-2 rounded-full bg-slate-900 border border-white/20" />
+              <div className="w-20 h-4 rounded-full bg-slate-900 dark:bg-black border border-slate-700 dark:border-white/10 flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-slate-800 dark:bg-slate-900 border border-slate-600 dark:border-white/20" />
               </div>
-              <div className="flex items-center gap-1.5 text-slate-400">
+              <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
                 <Signal className="w-3 h-3" />
                 <Wifi className="w-3 h-3" />
                 <Battery className="w-3.5 h-3.5" />
@@ -337,15 +337,15 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
             </div>
 
             {/* Mobile Editor Canvas: Fixed 375px internal website design viewport */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-[#050811]">
+            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-50 dark:bg-[#050811] transition-colors">
               <div className="w-full flex-1 flex flex-col overflow-x-hidden">
                 <MobileSliderProfileView onSave={onGlobalSave} />
               </div>
             </div>
 
             {/* Phone Bottom Home Bar */}
-            <div className="w-full py-1.5 bg-[#090E1B] flex items-center justify-center shrink-0 border-t border-white/5">
-              <div className="w-28 h-1 rounded-full bg-white/30" />
+            <div className="w-full py-1.5 bg-slate-100 dark:bg-[#090E1B] flex items-center justify-center shrink-0 border-t border-slate-200 dark:border-white/5 transition-colors">
+              <div className="w-28 h-1 rounded-full bg-slate-400 dark:bg-white/30" />
             </div>
 
           </div>

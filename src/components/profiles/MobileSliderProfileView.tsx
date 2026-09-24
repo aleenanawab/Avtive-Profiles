@@ -374,9 +374,9 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'profile':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Profile &amp; Identity</span>
               </span>
               <button
@@ -384,52 +384,52 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 onClick={toggleDarkMode}
                 aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
                 title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                className="p-1 rounded-md text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer shrink-0 flex items-center justify-center"
+                className="p-1 rounded-md text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer shrink-0 flex items-center justify-center"
               >
                 {isDark ? (
                   <Sun className="w-3.5 h-3.5 text-amber-400" />
                 ) : (
-                  <Moon className="w-3.5 h-3.5 text-slate-300" />
+                  <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
                 )}
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-slate-300">First Name</label>
+                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">First Name</label>
                 <input
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   placeholder="First Name"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-slate-300">Last Name</label>
+                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Last Name</label>
                 <input
                   type="text"
                   value={secondName}
                   onChange={(e) => setSecondName(e.target.value)}
                   placeholder="Last Name"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Professional Title</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Professional Title</label>
               <input
                 type="text"
                 value={professionalTitle}
                 onChange={(e) => setProfessionalTitle(e.target.value)}
                 placeholder="e.g. Senior Full Stack Engineer"
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Location</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Location</label>
               <div className="relative">
                 <MapPin className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -437,30 +437,30 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. San Francisco, CA (or Remote)"
-                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Bio</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Bio</label>
               <textarea
                 rows={2}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Brief summary..."
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none transition-colors"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">About</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">About</label>
               <textarea
                 rows={3}
                 value={about || ''}
                 onChange={(e) => setAbout(e.target.value)}
                 placeholder="Detailed background..."
-                className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
+                className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none transition-colors"
               />
             </div>
           </div>
@@ -471,16 +471,16 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'contactInfo':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Contact &amp; Personal Info</span>
               </span>
-              <span className="text-[10px] text-emerald-400 font-mono">Direct Communication</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">Direct Communication</span>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Email Address</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Email Address</label>
               <div className="relative">
                 <Mail className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -488,13 +488,13 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={profile.email || ''}
                   onChange={(e) => updateField('email', e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Phone Number</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Phone Number</label>
               <div className="relative">
                 <Phone className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -502,13 +502,13 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={profile.phone || ''}
                   onChange={(e) => updateField('phone', e.target.value)}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Website / Portfolio URL</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Website / Portfolio URL</label>
               <div className="relative">
                 <Globe className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -516,21 +516,21 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={profile.website || ''}
                   onChange={(e) => updateField('website', e.target.value)}
                   placeholder="https://yourdomain.com"
-                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Direct WhatsApp Number / Link</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Direct WhatsApp Number / Link</label>
               <div className="relative">
-                <WhatsAppIcon className="w-3 h-3 text-emerald-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <WhatsAppIcon className="w-3 h-3 text-emerald-500 dark:text-emerald-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={profile.whatsapp || ''}
                   onChange={(e) => updateField('whatsapp', e.target.value)}
                   placeholder="+1 (555) 000-0000"
-                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
@@ -541,15 +541,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'skills':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Code className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Code className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Skills &amp; Tech Stack ({skills.length})</span>
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddingNewSkill(!isAddingNewSkill)}
-                className="text-[10px] font-bold text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>Add Skill</span>
@@ -558,7 +558,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
 
             {/* Quick Add Custom Skill */}
             {isAddingNewSkill && (
-              <div className="p-2.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">
+              <div className="p-2.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/20 border border-cyan-500/30 space-y-2">
                 <div className="flex items-center gap-1.5">
                   <input
                     type="text"
@@ -571,7 +571,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                       }
                     }}
                     placeholder="Enter skill name (e.g. Next.js)"
-                    className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-cyan-500/50 text-white text-xs focus:outline-none"
+                    className="flex-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-cyan-500/50 text-slate-900 dark:text-white text-xs focus:outline-none"
                     autoFocus
                   />
                   <button
@@ -591,13 +591,13 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               value={skillSearchQuery}
               onChange={(e) => setSkillSearchQuery(e.target.value)}
               placeholder="Search active skills..."
-              className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+              className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
             />
 
             {/* Active Skill Chips */}
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-400">Your Active Skills</label>
-              <div className="flex flex-wrap gap-1.5 min-h-[40px] p-2 rounded-xl bg-[#070D18] border border-white/10">
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-400">Your Active Skills</label>
+              <div className="flex flex-wrap gap-1.5 min-h-[40px] p-2 rounded-xl bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 transition-colors">
                 {skills.length === 0 ? (
                   <span className="text-[10px] text-slate-500 italic">No skills added yet. Tap suggestions below.</span>
                 ) : (
@@ -606,13 +606,13 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                     .map((s) => (
                       <span
                         key={s}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium bg-[#142236] text-cyan-200 border border-cyan-500/30 shadow-xs"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium bg-cyan-50 dark:bg-[#142236] text-cyan-800 dark:text-cyan-200 border border-cyan-500/30 shadow-xs"
                       >
                         <span>{s}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveSkillTag(s)}
-                          className="text-slate-400 hover:text-rose-400 ml-0.5 cursor-pointer"
+                          className="text-slate-400 hover:text-rose-500 ml-0.5 cursor-pointer"
                         >
                           &times;
                         </button>
@@ -624,7 +624,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
 
             {/* Popular Suggestions */}
             <div className="space-y-1 pt-1">
-              <label className="text-[10px] font-semibold text-slate-400">Popular Suggestions</label>
+              <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-400">Popular Suggestions</label>
               <div className="flex flex-wrap gap-1.5">
                 {popularSkills
                   .filter(s => !skills.includes(s))
@@ -633,9 +633,9 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                       key={s}
                       type="button"
                       onClick={() => handleAddSkillTag(s)}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-medium bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
                     >
-                      <Plus className="w-2.5 h-2.5 text-cyan-400" />
+                      <Plus className="w-2.5 h-2.5 text-cyan-600 dark:text-cyan-400" />
                       <span>{s}</span>
                     </button>
                   ))}
@@ -648,15 +648,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'projects':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <FolderGit2 className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <FolderGit2 className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Projects ({projects.length})</span>
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddingProject(!isAddingProject)}
-                className="text-[10px] font-bold text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>{isAddingProject ? 'Cancel' : 'New Project'}</span>
@@ -665,15 +665,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
 
             {/* New Project Form Drawer */}
             {isAddingProject && (
-              <div className="p-3 rounded-xl bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg">
-                <div className="text-[11px] font-bold text-cyan-300">Add New Project</div>
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg transition-colors">
+                <div className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300">Add New Project</div>
                 
                 <input
                   type="text"
                   value={newProject.title}
                   onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
                   placeholder="Project Title"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <textarea
@@ -681,7 +681,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newProject.description}
                   onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                   placeholder="Brief description of what you built..."
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none transition-colors"
                 />
 
                 <input
@@ -689,7 +689,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newProject.tags}
                   onChange={(e) => setNewProject({ ...newProject, tags: e.target.value })}
                   placeholder="Tags (e.g. Next.js, Stripe, Tailwind)"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <input
@@ -697,7 +697,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newProject.link}
                   onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
                   placeholder="Live URL or GitHub repository"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <button
@@ -713,24 +713,24 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {/* List of Existing Projects */}
             <div className="space-y-2">
               {projects.length === 0 ? (
-                <div className="p-4 rounded-xl bg-[#070D18] border border-white/10 text-center text-slate-400 text-xs">
+                <div className="p-4 rounded-xl bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-center text-slate-500 dark:text-slate-400 text-xs transition-colors">
                   No projects added yet. Click &quot;New Project&quot; above to showcase your work.
                 </div>
               ) : (
                 projects.map((p) => (
                   <div
                     key={p.id}
-                    className="p-3 rounded-xl bg-[#0E1528] border border-white/10 space-y-1.5 hover:border-cyan-500/40 transition-colors"
+                    className="p-3 rounded-xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 space-y-1.5 hover:border-cyan-500/40 shadow-2xs dark:shadow-none transition-colors"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <div className="text-xs font-bold text-white truncate">{p.title}</div>
-                        <p className="text-[11px] text-slate-300 line-clamp-2 mt-0.5">{p.description}</p>
+                        <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.title}</div>
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 mt-0.5">{p.description}</p>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleDeleteProject(p.id)}
-                        className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer shrink-0"
+                        className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer shrink-0"
                         title="Delete project"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -740,7 +740,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                     <div className="flex items-center justify-between pt-1 text-[10px]">
                       <div className="flex items-center gap-1 overflow-hidden">
                         {p.tags?.slice(0, 3).map((t, idx) => (
-                          <span key={idx} className="px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 truncate">
+                          <span key={idx} className="px-1.5 py-0.2 rounded bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20 truncate">
                             {t}
                           </span>
                         ))}
@@ -750,7 +750,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                           href={p.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-cyan-400 hover:underline flex items-center gap-0.5 shrink-0"
+                          className="text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-0.5 shrink-0"
                         >
                           <span>Live Link</span>
                           <ExternalLink className="w-2.5 h-2.5" />
@@ -768,15 +768,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'experience':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Briefcase className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Work Experience ({experiences.length})</span>
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddingExperience(!isAddingExperience)}
-                className="text-[10px] font-bold text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>{isAddingExperience ? 'Cancel' : 'New Role'}</span>
@@ -785,15 +785,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
 
             {/* New Experience Form */}
             {isAddingExperience && (
-              <div className="p-3 rounded-xl bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg">
-                <div className="text-[11px] font-bold text-cyan-300">Add Career Experience</div>
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg transition-colors">
+                <div className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300">Add Career Experience</div>
 
                 <input
                   type="text"
                   value={newExperience.role}
                   onChange={(e) => setNewExperience({ ...newExperience, role: e.target.value })}
                   placeholder="Job Role (e.g. Lead Frontend Architect)"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <input
@@ -801,7 +801,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newExperience.company}
                   onChange={(e) => setNewExperience({ ...newExperience, company: e.target.value })}
                   placeholder="Company Name (e.g. Acme Corp)"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <div className="grid grid-cols-2 gap-2">
@@ -810,14 +810,14 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                     value={newExperience.period}
                     onChange={(e) => setNewExperience({ ...newExperience, period: e.target.value })}
                     placeholder="Period (e.g. 2022 - Present)"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                   <input
                     type="text"
                     value={newExperience.location}
                     onChange={(e) => setNewExperience({ ...newExperience, location: e.target.value })}
                     placeholder="Location (e.g. Remote)"
-                    className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                 </div>
 
@@ -826,7 +826,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newExperience.description}
                   onChange={(e) => setNewExperience({ ...newExperience, description: e.target.value })}
                   placeholder="Key responsibilities & accomplishments..."
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none transition-colors"
                 />
 
                 <button
@@ -842,36 +842,36 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {/* List of Experiences */}
             <div className="space-y-2">
               {experiences.length === 0 ? (
-                <div className="p-4 rounded-xl bg-[#070D18] border border-white/10 text-center text-slate-400 text-xs">
+                <div className="p-4 rounded-xl bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-center text-slate-500 dark:text-slate-400 text-xs transition-colors">
                   No work experience added yet. Tap &quot;New Role&quot; above.
                 </div>
               ) : (
                 experiences.map((exp) => (
                   <div
                     key={exp.id}
-                    className="p-3 rounded-xl bg-[#0E1528] border border-white/10 space-y-1 hover:border-cyan-500/40 transition-colors"
+                    className="p-3 rounded-xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 space-y-1 hover:border-cyan-500/40 shadow-2xs dark:shadow-none transition-colors"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <div className="text-xs font-bold text-white">{exp.role}</div>
-                        <div className="text-[11px] text-cyan-300 font-medium">{exp.company}</div>
+                        <div className="text-xs font-bold text-slate-900 dark:text-white">{exp.role}</div>
+                        <div className="text-[11px] text-cyan-600 dark:text-cyan-300 font-medium">{exp.company}</div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleDeleteExperience(exp.id)}
-                        className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer shrink-0"
+                        className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer shrink-0"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    <div className="text-[10px] text-slate-400 flex items-center gap-2">
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
                       {exp.period && <span>{exp.period}</span>}
                       {exp.location && <span>&middot; {exp.location}</span>}
                     </div>
 
                     {exp.description && (
-                      <p className="text-[11px] text-slate-300 pt-0.5">{exp.description}</p>
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 pt-0.5">{exp.description}</p>
                     )}
                   </div>
                 ))
@@ -884,15 +884,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'education':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <GraduationCap className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <GraduationCap className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Education ({education.length})</span>
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddingEducation(!isAddingEducation)}
-                className="text-[10px] font-bold text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>{isAddingEducation ? 'Cancel' : 'New Degree'}</span>
@@ -901,15 +901,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
 
             {/* New Education Form */}
             {isAddingEducation && (
-              <div className="p-3 rounded-xl bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg">
-                <div className="text-[11px] font-bold text-cyan-300">Add Academic Record</div>
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg transition-colors">
+                <div className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300">Add Academic Record</div>
 
                 <input
                   type="text"
                   value={newEducation.degree}
                   onChange={(e) => setNewEducation({ ...newEducation, degree: e.target.value })}
                   placeholder="Degree (e.g. B.S. in Computer Science)"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <input
@@ -917,7 +917,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newEducation.institution}
                   onChange={(e) => setNewEducation({ ...newEducation, institution: e.target.value })}
                   placeholder="Institution (e.g. University of California)"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <input
@@ -925,7 +925,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newEducation.period}
                   onChange={(e) => setNewEducation({ ...newEducation, period: e.target.value })}
                   placeholder="Graduation Year / Period (e.g. 2018 - 2022)"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <textarea
@@ -933,7 +933,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newEducation.description}
                   onChange={(e) => setNewEducation({ ...newEducation, description: e.target.value })}
                   placeholder="Honors, relevant coursework, thesis..."
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none transition-colors"
                 />
 
                 <button
@@ -949,30 +949,30 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {/* List of Education records */}
             <div className="space-y-2">
               {education.length === 0 ? (
-                <div className="p-4 rounded-xl bg-[#070D18] border border-white/10 text-center text-slate-400 text-xs">
+                <div className="p-4 rounded-xl bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-center text-slate-500 dark:text-slate-400 text-xs transition-colors">
                   No education records yet. Tap &quot;New Degree&quot; above.
                 </div>
               ) : (
                 education.map((edu) => (
                   <div
                     key={edu.id}
-                    className="p-3 rounded-xl bg-[#0E1528] border border-white/10 space-y-1 hover:border-cyan-500/40 transition-colors"
+                    className="p-3 rounded-xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 space-y-1 hover:border-cyan-500/40 shadow-2xs dark:shadow-none transition-colors"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <div className="text-xs font-bold text-white">{edu.degree}</div>
-                        <div className="text-[11px] text-cyan-300">{edu.institution}</div>
+                        <div className="text-xs font-bold text-slate-900 dark:text-white">{edu.degree}</div>
+                        <div className="text-[11px] text-cyan-600 dark:text-cyan-300">{edu.institution}</div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleDeleteEducation(edu.id)}
-                        className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer shrink-0"
+                        className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer shrink-0"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    {edu.period && <div className="text-[10px] text-slate-400">{edu.period}</div>}
-                    {edu.description && <p className="text-[11px] text-slate-300 pt-0.5">{edu.description}</p>}
+                    {edu.period && <div className="text-[10px] text-slate-500 dark:text-slate-400">{edu.period}</div>}
+                    {edu.description && <p className="text-[11px] text-slate-600 dark:text-slate-300 pt-0.5">{edu.description}</p>}
                   </div>
                 ))
               )}
@@ -984,27 +984,27 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'socialLinks':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Link2 className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Link2 className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Social Profiles &amp; Handles</span>
               </span>
-              <span className="text-[10px] text-cyan-400 font-mono">Live Badges</span>
+              <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">Live Badges</span>
             </div>
 
             {/* Platform URL Inputs */}
             <div className="space-y-2.5">
               {/* LinkedIn */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-[10px] font-semibold text-slate-300">
+                <div className="flex items-center justify-between text-[10px] font-semibold text-slate-700 dark:text-slate-300">
                   <span className="flex items-center gap-1.5">
-                    <LinkedInIcon className="w-3 h-3 text-cyan-400" />
+                    <LinkedInIcon className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
                     <span>LinkedIn Profile</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => toggleSocialVisibility('linkedin')}
-                    className="text-slate-400 hover:text-cyan-400"
+                    className="text-slate-400 hover:text-cyan-500"
                   >
                     <Eye className="w-3 h-3" />
                   </button>
@@ -1014,21 +1014,21 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={getSocialUrl('linkedin')}
                   onChange={(e) => updateSocialUrl('linkedin', e.target.value)}
                   placeholder="https://linkedin.com/in/username"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
 
               {/* GitHub */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-[10px] font-semibold text-slate-300">
+                <div className="flex items-center justify-between text-[10px] font-semibold text-slate-700 dark:text-slate-300">
                   <span className="flex items-center gap-1.5">
-                    <GithubIcon className="w-3 h-3 text-white" />
+                    <GithubIcon className="w-3 h-3 text-slate-800 dark:text-white" />
                     <span>GitHub Profile</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => toggleSocialVisibility('github')}
-                    className="text-slate-400 hover:text-cyan-400"
+                    className="text-slate-400 hover:text-cyan-500"
                   >
                     <Eye className="w-3 h-3" />
                   </button>
@@ -1038,21 +1038,21 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={getSocialUrl('github')}
                   onChange={(e) => updateSocialUrl('github', e.target.value)}
                   placeholder="https://github.com/username"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
 
               {/* Twitter / X */}
               <div className="space-y-1">
-                <div className="flex items-center justify-between text-[10px] font-semibold text-slate-300">
+                <div className="flex items-center justify-between text-[10px] font-semibold text-slate-700 dark:text-slate-300">
                   <span className="flex items-center gap-1.5">
-                    <TwitterIcon className="w-3 h-3 text-cyan-400" />
+                    <TwitterIcon className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
                     <span>X (Twitter)</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => toggleSocialVisibility('twitter')}
-                    className="text-slate-400 hover:text-cyan-400"
+                    className="text-slate-400 hover:text-cyan-500"
                   >
                     <Eye className="w-3 h-3" />
                   </button>
@@ -1062,7 +1062,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={getSocialUrl('twitter')}
                   onChange={(e) => updateSocialUrl('twitter', e.target.value)}
                   placeholder="https://x.com/username"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
@@ -1073,15 +1073,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'enhanceProfile':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Custom Fields &amp; Badges ({customFields.length})</span>
               </span>
               <button
                 type="button"
                 onClick={() => setIsAddingCustomField(!isAddingCustomField)}
-                className="text-[10px] font-bold text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-[10px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3 h-3" />
                 <span>{isAddingCustomField ? 'Cancel' : 'Add Field'}</span>
@@ -1090,15 +1090,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
 
             {/* New Custom Field Form */}
             {isAddingCustomField && (
-              <div className="p-3 rounded-xl bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg">
-                <div className="text-[11px] font-bold text-cyan-300">New Custom Metric / Field</div>
+              <div className="p-3 rounded-xl bg-slate-100 dark:bg-[#0E1728] border border-cyan-500/40 space-y-2 shadow-lg transition-colors">
+                <div className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300">New Custom Metric / Field</div>
 
                 <input
                   type="text"
                   value={newCustomField.label}
                   onChange={(e) => setNewCustomField({ ...newCustomField, label: e.target.value })}
                   placeholder="Field Title (e.g. Patents, Publications, Rate)"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <input
@@ -1106,7 +1106,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   value={newCustomField.value}
                   onChange={(e) => setNewCustomField({ ...newCustomField, value: e.target.value })}
                   placeholder="Content or Metric Value"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
 
                 <button
@@ -1122,23 +1122,23 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {/* List of Custom Fields */}
             <div className="space-y-2">
               {customFields.length === 0 ? (
-                <div className="p-4 rounded-xl bg-[#070D18] border border-white/10 text-center text-slate-400 text-xs">
+                <div className="p-4 rounded-xl bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-center text-slate-500 dark:text-slate-400 text-xs transition-colors">
                   No custom fields added yet. Add key metrics or credentials above.
                 </div>
               ) : (
                 customFields.map((field) => (
                   <div
                     key={field.id}
-                    className="p-2.5 rounded-xl bg-[#0E1528] border border-white/10 flex items-center justify-between gap-2"
+                    className="p-2.5 rounded-xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 flex items-center justify-between gap-2 shadow-2xs dark:shadow-none transition-colors"
                   >
                     <div>
-                      <div className="text-[11px] font-bold text-white">{field.label}</div>
-                      <div className="text-[10px] text-cyan-300">{field.value}</div>
+                      <div className="text-[11px] font-bold text-slate-900 dark:text-white">{field.label}</div>
+                      <div className="text-[10px] text-cyan-600 dark:text-cyan-300">{field.value}</div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleDeleteCustomField(field.id)}
-                      className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer"
+                      className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -1153,12 +1153,12 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       case 'settings':
         return (
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Settings className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Settings className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Theme &amp; Card Style</span>
               </span>
-              <span className="text-[10px] text-cyan-400 font-mono">Instant Switch</span>
+              <span className="text-[10px] text-cyan-600 dark:text-cyan-400 font-mono">Instant Switch</span>
             </div>
 
             <div className="space-y-2">
@@ -1173,17 +1173,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                     setActiveTheme(theme.id as ProfileTheme);
                     showToast?.(`Switched to ${theme.label}`);
                   }}
-                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                  className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between shadow-2xs dark:shadow-none ${
                     activeTheme === theme.id
-                      ? 'bg-[#142338] border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
-                      : 'bg-[#070D18] border-white/10 hover:bg-white/5'
+                      ? 'bg-cyan-50 dark:bg-[#142338] border-cyan-500 dark:border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
+                      : 'bg-white dark:bg-[#070D18] border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
                   }`}
                 >
                   <div>
-                    <div className="text-xs font-bold text-white">{theme.label}</div>
-                    <div className="text-[10px] text-slate-400">{theme.desc}</div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">{theme.label}</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">{theme.desc}</div>
                   </div>
-                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${activeTheme === theme.id ? 'border-cyan-400 bg-cyan-400 text-black' : 'border-slate-600'}`}>
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${activeTheme === theme.id ? 'border-cyan-500 bg-cyan-500 text-slate-950' : 'border-slate-300 dark:border-slate-600'}`}>
                     {activeTheme === theme.id && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                   </div>
                 </div>
@@ -1196,12 +1196,12 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       default:
         return (
           <div className="space-y-3">
-            <div className="flex items-center justify-between pb-1 border-b border-white/10">
-              <span className="text-xs font-bold text-white capitalize">{activeSection}</span>
-              <span className="text-[10px] text-slate-400 font-mono">Active</span>
+            <div className="flex items-center justify-between pb-1 border-b border-slate-200 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-900 dark:text-white capitalize">{activeSection}</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">Active</span>
             </div>
-            <p className="text-xs text-slate-300">
-              Editing section settings for <strong className="text-white capitalize">{activeSection}</strong>. All changes update the synchronized digital pass immediately.
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              Editing section settings for <strong className="text-slate-900 dark:text-white capitalize">{activeSection}</strong>. All changes update the synchronized digital pass immediately.
             </p>
           </div>
         );
@@ -1234,22 +1234,22 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       />
 
       {/* Top Mobile Mode Switcher Bar */}
-      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-300 bg-[#0C1424]/80 backdrop-blur-xl border-b border-white/10 shrink-0">
-        <span className="flex items-center gap-1 font-bold text-cyan-400 shrink-0">
+      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-700 dark:text-slate-300 bg-white/90 dark:bg-[#0C1424]/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 shrink-0 transition-colors">
+        <span className="flex items-center gap-1 font-bold text-cyan-600 dark:text-cyan-400 shrink-0">
           <Smartphone className="w-3.5 h-3.5" />
           <span className="capitalize">{activeSection}</span>
         </span>
 
         <div className="flex items-center gap-1.5 shrink-0">
           {/* 4 View Presets: Form, Split, Drawer, Live Card */}
-          <div className="flex items-center gap-0.5 bg-[#070D18]/80 backdrop-blur-md border border-cyan-500/30 rounded-lg p-0.5 shadow-inner">
+          <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-[#070D18]/80 backdrop-blur-md border border-slate-200 dark:border-cyan-500/30 rounded-lg p-0.5 shadow-inner transition-colors">
             <button
               type="button"
               onClick={() => setViewMode('form')}
               className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 viewMode === 'form'
-                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
               title="Full Edit Form"
             >
@@ -1262,8 +1262,8 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               onClick={() => setViewMode('split')}
               className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 viewMode === 'split'
-                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
               title="Split Slider View"
             >
@@ -1276,8 +1276,8 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               onClick={() => setViewMode('drawer')}
               className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 viewMode === 'drawer'
-                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
               title="Sections Drawer"
             >
@@ -1290,8 +1290,8 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               onClick={() => setViewMode('card')}
               className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
                 viewMode === 'card'
-                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
               title="Live Pass Preview"
             >
@@ -1306,12 +1306,12 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             onClick={toggleDarkMode}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="p-1 rounded-md text-slate-300 hover:text-white bg-[#070D18]/80 hover:bg-[#132238] border border-cyan-500/30 transition-colors cursor-pointer shrink-0 flex items-center justify-center shadow-xs"
+            className="p-1 rounded-md text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-[#070D18]/80 dark:hover:bg-[#132238] border border-slate-200 dark:border-cyan-500/30 transition-colors cursor-pointer shrink-0 flex items-center justify-center shadow-xs"
           >
             {isDark ? (
               <Sun className="w-3.5 h-3.5 text-amber-400" />
             ) : (
-              <Moon className="w-3.5 h-3.5 text-slate-300" />
+              <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
             )}
           </button>
         </div>
@@ -1320,11 +1320,11 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       {/* Main Inner Display Viewport */}
       <div 
         ref={containerRef}
-        className="relative w-full flex-1 overflow-hidden bg-[#0A101D] flex flex-col select-text"
+        className="relative w-full flex-1 overflow-hidden bg-slate-50 dark:bg-[#0A101D] text-slate-900 dark:text-white flex flex-col select-text transition-colors"
       >
         {/* LIVE CARD PREVIEW MODE */}
         {viewMode === 'card' ? (
-          <div className="w-full flex-1 overflow-y-auto p-3 bg-[#070D18]">
+          <div className="w-full flex-1 overflow-y-auto p-3 bg-slate-100 dark:bg-[#070D18] transition-colors">
             <AvtiveDigitalCard
               profile={liveProfile}
               canEdit={true}
@@ -1342,13 +1342,13 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
         ) : (
           <>
             {/* Top Interactive Banner Header */}
-            <div className="relative h-32 w-full shrink-0 overflow-hidden bg-[#0D1626]">
+            <div className="relative h-32 w-full shrink-0 overflow-hidden bg-slate-200 dark:bg-[#0D1626] transition-colors">
               <img
                 src={coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop'}
                 alt="Profile Cover"
                 className="w-full h-full object-cover opacity-80"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0A101D]/50 to-[#0A101D]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-slate-900/30 dark:via-[#0A101D]/50 to-slate-50 dark:to-[#0A101D]" />
 
               {/* Cover Upload Button */}
               <button
@@ -1365,7 +1365,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               <div className="absolute bottom-2 left-3 right-3 flex items-center gap-2.5">
                 <div 
                   onClick={() => avatarInputRef.current?.click()}
-                  className="relative w-12 h-12 rounded-full border-2 border-cyan-400 overflow-hidden bg-[#131F33] shrink-0 shadow-lg cursor-pointer group"
+                  className="relative w-12 h-12 rounded-full border-2 border-cyan-400 overflow-hidden bg-slate-100 dark:bg-[#131F33] shrink-0 shadow-lg cursor-pointer group"
                   title="Change Profile Photo"
                 >
                   <img
@@ -1387,7 +1387,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   </p>
                   <div className="flex items-center gap-1 mt-0.5 overflow-hidden">
                     {skills.slice(0, 3).map((s, idx) => (
-                      <span key={idx} className="text-[8px] px-1.5 py-0.2 rounded bg-black/50 text-slate-300 border border-white/10 shrink-0">
+                      <span key={idx} className="text-[8px] px-1.5 py-0.2 rounded bg-black/50 text-slate-200 border border-white/10 shrink-0">
                         {s}
                       </span>
                     ))}
@@ -1413,10 +1413,10 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               {/* LAYER 2: DRAWER VIEW (14-section quick toggle list) */}
               {(viewMode === 'drawer' || viewMode === 'split') && (
                 <div 
-                  className="h-full overflow-y-auto bg-[#0A1322]/85 backdrop-blur-2xl border-l border-[#2B4060]/50 p-2.5 space-y-1.5 scrollbar-none overscroll-contain"
+                  className="h-full overflow-y-auto bg-slate-100/90 dark:bg-[#0A1322]/85 backdrop-blur-2xl border-l border-slate-200 dark:border-[#2B4060]/50 p-2.5 space-y-1.5 scrollbar-none overscroll-contain transition-colors"
                   style={{ width: viewMode === 'split' ? `${100 - sliderPos}%` : '100%' }}
                 >
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1 pb-1">
+                  <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1 pb-1">
                     Sections &amp; Controls
                   </div>
 
@@ -1434,14 +1434,14 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                         }}
                         className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl border transition-all cursor-pointer backdrop-blur-md ${
                           isSelected
-                            ? 'bg-[#152338] border-cyan-400 shadow-md shadow-cyan-500/15 ring-1 ring-cyan-400/40'
-                            : 'bg-[#0E1B2D]/60 hover:bg-[#132238] border-[#223754]/60'
+                            ? 'bg-cyan-50 dark:bg-[#152338] border-cyan-500 dark:border-cyan-400 shadow-md shadow-cyan-500/15 ring-1 ring-cyan-500/40 dark:ring-cyan-400/40'
+                            : 'bg-white/80 dark:bg-[#0E1B2D]/60 hover:bg-slate-50 dark:hover:bg-[#132238] border-slate-200 dark:border-[#223754]/60'
                         }`}
                       >
                         {/* Left: Icon & Label */}
                         <div className="flex items-center gap-2 min-w-0">
-                          <IconComponent className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-cyan-400' : 'text-slate-300'}`} />
-                          <span className={`text-[11px] font-semibold truncate ${isSelected ? 'text-white' : 'text-slate-200'}`}>
+                          <IconComponent className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-600 dark:text-slate-300'}`} />
+                          <span className={`text-[11px] font-semibold truncate ${isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-200'}`}>
                             {sec.label}
                           </span>
                         </div>
@@ -1456,14 +1456,14 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                                 handleToggleSectionVisibility(sec.key);
                               }}
                               className={`p-1 rounded-lg transition-colors cursor-pointer ${
-                                isVis ? 'text-cyan-400 hover:bg-cyan-500/20' : 'text-slate-500 hover:text-amber-400 hover:bg-amber-500/20'
+                                isVis ? 'text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20' : 'text-slate-400 hover:text-amber-500 hover:bg-amber-500/20'
                               }`}
                               title={isVis ? 'Hide section' : 'Show section'}
                             >
-                              {isVis ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5 text-amber-400" />}
+                              {isVis ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5 text-amber-500" />}
                             </button>
                           )}
-                          <ChevronRight className="w-3 h-3 text-slate-500" />
+                          <ChevronRight className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                         </div>
                       </div>
                     );
@@ -1481,8 +1481,8 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   className="absolute top-0 bottom-0 -ml-3 w-6 flex flex-col items-center justify-center z-40 cursor-ew-resize group select-none touch-none"
                 >
                   <div className="w-[2px] h-full bg-gradient-to-b from-cyan-400/30 via-cyan-300 to-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
-                  <div className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#081120] border border-cyan-400 ring-2 ring-cyan-400/25 flex items-center justify-center shadow-lg">
-                    <div className="w-2.5 h-[2px] bg-cyan-300 rounded-full" />
+                  <div className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white dark:bg-[#081120] border border-cyan-500 dark:border-cyan-400 ring-2 ring-cyan-500/25 flex items-center justify-center shadow-lg">
+                    <div className="w-2.5 h-[2px] bg-cyan-500 dark:bg-cyan-300 rounded-full" />
                   </div>
                 </div>
               )}
@@ -1492,7 +1492,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
         )}
 
         {/* BOTTOM ACTION BAR */}
-        <div className="relative z-40 w-full bg-[#080E1A]/95 backdrop-blur-md border-t border-[#1F334F] py-2 px-3 flex items-center justify-between gap-2 shrink-0">
+        <div className="relative z-40 w-full bg-white/95 dark:bg-[#080E1A]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#1F334F] py-2 px-3 flex items-center justify-between gap-2 shrink-0 transition-colors">
           <button
             type="button"
             onClick={handleSaveTrigger}
@@ -1520,11 +1520,11 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               setActiveSection(DRAWER_SECTIONS[nextIdx].key);
               setViewMode('form');
             }}
-            className="px-3 py-2 rounded-xl text-xs font-bold bg-[#142338] hover:bg-[#1C3250] text-slate-200 border border-[#274164] transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0"
+            className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-[#142338] dark:hover:bg-[#1C3250] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#274164] transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0"
             title="Go to next section"
           >
             <span>Next</span>
-            <ChevronRight className="w-3.5 h-3.5 text-cyan-400" />
+            <ChevronRight className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
           </button>
 
           {/* Minimal Dark Mode Toggle Button */}
@@ -1533,12 +1533,12 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             onClick={toggleDarkMode}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="p-2 rounded-xl bg-[#142338] hover:bg-[#1C3250] text-slate-200 border border-[#274164] transition-all flex items-center justify-center cursor-pointer shrink-0"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#142338] dark:hover:bg-[#1C3250] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#274164] transition-all flex items-center justify-center cursor-pointer shrink-0"
           >
             {isDark ? (
               <Sun className="w-3.5 h-3.5 text-amber-400" />
             ) : (
-              <Moon className="w-3.5 h-3.5 text-slate-300" />
+              <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
             )}
           </button>
         </div>
