@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProfileData } from '@/types/profile';
 import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditorContext';
+import { usePortfolioTheme } from '@/context/ThemeContext';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
 import { DesktopProfileContent } from '@/components/profiles/DesktopProfileContent';
 import { MobileSliderProfileView } from '@/components/profiles/MobileSliderProfileView';
@@ -20,7 +21,10 @@ import {
   Battery,
   LogOut,
   Menu,
-  X
+  X,
+  ArrowRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface EditProfileClientProps {
@@ -38,9 +42,12 @@ export function EditProfileClient({ initialProfile, userProfiles }: EditProfileC
 
 function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileClientProps) {
   const router = useRouter();
+  const { isDark, toggleDarkMode } = usePortfolioTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { 
     profile, 
+    activeSection,
+    setActiveSection,
     isSaving, 
     saveProfile, 
     handleSaveChanges, 
@@ -89,6 +96,31 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
     }
   };
 
+  const handleTopBarNext = async () => {
+    try {
+      await onGlobalSave();
+    } catch (err) {
+      console.error('Error auto-saving before next section:', err);
+    }
+    const sectionKeys = [
+      'profile',
+      'personalDetails',
+      'skills',
+      'projects',
+      'education',
+      'contactInfo',
+      'socialLinks',
+      'experience',
+      'enhanceProfile'
+    ];
+    const currentIndex = sectionKeys.indexOf(activeSection);
+    if (currentIndex >= 0 && currentIndex < sectionKeys.length - 1) {
+      setActiveSection(sectionKeys[currentIndex + 1]);
+    } else {
+      router.push(`/profile/${identifier}`);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
@@ -103,7 +135,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center bg-[#070D18] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-auto">
+    <div className="min-h-screen w-full flex flex-col justify-center bg-slate-100 dark:bg-[#070D18] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-auto transition-colors">
       
       {/* Toast Notification Banner */}
       {toastMessage && (
@@ -123,10 +155,10 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[560px] max-w-[1240px] flex flex-col rounded-3xl border border-white/10 bg-[#0A101E] shadow-2xl shadow-black/60 overflow-hidden"
+          className="flex-1 min-w-[560px] max-w-[1240px] flex flex-col rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors"
         >
           {/* Desktop Frame Window Bar */}
-          <div className="w-full bg-[#0E1528] border-b border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0">
+          <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
             
             {/* macOS Window Controls + Hamburger Toggle Button */}
             <div className="flex items-center gap-3 shrink-0">
@@ -142,12 +174,12 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 onClick={() => setIsSidebarOpen(prev => !prev)}
                 aria-label={isSidebarOpen ? "Close section sidebar" : "Open section sidebar"}
                 title={isSidebarOpen ? "Close Sections Menu" : "Open Sections Menu"}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition-all cursor-pointer active:scale-95 shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 dark:border-white/10 transition-all cursor-pointer active:scale-95"
               >
                 {isSidebarOpen ? (
-                  <X className="w-3.5 h-3.5 text-cyan-400" />
+                  <X className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
                 ) : (
-                  <Menu className="w-3.5 h-3.5 text-cyan-400" />
+                  <Menu className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
                 )}
                 <span className="hidden sm:inline text-[11px] font-medium">Sections</span>
               </button>
@@ -159,7 +191,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 href={`/profile/${identifier}`}
                 aria-label="Return to Public Profile"
                 title="Return to Public Profile"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
@@ -181,7 +213,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 disabled={isSaving}
                 aria-label="Save All"
                 title="Save All"
-                className="p-1.5 px-3 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all active:scale-95"
+                className="p-1.5 px-3 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white shadow-2xs dark:shadow-md dark:shadow-cyan-500/25 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all active:scale-95"
               >
                 {isSaving ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -191,15 +223,42 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 <span className="hidden sm:inline">Save</span>
               </button>
 
+              {/* Next Button */}
+              <button
+                type="button"
+                onClick={handleTopBarNext}
+                aria-label="Next"
+                title="Next section"
+                className="p-1.5 px-3 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-2xs dark:bg-white/10 dark:hover:bg-white/15 dark:text-white dark:border-white/10 dark:shadow-none flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shrink-0"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ArrowRight className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+              </button>
+
+              {/* Minimal Light/Dark Theme Toggle: icon only, no text */}
+              <button
+                type="button"
+                onClick={toggleDarkMode}
+                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer shrink-0"
+              >
+                {isDark ? (
+                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                ) : (
+                  <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
+                )}
+              </button>
+
               <Link
                 href={`/profile/${identifier}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Live URL"
                 title="Open public profile in new tab"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 border border-white/10 transition-colors shrink-0"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors shrink-0"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
+                <ExternalLink className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
               </Link>
 
               <button
@@ -207,7 +266,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 onClick={handleLogout}
                 aria-label="Logout"
                 title="Sign Out"
-                className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/15 border border-rose-500/20 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/15 border border-rose-200 dark:border-rose-500/20 transition-colors cursor-pointer shrink-0"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>

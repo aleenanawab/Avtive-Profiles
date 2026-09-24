@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Camera, 
   Plus, 
@@ -20,9 +21,13 @@ import {
   RotateCcw, 
   Save, 
   CheckCircle2, 
-  Smartphone 
+  Smartphone,
+  ArrowRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
+import { usePortfolioTheme } from '@/context/ThemeContext';
 import { PhonePreview } from '@/components/PhonePreview';
 import { 
   ProfileTheme, 
@@ -39,6 +44,8 @@ export interface DesktopProfileContentProps {
 }
 
 export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfileContentProps) {
+  const router = useRouter();
+  const { isDark, toggleDarkMode } = usePortfolioTheme();
   const { 
     profile, 
     setProfile, 
@@ -49,9 +56,36 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
     saveProfile,
     showToast,
     activeTheme,
-    setActiveTheme,
-    isDark
+    setActiveTheme
   } = useProfileEditor();
+
+  const handleNext = async () => {
+    try {
+      await saveProfile();
+    } catch (e) {
+      console.error('Error saving before next section:', e);
+    }
+    const sectionKeys = [
+      'profile',
+      'personalDetails',
+      'skills',
+      'projects',
+      'education',
+      'contactInfo',
+      'socialLinks',
+      'experience',
+      'enhanceProfile'
+    ];
+    const currentIndex = sectionKeys.indexOf(activeSection);
+    if (currentIndex >= 0 && currentIndex < sectionKeys.length - 1) {
+      setActiveSection(sectionKeys[currentIndex + 1]);
+    } else {
+      const targetSlug = profile.slug || profile.id;
+      if (targetSlug) {
+        router.push(`/profile/${targetSlug}`);
+      }
+    }
+  };
 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
@@ -319,17 +353,17 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
   };
 
   return (
-    <div className="flex-1 h-full flex overflow-hidden bg-[#080D1A]">
+    <div className="flex-1 h-full flex overflow-hidden bg-slate-50 dark:bg-[#080D1A] transition-colors">
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* LEFT / CENTER: Active Section Edit Panel (Scrolls independently)           */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex-1 h-full overflow-y-auto p-5 sm:p-7 xl:p-8 scrollbar-thin scrollbar-thumb-white/10 space-y-6">
+      <div className="flex-1 h-full overflow-y-auto p-5 sm:p-7 xl:p-8 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-white/10 space-y-6">
         
-        {/* Top Section Header with Title, Visibility Toggle & Quick Save */}
-        <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10">
+        {/* Top Section Header with Title, Visibility Toggle, Save, Next & Theme Toggle */}
+        <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10">
           <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight capitalize">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight capitalize">
               {activeSection === 'profile' && 'Profile & Identity'}
               {activeSection === 'personalDetails' && 'Personal Details'}
               {activeSection === 'skills' && 'Skills & Expertise'}
@@ -345,12 +379,9 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
               {activeSection === 'security' && 'Security & Verification'}
               {activeSection === 'settings' && 'Settings & Profile Configuration'}
             </h1>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Customize your digital card details. All updates sync to the live preview instantly.
-            </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Section Visibility Toggle for Active Section */}
             {['profile', 'personalDetails', 'skills', 'projects', 'education', 'contactInfo', 'socialLinks', 'experience', 'enhanceProfile'].includes(activeSection) && (
               <button
@@ -359,32 +390,59 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                 title={(profile.sectionVisibility?.[activeSection] !== false) ? "Section is visible on card (Click to hide)" : "Section is hidden from card (Click to show)"}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                   (profile.sectionVisibility?.[activeSection] !== false)
-                    ? 'bg-white/5 hover:bg-white/10 text-slate-200 border-white/10'
-                    : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border-amber-500/30'
+                    ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-2xs dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 dark:border-white/10 dark:shadow-none'
+                    : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border-amber-500/30'
                 }`}
               >
                 {(profile.sectionVisibility?.[activeSection] !== false) ? (
                   <>
-                    <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                    <Eye className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                     <span className="hidden sm:inline">Visible</span>
                   </>
                 ) : (
                   <>
-                    <EyeOff className="w-3.5 h-3.5 text-amber-400" />
+                    <EyeOff className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                     <span className="hidden sm:inline">Hidden</span>
                   </>
                 )}
               </button>
             )}
 
+            {/* Save Button */}
             <button
               type="button"
               onClick={() => saveProfile()}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white shadow-2xs dark:shadow-md dark:shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50"
             >
               {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              <span>Save Section</span>
+              <span>Save</span>
+            </button>
+
+            {/* Next Button */}
+            <button
+              type="button"
+              onClick={handleNext}
+              aria-label="Next step"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-2xs dark:bg-white/10 dark:hover:bg-white/15 dark:text-white dark:border-white/10 dark:shadow-none transition-all cursor-pointer"
+            >
+              <span>Next</span>
+              <ArrowRight className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+            </button>
+
+            {/* Light / Dark Mode Toggle (Minimal icon only) */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer shrink-0"
+            >
+              {isDark ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
+              )}
             </button>
           </div>
         </div>
@@ -396,8 +454,8 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
           <div className="space-y-6">
             
             {/* Cover Banner & Avatar Upload Card */}
-            <div className="rounded-2xl bg-[#0E1526] border border-white/10 overflow-hidden shadow-sm">
-              <div className="relative h-36 sm:h-44 w-full bg-slate-800">
+            <div className="rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xs dark:shadow-sm transition-colors">
+              <div className="relative h-36 sm:h-44 w-full bg-slate-200 dark:bg-slate-800">
                 <img 
                   src={profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'} 
                   alt="Cover" 
@@ -422,7 +480,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
 
               <div className="p-4 sm:p-5 relative -mt-12 flex items-end justify-between gap-4">
                 <div className="flex items-end gap-3.5">
-                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-[#0E1526] overflow-hidden bg-slate-800 shadow-xl shrink-0 group">
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-[#0E1526] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-xl shrink-0 group">
                     <img 
                       src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'} 
                       alt="Avatar" 
@@ -445,8 +503,8 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                   </div>
 
                   <div className="pb-1">
-                    <h2 className="text-base sm:text-lg font-bold text-white">{profile.name}</h2>
-                    <p className="text-xs text-cyan-400 font-medium">@{profile.username || profile.slug}</p>
+                    <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{profile.name}</h2>
+                    <p className="text-xs text-cyan-600 dark:text-cyan-400 font-medium">@{profile.username || profile.slug}</p>
                   </div>
                 </div>
 
@@ -454,7 +512,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                   <button
                     type="button"
                     onClick={() => avatarInputRef.current?.click()}
-                    className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white border border-white/10 transition-colors"
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
                   >
                     Change Photo
                   </button>
@@ -463,25 +521,23 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
             </div>
 
             {/* Core Identity Inputs Form */}
-            <div className="p-5 rounded-2xl bg-[#0E1526] border border-white/10 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Basic Details</h3>
-              
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 space-y-4 shadow-2xs dark:shadow-none transition-colors">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Display Name</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
                   <input
                     type="text"
                     value={profile.name || ''}
                     onChange={(e) => updateField('name', e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#080D1A] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
                     placeholder="e.g. Syed Mesum Raza"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Username / Custom URL Handle</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-xs text-slate-500">@</span>
+                    <span className="absolute left-3.5 top-2.5 text-xs text-slate-400 dark:text-slate-500">@</span>
                     <input
                       type="text"
                       value={profile.username || profile.slug || ''}
@@ -490,7 +546,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                         updateField('username', val);
                         updateField('slug', val);
                       }}
-                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-[#080D1A] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
+                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
                       placeholder="username"
                     />
                   </div>
@@ -498,7 +554,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Professional Title / Headline</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Professional Title</label>
                 <input
                   type="text"
                   value={profile.professionalTitle || profile.designation || ''}
@@ -506,13 +562,13 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                     updateField('professionalTitle', e.target.value);
                     updateField('designation', e.target.value);
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080D1A] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
                   placeholder="e.g. Senior Full-Stack Engineer"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Short Bio / Pitch</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Bio</label>
                 <textarea
                   rows={3}
                   value={profile.bio || profile.shortBio || ''}
@@ -520,13 +576,13 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                     updateField('bio', e.target.value);
                     updateField('shortBio', e.target.value);
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080D1A] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
                   placeholder="Tell people who you are and what you build..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full About Summary</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">About</label>
                 <textarea
                   rows={4}
                   value={profile.about || profile.fullBio || ''}
@@ -534,8 +590,8 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                     updateField('about', e.target.value);
                     updateField('fullBio', e.target.value);
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080D1A] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
-                  placeholder="Comprehensive background, achievements, and technical philosophy..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+                  placeholder="Comprehensive background, achievements, and details..."
                 />
               </div>
             </div>

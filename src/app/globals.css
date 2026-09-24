@@ -125,7 +125,13 @@ html:not(.dark) .figma-pill-secondary:hover {
 
 /* FIGMA SLATE BLUE PROFILE EDITOR THEME TOKENS */
 .figma-editor-bg {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
+
+.dark .figma-editor-bg {
   background-color: #0B131E;
+  color: #FFFFFF;
 }
 
 .figma-slate-card {

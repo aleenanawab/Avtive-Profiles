@@ -378,7 +378,6 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <User className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Profile &amp; Identity</span>
               </span>
-              <span className="text-[10px] text-cyan-400 font-mono">Syncs to live card</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -405,7 +404,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Professional Title / Designation</label>
+              <label className="text-[10px] font-semibold text-slate-300">Professional Title</label>
               <input
                 type="text"
                 value={professionalTitle}
@@ -430,23 +429,23 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">Short Bio / Tagline</label>
+              <label className="text-[10px] font-semibold text-slate-300">Bio</label>
               <textarea
                 rows={2}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Brief summary displayed on pass header..."
+                placeholder="Brief summary..."
                 className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold text-slate-300">About Me (Full Story)</label>
+              <label className="text-[10px] font-semibold text-slate-300">About</label>
               <textarea
                 rows={3}
                 value={about || ''}
                 onChange={(e) => setAbout(e.target.value)}
-                placeholder="Detailed background, goals, and expertise..."
+                placeholder="Detailed background..."
                 className="w-full px-2.5 py-1.5 rounded-lg bg-[#070D18] border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
               />
             </div>
