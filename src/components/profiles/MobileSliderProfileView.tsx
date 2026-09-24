@@ -47,6 +47,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
+import { usePortfolioTheme } from '@/context/ThemeContext';
 import { 
   ProjectItem, 
   ExperienceItem, 
@@ -93,8 +94,6 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     setActiveSection,
     activeTheme,
     setActiveTheme,
-    isDark,
-    setIsDark,
     sharingSettings,
     toggleVisibilityField,
     updateField,
@@ -103,6 +102,8 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     isUploadingAvatar,
     isUploadingCover
   } = useProfileEditor();
+
+  const { isDark, toggleDarkMode } = usePortfolioTheme();
 
   // Mode: 'split' (slider), 'form' (full editor), 'drawer' (sections drawer), 'card' (live card preview)
   const [viewMode, setViewMode] = useState<'split' | 'form' | 'drawer' | 'card'>('form');
@@ -378,6 +379,19 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <User className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Profile &amp; Identity</span>
               </span>
+              <button
+                type="button"
+                onClick={toggleDarkMode}
+                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                className="p-1 rounded-md text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer shrink-0 flex items-center justify-center"
+              >
+                {isDark ? (
+                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                ) : (
+                  <Moon className="w-3.5 h-3.5 text-slate-300" />
+                )}
+              </button>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -1220,68 +1234,85 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       />
 
       {/* Top Mobile Mode Switcher Bar */}
-      <div className="w-full px-3 py-1.5 flex items-center justify-between text-[11px] text-slate-300 bg-[#0C1424]/80 backdrop-blur-xl border-b border-white/10 shrink-0">
-        <span className="flex items-center gap-1 font-bold text-cyan-400">
+      <div className="w-full px-2.5 py-1.5 flex items-center justify-between text-[11px] text-slate-300 bg-[#0C1424]/80 backdrop-blur-xl border-b border-white/10 shrink-0">
+        <span className="flex items-center gap-1 font-bold text-cyan-400 shrink-0">
           <Smartphone className="w-3.5 h-3.5" />
           <span className="capitalize">{activeSection}</span>
         </span>
 
-        {/* 4 View Presets: Form, Split, Drawer, Live Card */}
-        <div className="flex items-center gap-1 bg-[#070D18]/80 backdrop-blur-md border border-cyan-500/30 rounded-lg p-0.5 shadow-inner">
-          <button
-            type="button"
-            onClick={() => setViewMode('form')}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-              viewMode === 'form'
-                ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                : 'text-slate-400 hover:text-white'
-            }`}
-            title="Full Edit Form"
-          >
-            <Pencil className="w-2.5 h-2.5" />
-            <span>Form</span>
-          </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* 4 View Presets: Form, Split, Drawer, Live Card */}
+          <div className="flex items-center gap-0.5 bg-[#070D18]/80 backdrop-blur-md border border-cyan-500/30 rounded-lg p-0.5 shadow-inner">
+            <button
+              type="button"
+              onClick={() => setViewMode('form')}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                viewMode === 'form'
+                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Full Edit Form"
+            >
+              <Pencil className="w-2.5 h-2.5" />
+              <span>Form</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setViewMode('split')}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-              viewMode === 'split'
-                ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                : 'text-slate-400 hover:text-white'
-            }`}
-            title="Split Slider View"
-          >
-            <Columns className="w-2.5 h-2.5" />
-            <span>Split</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('split')}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                viewMode === 'split'
+                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Split Slider View"
+            >
+              <Columns className="w-2.5 h-2.5" />
+              <span>Split</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setViewMode('drawer')}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-              viewMode === 'drawer'
-                ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                : 'text-slate-400 hover:text-white'
-            }`}
-            title="Sections Drawer"
-          >
-            <Layers className="w-2.5 h-2.5" />
-            <span>Menu</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('drawer')}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                viewMode === 'drawer'
+                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Sections Drawer"
+            >
+              <Layers className="w-2.5 h-2.5" />
+              <span>Menu</span>
+            </button>
 
+            <button
+              type="button"
+              onClick={() => setViewMode('card')}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                viewMode === 'card'
+                  ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Live Pass Preview"
+            >
+              <Eye className="w-2.5 h-2.5" />
+              <span>Pass</span>
+            </button>
+          </div>
+
+          {/* Minimal Dark Mode Toggle Button */}
           <button
             type="button"
-            onClick={() => setViewMode('card')}
-            className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-              viewMode === 'card'
-                ? 'bg-gradient-to-r from-cyan-500/90 to-blue-600/90 text-white shadow-xs'
-                : 'text-slate-400 hover:text-white'
-            }`}
-            title="Live Pass Preview"
+            onClick={toggleDarkMode}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="p-1 rounded-md text-slate-300 hover:text-white bg-[#070D18]/80 hover:bg-[#132238] border border-cyan-500/30 transition-colors cursor-pointer shrink-0 flex items-center justify-center shadow-xs"
           >
-            <Eye className="w-2.5 h-2.5" />
-            <span>Pass</span>
+            {isDark ? (
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Moon className="w-3.5 h-3.5 text-slate-300" />
+            )}
           </button>
         </div>
       </div>
@@ -1461,7 +1492,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
         )}
 
         {/* BOTTOM ACTION BAR */}
-        <div className="relative z-40 w-full bg-[#080E1A]/95 backdrop-blur-md border-t border-[#1F334F] py-2 px-3 flex items-center justify-between gap-2.5 shrink-0">
+        <div className="relative z-40 w-full bg-[#080E1A]/95 backdrop-blur-md border-t border-[#1F334F] py-2 px-3 flex items-center justify-between gap-2 shrink-0">
           <button
             type="button"
             onClick={handleSaveTrigger}
@@ -1489,11 +1520,26 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               setActiveSection(DRAWER_SECTIONS[nextIdx].key);
               setViewMode('form');
             }}
-            className="px-3 py-2 rounded-xl text-xs font-bold bg-[#142338] hover:bg-[#1C3250] text-slate-200 border border-[#274164] transition-all flex items-center justify-center gap-1 cursor-pointer"
+            className="px-3 py-2 rounded-xl text-xs font-bold bg-[#142338] hover:bg-[#1C3250] text-slate-200 border border-[#274164] transition-all flex items-center justify-center gap-1 cursor-pointer shrink-0"
             title="Go to next section"
           >
             <span>Next</span>
             <ChevronRight className="w-3.5 h-3.5 text-cyan-400" />
+          </button>
+
+          {/* Minimal Dark Mode Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleDarkMode}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="p-2 rounded-xl bg-[#142338] hover:bg-[#1C3250] text-slate-200 border border-[#274164] transition-all flex items-center justify-center cursor-pointer shrink-0"
+          >
+            {isDark ? (
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Moon className="w-3.5 h-3.5 text-slate-300" />
+            )}
           </button>
         </div>
 
