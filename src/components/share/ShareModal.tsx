@@ -218,16 +218,16 @@ export function ShareModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left font-sans">
-      <div className="relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl bg-[#121216] border border-white/10 text-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl bg-white dark:bg-[#121216] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
         
         {/* Modal Header & Progress Stepper */}
-        <div className="p-4 sm:p-5 border-b border-white/10 shrink-0 space-y-3">
+        <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-white/10 shrink-0 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-white text-black font-bold text-xs flex items-center justify-center">
+              <span className="w-6 h-6 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs flex items-center justify-center">
                 {currentStep}
               </span>
-              <span className="text-xs font-semibold text-white/80">
+              <span className="text-xs font-semibold text-slate-700 dark:text-white/80">
                 Step {currentStep} of 4: {
                   currentStep === 1 ? 'Choose Role' :
                   currentStep === 2 ? 'Visibility Controls' :
@@ -239,7 +239,7 @@ export function ShareModal({
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/60 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -251,7 +251,7 @@ export function ShareModal({
               <div
                 key={s}
                 className={`h-1.5 rounded-full transition-all ${
-                  s <= currentStep ? 'bg-white' : 'bg-white/15'
+                  s <= currentStep ? 'bg-slate-900 dark:bg-white' : 'bg-slate-200 dark:bg-white/15'
                 }`}
               />
             ))}
@@ -273,10 +273,10 @@ export function ShareModal({
                 className="space-y-4"
               >
                 <div className="space-y-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-white">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                     Which role profile you want to share?
                   </h2>
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-slate-500 dark:text-white/60">
                     Select the active persona or profile pass you wish to export and configure.
                   </p>
                 </div>
@@ -290,26 +290,26 @@ export function ShareModal({
                         onClick={() => setSelectedProfile(r)}
                         className={`p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                           isSelected
-                            ? 'bg-white/10 border-white ring-1 ring-white/30 shadow-md'
-                            : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/[0.07]'
+                            ? 'bg-cyan-50 dark:bg-white/10 border-cyan-500 dark:border-white ring-1 ring-cyan-500/30 dark:ring-white/30 shadow-md'
+                            : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-100 dark:hover:bg-white/[0.07]'
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <img
                             src={r.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
                             alt={r.name}
-                            className="w-10 h-10 rounded-xl object-cover border border-white/15 shrink-0"
+                            className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-white/15 shrink-0"
                           />
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-bold text-white truncate">
+                              <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">
                                 {r.profileName || r.name}
                               </h4>
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/80 font-mono">
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-white/80 font-mono">
                                 {r.type || 'role'}
                               </span>
                             </div>
-                            <p className="text-xs text-white/60 truncate">
+                            <p className="text-xs text-slate-500 dark:text-white/60 truncate">
                               {r.profession || r.designation || 'Professional Profile'}
                             </p>
                           </div>
@@ -318,8 +318,8 @@ export function ShareModal({
                         <div
                           className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
                             isSelected
-                              ? 'bg-white border-white text-black'
-                              : 'border-white/30 bg-black/20'
+                              ? 'bg-slate-900 dark:bg-white border-slate-900 dark:border-white text-white dark:text-black'
+                              : 'border-slate-300 dark:border-white/30 bg-white dark:bg-black/20'
                           }`}
                         >
                           {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -342,10 +342,10 @@ export function ShareModal({
                 className="space-y-4"
               >
                 <div className="space-y-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-white">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                     What do you want to show?
                   </h2>
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-slate-500 dark:text-white/60">
                     Itemized privacy toggles for every module on &ldquo;{selectedProfile.profileName || selectedProfile.name}&rdquo;.
                   </p>
                 </div>
@@ -358,19 +358,19 @@ export function ShareModal({
                     return (
                       <div
                         key={mod.id}
-                        className="p-3 sm:p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-3 hover:bg-white/[0.07] transition-colors"
+                        className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 hover:bg-slate-100 dark:hover:bg-white/[0.07] transition-colors"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                            isVisible ? 'bg-white/15 text-white' : 'bg-white/5 text-white/30'
+                            isVisible ? 'bg-cyan-100 text-cyan-700 dark:bg-white/15 dark:text-white' : 'bg-slate-200 text-slate-400 dark:bg-white/5 dark:text-white/30'
                           }`}>
                             <Icon className="w-4 h-4" />
                           </div>
                           <div className="min-w-0">
-                            <h4 className="text-xs font-bold text-white truncate">
+                            <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                               {mod.label}
                             </h4>
-                            <p className="text-[11px] text-white/50 truncate">
+                            <p className="text-[11px] text-slate-500 dark:text-white/50 truncate">
                               {mod.description}
                             </p>
                           </div>
@@ -381,7 +381,7 @@ export function ShareModal({
                           type="button"
                           onClick={() => handleToggle(mod.key)}
                           className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                            isVisible ? 'bg-[#10B981]' : 'bg-[#2A2E39]'
+                            isVisible ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-[#2A2E39]'
                           }`}
                           role="switch"
                           aria-checked={isVisible}
@@ -391,7 +391,7 @@ export function ShareModal({
                             className={`pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out ${
                               isVisible
                                 ? 'translate-x-5 bg-white'
-                                : 'translate-x-0 bg-white/50'
+                                : 'translate-x-0 bg-white/70 dark:bg-white/50'
                             }`}
                           />
                         </button>
@@ -413,17 +413,17 @@ export function ShareModal({
                 className="space-y-4"
               >
                 <div className="space-y-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-white">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                     Reorder Sections
                   </h2>
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-slate-500 dark:text-white/60">
                     Arrange the visual sequence of active sections for your public pass.
                   </p>
                 </div>
 
                 {/* Visible Sections List */}
                 <div className="space-y-2">
-                  <div className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
+                  <div className="text-[11px] font-mono text-slate-500 dark:text-white/40 uppercase tracking-wider">
                     Visible Sections ({visibleSections.length})
                   </div>
 
@@ -435,14 +435,14 @@ export function ShareModal({
                     return (
                       <div
                         key={id}
-                        className="p-3 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-between gap-2"
+                        className="p-3 rounded-2xl bg-slate-50 dark:bg-white/10 border border-slate-200 dark:border-white/15 flex items-center justify-between gap-2"
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="w-5 h-5 rounded-full bg-white/15 text-[11px] font-mono flex items-center justify-center text-white/70">
+                          <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/15 text-[11px] font-mono flex items-center justify-center text-slate-700 dark:text-white/70">
                             {index + 1}
                           </span>
-                          <Icon className="w-4 h-4 text-white/80" />
-                          <span className="text-xs font-bold text-white">{mod.label}</span>
+                          <Icon className="w-4 h-4 text-slate-700 dark:text-white/80" />
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">{mod.label}</span>
                         </div>
 
                         <div className="flex items-center gap-1">
@@ -450,7 +450,7 @@ export function ShareModal({
                             type="button"
                             onClick={() => handleMove(sectionOrder.indexOf(id), 'up')}
                             disabled={index === 0}
-                            className="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 cursor-pointer"
+                            className="p-1 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white disabled:opacity-30 cursor-pointer"
                             title="Move Up"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
@@ -459,7 +459,7 @@ export function ShareModal({
                             type="button"
                             onClick={() => handleMove(sectionOrder.indexOf(id), 'down')}
                             disabled={index === visibleSections.length - 1}
-                            className="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white disabled:opacity-30 cursor-pointer"
+                            className="p-1 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white disabled:opacity-30 cursor-pointer"
                             title="Move Down"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
@@ -472,8 +472,8 @@ export function ShareModal({
 
                 {/* Hidden Sections List */}
                 {hiddenSections.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-white/10">
-                    <div className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
+                  <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10">
+                    <div className="text-[11px] font-mono text-slate-400 dark:text-white/40 uppercase tracking-wider">
                       Hidden Sections ({hiddenSections.length})
                     </div>
                     {hiddenSections.map((id) => {
@@ -482,7 +482,7 @@ export function ShareModal({
                       return (
                         <div
                           key={id}
-                          className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between text-white/40 text-xs"
+                          className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 flex items-center justify-between text-slate-500 dark:text-white/40 text-xs"
                         >
                           <div className="flex items-center gap-2">
                             <EyeOff className="w-3.5 h-3.5" />
@@ -508,38 +508,38 @@ export function ShareModal({
                 className="space-y-4"
               >
                 <div className="space-y-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-white">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                     Share Link Generation
                   </h2>
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-slate-500 dark:text-white/60">
                     Your customized digital pass is generated and ready to share.
                   </p>
                 </div>
 
                 {/* Preview Card */}
-                <div className="p-4 rounded-2xl bg-white/10 border border-white/15 space-y-3">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/10 border border-slate-200 dark:border-white/15 space-y-3">
                   <div className="flex items-center gap-3">
                     <img
                       src={selectedProfile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
                       alt={selectedProfile.name}
-                      className="w-12 h-12 rounded-2xl object-cover border border-white/20 shrink-0"
+                      className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-white/20 shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-bold text-white truncate">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
                           {selectedProfile.name}
                         </h3>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/15 font-mono text-white/90">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-white/15 font-mono text-slate-700 dark:text-white/90">
                           {selectedProfile.profileName || selectedProfile.type}
                         </span>
                       </div>
-                      <p className="text-xs text-white/60 truncate">
+                      <p className="text-xs text-slate-500 dark:text-white/60 truncate">
                         {selectedProfile.profession || selectedProfile.designation || 'Professional'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-white/60 font-mono">
+                  <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-[11px] text-slate-500 dark:text-white/60 font-mono">
                     <span>Active Modules: {visibleSections.length}</span>
                     <span>Theme: {selectedProfile.theme || 'editorial'}</span>
                   </div>
@@ -547,22 +547,22 @@ export function ShareModal({
 
                 {/* Generated Unique Public Profile Link */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] font-medium text-white/70">
+                  <div className="flex items-center justify-between text-[11px] font-medium text-slate-600 dark:text-white/70">
                     <span>Public Profile URL</span>
-                    <span className="font-mono text-emerald-400 text-[10px]">avtive.profiles/{identifier}</span>
+                    <span className="font-mono text-emerald-600 dark:text-emerald-400 text-[10px]">avtive.profiles/{identifier}</span>
                   </div>
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-white/5 border border-white/15">
-                    <span className="text-xs text-white font-mono truncate flex-1 select-all">
+                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/15">
+                    <span className="text-xs text-slate-900 dark:text-white font-mono truncate flex-1 select-all">
                       {canonicalUrl}
                     </span>
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="px-3.5 py-1.5 rounded-full bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                      className="px-3.5 py-1.5 rounded-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 shadow-xs"
                     >
                       {copied ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
                           <span>Copied!</span>
                         </>
                       ) : (
@@ -576,19 +576,19 @@ export function ShareModal({
                 </div>
 
                 {/* QR Code Action Box */}
-                <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between gap-3">
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <QrCode className="w-5 h-5 text-white/80" />
+                    <QrCode className="w-5 h-5 text-slate-700 dark:text-white/80" />
                     <div>
-                      <h4 className="text-xs font-bold text-white">QR Code Pass</h4>
-                      <p className="text-[11px] text-white/50">Instant scan for mobile cards</p>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white">QR Code Pass</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-white/50">Instant scan for mobile cards</p>
                     </div>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setShowQrCode(!showQrCode)}
-                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium text-xs transition-colors cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white font-medium text-xs transition-colors cursor-pointer"
                   >
                     {showQrCode ? 'Hide QR' : 'Show QR'}
                   </button>
@@ -599,7 +599,7 @@ export function ShareModal({
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="p-4 rounded-2xl bg-white flex flex-col items-center justify-center gap-3 text-center"
+                    className="p-4 rounded-2xl bg-white border border-slate-200 dark:border-transparent flex flex-col items-center justify-center gap-3 text-center shadow-lg"
                   >
                     <img src={qrDataUrl} alt="Public Profile QR Code" className="w-48 h-48 rounded-xl" />
                     <a
@@ -619,12 +619,12 @@ export function ShareModal({
         </div>
 
         {/* Modal Action Controls Footer */}
-        <div className="p-4 sm:p-5 border-t border-white/10 shrink-0 flex items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 border-t border-slate-200 dark:border-white/10 shrink-0 flex items-center justify-between gap-3">
           {currentStep > 1 ? (
             <button
               type="button"
               onClick={() => setCurrentStep((prev) => (prev - 1) as any)}
-              className="inline-flex items-center gap-1.5 py-2.5 px-5 rounded-full bg-white/10 hover:bg-white/15 text-white font-medium text-xs border border-white/15 transition-all active:scale-[0.98] cursor-pointer"
+              className="inline-flex items-center gap-1.5 py-2.5 px-5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white dark:border-white/15 font-medium text-xs transition-all active:scale-[0.98] cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -633,7 +633,7 @@ export function ShareModal({
             <button
               type="button"
               onClick={onClose}
-              className="py-2.5 px-5 rounded-full bg-white/5 hover:bg-white/10 text-white/70 font-medium text-xs transition-all cursor-pointer"
+              className="py-2.5 px-5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-white/70 font-medium text-xs transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -643,7 +643,7 @@ export function ShareModal({
             <button
               type="button"
               onClick={() => setCurrentStep((prev) => (prev + 1) as any)}
-              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 font-bold text-xs transition-all active:scale-[0.98] shadow-md cursor-pointer"
             >
               <span>{currentStep === 1 ? 'Next: Visibility' : currentStep === 2 ? 'Next: Reorder' : 'Next: Share Link'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -653,7 +653,7 @@ export function ShareModal({
               type="button"
               onClick={handleSaveAndShare}
               disabled={isSaving}
-              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-white text-zinc-900 font-bold text-xs hover:bg-zinc-100 transition-all active:scale-[0.98] shadow-md cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 font-bold text-xs transition-all active:scale-[0.98] shadow-md cursor-pointer disabled:opacity-50"
             >
               {isSaving ? (
                 <>

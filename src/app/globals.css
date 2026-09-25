@@ -141,10 +141,21 @@ html:not(.dark) .figma-pill-secondary:hover {
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
+html:not(.dark) .figma-slate-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.06);
+}
+
 .figma-slate-card-nested {
   background-color: #0E1724;
   border: 1px solid #1C2D40;
   border-radius: 14px;
+}
+
+html:not(.dark) .figma-slate-card-nested {
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
 }
 
 .figma-slate-input {
@@ -153,6 +164,12 @@ html:not(.dark) .figma-pill-secondary:hover {
   color: #F8FAFC;
   border-radius: 12px;
   transition: all 0.15s ease;
+}
+
+html:not(.dark) .figma-slate-input {
+  background-color: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
 }
 
 .figma-slate-input:focus {
@@ -165,6 +182,10 @@ html:not(.dark) .figma-pill-secondary:hover {
   color: #64748B;
 }
 
+html:not(.dark) .figma-slate-input::placeholder {
+  color: #94A3B8;
+}
+
 .figma-slate-btn-save {
   background: #16273C;
   border: 1px solid #2C4566;
@@ -175,10 +196,22 @@ html:not(.dark) .figma-pill-secondary:hover {
   box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
 }
 
+html:not(.dark) .figma-slate-btn-save {
+  background: #0F172A;
+  border: 1px solid #1E293B;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+}
+
 .figma-slate-btn-save:hover {
   background: #1F3652;
   border-color: #3B5D8A;
   transform: translateY(-1px);
+}
+
+html:not(.dark) .figma-slate-btn-save:hover {
+  background: #1E293B;
+  border-color: #334155;
 }
 
 .figma-slate-btn-next {
@@ -191,10 +224,22 @@ html:not(.dark) .figma-pill-secondary:hover {
   box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
 }
 
+html:not(.dark) .figma-slate-btn-next {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+}
+
 .figma-slate-btn-next:hover {
   background: #1F3652;
   border-color: #3B5D8A;
   transform: translateY(-1px);
+}
+
+html:not(.dark) .figma-slate-btn-next:hover {
+  background: #E2E8F0;
+  border-color: #94A3B8;
 }
 
 .figma-slate-toggle {
@@ -215,9 +260,20 @@ html:not(.dark) .figma-pill-secondary:hover {
   transition: all 0.15s ease;
 }
 
+html:not(.dark) .figma-slate-tag {
+  background-color: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+}
+
 .figma-slate-tag:hover {
   border-color: #38BDF8;
   color: #FFFFFF;
+}
+
+html:not(.dark) .figma-slate-tag:hover {
+  border-color: #0284C7;
+  color: #0F172A;
 }
 
 html, body {
@@ -573,6 +629,11 @@ html, body {
   -webkit-backdrop-filter: blur(20px);
 }
 
+html:not(.dark) .pdf-frosted-drawer {
+  background: rgba(255, 255, 255, 0.95);
+  border-left: 1px solid #E2E8F0;
+}
+
 .pdf-chip-tag {
   background: #162438;
   border: 1px solid #283E5E;
@@ -580,9 +641,21 @@ html, body {
   transition: all 0.15s ease;
 }
 
+html:not(.dark) .pdf-chip-tag {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #1E293B;
+}
+
 .pdf-chip-tag:hover {
   border-color: rgba(34, 211, 238, 0.6);
   background: #1D304A;
 }
+
+html:not(.dark) .pdf-chip-tag:hover {
+  border-color: #0284C7;
+  background: #E2E8F0;
+}
+
 
 

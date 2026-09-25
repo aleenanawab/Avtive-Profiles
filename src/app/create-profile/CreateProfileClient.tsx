@@ -103,18 +103,18 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
       <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" />
 
       {/* Header & Step Tracker */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider mb-1">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider mb-1">
             <span>Create Profile Studio</span>
             <span>&middot;</span>
             <span>Step {step} of 2</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             {step === 1 && 'Select Profile Type'}
             {step === 2 && 'Add Profile Details'}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             {step === 1 && 'Choose between individual digital identity or team organization pass.'}
             {step === 2 && 'Configure your name, designation, bio, and avatar.'}
           </p>
@@ -126,7 +126,7 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
             <button
               type="button"
               onClick={() => setStep((s) => (s - 1) as any)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-300 transition-colors"
             >
               Back
             </button>
@@ -156,7 +156,7 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
       </div>
 
       {errorMessage && (
-        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
@@ -168,18 +168,18 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
           <div
             onClick={() => setProfileType('individual')}
             className={`p-6 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between ${
-              profileType === 'individual' ? 'bg-cyan-950/20 border-cyan-400 shadow-lg ring-1 ring-cyan-500/40' : 'bg-[#0E1528] border-white/10'
+              profileType === 'individual' ? 'bg-cyan-50/60 dark:bg-cyan-950/20 border-cyan-500 dark:border-cyan-400 shadow-lg ring-1 ring-cyan-500/40' : 'bg-white dark:bg-[#0E1528] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 shadow-xs'
             }`}
           >
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-cyan-400 mb-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-cyan-600 dark:text-cyan-400 mb-3">
                 <User className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">Individual Profile</h3>
-              <p className="text-xs text-slate-300 mt-1">Personal verified portfolio pass for professionals and freelancers.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Individual Profile</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">Personal verified portfolio pass for professionals and freelancers.</p>
             </div>
-            <div className="pt-4 mt-4 border-t border-white/10 flex justify-end">
-              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-white/20'}`}>
+            <div className="pt-4 mt-4 border-t border-slate-200 dark:border-white/10 flex justify-end">
+              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-cyan-500 bg-cyan-500 text-white dark:border-cyan-400 dark:bg-cyan-400 dark:text-slate-950' : 'border-slate-300 dark:border-white/20'}`}>
                 {profileType === 'individual' && <Check className="w-4 h-4 stroke-[3]" />}
               </div>
             </div>
@@ -188,18 +188,18 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
           <div
             onClick={() => setProfileType('team')}
             className={`p-6 rounded-3xl border transition-all cursor-pointer flex flex-col justify-between ${
-              profileType === 'team' ? 'bg-cyan-950/20 border-cyan-400 shadow-lg ring-1 ring-cyan-500/40' : 'bg-[#0E1528] border-white/10'
+              profileType === 'team' ? 'bg-cyan-50/60 dark:bg-cyan-950/20 border-cyan-500 dark:border-cyan-400 shadow-lg ring-1 ring-cyan-500/40' : 'bg-white dark:bg-[#0E1528] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 shadow-xs'
             }`}
           >
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-cyan-400 mb-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-cyan-600 dark:text-cyan-400 mb-3">
                 <Users className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-white">Team / Organization</h3>
-              <p className="text-xs text-slate-300 mt-1">Collaborative team presence, organization roster, and company services.</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Team / Organization</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">Collaborative team presence, organization roster, and company services.</p>
             </div>
-            <div className="pt-4 mt-4 border-t border-white/10 flex justify-end">
-              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-white/20'}`}>
+            <div className="pt-4 mt-4 border-t border-slate-200 dark:border-white/10 flex justify-end">
+              <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-cyan-500 bg-cyan-500 text-white dark:border-cyan-400 dark:bg-cyan-400 dark:text-slate-950' : 'border-slate-300 dark:border-white/20'}`}>
                 {profileType === 'team' && <Check className="w-4 h-4 stroke-[3]" />}
               </div>
             </div>
@@ -210,8 +210,8 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
       {/* STEP 2 DESKTOP: DETAILS */}
       {step === 2 && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          <div className="md:col-span-4 p-5 rounded-3xl bg-[#0E1528] border border-white/10 flex flex-col items-center justify-center text-center space-y-3">
-            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-cyan-400 group">
+          <div className="md:col-span-4 p-5 rounded-3xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 flex flex-col items-center justify-center text-center space-y-3 shadow-xs">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-cyan-500 dark:border-cyan-400 group">
               <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
               <button
                 type="button"
@@ -224,55 +224,55 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-semibold text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-300 cursor-pointer"
             >
               Upload Photo
             </button>
           </div>
 
-          <div className="md:col-span-8 p-6 rounded-3xl bg-[#0E1528] border border-white/10 space-y-4">
+          <div className="md:col-span-8 p-6 rounded-3xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 space-y-4 shadow-xs">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300">Profile Persona Name</label>
+                <label className="text-xs font-medium text-slate-700 dark:text-slate-300">Profile Persona Name</label>
                 <input
                   type="text"
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
                   placeholder="e.g. MERN Developer"
-                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium text-slate-300">Full Name</label>
+                <label className="text-xs font-medium text-slate-700 dark:text-slate-300">Full Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Aleena Nawab"
-                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Professional Title</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">Professional Title</label>
               <input
                 type="text"
                 value={professionalTitle}
                 onChange={(e) => setProfessionalTitle(e.target.value)}
                 placeholder="Senior Systems Architect"
-                className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-300">Short Bio</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">Short Bio</label>
               <textarea
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="A brief summary..."
-                className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 resize-none"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none"
               />
             </div>
           </div>
@@ -288,22 +288,22 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
   const mobileView = (
     <div className="w-full flex-1 flex flex-col justify-between p-3.5 sm:p-4 text-left overflow-y-auto">
       <div className="space-y-3">
-        <div className="flex items-center justify-between text-slate-400 pb-1 border-b border-white/10">
+        <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 pb-1 border-b border-slate-200 dark:border-white/10">
           {step > 1 ? (
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="p-1 -ml-1 text-slate-300 hover:text-white flex items-center gap-1 text-xs cursor-pointer"
+              className="p-1 -ml-1 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white flex items-center gap-1 text-xs cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
             </button>
           ) : (
-            <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider">
+            <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 font-bold uppercase tracking-wider">
               Profile Wizard
             </span>
           )}
-          <span className="text-[11px] font-mono font-medium tracking-wider text-slate-400">
+          <span className="text-[11px] font-mono font-medium tracking-wider text-slate-500 dark:text-slate-400">
             Step {step} of 2
           </span>
         </div>
@@ -312,8 +312,8 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
         {step === 1 && (
           <div className="space-y-3">
             <div>
-              <h2 className="text-base font-extrabold text-white">Select Profile Type</h2>
-              <p className="text-[11px] text-slate-400">Choose between individual persona or team pass</p>
+              <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Select Profile Type</h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Choose between individual persona or team pass</p>
             </div>
 
             <div className="space-y-2.5">
@@ -321,20 +321,20 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                 onClick={() => setProfileType('individual')}
                 className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
                   profileType === 'individual'
-                    ? 'bg-[#142338] border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
-                    : 'bg-[#0E1528] border-white/10 hover:bg-white/5'
+                    ? 'bg-cyan-50/60 dark:bg-[#142338] border-cyan-500 dark:border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
+                    : 'bg-white dark:bg-[#0E1528] border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                  <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
                     <User className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white">Individual</h3>
-                    <p className="text-[10px] text-slate-400">Personal Identity &amp; Portfolio</p>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">Individual</h3>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Personal Identity &amp; Portfolio</p>
                   </div>
                 </div>
-                <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-slate-600'}`}>
+                <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${profileType === 'individual' ? 'border-cyan-500 bg-cyan-500 text-white dark:border-cyan-400 dark:bg-cyan-400 dark:text-slate-950' : 'border-slate-300 dark:border-slate-600'}`}>
                   {profileType === 'individual' && <Check className="w-3 h-3 stroke-[3]" />}
                 </div>
               </div>
@@ -343,20 +343,20 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                 onClick={() => setProfileType('team')}
                 className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
                   profileType === 'team'
-                    ? 'bg-[#142338] border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
-                    : 'bg-[#0E1528] border-white/10 hover:bg-white/5'
+                    ? 'bg-cyan-50/60 dark:bg-[#142338] border-cyan-500 dark:border-cyan-400 shadow-md ring-1 ring-cyan-500/30'
+                    : 'bg-white dark:bg-[#0E1528] border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                     <Users className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-white">Team / Organization</h3>
-                    <p className="text-[10px] text-slate-400">Group &amp; Company Services</p>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">Team / Organization</h3>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400">Group &amp; Company Services</p>
                   </div>
                 </div>
-                <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-slate-600'}`}>
+                <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${profileType === 'team' ? 'border-cyan-500 bg-cyan-500 text-white dark:border-cyan-400 dark:bg-cyan-400 dark:text-slate-950' : 'border-slate-300 dark:border-slate-600'}`}>
                   {profileType === 'team' && <Check className="w-3 h-3 stroke-[3]" />}
                 </div>
               </div>
@@ -368,15 +368,15 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
         {step === 2 && (
           <div className="space-y-3">
             <div>
-              <h2 className="text-base font-extrabold text-white">Profile Details</h2>
-              <p className="text-[11px] text-slate-400">Configure your public pass information</p>
+              <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Profile Details</h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Configure your public pass information</p>
             </div>
 
             <div className="space-y-2.5">
               {/* Avatar Photo Preview & Upload Card */}
-              <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-[#0E1528] border border-white/10">
+              <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10">
                 <div 
-                  className="relative group cursor-pointer w-12 h-12 rounded-full overflow-hidden border-2 border-cyan-400 shrink-0" 
+                  className="relative group cursor-pointer w-12 h-12 rounded-full overflow-hidden border-2 border-cyan-500 dark:border-cyan-400 shrink-0" 
                   onClick={() => fileInputRef.current?.click()}
                   title="Upload profile photo"
                 >
@@ -386,12 +386,12 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs font-bold text-white truncate">{fullName || 'Your Name'}</div>
-                  <div className="text-[10px] text-cyan-300 truncate">{professionalTitle || 'Professional Title'}</div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{fullName || 'Your Name'}</div>
+                  <div className="text-[10px] text-cyan-600 dark:text-cyan-300 truncate">{professionalTitle || 'Professional Title'}</div>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-[10px] text-cyan-400 hover:underline mt-0.5 cursor-pointer font-medium"
+                    className="text-[10px] text-cyan-600 dark:text-cyan-400 hover:underline mt-0.5 cursor-pointer font-medium"
                   >
                     Change photo
                   </button>
@@ -399,46 +399,46 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Profile Persona Name</label>
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Profile Persona Name</label>
                 <input
                   type="text"
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
                   placeholder="e.g. MERN Developer"
-                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Full Name</label>
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Full Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Full Name"
-                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Professional Title</label>
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Professional Title</label>
                 <input
                   type="text"
                   value={professionalTitle}
                   onChange={(e) => setProfessionalTitle(e.target.value)}
                   placeholder="e.g. Full Stack Developer"
-                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Short Bio</label>
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Short Bio</label>
                 <textarea
                   rows={2}
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Short bio description..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all resize-none"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all resize-none"
                 />
               </div>
             </div>

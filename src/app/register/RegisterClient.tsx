@@ -153,8 +153,8 @@ export default function RegisterClient() {
       
       {/* Left Column: Brand & Feature Highlights */}
       <div className="lg:col-span-5 space-y-6 text-left">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-700 dark:text-cyan-300 text-xs font-semibold">
+          <Sparkles className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
           <span>Complete Digital Identity Platform</span>
         </div>
 
@@ -163,9 +163,9 @@ export default function RegisterClient() {
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-extrabold text-white text-xl shadow-lg shadow-cyan-500/25">
               A
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white">Avtive</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Avtive</h1>
           </div>
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
             Create your high-impact digital identity, showcase verified projects, and control your private data with smart sharing.
           </p>
         </div>
@@ -173,39 +173,39 @@ export default function RegisterClient() {
         {/* Feature Checkpoints */}
         <div className="space-y-3 pt-2">
           <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/30">
+            <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/30">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-white">Multi-Persona Profiles</h4>
-              <p className="text-[11px] text-slate-400">Switch between Developer, Executive, and Personal passes instantly.</p>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Multi-Persona Profiles</h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Switch between Developer, Executive, and Personal passes instantly.</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 border border-cyan-500/30">
+            <div className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 mt-0.5 border border-cyan-500/30">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-white">Granular Privacy Limits</h4>
-              <p className="text-[11px] text-slate-400">Selectively share phone, email, or projects with dynamic QR codes.</p>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Granular Privacy Limits</h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Selectively share phone, email, or projects with dynamic QR codes.</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5 border border-blue-500/30">
+            <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5 border border-blue-500/30">
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-white">Synchronized Twin-Screen</h4>
-              <p className="text-[11px] text-slate-400">Realtime bi-directional input sync between Desktop and Mobile screens.</p>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Synchronized Twin-Screen</h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Realtime bi-directional input sync between Desktop and Mobile screens.</p>
             </div>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs text-slate-400">
+        <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-400">
           Already registered?{' '}
-          <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-4">
+          <Link href="/login" className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4">
             Sign in to existing account
           </Link>
         </div>
@@ -213,15 +213,15 @@ export default function RegisterClient() {
 
       {/* Right Column: Desktop Registration Form */}
       <div className="lg:col-span-7">
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#0E1528] border border-white/10 shadow-xl space-y-5 text-left">
+        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-xl space-y-5 text-left">
           
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-white">Create Your Account</h2>
-            <p className="text-xs text-slate-400">Enter your details or continue with your Google account</p>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Create Your Account</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Enter your details or continue with your Google account</p>
           </div>
 
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -229,31 +229,31 @@ export default function RegisterClient() {
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Full Name</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Full Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Aleena Nawab"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Email Address</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Email Address</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. aleena@example.com"
-                className="w-full px-4 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Password</label>
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -261,12 +261,12 @@ export default function RegisterClient() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
-                  className="w-full pl-4 pr-11 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  className="w-full pl-4 pr-11 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -294,15 +294,15 @@ export default function RegisterClient() {
           </form>
 
           <div className="relative flex items-center justify-center my-3">
-            <div className="border-t border-white/10 w-full" />
-            <span className="bg-[#0E1528] px-3 text-[11px] text-slate-500 uppercase tracking-wider font-mono">or</span>
+            <div className="border-t border-slate-200 dark:border-white/10 w-full" />
+            <span className="bg-white dark:bg-[#0E1528] px-3 text-[11px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono">or</span>
           </div>
 
           <button
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-50"
+            className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-200 flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-50"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -328,25 +328,25 @@ export default function RegisterClient() {
       <div className="space-y-3">
         {/* Mobile Centered Brand Header */}
         <div className="flex flex-col items-center justify-center pt-1 pb-1 text-center">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-semibold mb-2">
-            <Sparkles className="w-3 h-3 text-cyan-400" />
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-700 dark:text-cyan-300 text-[10px] font-semibold mb-2">
+            <Sparkles className="w-3 h-3 text-cyan-500 dark:text-cyan-400" />
             <span>Avtive Mobile Pass</span>
           </div>
 
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-extrabold text-white text-lg shadow-lg shadow-cyan-500/25 mb-1.5">
             A
           </div>
-          <span className="text-lg font-extrabold tracking-tight text-white">Create Your Account</span>
-          <p className="text-[11px] text-slate-300 mt-0.5">Instant Digital Persona &amp; NFC Profile</p>
+          <span className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">Create Your Account</span>
+          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">Instant Digital Persona &amp; NFC Profile</p>
 
           {/* Micro Trust Pills */}
           <div className="flex items-center justify-center gap-2 mt-2">
-            <span className="inline-flex items-center gap-1 text-[9px] font-medium text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-full">
-              <ShieldCheck className="w-2.5 h-2.5 text-cyan-400" />
+            <span className="inline-flex items-center gap-1 text-[9px] font-medium text-cyan-700 dark:text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-full">
+              <ShieldCheck className="w-2.5 h-2.5 text-cyan-600 dark:text-cyan-400" />
               <span>Encrypted</span>
             </span>
-            <span className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-              <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" />
+            <span className="inline-flex items-center gap-1 text-[9px] font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+              <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400" />
               <span>Multi-Persona</span>
             </span>
           </div>
@@ -354,41 +354,41 @@ export default function RegisterClient() {
 
         {/* Error Notification Alert */}
         {errorMessage && (
-          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span className="text-[11px]">{errorMessage}</span>
           </div>
         )}
 
         {/* Mobile Form Card */}
-        <div className="p-3.5 rounded-2xl bg-[#0E1528] border border-white/10 shadow-lg space-y-3">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-lg space-y-3">
           <form onSubmit={handleRegister} className="space-y-3">
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Full Name</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Full Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Aleena Nawab"
-                className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Email Address</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Email Address</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. aleena@example.com"
-                className="w-full px-3 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-300 ml-0.5">Password</label>
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -396,12 +396,12 @@ export default function RegisterClient() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
-                  className="w-full pl-3 pr-9 py-2 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  className="w-full pl-3 pr-9 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -429,15 +429,15 @@ export default function RegisterClient() {
           </form>
 
           <div className="relative flex items-center justify-center my-1.5">
-            <div className="border-t border-white/10 w-full" />
-            <span className="bg-[#0E1528] px-2 text-[10px] text-slate-500 uppercase tracking-wider font-mono">or</span>
+            <div className="border-t border-slate-200 dark:border-white/10 w-full" />
+            <span className="bg-white dark:bg-[#0E1528] px-2 text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono">or</span>
           </div>
 
           <button
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+            className="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 dark:text-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
           >
             <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -451,9 +451,9 @@ export default function RegisterClient() {
       </div>
 
       {/* Footer Link */}
-      <div className="pt-3 pb-1 text-center text-[11px] text-slate-400">
+      <div className="pt-3 pb-1 text-center text-[11px] text-slate-500 dark:text-slate-400">
         <span>Already have an account? </span>
-        <Link href="/login" className="font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-4 ml-1">
+        <Link href="/login" className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 ml-1">
           Log in
         </Link>
       </div>

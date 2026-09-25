@@ -189,7 +189,7 @@ function DetailsStepContent() {
           
           <div className="flex items-end gap-4">
             {/* Avatar with Camera Icon Overlay */}
-            <div className="relative w-22 h-22 sm:w-26 sm:h-26 rounded-full overflow-hidden border-4 border-[#070D1A] bg-slate-800 shadow-xl shrink-0 group">
+            <div className="relative w-22 h-22 sm:w-26 sm:h-26 rounded-full overflow-hidden border-4 border-white dark:border-[#070D1A] bg-slate-100 dark:bg-slate-800 shadow-xl shrink-0 group">
               <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
               <button
                 type="button"
@@ -203,10 +203,10 @@ function DetailsStepContent() {
             </div>
 
             <div className="pb-1">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {fullName || 'Your Name'}
               </h2>
-              <p className="text-xs text-cyan-400 font-medium">{professionalTitle}</p>
+              <p className="text-xs text-cyan-600 dark:text-cyan-400 font-medium">{professionalTitle}</p>
             </div>
           </div>
 
@@ -217,7 +217,7 @@ function DetailsStepContent() {
               onClick={handleBack}
               aria-label="Back"
               title="Back"
-              className="p-2.5 rounded-xl text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 dark:text-slate-400 dark:hover:text-white dark:bg-white/5 dark:hover:bg-white/10 dark:border-white/10 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
@@ -241,20 +241,20 @@ function DetailsStepContent() {
         </div>
 
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Minimalist Details Form Fields */}
-        <div className="p-6 rounded-3xl bg-[#0E1528] border border-white/10 space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 space-y-4 shadow-xs">
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <Tag className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <Tag className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Persona</span>
               </div>
               <input
@@ -262,13 +262,13 @@ function DetailsStepContent() {
                 value={profileName}
                 onChange={(e) => setProfileName(e.target.value)}
                 placeholder="e.g. MERN Developer"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <User className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <User className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Full Name</span>
               </div>
               <input
@@ -276,7 +276,7 @@ function DetailsStepContent() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Full Name"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
 
@@ -285,8 +285,8 @@ function DetailsStepContent() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <Briefcase className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Title</span>
               </div>
               <input
@@ -294,13 +294,13 @@ function DetailsStepContent() {
                 value={professionalTitle}
                 onChange={(e) => setProfessionalTitle(e.target.value)}
                 placeholder="Lead Systems Engineer"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <Building2 className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <Building2 className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>Company</span>
               </div>
               <input
@@ -308,15 +308,15 @@ function DetailsStepContent() {
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="Company Name"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
 
           </div>
 
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-              <FileText className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <FileText className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
               <span>Bio</span>
             </div>
             <textarea
@@ -324,7 +324,7 @@ function DetailsStepContent() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Tell others about yourself..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-[#070D18] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-500 resize-none transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 resize-none transition-colors"
             />
           </div>
 

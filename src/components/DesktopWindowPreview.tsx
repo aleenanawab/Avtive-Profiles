@@ -355,12 +355,12 @@ export function DesktopWindowPreview({
     <div className="w-full h-full flex flex-col font-sans select-none">
       
       {/* Outer Window Container with Realistic Shadow & Border */}
-      <div className="w-full rounded-2xl sm:rounded-3xl border border-slate-700/60 dark:border-slate-800/80 bg-[#0A101D] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col flex-1 min-h-[720px] transition-all">
+      <div className="w-full rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0A101D] shadow-xl shadow-slate-200/50 dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col flex-1 min-h-[720px] transition-all">
         
         {/* ========================================================================= */}
         {/* 1. BROWSER WINDOW CHROME & TAB BAR                                         */}
         {/* ========================================================================= */}
-        <div className="bg-[#0E1626] border-b border-slate-800/80 px-3 py-2 flex items-center justify-between gap-2 shrink-0">
+        <div className="bg-slate-100 dark:bg-[#0E1626] border-b border-slate-200 dark:border-slate-800/80 px-3 py-2 flex items-center justify-between gap-2 shrink-0 transition-colors">
           
           {/* Left: macOS 3 Window Control Dots + Tab */}
           <div className="flex items-center gap-3 min-w-0">
@@ -372,64 +372,64 @@ export function DesktopWindowPreview({
             </div>
 
             {/* Active Browser Tab */}
-            <div className="flex items-center gap-2 bg-[#131E33] border-t-2 border-t-blue-500 border-x border-slate-700/50 rounded-t-lg px-3 py-1.5 text-xs text-white font-medium shadow-xs truncate max-w-[220px]">
-              <AvtiveLogoIcon className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+            <div className="flex items-center gap-2 bg-white dark:bg-[#131E33] border-t-2 border-t-blue-500 border-x border-slate-200 dark:border-slate-700/50 rounded-t-lg px-3 py-1.5 text-xs text-slate-800 dark:text-white font-medium shadow-xs truncate max-w-[220px]">
+              <AvtiveLogoIcon className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 shrink-0" />
               <span className="truncate">Avtive Profiles</span>
-              <X className="w-3 h-3 text-slate-400 hover:text-white ml-1 shrink-0 cursor-pointer" />
+              <X className="w-3 h-3 text-slate-400 hover:text-slate-700 dark:hover:text-white ml-1 shrink-0 cursor-pointer" />
             </div>
 
             {/* New Tab Plus */}
-            <button type="button" className="text-slate-500 hover:text-slate-300 p-1 rounded-md cursor-pointer">
+            <button type="button" className="text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 p-1 rounded-md cursor-pointer">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Right: Window Controls (Minimize, Maximize, Close) */}
-          <div className="hidden sm:flex items-center gap-3 text-slate-400 text-xs px-2">
-            <span className="cursor-pointer hover:text-white">—</span>
-            <span className="cursor-pointer hover:text-white">□</span>
-            <span className="cursor-pointer hover:text-white">✕</span>
+          <div className="hidden sm:flex items-center gap-3 text-slate-400 hover:text-slate-700 dark:hover:text-white text-xs px-2">
+            <span className="cursor-pointer">—</span>
+            <span className="cursor-pointer">□</span>
+            <span className="cursor-pointer">✕</span>
           </div>
         </div>
 
         {/* ========================================================================= */}
         {/* 2. OMNIBOX / BROWSER ADDRESS BAR                                           */}
         {/* ========================================================================= */}
-        <div className="bg-[#0B1220] border-b border-slate-800/80 px-3 py-2 flex items-center justify-between gap-2 shrink-0">
+        <div className="bg-slate-50 dark:bg-[#0B1220] border-b border-slate-200 dark:border-slate-800/80 px-3 py-2 flex items-center justify-between gap-2 shrink-0 transition-colors">
           
           {/* Navigation Controls: Back, Forward, Reload */}
           <div className="flex items-center gap-1 text-slate-400 shrink-0">
-            <button type="button" className="p-1 rounded-lg hover:bg-white/5 hover:text-white cursor-pointer" title="Back">
+            <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer" title="Back">
               <ArrowLeft className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="p-1 rounded-lg hover:bg-white/5 hover:text-white cursor-pointer" title="Forward">
+            <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer" title="Forward">
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="p-1 rounded-lg hover:bg-white/5 hover:text-white cursor-pointer" title="Reload">
+            <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer" title="Reload">
               <RotateCw className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Centered URL Address Bar */}
-          <div className="flex-1 max-w-2xl mx-auto flex items-center gap-2 bg-[#131D2F] border border-slate-700/50 rounded-full px-3 py-1 text-xs text-slate-300 font-mono shadow-inner min-w-0">
-            <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
-            <span className="truncate text-[11px] text-slate-200">
+          <div className="flex-1 max-w-2xl mx-auto flex items-center gap-2 bg-white dark:bg-[#131D2F] border border-slate-200 dark:border-slate-700/50 rounded-full px-3 py-1 text-xs text-slate-700 dark:text-slate-300 font-mono shadow-xs min-w-0">
+            <Lock className="w-3 h-3 text-emerald-500 dark:text-emerald-400 shrink-0" />
+            <span className="truncate text-[11px] text-slate-800 dark:text-slate-200">
               {displayUrl}
             </span>
           </div>
 
           {/* Right Utility Icons */}
           <div className="hidden sm:flex items-center gap-1.5 text-slate-400 shrink-0">
-            <button type="button" className="p-1 rounded-lg hover:bg-white/5 hover:text-white cursor-pointer" title="Bookmark">
+            <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer" title="Bookmark">
               <Bookmark className="w-3.5 h-3.5" />
             </button>
-            <button type="button" className="p-1 rounded-lg hover:bg-white/5 hover:text-white cursor-pointer" title="Extensions">
+            <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer" title="Extensions">
               <Puzzle className="w-3.5 h-3.5" />
             </button>
-            <div className="w-5 h-5 rounded-full overflow-hidden border border-slate-600 shrink-0 ml-1">
+            <div className="w-5 h-5 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600 shrink-0 ml-1">
               <img src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'} alt="avatar" className="w-full h-full object-cover" />
             </div>
-            <button type="button" className="p-1 rounded-lg hover:bg-white/5 hover:text-white cursor-pointer">
+            <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer">
               <MoreVertical className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -438,25 +438,25 @@ export function DesktopWindowPreview({
         {/* ========================================================================= */}
         {/* 3. WINDOW WORKSPACE (LEFT SIDEBAR + MAIN EDITOR CANVAS)                    */}
         {/* ========================================================================= */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#070C18]">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-slate-100 dark:bg-[#070C18] transition-colors">
           
           {/* ──────────────────────────────────────────────────────────────────────── */}
-          {/* A. LEFT SIDEBAR (Dark Navy, User Identity, Navigation Menu, Card Preview)*/}
+          {/* A. LEFT SIDEBAR (User Identity, Navigation Menu, Card Preview)           */}
           {/* ──────────────────────────────────────────────────────────────────────── */}
-          <aside className="w-full md:w-60 xl:w-64 bg-[#0B1322] border-r border-slate-800/80 flex flex-col justify-between p-3.5 sm:p-4 shrink-0 overflow-y-auto">
+          <aside className="w-full md:w-60 xl:w-64 bg-white dark:bg-[#0B1322] border-r border-slate-200 dark:border-slate-800/80 flex flex-col justify-between p-3.5 sm:p-4 shrink-0 overflow-y-auto transition-colors">
             
             <div className="space-y-4">
               {/* Top Avtive Brand in Window */}
               <div className="flex items-center gap-2 px-1">
-                <AvtiveLogoIcon className="w-5 h-5 text-white shrink-0" />
-                <span className="font-bold text-base tracking-tight text-white font-sans">
+                <AvtiveLogoIcon className="w-5 h-5 text-slate-900 dark:text-white shrink-0" />
+                <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white font-sans">
                   avtive
                 </span>
               </div>
 
               {/* User Identity Snippet */}
-              <div className="flex items-center gap-3 p-2 rounded-xl bg-[#111A2D] border border-slate-800/60 shadow-xs">
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-blue-500/40 shrink-0 bg-slate-800">
+              <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-[#111A2D] border border-slate-200 dark:border-slate-800/60 shadow-2xs">
+                <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-blue-500/40 shrink-0 bg-slate-200 dark:bg-slate-800">
                   <img 
                     src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop'} 
                     alt={profile.name || 'User'} 
@@ -464,10 +464,10 @@ export function DesktopWindowPreview({
                   />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-white truncate">
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
                     {profile.name || 'Aleena Nawab'}
                   </h4>
-                  <p className="text-[10px] text-slate-400 truncate">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
                     {profile.professionalTitle || profile.designation || 'Full Stack Engineer'}
                   </p>
                 </div>
@@ -496,16 +496,16 @@ export function DesktopWindowPreview({
                       onClick={() => scrollToRow(item.id)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                         isActive
-                          ? 'bg-[#182B48] text-white font-bold shadow-xs border border-blue-500/30'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                          ? 'bg-blue-50 text-blue-900 border-blue-200 dark:bg-[#182B48] dark:text-white font-bold shadow-2xs border dark:border-blue-500/30'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/5'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 truncate">
-                        <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
+                        <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} />
                         <span className="truncate">{item.label}</span>
                       </div>
                       {item.badge && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-mono">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
                           {item.badge}
                         </span>
                       )}
@@ -517,16 +517,16 @@ export function DesktopWindowPreview({
 
             {/* Bottom Card: "Preview your card" Widget (Matching Screenshot) */}
             <div className="pt-4 mt-auto">
-              <div className="rounded-2xl p-3.5 bg-gradient-to-br from-[#12223B] to-[#0D1829] border border-blue-500/20 shadow-md flex flex-col space-y-2">
+              <div className="rounded-2xl p-3.5 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#12223B] dark:to-[#0D1829] border border-slate-200 dark:border-blue-500/20 shadow-xs flex flex-col space-y-2">
                 <div className="flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                     <CreditCard className="w-4 h-4" />
                   </div>
                   <div>
-                    <h5 className="text-xs font-bold text-white leading-tight">
+                    <h5 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
                       Preview your card
                     </h5>
-                    <p className="text-[10px] text-slate-400 leading-relaxed mt-0.5">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
                       See how your profile looks as a digital business card.
                     </p>
                   </div>
@@ -538,7 +538,7 @@ export function DesktopWindowPreview({
                     if (onViewCard) onViewCard();
                     else scrollToRow('profile');
                   }}
-                  className="w-full py-1.5 px-3 rounded-xl bg-[#1B2F50] hover:bg-[#223B64] text-white text-[11px] font-bold border border-blue-500/30 transition-all text-center cursor-pointer shadow-xs active:scale-98"
+                  className="w-full py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-black text-white dark:bg-[#1B2F50] dark:hover:bg-[#223B64] text-[11px] font-bold border border-slate-900 dark:border-blue-500/30 transition-all text-center cursor-pointer shadow-xs active:scale-98"
                 >
                   View Card
                 </button>
@@ -550,15 +550,15 @@ export function DesktopWindowPreview({
           {/* ──────────────────────────────────────────────────────────────────────── */}
           {/* B. MAIN DESKTOP EDITOR CANVAS (Header + Section Cards List)             */}
           {/* ──────────────────────────────────────────────────────────────────────── */}
-          <main className="flex-1 flex flex-col overflow-y-auto bg-[#070C18] p-4 sm:p-6 lg:p-7 space-y-5">
+          <main className="flex-1 flex flex-col overflow-y-auto bg-slate-50 dark:bg-[#070C18] p-4 sm:p-6 lg:p-7 space-y-5 transition-colors">
             
             {/* Main Header Bar (Matching Screenshot) */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-800/80">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                   Edit Profile
                 </h1>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Update your information and manage what others can see.
                 </p>
               </div>
@@ -569,7 +569,7 @@ export function DesktopWindowPreview({
                   type="button"
                   onClick={onSave}
                   disabled={isSaving}
-                  className="px-4 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs shadow-md flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                  className="px-4 py-2 rounded-full bg-slate-900 hover:bg-black text-white dark:bg-white dark:hover:bg-slate-100 dark:text-slate-900 font-bold text-xs shadow-md flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
                   title="Save changes to database"
                 >
                   {isSaving ? (
@@ -579,7 +579,7 @@ export function DesktopWindowPreview({
                     </>
                   ) : (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <Check className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" />
                       <span>Save Changes</span>
                     </>
                   )}
@@ -588,7 +588,7 @@ export function DesktopWindowPreview({
                 <button
                   type="button"
                   onClick={onNext}
-                  className="px-4 py-2 rounded-full bg-transparent hover:bg-white/10 text-white font-bold text-xs border border-slate-700 hover:border-slate-500 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 dark:bg-transparent dark:hover:bg-white/10 dark:text-white dark:border-slate-700 font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                   title="Next / Share profile"
                 >
                   <span>Next</span>
@@ -605,19 +605,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-profile"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('profile')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400 flex items-center justify-center shrink-0">
                       <User className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Profile</h3>
-                      <p className="text-xs text-slate-400 truncate">Your name, title, bio and profile photo</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Profile</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Your name, title, bio and profile photo</p>
                     </div>
                   </div>
 
@@ -627,26 +627,26 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('profile', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('profile')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                       title="Toggle visibility of profile on public card"
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('profile') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('profile') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('profile') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('profile'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('profile'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.profile ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -655,12 +655,12 @@ export function DesktopWindowPreview({
 
                 {/* Inline Editing Controls */}
                 {expandedRows.profile && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3.5 bg-[#090F1C]/70">
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3.5 bg-slate-50/50 dark:bg-[#090F1C]/70">
                     
                     {/* Images: Cover & Avatar */}
                     <div className="flex items-center gap-4 pt-2">
                       <div className="relative group/av">
-                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-500/40 bg-slate-800 shrink-0">
+                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-500/40 bg-slate-100 dark:bg-slate-800 shrink-0">
                           <img src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop'} alt="avatar" className="w-full h-full object-cover" />
                         </div>
                         <button
@@ -684,20 +684,20 @@ export function DesktopWindowPreview({
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <span className="text-xs font-bold text-white block">Profile Photo & Cover</span>
-                        <p className="text-[10px] text-slate-400">Upload high-res avatar or cover photo</p>
+                        <span className="text-xs font-bold text-slate-900 dark:text-white block">Profile Photo & Cover</span>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400">Upload high-res avatar or cover photo</p>
                         <div className="flex items-center gap-2 mt-1.5">
                           <button
                             type="button"
                             onClick={() => avatarInputRef.current?.click()}
-                            className="text-[10px] font-bold px-2 py-1 rounded-md bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/30 cursor-pointer"
+                            className="text-[10px] font-bold px-2 py-1 rounded-md bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 dark:bg-blue-600/20 dark:text-blue-400 dark:hover:bg-blue-600/30 border border-blue-500/30 cursor-pointer"
                           >
                             Upload Avatar
                           </button>
                           <button
                             type="button"
                             onClick={() => coverInputRef.current?.click()}
-                            className="text-[10px] font-bold px-2 py-1 rounded-md bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700 cursor-pointer"
+                            className="text-[10px] font-bold px-2 py-1 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:border-slate-700 cursor-pointer"
                           >
                             Change Cover
                           </button>
@@ -718,17 +718,17 @@ export function DesktopWindowPreview({
                     {/* Full Name & Title Inputs */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Full Name</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                         <input
                           type="text"
                           value={profile.name || ''}
                           onChange={(e) => handleFieldChange('name', e.target.value)}
                           placeholder="e.g. Aleena Nawab"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Professional Title</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Professional Title</label>
                         <input
                           type="text"
                           value={profile.professionalTitle || profile.designation || ''}
@@ -737,14 +737,14 @@ export function DesktopWindowPreview({
                             handleFieldChange('designation', e.target.value);
                           }}
                           placeholder="e.g. Full Stack Engineer"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                     </div>
 
                     {/* Short Bio */}
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-300 mb-1">Bio / Headline</label>
+                      <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Bio / Headline</label>
                       <textarea
                         rows={2}
                         value={profile.bio || profile.shortBio || ''}
@@ -753,7 +753,7 @@ export function DesktopWindowPreview({
                           handleFieldChange('shortBio', e.target.value);
                         }}
                         placeholder="Brief summary displayed at the top of your profile..."
-                        className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500 resize-none"
+                        className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500 resize-none"
                       />
                     </div>
                   </div>
@@ -765,19 +765,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-personalDetails"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('personalDetails')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400 flex items-center justify-center shrink-0">
                       <User className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Personal Details</h3>
-                      <p className="text-xs text-slate-400 truncate">Your basic information (name, phone, location, etc.)</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Personal Details</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Your basic information (name, phone, location, etc.)</p>
                     </div>
                   </div>
 
@@ -787,26 +787,26 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('personalDetails', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('personalDetails')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                       title="Toggle visibility"
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('personalDetails') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('personalDetails') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('personalDetails') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('personalDetails'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('personalDetails'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.personalDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -814,46 +814,46 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.personalDetails && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Email Address</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
                         <input
                           type="email"
                           value={profile.email || ''}
                           onChange={(e) => handleFieldChange('email', e.target.value)}
                           placeholder="email@domain.com"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Phone Number</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
                         <input
                           type="tel"
                           value={profile.phone || ''}
                           onChange={(e) => handleFieldChange('phone', e.target.value)}
                           placeholder="+1 555 123 4567"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Location / City</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Location / City</label>
                         <input
                           type="text"
                           value={profile.location || ''}
                           onChange={(e) => handleFieldChange('location', e.target.value)}
                           placeholder="San Francisco, CA"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Company / Organization</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Company / Organization</label>
                         <input
                           type="text"
                           value={profile.company || ''}
                           onChange={(e) => handleFieldChange('company', e.target.value)}
                           placeholder="Avtive Corp"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -866,19 +866,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-skills"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('skills')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
                       <SlidersHorizontal className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Skills</h3>
-                      <p className="text-xs text-slate-400 truncate">Technologies and tools you work with</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Skills</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Technologies and tools you work with</p>
                     </div>
                   </div>
 
@@ -888,25 +888,25 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('skills', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('skills')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('skills') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('skills') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('skills') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('skills'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('skills'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.skills ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -914,14 +914,14 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.skills && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
                     <form onSubmit={handleAddSkill} className="flex gap-2 pt-2">
                       <input
                         type="text"
                         value={newSkillText}
                         onChange={(e) => setNewSkillText(e.target.value)}
                         placeholder="Add skill (e.g. Next.js, TypeScript, Figma)..."
-                        className="flex-1 text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                        className="flex-1 text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                       />
                       <button
                         type="submit"
@@ -938,13 +938,13 @@ export function DesktopWindowPreview({
                         return (
                           <span
                             key={name}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#111A2D] border border-slate-700/80 text-xs font-medium text-slate-200"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#111A2D] border border-slate-200 dark:border-slate-700/80 text-xs font-medium text-slate-800 dark:text-slate-200"
                           >
                             <span>{name}</span>
                             <button
                               type="button"
                               onClick={() => handleRemoveSkill(name)}
-                              className="text-slate-400 hover:text-rose-400 ml-1 cursor-pointer"
+                              className="text-slate-400 hover:text-rose-500 ml-1 cursor-pointer"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -961,19 +961,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-projects"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('projects')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
                       <FolderGit2 className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Projects</h3>
-                      <p className="text-xs text-slate-400 truncate">Your featured projects and work samples</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Projects</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Your featured projects and work samples</p>
                     </div>
                   </div>
 
@@ -983,25 +983,25 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('projects', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('projects')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('projects') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('projects') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('projects') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('projects'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('projects'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.projects ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -1009,9 +1009,9 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.projects && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
                     <div className="flex items-center justify-between pt-2">
-                      <span className="text-xs font-bold text-white">Project Showcase ({(profile.projects || []).length})</span>
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">Project Showcase ({(profile.projects || []).length})</span>
                       <button
                         type="button"
                         onClick={() => setIsAddingProject(!isAddingProject)}
@@ -1024,13 +1024,13 @@ export function DesktopWindowPreview({
 
                     {/* Inline Add Form */}
                     {isAddingProject && (
-                      <form onSubmit={handleSaveProject} className="p-3 rounded-xl bg-[#111A2D] border border-slate-700/80 space-y-2">
+                      <form onSubmit={handleSaveProject} className="p-3 rounded-xl bg-slate-50 dark:bg-[#111A2D] border border-slate-200 dark:border-slate-700/80 space-y-2">
                         <input
                           type="text"
                           value={newProject.title}
                           onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
                           placeholder="Project Title"
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
+                          className="w-full text-xs px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                           required
                         />
                         <textarea
@@ -1038,7 +1038,7 @@ export function DesktopWindowPreview({
                           value={newProject.description}
                           onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                           placeholder="Project Description"
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white resize-none"
+                          className="w-full text-xs px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none"
                         />
                         <div className="grid grid-cols-2 gap-2">
                           <input
@@ -1046,21 +1046,21 @@ export function DesktopWindowPreview({
                             value={newProject.tags}
                             onChange={(e) => setNewProject({ ...newProject, tags: e.target.value })}
                             placeholder="Tags (comma separated)"
-                            className="text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
+                            className="text-xs px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                           />
                           <input
                             type="url"
                             value={newProject.link}
                             onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
                             placeholder="https://..."
-                            className="text-xs px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white"
+                            className="text-xs px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                           />
                         </div>
                         <div className="flex justify-end gap-2 pt-1">
                           <button
                             type="button"
                             onClick={() => setIsAddingProject(false)}
-                            className="text-xs text-slate-400 hover:text-white px-2 py-1"
+                            className="text-xs text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2 py-1"
                           >
                             Cancel
                           </button>
@@ -1077,18 +1077,18 @@ export function DesktopWindowPreview({
                     {/* Project List */}
                     <div className="space-y-2">
                       {(profile.projects || []).map((p) => (
-                        <div key={p.id} className="flex items-center justify-between p-2.5 rounded-xl bg-[#111A2D] border border-slate-800">
+                        <div key={p.id} className="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-200 dark:border-slate-800">
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <img src={p.image || p.coverImage || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=200&auto=format&fit=crop'} alt={p.title} className="w-8 h-8 rounded-lg object-cover bg-slate-800 shrink-0" />
+                            <img src={p.image || p.coverImage || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=200&auto=format&fit=crop'} alt={p.title} className="w-8 h-8 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 shrink-0" />
                             <div className="min-w-0">
-                              <h4 className="text-xs font-bold text-white truncate">{p.title}</h4>
-                              <p className="text-[10px] text-slate-400 truncate">{p.description}</p>
+                              <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.title}</h4>
+                              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{p.description}</p>
                             </div>
                           </div>
                           <button
                             type="button"
                             onClick={() => handleDeleteProject(p.id)}
-                            className="p-1.5 rounded-lg hover:bg-rose-500/20 text-slate-400 hover:text-rose-400"
+                            className="p-1.5 rounded-lg hover:bg-rose-500/10 dark:hover:bg-rose-500/20 text-slate-400 hover:text-rose-500"
                             title="Delete project"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1105,19 +1105,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-education"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('education')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-500 dark:text-violet-400 flex items-center justify-center shrink-0">
                       <GraduationCap className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Education</h3>
-                      <p className="text-xs text-slate-400 truncate">Your academic background</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Education</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Your academic background</p>
                     </div>
                   </div>
 
@@ -1127,25 +1127,25 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('education', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('education')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('education') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('education') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('education') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('education'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('education'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.education ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -1153,16 +1153,16 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.education && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
-                    <p className="text-xs text-slate-400 pt-2">Academic background & qualifications</p>
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 pt-2">Academic background & qualifications</p>
                     {(profile.education || []).map((edu, idx) => (
-                      <div key={idx} className="p-2.5 rounded-xl bg-[#111A2D] border border-slate-800 text-xs">
-                        <div className="font-bold text-white">{edu.institution}</div>
-                        <div className="text-slate-400 text-[11px]">{edu.degree} {edu.period ? `· ${edu.period}` : edu.year ? `· ${edu.year}` : ''}</div>
+                      <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-200 dark:border-slate-800 text-xs">
+                        <div className="font-bold text-slate-900 dark:text-white">{edu.institution}</div>
+                        <div className="text-slate-500 dark:text-slate-400 text-[11px]">{edu.degree} {edu.period ? `· ${edu.period}` : edu.year ? `· ${edu.year}` : ''}</div>
                       </div>
                     ))}
                     {(!profile.education || profile.education.length === 0) && (
-                      <div className="text-xs text-slate-500 text-center py-2">
+                      <div className="text-xs text-slate-400 dark:text-slate-500 text-center py-2">
                         No education records yet.
                       </div>
                     )}
@@ -1175,19 +1175,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-contactInfo"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('contactInfo')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 dark:text-rose-400 flex items-center justify-center shrink-0">
                       <Phone className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Contact Info</h3>
-                      <p className="text-xs text-slate-400 truncate">Your email, phone and location details</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Contact Info</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Your email, phone and location details</p>
                     </div>
                   </div>
 
@@ -1197,25 +1197,25 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('contactInfo', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('contactInfo')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('contactInfo') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('contactInfo') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('contactInfo') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('contactInfo'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('contactInfo'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.contactInfo ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -1223,20 +1223,20 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.contactInfo && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Public Email</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Public Email</label>
                         <input
                           type="email"
                           value={profile.email || ''}
                           onChange={(e) => handleFieldChange('email', e.target.value)}
                           placeholder="public@domain.com"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">WhatsApp / Phone</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">WhatsApp / Phone</label>
                         <input
                           type="tel"
                           value={profile.whatsapp || profile.phone || ''}
@@ -1245,7 +1245,7 @@ export function DesktopWindowPreview({
                             handleFieldChange('phone', e.target.value);
                           }}
                           placeholder="+1 555 000 1234"
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -1258,19 +1258,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-socialLinks"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('socialLinks')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-500 dark:text-cyan-400 flex items-center justify-center shrink-0">
                       <Link2 className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Social Links</h3>
-                      <p className="text-xs text-slate-400 truncate">Your social media and professional links</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Social Links</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Your social media and professional links</p>
                     </div>
                   </div>
 
@@ -1280,25 +1280,25 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('socialLinks', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('socialLinks')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('socialLinks') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('socialLinks') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('socialLinks') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('socialLinks'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('socialLinks'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.socialLinks ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -1306,21 +1306,21 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.socialLinks && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
-                    <p className="text-xs text-slate-400 pt-2">Direct portfolio links & platforms</p>
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 pt-2">Direct portfolio links & platforms</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Website</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Website</label>
                         <input
                           type="url"
                           value={profile.website || ''}
                           onChange={(e) => handleFieldChange('website', e.target.value)}
                           placeholder="https://..."
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">LinkedIn Profile</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">LinkedIn Profile</label>
                         <input
                           type="url"
                           value={(profile.socials || []).find(s => s.platform === 'linkedin')?.url || ''}
@@ -1329,11 +1329,11 @@ export function DesktopWindowPreview({
                             handleFieldChange('socials', [...other, { platform: 'linkedin', url: e.target.value }]);
                           }}
                           placeholder="https://linkedin.com/in/..."
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">GitHub Profile</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">GitHub Profile</label>
                         <input
                           type="url"
                           value={(profile.socials || []).find(s => s.platform === 'github')?.url || ''}
@@ -1342,11 +1342,11 @@ export function DesktopWindowPreview({
                             handleFieldChange('socials', [...other, { platform: 'github', url: e.target.value }]);
                           }}
                           placeholder="https://github.com/..."
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-slate-300 mb-1">Twitter / X</label>
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">Twitter / X</label>
                         <input
                           type="url"
                           value={(profile.socials || []).find(s => s.platform === 'twitter')?.url || ''}
@@ -1355,7 +1355,7 @@ export function DesktopWindowPreview({
                             handleFieldChange('socials', [...other, { platform: 'twitter', url: e.target.value }]);
                           }}
                           placeholder="https://x.com/..."
-                          className="w-full text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-blue-500"
+                          className="w-full text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                         />
                       </div>
                     </div>
@@ -1368,19 +1368,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-experience"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('experience')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-500 dark:text-orange-400 flex items-center justify-center shrink-0">
                       <Briefcase className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Experience</h3>
-                      <p className="text-xs text-slate-400 truncate">Your work experience and roles</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Experience</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Your work experience and roles</p>
                     </div>
                   </div>
 
@@ -1390,25 +1390,25 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('experience', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('experience')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('experience') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('experience') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('experience') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('experience'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('experience'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.experience ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -1416,16 +1416,16 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.experience && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
-                    <p className="text-xs text-slate-400 pt-2">Career timeline and organizations</p>
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 pt-2">Career timeline and organizations</p>
                     {(profile.experiences || profile.experience || []).map((exp, idx) => (
-                      <div key={idx} className="p-2.5 rounded-xl bg-[#111A2D] border border-slate-800 text-xs">
-                        <div className="font-bold text-white">{exp.role || 'Role'}</div>
-                        <div className="text-slate-400 text-[11px]">{exp.company} {exp.period ? `· ${exp.period}` : ''}</div>
+                      <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-200 dark:border-slate-800 text-xs">
+                        <div className="font-bold text-slate-900 dark:text-white">{exp.role || 'Role'}</div>
+                        <div className="text-slate-500 dark:text-slate-400 text-[11px]">{exp.company} {exp.period ? `· ${exp.period}` : ''}</div>
                       </div>
                     ))}
                     {(!profile.experiences || profile.experiences.length === 0) && (
-                      <div className="text-xs text-slate-500 text-center py-2">
+                      <div className="text-xs text-slate-400 dark:text-slate-500 text-center py-2">
                         No experience records yet.
                       </div>
                     )}
@@ -1438,19 +1438,19 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-customFields"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('customFields')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400 flex items-center justify-center shrink-0">
                       <Tag className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Custom Fields</h3>
-                      <p className="text-xs text-slate-400 truncate">Custom titled fields and links ({(profile.customFields || []).length})</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Custom Fields</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Custom titled fields and links ({(profile.customFields || []).length})</p>
                     </div>
                   </div>
 
@@ -1460,25 +1460,25 @@ export function DesktopWindowPreview({
                       onClick={(e) => handleToggleVisibility('customFields', e)}
                       className={`px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                         isSectionVisible('customFields')
-                          ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60'
-                          : 'bg-slate-800/60 border-slate-700/40 text-slate-400 hover:bg-slate-700/60'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500/40 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                          : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800/60 dark:border-slate-700/40 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700/60'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('customFields') ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSectionVisible('customFields') ? 'bg-emerald-500 dark:bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
                       <span>{isSectionVisible('customFields') ? 'Visible' : 'Hidden'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('customFields'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleRow('customFields'); }}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       {expandedRows.customFields ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -1486,21 +1486,21 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.customFields && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-3 bg-[#090F1C]/70">
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-3 bg-slate-50/50 dark:bg-[#090F1C]/70">
                     <div className="flex flex-col sm:flex-row gap-2 pt-2">
                       <input
                         type="text"
                         value={newCustomFieldLabel}
                         onChange={(e) => setNewCustomFieldLabel(e.target.value)}
                         placeholder="Field Title (e.g. Publications, Office Hours)"
-                        className="flex-1 text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-purple-500"
+                        className="flex-1 text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-purple-500"
                       />
                       <input
                         type="text"
                         value={newCustomFieldValue}
                         onChange={(e) => setNewCustomFieldValue(e.target.value)}
                         placeholder="Field Content or Link"
-                        className="flex-1 text-xs px-3 py-2 rounded-xl bg-[#111A2D] border border-slate-700/60 text-white focus:outline-hidden focus:border-purple-500"
+                        className="flex-1 text-xs px-3 py-2 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-300 dark:border-slate-700/60 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-purple-500"
                       />
                       <button
                         type="button"
@@ -1514,15 +1514,15 @@ export function DesktopWindowPreview({
 
                     <div className="space-y-2">
                       {(profile.customFields || []).map((f) => (
-                        <div key={f.id} className="flex items-center justify-between p-2.5 rounded-xl bg-[#111A2D] border border-slate-800 text-xs">
+                        <div key={f.id} className="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-200 dark:border-slate-800 text-xs">
                           <div className="min-w-0">
-                            <span className="font-bold text-white block">{f.label}</span>
-                            <span className="text-slate-400 text-[11px] truncate block">{f.value || (f as any).content}</span>
+                            <span className="font-bold text-slate-900 dark:text-white block">{f.label}</span>
+                            <span className="text-slate-500 dark:text-slate-400 text-[11px] truncate block">{f.value || (f as any).content}</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => handleDeleteCustomField(f.id)}
-                            className="p-1.5 rounded-lg hover:bg-rose-500/20 text-slate-400 hover:text-rose-400"
+                            className="p-1.5 rounded-lg hover:bg-rose-500/10 dark:hover:bg-rose-500/20 text-slate-400 hover:text-rose-500"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -1538,31 +1538,31 @@ export function DesktopWindowPreview({
               {/* ──────────────────────────────────────────────────────────────────── */}
               <div 
                 id="desktop-row-hiddenSections"
-                className="rounded-2xl border border-slate-800/80 bg-[#0D1527] hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#0D1527] hover:border-slate-300 dark:hover:border-slate-700/80 transition-all overflow-hidden shadow-xs"
               >
                 <div 
                   onClick={() => toggleRow('hiddenSections')}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-white/[0.02]"
+                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-slate-700/20 border border-slate-700/30 text-slate-400 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700/20 border border-slate-200 dark:border-slate-700/30 text-slate-500 dark:text-slate-400 flex items-center justify-center shrink-0">
                       <EyeOff className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-white truncate">Hidden Sections</h3>
-                      <p className="text-xs text-slate-400 truncate">Sections that are hidden from your profile</p>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">Hidden Sections</h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Sections that are hidden from your profile</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/60 border border-slate-700/40 text-slate-400 flex items-center gap-1.5">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/40 text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
                       <span>{hiddenCount > 0 ? `${hiddenCount} Hidden` : 'None'}</span>
                     </span>
 
                     <button
                       type="button"
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-white"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     >
                       {expandedRows.hiddenSections ? <ChevronUp className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </button>
@@ -1570,8 +1570,8 @@ export function DesktopWindowPreview({
                 </div>
 
                 {expandedRows.hiddenSections && (
-                  <div className="px-4 pb-4 pt-1 border-t border-slate-800/60 space-y-2.5 bg-[#090F1C]/70">
-                    <p className="text-xs text-slate-400 pt-2">
+                  <div className="px-4 pb-4 pt-1 border-t border-slate-200 dark:border-slate-800/60 space-y-2.5 bg-slate-50/50 dark:bg-[#090F1C]/70">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 pt-2">
                       Click any hidden section below to restore it to your public card:
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1592,8 +1592,8 @@ export function DesktopWindowPreview({
                             key={item.key} 
                             className={`p-2.5 rounded-xl border flex items-center justify-between text-xs transition-colors ${
                               visible 
-                                ? 'bg-slate-900/40 border-slate-800/40 text-slate-500 opacity-60' 
-                                : 'bg-[#111A2D] border-blue-500/30 text-white shadow-xs'
+                                ? 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800/40 text-slate-400 dark:text-slate-500 opacity-60' 
+                                : 'bg-white dark:bg-[#111A2D] border-blue-400/40 dark:border-blue-500/30 text-slate-900 dark:text-white shadow-xs'
                             }`}
                           >
                             <span className="font-semibold">{item.name}</span>
@@ -1602,7 +1602,7 @@ export function DesktopWindowPreview({
                               onClick={() => handleToggleVisibility(item.key)}
                               className={`text-[10px] font-bold px-2 py-0.5 rounded-lg cursor-pointer transition-colors ${
                                 visible
-                                  ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                                  ? 'bg-slate-200 text-slate-600 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'
                                   : 'bg-blue-600 text-white hover:bg-blue-500'
                               }`}
                             >
