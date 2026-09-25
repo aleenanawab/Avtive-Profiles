@@ -329,7 +329,10 @@ export function ProfileSectionEditor({
     }
     const reader = new FileReader();
     reader.onload = () => {
-      if (reader.result) setCoverImage(reader.result as string);
+      if (reader.result) {
+        setCoverImage(reader.result as string);
+        onLiveUpdate?.({ coverImage: reader.result as string });
+      }
     };
     reader.readAsDataURL(file);
 
@@ -341,6 +344,7 @@ export function ProfileSectionEditor({
       const data = await res.json();
       if (res.ok && data.url) {
         setCoverImage(data.url);
+        onLiveUpdate?.({ coverImage: data.url });
       }
     } catch (e) {
       console.error('Cover upload failed:', e);
@@ -356,7 +360,10 @@ export function ProfileSectionEditor({
     }
     const reader = new FileReader();
     reader.onload = () => {
-      if (reader.result) setAvatar(reader.result as string);
+      if (reader.result) {
+        setAvatar(reader.result as string);
+        onLiveUpdate?.({ avatar: reader.result as string });
+      }
     };
     reader.readAsDataURL(file);
 
@@ -368,6 +375,7 @@ export function ProfileSectionEditor({
       const data = await res.json();
       if (res.ok && data.url) {
         setAvatar(data.url);
+        onLiveUpdate?.({ avatar: data.url });
       }
     } catch (e) {
       console.error('Avatar upload failed:', e);

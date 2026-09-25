@@ -15,3 +15,83 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
     autoRefreshToken: false,
   }
 });
+
+export const DEFAULT_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'profiles';
+const CANDIDATE_BUCKETS = [DEFAULT_STORAGE_BUCKET, 'avatars', 'media', 'uploads', 'public'];
+
+/**
+ * Upload a file buffer directly to Supabase Storage and return its permanent public CDN URL
+ */
+export async function uploadToSupabaseStorage(
+  buffer: Buffer,
+  filename: string,
+  contentType: string,
+  preferredBucket: string = DEFAULT_STORAGE_BUCKET
+): Promise<{ success: boolean; url?: string; error?: string; bucket?: string }> {
+  try {
+    const bucketsToTry = [preferredBucket, ...CANDIDATE_BUCKETS.filter(b => b !== preferredBucket)];
+
+    let lastError: any = null;
+
+    for (const bucket of bucketsToTry) {
+      // 1. Try uploading to bucket
+      const { data, error } = await supabaseAdmin.storage
+        .from(bucket)
+        .upload(filename, buffer, {
+          contentType,
+          upsert: true
+        });
+
+      if (!error && data?.path) {
+        const { data: pubData } = supabaseAdmin.storage.from(bucket).getPublicUrl(data.path);
+        return {
+          success: true,
+          url: pubData.publicUrl,
+          bucket
+        };
+      }
+
+      lastError = error;
+
+      // If bucket does not exist, try creating it with public access
+      if (error && (error.message?.includes('Bucket not found') || error.message?.includes('not found') || (error as any).statusCode === '404')) {
+        try {
+          const { error: createErr } = await supabaseAdmin.storage.createBucket(bucket, {
+            public: true,
+            fileSizeLimit: 10485760 // 10MB
+          });
+
+          if (!createErr) {
+            // Retry upload after creating bucket
+            const { data: retryData, error: retryErr } = await supabaseAdmin.storage
+              .from(bucket)
+              .upload(filename, buffer, {
+                contentType,
+                upsert: true
+              });
+
+            if (!retryErr && retryData?.path) {
+              const { data: pubData } = supabaseAdmin.storage.from(bucket).getPublicUrl(retryData.path);
+              return {
+                success: true,
+                url: pubData.publicUrl,
+                bucket
+              };
+            }
+          }
+        } catch {}
+      }
+    }
+
+    return {
+      success: false,
+      error: lastError?.message || 'Failed to upload to Supabase Storage bucket.'
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || 'Error communicating with Supabase Storage.'
+    };
+  }
+}
+

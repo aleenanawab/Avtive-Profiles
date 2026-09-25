@@ -11,8 +11,20 @@ interface ImageDropzoneProps {
   className?: string;
 }
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/pjpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/svg+xml',
+  'image/avif',
+  'image/heic',
+  'image/heif',
+  'image/bmp'
+];
+const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
 export function ImageDropzone({
   value,
@@ -29,11 +41,12 @@ export function ImageDropzone({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): string | null => {
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return 'Invalid file type. Only JPG, PNG, and WebP are allowed.';
+    const isAllowed = ALLOWED_TYPES.includes(file.type) || file.type.startsWith('image/');
+    if (!isAllowed) {
+      return 'Invalid file type. Please select an image (JPG, PNG, WebP, GIF, SVG, AVIF).';
     }
     if (file.size > MAX_SIZE_BYTES) {
-      return 'File exceeds 5MB limit. Please choose a smaller image.';
+      return 'File exceeds 10MB limit. Please choose a smaller image.';
     }
     return null;
   };

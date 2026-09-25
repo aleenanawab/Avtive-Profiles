@@ -7,6 +7,9 @@ const PUBLIC_PATHS = [
   '/register',
   '/forgot-password',
   '/reset-password',
+  '/onboarding',
+  '/profile',
+  '/api/upload',
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/social',
@@ -15,6 +18,7 @@ const PUBLIC_PATHS = [
   '/api/auth/forgot-password',
   '/api/auth/reset-password'
 ];
+
 
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;

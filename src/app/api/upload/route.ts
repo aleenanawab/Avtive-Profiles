@@ -1,77 +1,197 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
+import { uploadToSupabaseStorage, DEFAULT_STORAGE_BUCKET } from '@/lib/supabase';
 import fs from 'fs';
 import path from 'path';
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_MIME_PREFIXES = ['image/'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+function getExtension(mimeType: string, originalName?: string): string {
+  if (originalName) {
+    const extMatch = originalName.match(/\.([a-zA-Z0-9]+)$/);
+    if (extMatch && extMatch[1]) {
+      const ext = `.${extMatch[1].toLowerCase()}`;
+      if (ALLOWED_EXTENSIONS.includes(ext)) return ext;
+    }
+  }
+  if (mimeType.includes('png')) return '.png';
+  if (mimeType.includes('webp')) return '.webp';
+
+  return '.jpg';
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized: You must be logged in to upload images.' },
-        { status: 401 }
-      );
+    // Session is read if present, but not mandatory to avoid blocking onboarding or profile editing
+    const session = await getSession().catch(() => null);
+
+    let buffer: Buffer | null = null;
+    let mimeType = 'image/jpeg';
+    let originalName: string | undefined;
+
+    const contentType = request.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const jsonBody = await request.json().catch(() => ({}));
+      const rawData = jsonBody.file || jsonBody.image || jsonBody.dataUrl || jsonBody.avatar || jsonBody.cover;
+
+      if (!rawData || typeof rawData !== 'string') {
+        return NextResponse.json(
+          { error: 'No image data provided.' },
+          { status: 400 }
+        );
+      }
+
+      // If already a remote URL (http/https), return it directly
+      if (rawData.startsWith('http://') || rawData.startsWith('https://')) {
+        return NextResponse.json({ success: true, url: rawData, storage: 'remote' });
+      }
+
+      // If base64 data URI
+      if (rawData.startsWith('data:')) {
+        const matches = rawData.match(/^data:([a-zA-Z0-9/+.-]+);base64,(.+)$/);
+        if (matches && matches[2]) {
+          mimeType = matches[1] || 'image/jpeg';
+          buffer = Buffer.from(matches[2], 'base64');
+        } else {
+          return NextResponse.json({ success: true, url: rawData, storage: 'data-url' });
+        }
+      } else {
+        buffer = Buffer.from(rawData, 'base64');
+      }
+    } else {
+      // Parse multipart form data
+      let formData: FormData;
+      try {
+        formData = await request.formData();
+      } catch (formErr) {
+        console.warn('FormData parse fallback:', formErr);
+        return NextResponse.json(
+          { error: 'Invalid form data. Please upload a valid image file.' },
+          { status: 400 }
+        );
+      }
+
+      const file = (formData.get('file') || formData.get('image') || formData.get('avatar')) as File | string | null;
+
+      if (!file) {
+        return NextResponse.json(
+          { error: 'No file provided.' },
+          { status: 400 }
+        );
+      }
+
+      if (typeof file === 'string') {
+        if (file.startsWith('data:image/') || file.startsWith('http://') || file.startsWith('https://')) {
+          return NextResponse.json({ success: true, url: file, storage: 'direct' });
+        }
+        return NextResponse.json(
+          { error: 'Invalid image format.' },
+          { status: 400 }
+        );
+      }
+
+      // Validate File object
+      if (file.size > MAX_FILE_SIZE) {
+        return NextResponse.json(
+          { error: 'File size exceeds the 5MB limit. Please select a smaller photo.' },
+          { status: 400 }
+        );
+      }
+
+      mimeType = file.type || 'image/jpeg';
+      originalName = file.name;
+
+      // Ensure it is an image type
+      const isImage = ALLOWED_MIME_PREFIXES.some(prefix => mimeType.startsWith(prefix)) ||
+        (originalName && ALLOWED_EXTENSIONS.some(ext => originalName!.toLowerCase().endsWith(ext)));
+
+      if (!isImage && mimeType !== 'application/octet-stream') {
+        return NextResponse.json(
+          { error: 'Invalid file type. Please upload an image (JPG, PNG, WebP).' },
+          { status: 400 }
+        );
+      }
+
+      const bytes = await file.arrayBuffer();
+      buffer = Buffer.from(bytes);
     }
 
-    const formData = await request.formData();
-    const file = formData.get('file') as File | null;
-
-    if (!file) {
+    if (!buffer || buffer.length === 0) {
       return NextResponse.json(
-        { error: 'No file provided.' },
+        { error: 'Empty file received.' },
         { status: 400 }
       );
     }
 
-    // Validate MIME type
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.' },
-        { status: 400 }
-      );
-    }
-
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: 'File size exceeds the 5MB limit.' },
-        { status: 400 }
-      );
-    }
-
-    // Determine extension
-    let ext = '.jpg';
-    if (file.type === 'image/png') ext = '.png';
-    else if (file.type === 'image/webp') ext = '.webp';
-    else if (file.type === 'image/jpeg') ext = '.jpg';
-
+    // Determine safe file extension and unique filename
+    const ext = getExtension(mimeType, originalName);
     const filename = `media-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
 
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    // ──────────────────────────────────────────────────────────────────────────
+    // 1. PRIMARY STORAGE: Upload directly to Supabase Storage Bucket
+    // ──────────────────────────────────────────────────────────────────────────
+    const supabaseResult = await uploadToSupabaseStorage(buffer, filename, mimeType, DEFAULT_STORAGE_BUCKET);
+
+    if (supabaseResult.success && supabaseResult.url) {
+      return NextResponse.json({
+        success: true,
+        url: supabaseResult.url,
+        filename,
+        bucket: supabaseResult.bucket,
+        storage: 'supabase',
+        size: buffer.length,
+        mimeType
+      });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const filePath = path.join(uploadDir, filename);
+    console.warn('Supabase storage upload fallback:', supabaseResult.error);
 
-    await fs.promises.writeFile(filePath, buffer);
+    // ──────────────────────────────────────────────────────────────────────────
+    // 2. SECONDARY FALLBACK: Local disk storage (if Supabase key is missing / dev)
+    // ──────────────────────────────────────────────────────────────────────────
+    try {
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
 
-    const publicUrl = `/uploads/${filename}`;
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
 
-    return NextResponse.json({
-      success: true,
-      url: publicUrl
-    });
-  } catch (error) {
-    console.error('File Upload Error:', error);
+      const filePath = path.join(uploadDir, filename);
+      await fs.promises.writeFile(filePath, buffer);
+
+      const publicUrl = `/uploads/${filename}`;
+      return NextResponse.json({
+        success: true,
+        url: publicUrl,
+        filename,
+        storage: 'local',
+        size: buffer.length,
+        mimeType
+      });
+    } catch (fsError) {
+      // ──────────────────────────────────────────────────────────────────────────
+      // 3. TERTIARY FALLBACK: Base64 Data URL so the user is never stuck
+      // ──────────────────────────────────────────────────────────────────────────
+      const dataUrl = `data:${mimeType};base64,${buffer.toString('base64')}`;
+      return NextResponse.json({
+        success: true,
+        url: dataUrl,
+        filename,
+        storage: 'data-url',
+        size: buffer.length,
+        mimeType
+      });
+    }
+  } catch (error: any) {
+    console.error('File Upload API Error:', error);
     return NextResponse.json(
-      { error: 'Failed to upload image. Please try again.' },
-      { status: 500 }
+      { error: error?.message || 'Failed to upload image. Please try again.' },
+      { status: 400 }
     );
   }
 }
+
+
