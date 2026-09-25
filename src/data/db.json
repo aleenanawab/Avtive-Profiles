@@ -22,6 +22,15 @@
       "createdAt": "2026-09-15T06:00:00.000Z"
     },
     {
+      "id": "user-leap",
+      "name": "The Leap Pakistan",
+      "email": "theleappakistan22@gmail.com",
+      "passwordHash": "$2b$10$LTILF6Ei/y3Q5iXTfHHAO.egd.Dw6sU4ASMOaCmzoEllKURxQHZJi",
+      "createdAt": "2026-09-25T11:00:00.000Z",
+      "resetToken": "e6cf985c4141b6f6a9e81f1cc8e5861848e7a66dfa24feab03ce24e33f34e6ad",
+      "resetTokenExpires": "2026-09-25T12:36:03.103Z"
+    },
+    {
       "id": "user-1788782031980-5qjjq",
       "name": "Jane Doe",
       "email": "testuser_1788782031863@example.com",
@@ -40,7 +49,9 @@
       "name": "ALEENA NAWAB",
       "email": "aleenaknawab@gmail.com",
       "passwordHash": "$2b$10$7oliayuAZWQm8AXUyT/dveDvxJzqun1ewrfKiO7Wty0yBlESRId5.",
-      "createdAt": "2026-09-07T12:02:14.301Z"
+      "createdAt": "2026-09-07T12:02:14.301Z",
+      "resetToken": "b539dcd0f51ce313eb1b14d9b2deb3f376bb731addc00a2c415b8d293563aacb",
+      "resetTokenExpires": "2026-09-25T12:35:14.848Z"
     },
     {
       "id": "user-1788783656218-y4fi6",

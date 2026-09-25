@@ -81,6 +81,22 @@ function getInitialSeedData(): DatabaseSchema {
     createdAt: new Date().toISOString()
   };
 
+  const leapUser: UserRecord = {
+    id: 'user-leap',
+    name: 'The Leap Pakistan',
+    email: 'theleappakistan22@gmail.com',
+    passwordHash: abcdPasswordHash,
+    createdAt: new Date().toISOString()
+  };
+
+  const aleenaUser: UserRecord = {
+    id: 'user-aleena',
+    name: 'Aleena Nawab',
+    email: 'aleenaknawab@gmail.com',
+    passwordHash: abcdPasswordHash,
+    createdAt: new Date().toISOString()
+  };
+
   const seededFounderProfile: ProfileData = {
     ...founderProfile,
     userId: founderUser.id,
@@ -112,7 +128,7 @@ function getInitialSeedData(): DatabaseSchema {
   };
 
   return {
-    users: [founderUser, teamUser, abcdUser],
+    users: [founderUser, teamUser, abcdUser, leapUser, aleenaUser],
     profiles: {
       [seededFounderProfile.id]: seededFounderProfile,
       [seededFounderProfile.slug]: seededFounderProfile,

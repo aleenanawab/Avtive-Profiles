@@ -24,7 +24,25 @@ function getSmtpTransporter() {
   const pass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD;
   const secure = process.env.SMTP_SECURE === 'true' || port === 465;
 
-  if (!host || !user || !pass) {
+  if (!user || !pass) {
+    return null;
+  }
+
+  // Optimize for Gmail if host is gmail or user is a gmail address
+  if ((host && host.includes('gmail')) || (user && user.endsWith('@gmail.com'))) {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: user.trim(),
+        pass: pass.trim().replace(/\s+/g, '') // remove any accidental spaces in app password
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+  }
+
+  if (!host) {
     return null;
   }
 
@@ -33,8 +51,11 @@ function getSmtpTransporter() {
     port,
     secure,
     auth: {
-      user,
-      pass
+      user: user.trim(),
+      pass: pass.trim()
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
 }
@@ -131,26 +152,39 @@ export async function sendPasswordResetEmail({
   resetUrl
 }: SendPasswordResetEmailParams): Promise<EmailSendResult> {
   const normalizedEmail = to.trim().toLowerCase();
+  let lastError = '';
 
   // 1. Check if SMTP configuration is present
   const transporter = getSmtpTransporter();
   if (transporter) {
     try {
-      const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@avtive.app';
+      const user = process.env.SMTP_USER || '';
+      let rawFrom = process.env.SMTP_FROM || user || 'no-reply@avtive.app';
+      
+      // Clean up fromAddress
+      let fromAddress = rawFrom.trim();
+      if (!fromAddress.includes('@')) {
+        fromAddress = `"Avtive Security" <${user}>`;
+      } else if (!fromAddress.includes('<')) {
+        fromAddress = `"Avtive Security" <${fromAddress}>`;
+      }
+
       const info = await transporter.sendMail({
-        from: fromAddress.includes('<') ? fromAddress : `"Avtive Security" <${fromAddress}>`,
+        from: fromAddress,
         to: normalizedEmail,
         subject: 'Reset your password',
         text: `Hello,\n\nPlease click the following link to reset your password:\n${resetUrl}\n\nThis link is valid for 1 hour.`,
         html: generatePasswordResetHtml(resetUrl, name)
       });
 
+      console.log(`[SMTP SUCCESS] Sent email to ${normalizedEmail}, messageId: ${info.messageId}`);
       return {
         success: true,
         messageId: info.messageId,
         provider: 'smtp'
       };
     } catch (smtpErr: any) {
+      lastError = smtpErr?.message || String(smtpErr);
       console.error('Nodemailer SMTP sending error:', smtpErr);
       // Fall through to other providers if available
     }
@@ -183,7 +217,8 @@ export async function sendPasswordResetEmail({
         };
       }
       console.error('Resend API response error:', data);
-    } catch (resendErr) {
+    } catch (resendErr: any) {
+      lastError = resendErr?.message || String(resendErr);
       console.error('Resend API error:', resendErr);
     }
   }
@@ -201,13 +236,14 @@ export async function sendPasswordResetEmail({
       };
     }
     console.warn('Supabase auth resetPasswordForEmail notice:', sbError.message);
-  } catch (sbErr) {
+  } catch (sbErr: any) {
+    lastError = sbErr?.message || String(sbErr);
     console.error('Supabase Auth reset exception:', sbErr);
   }
 
   // If no email provider successfully delivered the message
   return {
     success: false,
-    error: 'Email delivery service is not configured or failed to dispatch. Please configure SMTP settings (SMTP_HOST, SMTP_USER, SMTP_PASS) or Supabase Auth SMTP in .env.local.'
+    error: lastError ? `Email delivery failed: ${lastError}` : 'Email delivery service is not configured or failed to dispatch. Please configure SMTP settings (SMTP_HOST, SMTP_USER, SMTP_PASS) in .env.local.'
   };
 }
