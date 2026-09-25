@@ -324,22 +324,14 @@ export default function LoginClient() {
             </div>
 
             {forgotSuccessMessage && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs space-y-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>{forgotSuccessMessage}</span>
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-1">
+                <div className="flex items-center gap-2 font-bold">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span>Password Reset Email Sent</span>
                 </div>
-                {forgotResetUrl && (
-                  <div className="pt-1 border-t border-emerald-500/20">
-                    <Link 
-                      href={forgotResetUrl}
-                      className={`inline-flex items-center gap-1.5 text-[11px] font-bold ${themeStyles.textLink} hover:underline`}
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>Open Reset Password Page (Dev Demo)</span>
-                    </Link>
-                  </div>
-                )}
+                <p className="text-[11px] text-emerald-800 dark:text-emerald-200">
+                  {forgotSuccessMessage} Please check your inbox and click the link to set your new password.
+                </p>
               </div>
             )}
 
@@ -539,22 +531,14 @@ export default function LoginClient() {
             </p>
 
             {forgotSuccessMessage && (
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs space-y-1.5 box-border">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                  <span className="text-[11px]">{forgotSuccessMessage}</span>
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-1 box-border">
+                <div className="flex items-center gap-2 font-bold">
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-[11px]">Password Reset Email Sent</span>
                 </div>
-                {forgotResetUrl && (
-                  <div className="pt-1 border-t border-emerald-500/20">
-                    <Link 
-                      href={forgotResetUrl}
-                      className={`inline-flex items-center gap-1 text-[11px] font-bold ${themeStyles.textLink} hover:underline`}
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>Open Reset Password Page (Demo)</span>
-                    </Link>
-                  </div>
-                )}
+                <p className="text-[10px] text-emerald-800 dark:text-emerald-200">
+                  {forgotSuccessMessage} Please check your email inbox.
+                </p>
               </div>
             )}
 

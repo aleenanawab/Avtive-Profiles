@@ -129,37 +129,14 @@ export default function ForgotPasswordClient() {
           </div>
 
           {successMessage && (
-            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-2.5">
-              <div className="flex items-center gap-2 font-bold">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                <span>{successMessage}</span>
+            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-2">
+              <div className="flex items-center gap-2 font-bold text-sm">
+                <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span>Password Reset Email Sent</span>
               </div>
-
-              {generatedResetUrl && (
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-emerald-500/20 space-y-2">
-                  <div className="text-[11px] text-slate-700 dark:text-slate-300 font-semibold flex items-center justify-between">
-                    <span>Direct Password Reset Link:</span>
-                    <button
-                      type="button"
-                      onClick={handleCopyLink}
-                      className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 text-[10px] flex items-center gap-1 cursor-pointer"
-                    >
-                      {hasCopied ? <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                      <span>{hasCopied ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-                  <div className="text-[10px] font-mono text-cyan-700 dark:text-cyan-300 break-all p-1.5 rounded bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/5">
-                    {generatedResetUrl}
-                  </div>
-                  <Link
-                    href={generatedResetUrl}
-                    className="w-full py-2 px-3 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
-                  >
-                    <span>Click Here to Reset Password Now</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              )}
+              <p className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
+                {successMessage} Please check your inbox and click the secure link to set your new password.
+              </p>
             </div>
           )}
 
@@ -234,23 +211,14 @@ export default function ForgotPasswordClient() {
 
         {/* Notifications */}
         {successMessage && (
-          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-2">
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-1.5">
             <div className="flex items-center gap-1.5 font-bold">
-              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-[11px]">{successMessage}</span>
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>Password Reset Email Sent</span>
             </div>
-
-            {generatedResetUrl && (
-              <div className="pt-1 space-y-1.5">
-                <Link
-                  href={generatedResetUrl}
-                  className="w-full py-2 px-3 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
-                >
-                  <span>Reset Password Now</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
-              </div>
-            )}
+            <p className="text-[11px] text-emerald-800 dark:text-emerald-200">
+              {successMessage} Please check your email inbox to proceed.
+            </p>
           </div>
         )}
 

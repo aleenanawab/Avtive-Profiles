@@ -7,8 +7,6 @@ const PUBLIC_PATHS = [
   '/register',
   '/forgot-password',
   '/reset-password',
-  '/onboarding',
-  '/profile',
   '/api/upload',
   '/api/auth/login',
   '/api/auth/register',
@@ -18,7 +16,6 @@ const PUBLIC_PATHS = [
   '/api/auth/forgot-password',
   '/api/auth/reset-password'
 ];
-
 
 export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -38,9 +35,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Check for active session cookie
+  // 3. Allow public profile viewing (/profile/[slug]) but protect editing/sharing routes
+  if (pathname.startsWith('/profile/')) {
+    const isEditOrShare = pathname.includes('/edit') || pathname.includes('/share');
+    if (!isEditOrShare) {
+      return NextResponse.next();
+    }
+  }
+
+  // 4. Check for active session cookie
   const sessionCookie = request.cookies.get('avtive_session');
   const hasValidSession = Boolean(sessionCookie && sessionCookie.value && sessionCookie.value.includes('.'));
+
 
   // 4. Strict gatekeeper: If no valid session, deny access to site and data
   if (!hasValidSession) {

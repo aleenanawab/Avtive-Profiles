@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyPasswordResetToken, resetUserPassword, getProfileByUserId } from '@/lib/db';
-import { hashPassword, setSessionCookie } from '@/lib/auth';
+import { verifyPasswordResetToken, resetUserPassword } from '@/lib/db';
+import { hashPassword } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const email = body.email;
     const token = body.token;
     const password = body.password || body.newPassword;
@@ -46,32 +46,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Automatically authenticate the user upon successful reset
-    const sessionUser = {
-      id: updatedUser.id,
-      name: updatedUser.name,
-      email: updatedUser.email
-    };
-
-    const userProfile = await getProfileByUserId(updatedUser.id);
-
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
-      message: 'Your password has been successfully reset. You are now logged in.',
-      user: sessionUser,
-      hasProfile: Boolean(userProfile),
-      profileSlug: userProfile?.slug || userProfile?.id || null
-    });
+      message: 'Your password has been successfully updated. Please sign in with your new password.',
+      redirectTo: '/login'
+    }, { status: 200 });
 
-    await setSessionCookie(sessionUser, response);
-
-    return response;
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('Reset Password API Error:', error);
     return NextResponse.json(
-      { error: 'An unexpected error occurred while resetting your password.' },
+      { error: error?.message || 'An unexpected error occurred while resetting your password.' },
       { status: 500 }
     );
   }
 }
+

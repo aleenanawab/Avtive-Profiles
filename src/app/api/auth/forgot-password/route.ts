@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail, createPasswordResetToken } from '@/lib/db';
+import { sendPasswordResetEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const { email } = body;
 
     if (!email || !email.trim()) {
@@ -18,20 +19,20 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'No account found with this email address. Please check and try again.' },
+        { error: 'No registered account found with this email address. Please check and try again.' },
         { status: 404 }
       );
     }
 
     const result = await createPasswordResetToken(normalizedEmail);
-    if (!result) {
+    if (!result || !result.token) {
       return NextResponse.json(
-        { error: 'Failed to generate reset link. Please try again later.' },
+        { error: 'Failed to generate password reset token. Please try again later.' },
         { status: 500 }
       );
     }
 
-    // Build robust reset URL targeting the active site deployment
+    // Build reset URL targeting the active host / domain
     let origin = request.nextUrl?.origin;
     const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
     const proto = request.headers.get('x-forwarded-proto') || 'https';
@@ -45,21 +46,42 @@ export async function POST(request: NextRequest) {
     origin = origin.replace(/\/+$/, '');
     const resetUrl = `${origin}/reset-password?token=${result.token}&email=${encodeURIComponent(normalizedEmail)}`;
 
-    console.log(`[PASSWORD RESET] Email sent to: ${normalizedEmail}`);
-    console.log(`[PASSWORD RESET] Reset Link: ${resetUrl}`);
+    // ──────────────────────────────────────────────────────────────────────────
+    // Send Real Password Reset Email via SMTP / Resend / Supabase
+    // ──────────────────────────────────────────────────────────────────────────
+    const emailResult = await sendPasswordResetEmail({
+      to: normalizedEmail,
+      name: user.name,
+      resetUrl
+    });
+
+    console.log(`[PASSWORD RESET] Target: ${normalizedEmail}`);
+    console.log(`[PASSWORD RESET] Link: ${resetUrl}`);
+    console.log(`[PASSWORD RESET] Email Dispatch Result:`, emailResult);
+
+    if (!emailResult.success) {
+      // In local development or if SMTP is not yet configured in .env.local, provide clear guidance
+      return NextResponse.json({
+        success: false,
+        error: emailResult.error || 'Failed to deliver password reset email. Please ensure SMTP credentials are configured.',
+        // Provide dev fallback reset link only in local dev for testing
+        devResetUrl: process.env.NODE_ENV !== 'production' ? resetUrl : undefined
+      }, { status: 502 });
+    }
 
     return NextResponse.json({
       success: true,
-      message: `Password reset link has been dispatched to ${normalizedEmail}.`,
+      message: `Password reset email has been successfully delivered to ${normalizedEmail}.`,
       email: normalizedEmail,
-      resetUrl: resetUrl // Returned for instant testing and verification
-    });
+      provider: emailResult.provider
+    }, { status: 200 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Forgot Password API Error:', error);
     return NextResponse.json(
-      { error: 'An unexpected error occurred while processing your request.' },
+      { error: error?.message || 'An unexpected error occurred while processing your password reset.' },
       { status: 500 }
     );
   }
 }
+
