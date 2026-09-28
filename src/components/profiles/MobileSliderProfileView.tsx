@@ -701,39 +701,79 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {renderSectionHeader('Personal Details', 'personalDetails')}
 
             <div className="p-3 rounded-xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 space-y-2.5 shadow-xs">
-              <div className="space-y-0.5">
-                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Primary Office Location</label>
-                <div className="relative">
-                  <MapPin className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-0.5">
+                  <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">First Name</label>
                   <input
                     type="text"
-                    value={profile.location || location || ''}
+                    value={profile.firstName || firstName || ''}
                     onChange={(e) => {
-                      setLocation(e.target.value);
-                      updateField('location', e.target.value);
+                      setFirstName(e.target.value);
+                      updateField('firstName', e.target.value);
+                      updateField('name', `${e.target.value} ${secondName}`.trim());
                     }}
-                    placeholder="e.g. New York, NY"
-                    className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                    placeholder="e.g. Syed"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-0.5">
+                  <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Last Name / Surname</label>
+                  <input
+                    type="text"
+                    value={profile.secondName || profile.lastName || secondName || ''}
+                    onChange={(e) => {
+                      setSecondName(e.target.value);
+                      updateField('secondName', e.target.value);
+                      updateField('lastName', e.target.value);
+                      updateField('name', `${firstName} ${e.target.value}`.trim());
+                    }}
+                    placeholder="e.g. Raza"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-0.5">
+                  <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Pronouns</label>
+                  <input
+                    type="text"
+                    value={profile.pronouns || ''}
+                    onChange={(e) => updateField('pronouns', e.target.value)}
+                    placeholder="e.g. He/Him, They/Them"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-0.5">
+                  <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Birthdate</label>
+                  <input
+                    type="text"
+                    value={profile.birthday || ''}
+                    onChange={(e) => updateField('birthday', e.target.value)}
+                    placeholder="e.g. September 18"
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="space-y-0.5">
-                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Business Email</label>
+                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Direct Email</label>
                 <div className="relative">
                   <Mail className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     value={profile.email || ''}
                     onChange={(e) => updateField('email', e.target.value)}
-                    placeholder="name@example.com"
+                    placeholder="user@example.com"
                     className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="space-y-0.5">
-                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Direct Telephone</label>
+                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Direct Phone</label>
                 <div className="relative">
                   <Phone className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                   <input
@@ -747,28 +787,31 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
               </div>
 
               <div className="space-y-0.5">
-                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">WhatsApp Number / Link</label>
+                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Location</label>
                 <div className="relative">
-                  <WhatsAppIcon className="w-3 h-3 text-emerald-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  <MapPin className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
-                    value={profile.whatsapp || ''}
-                    onChange={(e) => updateField('whatsapp', e.target.value)}
-                    placeholder="+1 (555) 000-0000"
+                    value={profile.location || location || ''}
+                    onChange={(e) => {
+                      setLocation(e.target.value);
+                      updateField('location', e.target.value);
+                    }}
+                    placeholder="e.g. San Francisco, CA"
                     className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="space-y-0.5">
-                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Personal Website</label>
+                <label className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">Company / Organization</label>
                 <div className="relative">
-                  <Globe className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  <Briefcase className="w-3 h-3 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
                   <input
-                    type="url"
-                    value={profile.website || ''}
-                    onChange={(e) => updateField('website', e.target.value)}
-                    placeholder="https://yourdomain.com"
+                    type="text"
+                    value={profile.company || ''}
+                    onChange={(e) => updateField('company', e.target.value)}
+                    placeholder="e.g. Avtive Inc."
                     className="w-full pl-7 pr-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                 </div>
@@ -1650,6 +1693,17 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 dark:border-white/10">
+                <h4 className="text-[10px] font-bold text-rose-500 dark:text-rose-400 mb-1.5">Danger Zone</h4>
+                <button
+                  type="button"
+                  onClick={() => showToast?.('Profile reset is disabled on production accounts.')}
+                  className="w-full py-1.5 px-3 rounded-lg bg-rose-500/10 border border-rose-500/25 text-rose-600 dark:text-rose-300 hover:bg-rose-500/20 text-xs font-bold transition-colors cursor-pointer text-center"
+                >
+                  Reset Profile to Default
+                </button>
               </div>
             </div>
           </div>
