@@ -179,11 +179,14 @@ export function ProfileSectionEditor({
       setBookingUrl(profile.bookingUrl || '');
       setCtaLabel(profile.customCta?.label || 'Get In Touch');
       setCtaUrl(profile.customCta?.url || '');
-      setCtaActive(profile.customCta?.active ?? false);
-      setAvatar(profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
-      setCoverImage(profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
+      if (profile.avatar) {
+        setAvatar(profile.avatar);
+      }
+      if (profile.coverImage) {
+        setCoverImage(profile.coverImage);
+      }
     }
-  }, [profile, mode]);
+  }, [profile.id, profile.slug, profile.avatar, profile.coverImage, mode]);
 
   // Derived full name
   const fullName = `${firstName} ${secondName}`.trim() || firstName.trim() || 'Professional';

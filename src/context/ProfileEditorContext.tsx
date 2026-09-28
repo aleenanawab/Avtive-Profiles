@@ -527,12 +527,70 @@ export function ProfileEditorProvider({
       ? `${window.location.origin}/profile/${currentActiveIdentifier}`
       : `https://avtive.app/profile/${currentActiveIdentifier}`;
 
+  // ── Desktop Studio & Navigation State ─────────────────────────────────────
+  const [activeSection, setActiveSection] = useState<string>('profile');
+  const [activeSectionTarget, setActiveSectionTarget] = useState<{
+    sectionKey: string;
+    fieldKey?: string;
+    timestamp: number;
+  } | null>(null);
+  const [isDark, setIsDark] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Sync dark mode from document using MutationObserver subscription
+  useEffect(() => {
+    const checkDark = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  const showToast = useCallback((msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  }, []);
+
+  // Update a single field in state
+  const updateField = useCallback(<K extends keyof ProfileData>(key: K, val: ProfileData[K]) => {
+    setProfile((prev) => ({
+      ...prev,
+      [key]: val,
+    }));
+    // Also sync corresponding atoms
+    if (key === 'theme' && typeof val === 'string') setActiveTheme(val as ProfileTheme);
+    if (key === 'firstName' && typeof val === 'string') setFirstName(val);
+    if (key === 'secondName' && typeof val === 'string') setSecondName(val);
+    if (key === 'username' && typeof val === 'string') setUsername(val);
+    if (key === 'professionalTitle' && typeof val === 'string') setProfessionalTitle(val);
+    if (key === 'bio' && typeof val === 'string') setBio(val);
+    if (key === 'tagline' && typeof val === 'string') setTagline(val);
+    if (key === 'company' && typeof val === 'string') setCompany(val);
+    if (key === 'location' && typeof val === 'string') setLocation(val);
+    if (key === 'avatar' && typeof val === 'string') setAvatar(val);
+    if (key === 'coverImage' && typeof val === 'string') setCoverImage(val);
+    if (key === 'skills' && Array.isArray(val)) setSkills((val as (string | { name: string })[]).map(s => typeof s === 'string' ? s : s.name));
+    if (key === 'about' && typeof val === 'string') setAbout(val);
+    if (key === 'projects' && Array.isArray(val)) setProjects(val as ProjectItem[]);
+    if (key === 'experiences' && Array.isArray(val)) setExperiences(val as ExperienceItem[]);
+    if (key === 'education' && Array.isArray(val)) setEducation(val as EducationItem[]);
+    if (key === 'customFields' && Array.isArray(val)) setCustomFields(val as CustomFieldItem[]);
+    if (key === 'dynamicSections' && Array.isArray(val)) setDynamicSections(val as DynamicSection[]);
+    if (key === 'sectionOrder' && Array.isArray(val)) setSectionOrder(val as string[]);
+    if (key === 'sectionVisibility' && typeof val === 'object' && val !== null) setSectionVisibility(val as Record<string, boolean>);
+    if (key === 'sharingSettings' && typeof val === 'object' && val !== null) setSharingSettings(val as SharingSettings);
+  }, []);
+
   // ── Upload Handlers ───────────────────────────────────────────────────────
   const handleCoverUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = () => {
-      if (reader.result) setCoverImage(reader.result as string);
+      if (reader.result) {
+        setCoverImage(reader.result as string);
+        updateField('coverImage', reader.result as string);
+      }
     };
     reader.readAsDataURL(file);
     setIsUploadingCover(true);
@@ -541,19 +599,29 @@ export function ProfileEditorProvider({
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
-      if (res.ok && data.url) setCoverImage(data.url);
+      if (res.ok && data.url) {
+        setCoverImage(data.url);
+        updateField('coverImage', data.url);
+        showToast('✓ Cover banner updated!');
+      } else {
+        showToast('✓ Cover updated (preview mode)');
+      }
     } catch (e) {
       console.error(e);
+      showToast('✓ Cover updated (local mode)');
     } finally {
       setIsUploadingCover(false);
     }
-  }, []);
+  }, [updateField, showToast]);
 
   const handleAvatarUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = () => {
-      if (reader.result) setAvatar(reader.result as string);
+      if (reader.result) {
+        setAvatar(reader.result as string);
+        updateField('avatar', reader.result as string);
+      }
     };
     reader.readAsDataURL(file);
     setIsUploadingAvatar(true);
@@ -562,13 +630,20 @@ export function ProfileEditorProvider({
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
       const data = await res.json();
-      if (res.ok && data.url) setAvatar(data.url);
+      if (res.ok && data.url) {
+        setAvatar(data.url);
+        updateField('avatar', data.url);
+        showToast('✓ Profile photo updated!');
+      } else {
+        showToast('✓ Photo updated (preview mode)');
+      }
     } catch (e) {
       console.error(e);
+      showToast('✓ Photo updated (local mode)');
     } finally {
       setIsUploadingAvatar(false);
     }
-  }, []);
+  }, [updateField, showToast]);
 
   // ── Social Link Handlers ──────────────────────────────────────────────────
   const handleUpdateLink = useCallback((id: string, patch: Partial<DraggableLinkItem>) => {
@@ -642,7 +717,7 @@ export function ProfileEditorProvider({
     []
   );
 
-  // ── Section Order / Visibility ────────────────────────────────────────────
+  // ── Section Order / Visibility ────────────────────────────────────
   const handleMoveSection = useCallback(
     (index: number, direction: 'up' | 'down') => {
       const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -805,14 +880,6 @@ export function ProfileEditorProvider({
 
   // ── Save All Changes ──────────────────────────────────────────────────────
   const handleSaveChanges = useCallback(async () => {
-    if (!isConfirmed) {
-      setStatusMessage({
-        type: 'error',
-        text: 'Please check the confirmation box to confirm your profile changes before saving.',
-      });
-      return;
-    }
-
     setIsSaving(true);
     setStatusMessage(null);
 
@@ -866,6 +933,7 @@ export function ProfileEditorProvider({
 
       if (!res.ok) {
         setStatusMessage({ type: 'error', text: data.error || 'Failed to save changes.' });
+        showToast(data.error || 'Failed to save changes.');
         setIsSaving(false);
         return;
       }
@@ -895,6 +963,7 @@ export function ProfileEditorProvider({
         type: 'success',
         text: '✓ Profile saved successfully! Live preview updated.',
       });
+      showToast('✓ Profile saved successfully!');
 
       onSaveSuccess?.(finalProfile);
 
@@ -904,6 +973,7 @@ export function ProfileEditorProvider({
     } catch (err: unknown) {
       console.error('Save changes error:', err);
       setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
+      showToast('Network error while saving changes.');
     } finally {
       setIsSaving(false);
     }
@@ -914,64 +984,9 @@ export function ProfileEditorProvider({
     skills, projects, experiences, education,
     activeSocialsPayload, customFields, dynamicSections,
     sectionOrder, sectionVisibility, sharingSettings,
-    isConfirmed,
-    profile, initialProfile, onSaveSuccess,
+    profile, initialProfile, onSaveSuccess, showToast
   ]);
 
-  // ── Desktop Studio & Navigation State ─────────────────────────────────────
-  const [activeSection, setActiveSection] = useState<string>('profile');
-  const [activeSectionTarget, setActiveSectionTarget] = useState<{
-    sectionKey: string;
-    fieldKey?: string;
-    timestamp: number;
-  } | null>(null);
-  const [isDark, setIsDark] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  // Sync dark mode from document using MutationObserver subscription
-  useEffect(() => {
-    const checkDark = () => {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    };
-    const observer = new MutationObserver(checkDark);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
-
-  const showToast = useCallback((msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  }, []);
-
-  // Update a single field in state
-  const updateField = useCallback(<K extends keyof ProfileData>(key: K, val: ProfileData[K]) => {
-    setProfile((prev) => ({
-      ...prev,
-      [key]: val,
-    }));
-    // Also sync corresponding atoms
-    if (key === 'theme' && typeof val === 'string') setActiveTheme(val as ProfileTheme);
-    if (key === 'firstName' && typeof val === 'string') setFirstName(val);
-    if (key === 'secondName' && typeof val === 'string') setSecondName(val);
-    if (key === 'username' && typeof val === 'string') setUsername(val);
-    if (key === 'professionalTitle' && typeof val === 'string') setProfessionalTitle(val);
-    if (key === 'bio' && typeof val === 'string') setBio(val);
-    if (key === 'tagline' && typeof val === 'string') setTagline(val);
-    if (key === 'company' && typeof val === 'string') setCompany(val);
-    if (key === 'location' && typeof val === 'string') setLocation(val);
-    if (key === 'avatar' && typeof val === 'string') setAvatar(val);
-    if (key === 'coverImage' && typeof val === 'string') setCoverImage(val);
-    if (key === 'skills' && Array.isArray(val)) setSkills((val as (string | { name: string })[]).map(s => typeof s === 'string' ? s : s.name));
-    if (key === 'about' && typeof val === 'string') setAbout(val);
-    if (key === 'projects' && Array.isArray(val)) setProjects(val as ProjectItem[]);
-    if (key === 'experiences' && Array.isArray(val)) setExperiences(val as ExperienceItem[]);
-    if (key === 'education' && Array.isArray(val)) setEducation(val as EducationItem[]);
-    if (key === 'customFields' && Array.isArray(val)) setCustomFields(val as CustomFieldItem[]);
-    if (key === 'dynamicSections' && Array.isArray(val)) setDynamicSections(val as DynamicSection[]);
-    if (key === 'sectionOrder' && Array.isArray(val)) setSectionOrder(val as string[]);
-    if (key === 'sectionVisibility' && typeof val === 'object' && val !== null) setSectionVisibility(val as Record<string, boolean>);
-    if (key === 'sharingSettings' && typeof val === 'object' && val !== null) setSharingSettings(val as SharingSettings);
-  }, []);
 
   // Update multiple fields at once
   const updateProfilePartial = useCallback((partial: Partial<ProfileData>) => {

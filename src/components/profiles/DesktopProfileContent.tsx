@@ -74,7 +74,12 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
       'contactInfo',
       'socialLinks',
       'experience',
-      'enhanceProfile'
+      'enhanceProfile',
+      'limitations',
+      'accountInfo',
+      'archive',
+      'security',
+      'settings'
     ];
     const currentIndex = sectionKeys.indexOf(activeSection);
     if (currentIndex >= 0 && currentIndex < sectionKeys.length - 1) {
