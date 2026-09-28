@@ -575,7 +575,7 @@ export function SlidingEditorPanel({
           : p
       ));
     } else {
-      setProjects((prev) => [{ id: `proj-${Date.now()}`, title: projectForm.title.trim(), description: projectForm.description.trim(), tags: tagsArray, link: projectForm.link.trim(), image: projectForm.image.trim() || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop', coverImage: projectForm.image.trim(), category: 'Project' }, ...prev]);
+      setProjects((prev) => [{ id: `proj-${Date.now()}`, title: projectForm.title.trim(), description: projectForm.description.trim(), tags: tagsArray, link: projectForm.link.trim(), image: projectForm.image.trim() || undefined, coverImage: projectForm.image.trim() || undefined, category: 'Project' }, ...prev]);
     }
     setIsInlineProjectOpen(false);
   };
@@ -1006,11 +1006,17 @@ export function SlidingEditorPanel({
                         className="p-3 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 hover:bg-slate-100/80 dark:hover:bg-white/[0.08] transition-colors shadow-2xs"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <img
-                            src={proj.image || proj.coverImage || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop'}
-                            alt={proj.title}
-                            className="w-10 h-10 rounded-lg object-cover border border-slate-200 dark:border-white/10 shrink-0 bg-slate-100 dark:bg-slate-900"
-                          />
+                          {(proj.image || proj.coverImage) ? (
+                            <img
+                              src={proj.image || proj.coverImage}
+                              alt={proj.title}
+                              className="w-10 h-10 rounded-lg object-cover border border-slate-200 dark:border-white/10 shrink-0 bg-slate-100 dark:bg-slate-900"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-500 shrink-0">
+                              <FolderGit2 className="w-4 h-4" />
+                            </div>
+                          )}
                           <div className="min-w-0">
                             <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{proj.title}</h4>
                             <p className="text-[11px] text-slate-500 dark:text-white/60 line-clamp-1">{proj.description}</p>

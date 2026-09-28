@@ -373,14 +373,8 @@ export function ProfileEditorProvider({
   const [location, setLocation] = useState(initialProfile.location || 'Global');
 
   // ── Images ────────────────────────────────────────────────────────────────
-  const [avatar, setAvatar] = useState(
-    initialProfile.avatar ||
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'
-  );
-  const [coverImage, setCoverImage] = useState(
-    initialProfile.coverImage ||
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'
-  );
+  const [avatar, setAvatar] = useState(initialProfile.avatar || '');
+  const [coverImage, setCoverImage] = useState(initialProfile.coverImage || '');
 
   // ── Skills / About ────────────────────────────────────────────────────────
   const [skills, setSkills] = useState<string[]>(extractSkills(initialProfile));
@@ -402,7 +396,7 @@ export function ProfileEditorProvider({
         description: 'Verified digital identity cards and granular privacy profiles built with Next.js and Tailwind CSS.',
         tags: ['Next.js', 'TypeScript', 'Tailwind CSS'],
         link: 'https://www.avtive.app',
-        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop',
+        image: undefined,
         category: 'Web App',
       },
     ];
@@ -836,14 +830,8 @@ export function ProfileEditorProvider({
     setTagline(newProf.tagline || '');
     setCompany(newProf.company || '');
     setLocation(newProf.location || '');
-    setAvatar(
-      newProf.avatar ||
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'
-    );
-    setCoverImage(
-      newProf.coverImage ||
-        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'
-    );
+    setAvatar(newProf.avatar || '');
+    setCoverImage(newProf.coverImage || '');
     setSkills(extractSkills(newProf));
     setAbout(newProf.about || newProf.fullBio || '');
     setProjects(Array.isArray(newProf.projects) ? newProf.projects : []);

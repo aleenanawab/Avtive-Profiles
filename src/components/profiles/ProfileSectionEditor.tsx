@@ -129,12 +129,8 @@ export function ProfileSectionEditor({
   const [ctaActive, setCtaActive] = useState(profile.customCta?.active ?? false);
 
   // Photos
-  const [avatar, setAvatar] = useState(
-    profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'
-  );
-  const [coverImage, setCoverImage] = useState(
-    profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'
-  );
+  const [avatar, setAvatar] = useState(profile.avatar || '');
+  const [coverImage, setCoverImage] = useState(profile.coverImage || '');
 
   // UI / Action status
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -290,8 +286,8 @@ export function ProfileSectionEditor({
       setCtaLabel('Contact Me');
       setCtaUrl('');
       setCtaActive(false);
-      setAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
-      setCoverImage('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
+      setAvatar(profile.avatar || '');
+      setCoverImage(profile.coverImage || '');
     } else {
       // Reset back to original profile
       const fName = profile.firstName || (profile.name ? profile.name.split(' ')[0] : '');
@@ -319,8 +315,8 @@ export function ProfileSectionEditor({
       setCtaLabel(profile.customCta?.label || 'Get In Touch');
       setCtaUrl(profile.customCta?.url || '');
       setCtaActive(profile.customCta?.active ?? false);
-      setAvatar(profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop');
-      setCoverImage(profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop');
+      setAvatar(profile.avatar || '');
+      setCoverImage(profile.coverImage || '');
     }
   };
 

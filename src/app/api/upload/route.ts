@@ -33,9 +33,15 @@ export async function POST(request: NextRequest) {
 
     const contentType = request.headers.get('content-type') || '';
 
+    let requestedBucket = 'profiles';
+
     if (contentType.includes('application/json')) {
       const jsonBody = await request.json().catch(() => ({}));
       const rawData = jsonBody.file || jsonBody.image || jsonBody.dataUrl || jsonBody.avatar || jsonBody.cover;
+      const jBucket = jsonBody.bucket || jsonBody.category || jsonBody.type;
+      if (jBucket === 'links' || jBucket === 'link' || jBucket === 'social') {
+        requestedBucket = 'links';
+      }
 
       if (!rawData || typeof rawData !== 'string') {
         return NextResponse.json(
@@ -72,6 +78,11 @@ export async function POST(request: NextRequest) {
           { error: 'Invalid form data. Please upload a valid image file.' },
           { status: 400 }
         );
+      }
+
+      const formBucket = (formData.get('bucket') || formData.get('category') || formData.get('type')) as string | null;
+      if (formBucket === 'links' || formBucket === 'link' || formBucket === 'social') {
+        requestedBucket = 'links';
       }
 
       const file = (formData.get('file') || formData.get('image') || formData.get('avatar')) as File | string | null;
@@ -128,19 +139,19 @@ export async function POST(request: NextRequest) {
 
     // Determine safe file extension and unique filename
     const ext = getExtension(mimeType, originalName);
-    const filename = `media-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
+    const filename = `${requestedBucket}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
 
     // ──────────────────────────────────────────────────────────────────────────
-    // 1. PRIMARY STORAGE: Upload directly to Supabase Storage Bucket
+    // 1. PRIMARY STORAGE: Upload directly to Supabase Storage Bucket (profiles / links)
     // ──────────────────────────────────────────────────────────────────────────
-    const supabaseResult = await uploadToSupabaseStorage(buffer, filename, mimeType, DEFAULT_STORAGE_BUCKET);
+    const supabaseResult = await uploadToSupabaseStorage(buffer, filename, mimeType, requestedBucket);
 
     if (supabaseResult.success && supabaseResult.url) {
       return NextResponse.json({
         success: true,
         url: supabaseResult.url,
         filename,
-        bucket: supabaseResult.bucket,
+        bucket: supabaseResult.bucket || requestedBucket,
         storage: 'supabase',
         size: buffer.length,
         mimeType

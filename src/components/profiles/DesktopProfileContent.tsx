@@ -19,12 +19,14 @@ import {
   Phone, 
   MapPin, 
   RotateCcw, 
-  Save, 
-  CheckCircle2, 
+  CheckCircle2,
   Smartphone,
   ArrowRight,
   Sun,
-  Moon
+  Moon,
+  Upload,
+  FolderGit2,
+  Save
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { usePortfolioTheme } from '@/context/ThemeContext';
@@ -235,14 +237,14 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
       technology: tagsArray.join(', '),
       link: newProject.link.trim() || undefined,
       liveUrl: newProject.link.trim() || undefined,
-      image: newProject.image.trim() || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop',
-      coverImage: newProject.image.trim() || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop'
+      image: newProject.image.trim() || undefined,
+      coverImage: newProject.image.trim() || undefined
     };
     const current = Array.isArray(profile.projects) ? profile.projects : [];
     updateField('projects', [projectItem, ...current]);
     setNewProject({ title: '', description: '', tags: '', link: '', image: '' });
     setIsAddingProject(false);
-    showToast('✓ Project added!');
+    showToast('✓ Project added with Supabase storage sync!');
   };
 
   const handleDeleteProject = (id: string) => {
@@ -491,7 +493,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
             <div className="rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xs dark:shadow-sm transition-colors">
               <div className="relative h-36 sm:h-44 w-full bg-slate-200 dark:bg-slate-800">
                 <img 
-                  src={profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'} 
+                  src={profile.coverImage || ''} 
                   alt="Cover" 
                   className="w-full h-full object-cover"
                 />
@@ -516,7 +518,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                 <div className="flex items-end gap-3.5">
                   <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-[#0E1526] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-xl shrink-0 group">
                     <img 
-                      src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'} 
+                      src={profile.avatar || ''} 
                       alt="Avatar" 
                       className="w-full h-full object-cover"
                     />
@@ -903,14 +905,42 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">Cover Image URL (optional)</label>
-                    <input
-                      type="text"
-                      value={newProject.image}
-                      onChange={(e) => setNewProject({ ...newProject, image: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl bg-[#080D1A] border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500"
-                      placeholder="https://images.unsplash.com/..."
-                    />
+                    <label className="block text-[11px] text-slate-400 mb-1">Project Image (Supabase Storage / URL)</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={newProject.image}
+                        onChange={(e) => setNewProject({ ...newProject, image: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                        placeholder="Supabase image URL..."
+                      />
+                      <label className="px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shrink-0">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('bucket', 'profiles');
+                            try {
+                              const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                              const data = await res.json();
+                              if (data.url) {
+                                setNewProject(prev => ({ ...prev, image: data.url }));
+                                showToast('✓ Project image uploaded to Supabase Storage!');
+                              }
+                            } catch (err) {
+                              console.error(err);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
@@ -937,11 +967,17 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
               {(Array.isArray(profile.projects) ? profile.projects : []).map((proj) => (
                 <div key={proj.id} className="p-4 rounded-2xl bg-[#0E1526] border border-white/10 flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3.5 min-w-0">
-                    <img 
-                      src={proj.image || proj.coverImage || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop'} 
-                      alt={proj.title}
-                      className="w-16 h-16 rounded-xl object-cover border border-white/10 shrink-0 bg-slate-800"
-                    />
+                    {(proj.image || proj.coverImage) ? (
+                      <img 
+                        src={proj.image || proj.coverImage} 
+                        alt={proj.title}
+                        className="w-16 h-16 rounded-xl object-cover border border-white/10 shrink-0 bg-slate-800"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                        <FolderGit2 className="w-6 h-6" />
+                      </div>
+                    )}
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <h4 className="text-xs font-bold text-white truncate">{proj.title}</h4>

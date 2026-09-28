@@ -216,9 +216,9 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <img
-                      src={p.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200'}
+                      src={p.avatar || ''}
                       alt={p.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 dark:border-white/10"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 dark:border-white/10 bg-slate-200 dark:bg-slate-800"
                     />
                     <div>
                       <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">

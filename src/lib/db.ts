@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, SUPABASE_DEFAULT_AVATAR, SUPABASE_DEFAULT_COVER } from '@/lib/supabase';
 import { ProfileData, UserRecord, ProfileTheme, UserConnection, SharingSettings, normalizeProfileType } from '@/types/profile';
 import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
 
@@ -411,7 +411,7 @@ export async function createUser(data: {
       designation: 'Professional',
       company: 'Avtive Network',
       location: 'Global',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+      avatar: SUPABASE_DEFAULT_AVATAR,
       shortBio: 'Welcome to my digital profile on Avtive.',
       fullBio: 'Connect with me directly via phone, WhatsApp, or email.',
       theme: 'elegant',
@@ -554,8 +554,8 @@ export async function createProfileForUser(
     designation: data.designation?.trim() || data.professionalTitle?.trim() || profession,
     company: data.company?.trim() || 'Avtive Network',
     location: data.location?.trim() || 'Global',
-    avatar: data.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
-    coverImage: data.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop',
+    avatar: data.avatar || SUPABASE_DEFAULT_AVATAR,
+    coverImage: data.coverImage || SUPABASE_DEFAULT_COVER,
     bio: data.bio?.trim() || data.shortBio?.trim() || 'Welcome to my digital profile on Avtive.',
     about: data.about?.trim() || data.fullBio?.trim() || 'Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.',
     shortBio: data.shortBio?.trim() || data.bio?.trim() || 'Welcome to my digital profile on Avtive.',

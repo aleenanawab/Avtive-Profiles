@@ -16,8 +16,35 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   }
 });
 
-export const DEFAULT_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'profiles';
-const CANDIDATE_BUCKETS = [DEFAULT_STORAGE_BUCKET, 'avatars', 'media', 'uploads', 'public'];
+export const PROFILES_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'profiles';
+export const LINKS_STORAGE_BUCKET = process.env.SUPABASE_LINKS_BUCKET || 'links';
+export const DEFAULT_STORAGE_BUCKET = PROFILES_STORAGE_BUCKET;
+export const CANDIDATE_BUCKETS = ['profiles', 'links', 'avatars', 'media', 'uploads', 'public'];
+
+/**
+ * Get permanent Supabase Storage public CDN URL for an asset in any bucket
+ */
+export function getSupabasePublicUrl(bucket: string = PROFILES_STORAGE_BUCKET, filePath: string): string {
+  if (!filePath) return '';
+  if (filePath.startsWith('http://') || filePath.startsWith('https://') || filePath.startsWith('data:')) {
+    return filePath;
+  }
+  const cleanPath = filePath.replace(/^\/+/, '');
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${cleanPath}`;
+}
+
+export function getSupabaseProfileAssetUrl(filename: string): string {
+  return getSupabasePublicUrl(PROFILES_STORAGE_BUCKET, filename);
+}
+
+export function getSupabaseLinkAssetUrl(filename: string): string {
+  return getSupabasePublicUrl(LINKS_STORAGE_BUCKET, filename);
+}
+
+export const SUPABASE_DEFAULT_AVATAR = `${supabaseUrl}/storage/v1/object/public/profiles/default-avatar.png`;
+export const SUPABASE_DEFAULT_COVER = `${supabaseUrl}/storage/v1/object/public/profiles/default-cover.png`;
+export const SUPABASE_DEFAULT_PROJECT_IMAGE = `${supabaseUrl}/storage/v1/object/public/profiles/default-project.png`;
+export const SUPABASE_DEFAULT_LINK_ICON = `${supabaseUrl}/storage/v1/object/public/links/default-link.png`;
 
 /**
  * Upload a file buffer directly to Supabase Storage and return its permanent public CDN URL
@@ -26,7 +53,7 @@ export async function uploadToSupabaseStorage(
   buffer: Buffer,
   filename: string,
   contentType: string,
-  preferredBucket: string = DEFAULT_STORAGE_BUCKET
+  preferredBucket: string = PROFILES_STORAGE_BUCKET
 ): Promise<{ success: boolean; url?: string; error?: string; bucket?: string }> {
   try {
     const bucketsToTry = [preferredBucket, ...CANDIDATE_BUCKETS.filter(b => b !== preferredBucket)];

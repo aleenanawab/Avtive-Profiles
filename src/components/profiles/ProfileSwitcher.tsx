@@ -223,9 +223,9 @@ export function ProfileSwitcher({
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <img
-                        src={p.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
+                        src={p.avatar || ''}
                         alt={p.name}
-                        className="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-zinc-700 shrink-0"
+                        className="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-zinc-700 shrink-0 bg-slate-200 dark:bg-zinc-800"
                       />
                       <div className="min-w-0">
                         <div className="text-xs truncate font-bold leading-snug">

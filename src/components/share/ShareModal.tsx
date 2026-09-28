@@ -296,9 +296,9 @@ export function ShareModal({
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <img
-                            src={r.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
+                            src={r.avatar || ''}
                             alt={r.name}
-                            className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-white/15 shrink-0"
+                            className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-white/15 shrink-0 bg-slate-200 dark:bg-white/10"
                           />
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
@@ -520,9 +520,9 @@ export function ShareModal({
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/10 border border-slate-200 dark:border-white/15 space-y-3">
                   <div className="flex items-center gap-3">
                     <img
-                      src={selectedProfile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop'}
+                      src={selectedProfile.avatar || ''}
                       alt={selectedProfile.name}
-                      className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-white/20 shrink-0"
+                      className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-white/20 shrink-0 bg-slate-200 dark:bg-white/10"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">

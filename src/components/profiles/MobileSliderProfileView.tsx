@@ -271,15 +271,15 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       technology: tagsArr.join(', '),
       link: newProject.link.trim() || undefined,
       liveUrl: newProject.link.trim() || undefined,
-      image: newProject.image.trim() || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop',
-      coverImage: newProject.image.trim() || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600&auto=format&fit=crop'
+      image: newProject.image.trim() || undefined,
+      coverImage: newProject.image.trim() || undefined
     };
     const updated = [item, ...(Array.isArray(projects) ? projects : [])];
     setProjects(updated);
     updateField('projects', updated);
     setNewProject({ title: '', description: '', tags: '', link: '', image: '' });
     setIsAddingProject(false);
-    showToast?.('✓ Project added!');
+    showToast?.('✓ Project added with Supabase storage sync!');
   };
 
   const handleDeleteProject = (id: string) => {
@@ -526,7 +526,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             <div className="rounded-xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 overflow-hidden shadow-xs">
               <div className="relative h-24 w-full bg-slate-200 dark:bg-slate-800">
                 <img 
-                  src={profile.coverImage || coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop'} 
+                  src={profile.coverImage || coverImage || ''} 
                   alt="Cover" 
                   className="w-full h-full object-cover"
                 />
@@ -546,7 +546,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                 <div className="flex items-end gap-2.5">
                   <div className="relative w-14 h-14 rounded-full border-2 border-white dark:border-[#0E1526] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-md shrink-0 group">
                     <img 
-                      src={profile.avatar || avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'} 
+                      src={profile.avatar || avatar || ''} 
                       alt="Avatar" 
                       className="w-full h-full object-cover"
                     />
@@ -931,6 +931,42 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   className="w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
                 />
 
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={newProject.image}
+                    onChange={(e) => setNewProject({ ...newProject, image: e.target.value })}
+                    placeholder="Project Image (Supabase / URL)"
+                    className="flex-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
+                  />
+                  <label className="px-2.5 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer shrink-0">
+                    <Upload className="w-3 h-3" />
+                    <span>Upload</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('bucket', 'profiles');
+                        try {
+                          const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                          const data = await res.json();
+                          if (data.url) {
+                            setNewProject(prev => ({ ...prev, image: data.url }));
+                            showToast?.('✓ Project image uploaded to Supabase Storage!');
+                          }
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
                 <button
                   type="button"
                   onClick={handleSaveProject}
@@ -953,9 +989,22 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                     className="p-3 rounded-xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 space-y-1.5 shadow-xs"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.title}</div>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 mt-0.5">{p.description}</p>
+                      <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                        {(p.image || p.coverImage) ? (
+                          <img
+                            src={p.image || p.coverImage}
+                            alt={p.title}
+                            className="w-10 h-10 rounded-lg object-cover border border-slate-200 dark:border-white/10 shrink-0 bg-slate-800"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                            <FolderGit2 className="w-4 h-4" />
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.title}</div>
+                          <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 mt-0.5">{p.description}</p>
+                        </div>
                       </div>
                       <button
                         type="button"
@@ -1778,7 +1827,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
             {/* Top Interactive Banner Header */}
             <div className="relative h-28 w-full shrink-0 overflow-hidden bg-slate-200 dark:bg-[#0D1626] transition-colors">
               <img
-                src={coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop'}
+                src={coverImage || ''}
                 alt="Profile Cover"
                 className="w-full h-full object-cover opacity-80"
               />
@@ -1803,7 +1852,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   title="Change Profile Photo"
                 >
                   <img
-                    src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'}
+                    src={avatar || ''}
                     alt={fullName}
                     className="w-full h-full object-cover"
                   />
