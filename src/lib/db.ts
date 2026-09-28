@@ -704,6 +704,8 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
         slug: data.slug,
         name: data.name,
         email: data.email,
+        avatar: data.avatar || (data.data && data.data.avatar) || '',
+        coverImage: data.cover_image || data.coverImage || (data.data && (data.data.coverImage || data.data.cover_image)) || '',
         type: data.type || 'individual',
         theme: data.theme || 'editorial'
       };
@@ -786,6 +788,8 @@ export async function getProfilesByUserId(userId: string): Promise<ProfileData[]
             slug: item.slug,
             name: item.name,
             email: item.email,
+            avatar: item.avatar || (item.data && item.data.avatar) || '',
+            coverImage: item.cover_image || item.coverImage || (item.data && (item.data.coverImage || item.data.cover_image)) || '',
             type: item.type || 'individual',
             theme: item.theme || 'editorial'
           };
@@ -975,6 +979,23 @@ export async function updateProfile(
   }
   saveDb(db);
 
+  // Sync profile update to Supabase
+  asyncSyncSupabase(
+    supabaseAdmin.from('profiles').upsert({
+      id: merged.id,
+      user_id: merged.userId,
+      slug: merged.slug,
+      name: merged.name,
+      email: merged.email || '',
+      type: merged.type,
+      theme: merged.theme,
+      avatar: merged.avatar || '',
+      cover_image: merged.coverImage || '',
+      data: merged,
+      updated_at: merged.updatedAt
+    }, { onConflict: 'id' })
+  );
+
   return { success: true, profile: merged, status: 200 };
 }
 
@@ -1018,6 +1039,24 @@ export async function duplicateProfile(
   db.profiles[cloned.slug] = cloned;
   saveDb(db);
 
+  // Sync duplicate to Supabase
+  asyncSyncSupabase(
+    supabaseAdmin.from('profiles').upsert({
+      id: cloned.id,
+      user_id: cloned.userId,
+      slug: cloned.slug,
+      name: cloned.name,
+      email: cloned.email || '',
+      type: cloned.type,
+      theme: cloned.theme,
+      avatar: cloned.avatar || '',
+      cover_image: cloned.coverImage || '',
+      data: cloned,
+      created_at: cloned.createdAt,
+      updated_at: cloned.updatedAt
+    }, { onConflict: 'id' })
+  );
+
   return { success: true, profile: cloned, status: 201 };
 }
 
@@ -1053,6 +1092,12 @@ export async function deleteProfile(
   }
 
   saveDb(db);
+
+  // Delete from Supabase
+  asyncSyncSupabase(
+    supabaseAdmin.from('profiles').delete().eq('id', target.id)
+  );
+
   return { success: true, status: 200 };
 }
 
