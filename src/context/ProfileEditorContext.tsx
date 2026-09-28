@@ -596,6 +596,13 @@ export function ProfileEditorProvider({
       if (res.ok && data.url) {
         setCoverImage(data.url);
         updateField('coverImage', data.url);
+        try {
+          const updatedObj = { ...profile, coverImage: data.url };
+          if (updatedObj.slug) localStorage.setItem(`avtive_profile_${updatedObj.slug}`, JSON.stringify(updatedObj));
+          if (updatedObj.id) localStorage.setItem(`avtive_profile_${updatedObj.id}`, JSON.stringify(updatedObj));
+          localStorage.setItem('avtive_last_saved_profile', JSON.stringify(updatedObj));
+          window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: updatedObj }));
+        } catch {}
         showToast('✓ Cover banner updated!');
       } else {
         showToast('✓ Cover updated (preview mode)');
@@ -606,7 +613,7 @@ export function ProfileEditorProvider({
     } finally {
       setIsUploadingCover(false);
     }
-  }, [updateField, showToast]);
+  }, [updateField, showToast, profile]);
 
   const handleAvatarUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) return;
@@ -627,6 +634,13 @@ export function ProfileEditorProvider({
       if (res.ok && data.url) {
         setAvatar(data.url);
         updateField('avatar', data.url);
+        try {
+          const updatedObj = { ...profile, avatar: data.url };
+          if (updatedObj.slug) localStorage.setItem(`avtive_profile_${updatedObj.slug}`, JSON.stringify(updatedObj));
+          if (updatedObj.id) localStorage.setItem(`avtive_profile_${updatedObj.id}`, JSON.stringify(updatedObj));
+          localStorage.setItem('avtive_last_saved_profile', JSON.stringify(updatedObj));
+          window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: updatedObj }));
+        } catch {}
         showToast('✓ Profile photo updated!');
       } else {
         showToast('✓ Photo updated (preview mode)');
@@ -637,7 +651,7 @@ export function ProfileEditorProvider({
     } finally {
       setIsUploadingAvatar(false);
     }
-  }, [updateField, showToast]);
+  }, [updateField, showToast, profile]);
 
   // ── Social Link Handlers ──────────────────────────────────────────────────
   const handleUpdateLink = useCallback((id: string, patch: Partial<DraggableLinkItem>) => {
@@ -800,7 +814,12 @@ export function ProfileEditorProvider({
       if (savedProfile.company) setCompany(savedProfile.company);
       if (savedProfile.location) setLocation(savedProfile.location);
       if (savedProfile.avatar) setAvatar(savedProfile.avatar);
-      if (savedProfile.coverImage) setCoverImage(savedProfile.coverImage);
+      try {
+        if (savedProfile.slug) localStorage.setItem(`avtive_profile_${savedProfile.slug}`, JSON.stringify(savedProfile));
+        if (savedProfile.id) localStorage.setItem(`avtive_profile_${savedProfile.id}`, JSON.stringify(savedProfile));
+        localStorage.setItem('avtive_last_saved_profile', JSON.stringify(savedProfile));
+        window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: savedProfile }));
+      } catch {}
 
       setStatusMessage({
         type: 'success',
@@ -936,13 +955,17 @@ export function ProfileEditorProvider({
         data.updatedProfile || data.profile || { ...profile, ...updatedData, slug: savedSlug };
       setProfile(finalProfile);
 
-      // Cache locally
+      // Cache locally and dispatch update event
       try {
         localStorage.setItem(`avtive_profile_${savedSlug}`, JSON.stringify(finalProfile));
+        if (finalProfile.id) {
+          localStorage.setItem(`avtive_profile_${finalProfile.id}`, JSON.stringify(finalProfile));
+        }
         if (initialProfile.slug) {
           localStorage.setItem(`avtive_profile_${initialProfile.slug}`, JSON.stringify(finalProfile));
         }
         localStorage.setItem('avtive_last_saved_profile', JSON.stringify(finalProfile));
+        window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: finalProfile }));
       } catch (e) {
         console.error('Failed to cache profile in localStorage:', e);
       }
@@ -1038,10 +1061,14 @@ export function ProfileEditorProvider({
 
       try {
         localStorage.setItem(`avtive_profile_${savedSlug}`, JSON.stringify(finalProfile));
+        if (finalProfile.id) {
+          localStorage.setItem(`avtive_profile_${finalProfile.id}`, JSON.stringify(finalProfile));
+        }
         if (initialProfile.slug) {
           localStorage.setItem(`avtive_profile_${initialProfile.slug}`, JSON.stringify(finalProfile));
         }
         localStorage.setItem('avtive_last_saved_profile', JSON.stringify(finalProfile));
+        window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: finalProfile }));
       } catch (e) {
         console.error('Failed to cache profile in localStorage:', e);
       }

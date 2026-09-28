@@ -81,6 +81,54 @@ function PublicProfileClientInner({
     setIsDark(hasDark);
   }, []);
 
+  // Hydrate updated profile from localStorage on mount & listen to real-time updates
+  useEffect(() => {
+    try {
+      const cached =
+        localStorage.getItem(`avtive_profile_${initialProfile.slug}`) ||
+        localStorage.getItem(`avtive_profile_${initialProfile.id}`) ||
+        localStorage.getItem('avtive_last_saved_profile');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && (parsed.id === initialProfile.id || parsed.slug === initialProfile.slug)) {
+          setProfile((prev) => ({ ...prev, ...parsed }));
+          if (parsed.theme) setActiveTheme(parsed.theme);
+        }
+      }
+    } catch {}
+
+    const handleProfileUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<ProfileData>;
+      if (customEvent.detail) {
+        const updated = customEvent.detail;
+        if (updated.id === initialProfile.id || updated.slug === initialProfile.slug) {
+          setProfile((prev) => ({ ...prev, ...updated }));
+          if (updated.theme) setActiveTheme(updated.theme);
+        }
+      }
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key && e.key.startsWith('avtive_profile_') && e.newValue) {
+        try {
+          const updated = JSON.parse(e.newValue);
+          if (updated && (updated.id === initialProfile.id || updated.slug === initialProfile.slug)) {
+            setProfile((prev) => ({ ...prev, ...updated }));
+            if (updated.theme) setActiveTheme(updated.theme);
+          }
+        } catch {}
+      }
+    };
+
+    window.addEventListener('avtive_profile_updated', handleProfileUpdate);
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('avtive_profile_updated', handleProfileUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [initialProfile.id, initialProfile.slug]);
+
   // Fetch / verify session dynamically so logout button is always available when user is logged in
   useEffect(() => {
     if (!currentUser) {

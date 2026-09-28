@@ -9,6 +9,7 @@ import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon, WhatsAppIcon } from './BrandIcons';
 import { StatsRow } from './profiles/StatsRow';
 import { ProfileSwitcher } from './profiles/ProfileSwitcher';
+import { SUPABASE_DEFAULT_AVATAR, SUPABASE_DEFAULT_COVER } from '@/lib/supabase';
 
 interface HeroSectionProps {
   profile: ProfileData;
@@ -38,8 +39,8 @@ export function HeroSection({
 }: HeroSectionProps) {
   const router = useRouter();
 
-  const coverUrl = profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop';
-  const avatarUrl = profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop';
+  const coverUrl = profile.coverImage || SUPABASE_DEFAULT_COVER;
+  const avatarUrl = profile.avatar || SUPABASE_DEFAULT_AVATAR;
   const sharing = profile.sharingSettings || {};
 
   const normalizedType = normalizeProfileType(profile.type);

@@ -51,31 +51,72 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
   const activeProfile = profiles.find((p) => p.id === activeProfileId) || profiles[0] || initialProfiles[0];
 
   useEffect(() => {
-    if (profiles.length === 0) {
-      try {
-        const lastSaved = localStorage.getItem('avtive_last_saved_profile');
-        if (lastSaved) {
-          const parsed = JSON.parse(lastSaved);
-          if (parsed && parsed.id) {
-            setProfiles([parsed]);
-            setActiveProfileId(parsed.id);
+    // 1. Sync from localStorage cached profiles on mount if any updates were saved
+    try {
+      setProfiles((prev) => {
+        return prev.map((p) => {
+          const cachedSlug = localStorage.getItem(`avtive_profile_${p.slug}`);
+          const cachedId = localStorage.getItem(`avtive_profile_${p.id}`);
+          const cached = cachedSlug || cachedId;
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed && (parsed.id === p.id || parsed.slug === p.slug)) {
+                return { ...p, ...parsed };
+              }
+            } catch {}
           }
+          return p;
+        });
+      });
+    } catch {}
+
+    // 2. Fetch fresh list from server
+    fetch('/api/profile/list')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.profiles && Array.isArray(data.profiles) && data.profiles.length > 0) {
+          setProfiles(data.profiles);
         }
-      } catch {}
-      fetch('/api/auth/me')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.profiles && data.profiles.length > 0) {
-            setProfiles(data.profiles);
-            setActiveProfileId(data.profiles[0].id);
-          } else if (data.profile) {
-            setProfiles([data.profile]);
-            setActiveProfileId(data.profile.id);
+      })
+      .catch(() => {});
+
+    // 3. Listen for custom profile update events & storage events
+    const handleProfileUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<ProfileData>;
+      if (customEvent.detail) {
+        const updated = customEvent.detail;
+        setProfiles((prev) => {
+          const exists = prev.some((p) => p.id === updated.id || p.slug === updated.slug);
+          if (exists) {
+            return prev.map((p) => (p.id === updated.id || p.slug === updated.slug ? { ...p, ...updated } : p));
           }
-        })
-        .catch(() => {});
-    }
-  }, [profiles.length]);
+          return [...prev, updated];
+        });
+      }
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key && e.key.startsWith('avtive_profile_') && e.newValue) {
+        try {
+          const updated = JSON.parse(e.newValue);
+          if (updated && (updated.id || updated.slug)) {
+            setProfiles((prev) =>
+              prev.map((p) => (p.id === updated.id || p.slug === updated.slug ? { ...p, ...updated } : p))
+            );
+          }
+        } catch {}
+      }
+    };
+
+    window.addEventListener('avtive_profile_updated', handleProfileUpdate);
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('avtive_profile_updated', handleProfileUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -215,11 +256,19 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={p.avatar || ''}
-                      alt={p.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 dark:border-white/10 bg-slate-200 dark:bg-slate-800"
-                    />
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 dark:border-white/10 bg-slate-200 dark:bg-slate-800 shrink-0">
+                      {p.avatar ? (
+                        <img
+                          src={p.avatar}
+                          alt={p.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-sm bg-gradient-to-tr from-cyan-500/20 to-blue-500/20">
+                          {(p.profileName || p.name || 'U').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
                     <div>
                       <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
                         {p.profileName || p.name}
@@ -320,7 +369,15 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2.5">
-                    <img src={p.avatar} alt={p.name} className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-white/10" />
+                    <div className="relative w-9 h-9 rounded-full overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-200 dark:bg-slate-800 shrink-0">
+                      {p.avatar ? (
+                        <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-xs bg-gradient-to-tr from-cyan-500/20 to-blue-500/20">
+                          {(p.profileName || p.name || 'U').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
                     <div>
                       <h3 className="text-xs font-bold text-slate-900 dark:text-white">{p.profileName || p.name}</h3>
                       <p className="text-[10px] text-slate-500 dark:text-slate-400">{p.designation}</p>

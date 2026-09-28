@@ -49,28 +49,77 @@ export function ProfileSwitcher({
   const [isSubmittingNew, setIsSubmittingNew] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
-  // Sync with initialProfiles prop
+  // Sync with initialProfiles prop and localStorage cache
   useEffect(() => {
-    if (initialProfiles && initialProfiles.length > 0) {
-      setProfiles(initialProfiles);
-      setLoading(false);
-    }
+    try {
+      setProfiles((prev) => {
+        const base = initialProfiles && initialProfiles.length > 0 ? initialProfiles : prev;
+        return base.map((p) => {
+          const cached = localStorage.getItem(`avtive_profile_${p.slug}`) || localStorage.getItem(`avtive_profile_${p.id}`);
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed && (parsed.id === p.id || parsed.slug === p.slug)) {
+                return { ...p, ...parsed };
+              }
+            } catch {}
+          }
+          return p;
+        });
+      });
+      if (initialProfiles && initialProfiles.length > 0) {
+        setLoading(false);
+      }
+    } catch {}
   }, [initialProfiles]);
 
-  // Fetch profiles if not supplied
+  // Fetch profiles & listen for real-time updates
   useEffect(() => {
-    if (!initialProfiles || initialProfiles.length === 0) {
-      fetch('/api/profile/list')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.profiles && Array.isArray(data.profiles)) {
-            setProfiles(data.profiles);
+    fetch('/api/profile/list')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.profiles && Array.isArray(data.profiles) && data.profiles.length > 0) {
+          setProfiles(data.profiles);
+        }
+      })
+      .catch((err) => console.error('Failed to load profiles for switcher', err))
+      .finally(() => setLoading(false));
+
+    const handleProfileUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<ProfileData>;
+      if (customEvent.detail) {
+        const updated = customEvent.detail;
+        setProfiles((prev) => {
+          const exists = prev.some((p) => p.id === updated.id || p.slug === updated.slug);
+          if (exists) {
+            return prev.map((p) => (p.id === updated.id || p.slug === updated.slug ? { ...p, ...updated } : p));
           }
-        })
-        .catch((err) => console.error('Failed to load profiles for switcher', err))
-        .finally(() => setLoading(false));
-    }
-  }, [initialProfiles]);
+          return [...prev, updated];
+        });
+      }
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key && e.key.startsWith('avtive_profile_') && e.newValue) {
+        try {
+          const updated = JSON.parse(e.newValue);
+          if (updated && (updated.id || updated.slug)) {
+            setProfiles((prev) =>
+              prev.map((p) => (p.id === updated.id || p.slug === updated.slug ? { ...p, ...updated } : p))
+            );
+          }
+        } catch {}
+      }
+    };
+
+    window.addEventListener('avtive_profile_updated', handleProfileUpdate);
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('avtive_profile_updated', handleProfileUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -222,11 +271,19 @@ export function ProfileSwitcher({
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <img
-                        src={p.avatar || ''}
-                        alt={p.name}
-                        className="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-zinc-700 shrink-0 bg-slate-200 dark:bg-zinc-800"
-                      />
+                      <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-700 shrink-0 bg-slate-200 dark:bg-zinc-800">
+                        {p.avatar ? (
+                          <img
+                            src={p.avatar}
+                            alt={p.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-xs bg-gradient-to-tr from-cyan-500/20 to-blue-500/20">
+                            {(p.profileName || p.name || 'U').charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
                       <div className="min-w-0">
                         <div className="text-xs truncate font-bold leading-snug">
                           {p.profileName || p.name}

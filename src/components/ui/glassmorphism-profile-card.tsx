@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Clock, Plus, Copy, Zap } from "lucide-react";
+import { SUPABASE_DEFAULT_AVATAR } from "@/lib/supabase";
 
 interface ComponentProps {
   name?: string;
@@ -23,7 +24,7 @@ export default function Component({
   name = "Mesum Raza",
   role = "Founder & CEO | Avtive",
   email = "mesum@avtive.app",
-  avatarSrc = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop",
+  avatarSrc = SUPABASE_DEFAULT_AVATAR,
   statusText = "Available for Enterprise Demos",
   statusColor = "bg-green-500",
   glowText = "Avtive Smart NFC Identity",

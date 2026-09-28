@@ -47,6 +47,7 @@ import {
   EducationItem, 
   CustomFieldItem 
 } from '@/types/profile';
+import { SUPABASE_DEFAULT_AVATAR } from '@/lib/supabase';
 
 // Stylized Avtive double-chevron "A" Logo
 export function AvtiveLogoIcon({ className = 'w-5 h-5 text-white' }: { className?: string }) {
@@ -427,7 +428,7 @@ export function DesktopWindowPreview({
               <Puzzle className="w-3.5 h-3.5" />
             </button>
             <div className="w-5 h-5 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600 shrink-0 ml-1">
-              <img src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'} alt="avatar" className="w-full h-full object-cover" />
+              <img src={profile.avatar || SUPABASE_DEFAULT_AVATAR} alt="avatar" className="w-full h-full object-cover" />
             </div>
             <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer">
               <MoreVertical className="w-3.5 h-3.5" />
@@ -458,7 +459,7 @@ export function DesktopWindowPreview({
               <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-[#111A2D] border border-slate-200 dark:border-slate-800/60 shadow-2xs">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-blue-500/40 shrink-0 bg-slate-200 dark:bg-slate-800">
                   <img 
-                    src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop'} 
+                    src={profile.avatar || SUPABASE_DEFAULT_AVATAR} 
                     alt={profile.name || 'User'} 
                     className="w-full h-full object-cover"
                   />
@@ -661,7 +662,7 @@ export function DesktopWindowPreview({
                     <div className="flex items-center gap-4 pt-2">
                       <div className="relative group/av">
                         <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-500/40 bg-slate-100 dark:bg-slate-800 shrink-0">
-                          <img src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop'} alt="avatar" className="w-full h-full object-cover" />
+                          <img src={profile.avatar || SUPABASE_DEFAULT_AVATAR} alt="avatar" className="w-full h-full object-cover" />
                         </div>
                         <button
                           type="button"
