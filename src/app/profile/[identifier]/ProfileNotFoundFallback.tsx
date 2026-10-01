@@ -9,9 +9,10 @@ import { PublicProfileClient } from './PublicProfileClient';
 interface ProfileNotFoundFallbackProps {
   identifier: string;
   session: UserSession | null;
+  initialIsEditing?: boolean;
 }
 
-export function ProfileNotFoundFallback({ identifier, session }: ProfileNotFoundFallbackProps) {
+export function ProfileNotFoundFallback({ identifier, session, initialIsEditing }: ProfileNotFoundFallbackProps) {
   const [cachedProfile, setCachedProfile] = useState<ProfileData | null>(null);
   const [isChecking, setIsChecking] = useState(true);
 
@@ -125,6 +126,7 @@ export function ProfileNotFoundFallback({ identifier, session }: ProfileNotFound
         initialProfile={cachedProfile}
         session={session}
         isOwner={isOwner}
+        initialIsEditing={initialIsEditing}
       />
     );
   }

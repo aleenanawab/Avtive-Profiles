@@ -12,7 +12,7 @@ import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { PhonePreview } from '@/components/PhonePreview';
 import { getThemeConfig } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
-import { SlidingEditorPanel } from '@/components/profiles/SlidingEditorPanel';
+import { EditProfileClient } from '@/app/edit-profile/EditProfileClient';
 import { ProfileEditorProvider } from '@/context/ProfileEditorContext';
 import { 
   Share2, 
@@ -29,23 +29,29 @@ import {
   LogIn
 } from 'lucide-react';
 
-interface PublicProfileClientProps {
+export interface PublicProfileClientProps {
   initialProfile: ProfileData;
   session: UserSession | null;
   isOwner: boolean;
+  initialIsEditing?: boolean;
+  userProfiles?: ProfileData[];
 }
 
 export function PublicProfileClient({
   initialProfile,
   session,
-  isOwner
+  isOwner,
+  initialIsEditing = false,
+  userProfiles = []
 }: PublicProfileClientProps) {
   return (
-    <ProfileEditorProvider initialProfile={initialProfile}>
+    <ProfileEditorProvider initialProfile={initialProfile} userProfiles={userProfiles}>
       <PublicProfileClientInner
         initialProfile={initialProfile}
         session={session}
         isOwner={isOwner}
+        initialIsEditing={initialIsEditing}
+        userProfiles={userProfiles}
       />
     </ProfileEditorProvider>
   );
@@ -54,7 +60,9 @@ export function PublicProfileClient({
 function PublicProfileClientInner({
   initialProfile,
   session,
-  isOwner
+  isOwner,
+  initialIsEditing = false,
+  userProfiles = []
 }: PublicProfileClientProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData>(initialProfile);
@@ -63,8 +71,8 @@ function PublicProfileClientInner({
   );
   const [isDark, setIsDark] = useState(false);
   const [viewMode, setViewMode] = useState<'standard' | 'web'>('standard');
-  const [isEditing, setIsEditing] = useState(false);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(Boolean(initialIsEditing && isOwner));
+  const [activeScreenTab, setActiveScreenTab] = useState<'both' | 'desktop' | 'mobile'>('both');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<UserSession | null>(session);
@@ -80,6 +88,24 @@ function PublicProfileClientInner({
     const hasDark = document.documentElement.classList.contains('dark');
     setIsDark(hasDark);
   }, []);
+
+  // Check sessionStorage for post-creation edit mode or URL param
+  useEffect(() => {
+    if (typeof window !== 'undefined' && isOwner) {
+      try {
+        const storedEditTarget = sessionStorage.getItem('avtive_open_edit_mode');
+        const targetSlug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
+        if (storedEditTarget && (storedEditTarget === targetSlug || storedEditTarget === 'true' || storedEditTarget === (profile.slug || profile.id))) {
+          setIsEditing(true);
+          sessionStorage.removeItem('avtive_open_edit_mode');
+        }
+      } catch {}
+
+      if (window.location.search.includes('edit=')) {
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  }, [profile.id, profile.slug, initialProfile.id, initialProfile.slug, isOwner]);
 
   // Hydrate updated profile from localStorage on mount & listen to real-time updates
   useEffect(() => {
@@ -183,10 +209,27 @@ function PublicProfileClientInner({
 
   const identifier = profile.slug || profile.id;
 
+  // Single shared editor: switches on the same page with no /edit route and no navigation
+  if (isEditing && isOwner) {
+    return (
+      <EditProfileClient
+        initialProfile={profile}
+        userProfiles={userProfiles && userProfiles.length > 0 ? userProfiles : [profile]}
+        onReturnToView={(updatedProfile) => {
+          if (updatedProfile) {
+            setProfile(updatedProfile);
+            if (updatedProfile.theme) setActiveTheme(updatedProfile.theme);
+          }
+          setIsEditing(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div 
       data-theme={activeTheme}
-      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans overflow-x-auto`}
+      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans overflow-x-hidden`}
     >
       {/* Toast Notification Banner */}
       {toastMessage && (
@@ -220,14 +263,15 @@ function PublicProfileClientInner({
           {/* Right Toolbar Actions: Studio Editor, Dashboard, Share & Logout */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             {isOwner && (
-              <Link
-                href={`/profile/${identifier}/edit`}
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-all shadow-2xs shrink-0 cursor-pointer"
                 title="Open Studio Editor"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Studio Editor</span>
-              </Link>
+              </button>
             )}
 
             {currentUser && (
@@ -276,18 +320,72 @@ function PublicProfileClientInner({
         </div>
       </div>
 
+      {/* Responsive Viewport Switcher for Small Screens (< xl) */}
+      <div className="w-full flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-white/5 xl:hidden shrink-0 bg-white/90 dark:bg-[#0A101E]/90 backdrop-blur-md transition-colors z-20">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-xs">
+            A
+          </div>
+          <span className="text-xs font-bold text-slate-900 dark:text-white">Avtive Twin-Screen</span>
+        </div>
+
+        <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-[#050913] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('desktop')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'desktop'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <Monitor className="w-3.5 h-3.5" />
+            <span>Desktop</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('mobile')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'mobile'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>Mobile</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('both')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'both'
+                ? 'bg-white text-slate-900 shadow-xs dark:bg-white/10 dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <span>Both</span>
+          </button>
+        </div>
+      </div>
+
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN VIEWPORT                                             */}
       {/* Both Desktop Screen and Mobile Screen are permanently mounted & visible.   */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <main className="flex-1 w-full p-3 sm:p-5 lg:p-6 flex flex-row items-start justify-center gap-4 sm:gap-6 min-w-[1100px] xl:min-w-0 max-w-[1920px] mx-auto">
+      <main className={`flex-1 w-full p-2.5 sm:p-5 lg:p-6 flex flex-row items-start justify-center gap-4 sm:gap-6 max-w-[1920px] mx-auto min-w-0 box-border ${
+        activeScreenTab === 'both' ? 'overflow-x-auto xl:overflow-x-visible' : 'overflow-x-hidden'
+      }`}>
         
         {/* ======================================================================= */}
         {/* WORKING SCREEN 1: DESKTOP PUBLIC PROFILE CARD                          */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[560px] max-w-[1240px] flex flex-col rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1528] shadow-2xl shadow-black/30 overflow-hidden"
+          className={`flex-1 min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1528] shadow-2xl shadow-black/30 overflow-hidden ${
+            activeScreenTab === 'mobile' ? 'hidden xl:flex' : 'flex'
+          }`}
         >
           {/* Desktop Frame Window Header */}
           <div className="w-full bg-slate-100 dark:bg-[#0A101E] border-b border-slate-200 dark:border-white/10 px-4 py-2 flex items-center justify-between gap-3 shrink-0">
@@ -308,13 +406,13 @@ function PublicProfileClientInner({
           </div>
 
           {/* Desktop Profile Card Content */}
-          <div className="flex-1 w-full overflow-y-auto p-4 sm:p-6">
+          <div className="flex-1 w-full overflow-y-auto p-4 sm:p-6 min-w-0">
             <AvtiveDigitalCard
               profile={{ ...profile, theme: activeTheme }}
               canEdit={isOwner}
-              isEditing={isEditing}
+              isEditing={false}
               isConnected={false}
-              onOpenEdit={() => router.push(`/profile/${identifier}/edit`)}
+              onOpenEdit={() => setIsEditing(true)}
               onCancelEdit={() => setIsEditing(false)}
               onSaveEdits={handleSaveEdits}
               onSaveContact={() => showToast('Contact information saved!')}
@@ -343,7 +441,9 @@ function PublicProfileClientInner({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center"
+          className={`w-full max-w-[375px] shrink-0 flex flex-col items-center min-w-0 ${
+            activeScreenTab === 'desktop' ? 'hidden xl:flex' : 'flex'
+          }`}
         >
           {/* Top Label */}
           <div className="w-full flex items-center justify-between px-2 mb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
@@ -363,7 +463,7 @@ function PublicProfileClientInner({
               profile={{ ...profile, theme: activeTheme }}
               isDark={isDark}
               canEdit={isOwner}
-              onOpenEdit={() => router.push(`/profile/${identifier}/edit`)}
+              onOpenEdit={() => setIsEditing(true)}
               onOpenShare={() => setIsShareModalOpen(true)}
               onOpenConnect={() => showToast('Connected!')}
               onSaveContact={() => showToast('Contact information saved!')}

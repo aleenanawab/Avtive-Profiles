@@ -86,7 +86,10 @@ export function CreateProfileClient({ user }: CreateProfileClientProps) {
       }
 
       const targetSlug = data.profile?.slug || data.profile?.id;
-      router.push(`/profile/${targetSlug}`);
+      try {
+        sessionStorage.setItem('avtive_open_edit_mode', targetSlug);
+      } catch {}
+      router.push(`/profile/${targetSlug}?edit=true`);
       router.refresh();
     } catch (err) {
       console.error(err);

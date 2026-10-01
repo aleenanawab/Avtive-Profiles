@@ -220,8 +220,9 @@ function CreateProfileContent() {
               localStorage.setItem(`avtive_profile_${data.profile.id}`, JSON.stringify(data.profile));
             }
           }
+          sessionStorage.setItem('avtive_open_edit_mode', targetSlug);
         } catch {}
-        router.push(`/profile/${targetSlug}`);
+        router.push(`/profile/${targetSlug}?edit=true`);
       } else {
         router.push('/dashboard');
       }

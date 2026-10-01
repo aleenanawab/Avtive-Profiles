@@ -9,6 +9,7 @@ import { ProfileNotFoundFallback } from './ProfileNotFoundFallback';
 
 interface PageProps {
   params: Promise<{ identifier: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -33,8 +34,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ProfilePage({ params }: PageProps) {
+export default async function ProfilePage({ params, searchParams }: PageProps) {
   const { identifier } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const isInitialEdit = resolvedSearchParams?.edit === 'true' || resolvedSearchParams?.edit === '1';
+
   const session = await getSession();
 
   // 1. Mandatory Gatekeeper: Register/Login must come first before profile access (Req 13 & 47)
@@ -46,7 +50,13 @@ export default async function ProfilePage({ params }: PageProps) {
 
   // 1. If Profile was not found on server, use ProfileNotFoundFallback to hydrate from localStorage if available
   if (!profile) {
-    return <ProfileNotFoundFallback identifier={identifier} session={session} />;
+    return (
+      <ProfileNotFoundFallback 
+        identifier={identifier} 
+        session={session} 
+        initialIsEditing={isInitialEdit}
+      />
+    );
   }
 
   // 2. Strict Owner Verification: Caller's session ID === targetProfile.userId
@@ -64,11 +74,17 @@ export default async function ProfilePage({ params }: PageProps) {
   // so hidden contact info, experience, etc. are strictly omitted before sending to client
   const servedProfile = sanitizeProfileForPublic(profile, isOwner);
 
+  // 4. Fetch all user profiles for the switcher if owner
+  const { getProfilesByUserId } = await import('@/lib/db');
+  const userProfiles = (isOwner && session?.id) ? await getProfilesByUserId(session.id) : [];
+
   return (
     <PublicProfileClient
       initialProfile={servedProfile}
       session={session}
       isOwner={isOwner}
+      initialIsEditing={isInitialEdit && isOwner}
+      userProfiles={userProfiles}
     />
   );
 }

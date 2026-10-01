@@ -48,16 +48,6 @@ export default async function ProfileEditPage({ searchParams }: EditProfilePageP
     }
   }
 
-  const allUserProfiles = await getProfilesByUserId(session.id);
-
-  return (
-    <main className="min-h-screen w-full figma-editor-bg text-slate-900 dark:text-white font-sans">
-      <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-slate-400">Loading profile editor...</div>}>
-        <EditProfileClient 
-          initialProfile={targetProfile} 
-          userProfiles={allUserProfiles}
-        />
-      </Suspense>
-    </main>
-  );
+  const targetSlug = targetProfile.slug || targetProfile.id;
+  redirect(`/profile/${encodeURIComponent(targetSlug)}?edit=true`);
 }

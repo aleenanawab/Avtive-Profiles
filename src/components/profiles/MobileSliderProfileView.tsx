@@ -1723,7 +1723,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
   };
 
   return (
-    <div className={`w-[375px] min-w-[375px] max-w-[375px] h-full flex flex-col select-none overflow-hidden ${className}`}>
+    <div className={`w-full max-w-[375px] min-w-0 h-full flex flex-col select-none overflow-hidden ${className}`}>
       
       {/* Hidden File Upload Inputs */}
       <input

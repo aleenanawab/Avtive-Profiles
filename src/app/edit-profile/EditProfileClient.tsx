@@ -24,26 +24,34 @@ import {
   X,
   ArrowRight,
   Sun,
-  Moon
+  Moon,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
 
-interface EditProfileClientProps {
+export interface EditProfileClientProps {
   initialProfile: ProfileData;
   userProfiles?: ProfileData[];
+  onReturnToView?: (updatedProfile?: ProfileData) => void;
 }
 
-export function EditProfileClient({ initialProfile, userProfiles }: EditProfileClientProps) {
+export function EditProfileClient({ initialProfile, userProfiles, onReturnToView }: EditProfileClientProps) {
   return (
     <ProfileEditorProvider initialProfile={initialProfile} userProfiles={userProfiles}>
-      <EditProfileClientInner initialProfile={initialProfile} userProfiles={userProfiles} />
+      <EditProfileClientInner initialProfile={initialProfile} userProfiles={userProfiles} onReturnToView={onReturnToView} />
     </ProfileEditorProvider>
   );
 }
 
-function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileClientProps) {
+function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }: EditProfileClientProps) {
   const router = useRouter();
   const { isDark, toggleDarkMode } = usePortfolioTheme();
+  const [activeScreenTab, setActiveScreenTab] = useState<'both' | 'desktop' | 'mobile'>('both');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarPinned, setIsSidebarPinned] = useState(false);
+  const closeTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const isTouchRef = React.useRef(false);
+
   const { 
     profile, 
     activeSection,
@@ -55,6 +63,75 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
     currentIdentifier,
     handleSwitchToProfile
   } = useProfileEditor();
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const startCloseTimer = () => {
+    if (isSidebarPinned) return;
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      setIsSidebarOpen(false);
+    }, 280);
+  };
+
+  const handleTriggerMouseEnter = () => {
+    if (isTouchRef.current) return;
+    clearCloseTimer();
+    setIsSidebarOpen(true);
+  };
+
+  const handleTriggerMouseLeave = () => {
+    if (isTouchRef.current) return;
+    startCloseTimer();
+  };
+
+  const handlePanelMouseEnter = () => {
+    if (isTouchRef.current) return;
+    clearCloseTimer();
+    setIsSidebarOpen(true);
+  };
+
+  const handlePanelMouseLeave = () => {
+    if (isTouchRef.current) return;
+    startCloseTimer();
+  };
+
+  const handleTriggerClick = () => {
+    clearCloseTimer();
+    if (isSidebarOpen && isSidebarPinned) {
+      setIsSidebarOpen(false);
+      setIsSidebarPinned(false);
+    } else {
+      setIsSidebarOpen(true);
+      setIsSidebarPinned(true);
+    }
+  };
+
+  const handleCloseSidebar = () => {
+    clearCloseTimer();
+    setIsSidebarOpen(false);
+    setIsSidebarPinned(false);
+  };
+
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleTriggerClick();
+    } else if (e.key === 'Escape') {
+      handleCloseSidebar();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      clearCloseTimer();
+    };
+  }, []);
 
   // Session guard
   useEffect(() => {
@@ -122,7 +199,11 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
     if (currentIndex >= 0 && currentIndex < sectionKeys.length - 1) {
       setActiveSection(sectionKeys[currentIndex + 1]);
     } else {
-      router.push(`/profile/${identifier}`);
+      if (onReturnToView) {
+        onReturnToView(profile);
+      } else {
+        router.push(`/profile/${identifier}`);
+      }
     }
   };
 
@@ -140,7 +221,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center bg-slate-100 dark:bg-[#070D18] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-auto transition-colors">
+    <div className="min-h-screen xl:h-screen w-full flex flex-col justify-start xl:justify-center bg-slate-100 dark:bg-[#070D18] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-hidden transition-colors">
       
       {/* Toast Notification Banner */}
       {toastMessage && (
@@ -150,20 +231,74 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
         </div>
       )}
 
+      {/* Responsive Viewport Switcher for Small Screens (< xl) */}
+      <div className="w-full flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-white/5 xl:hidden shrink-0 bg-white/90 dark:bg-[#0A101E]/90 backdrop-blur-md transition-colors z-20">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-xs">
+            A
+          </div>
+          <span className="text-xs font-bold text-slate-900 dark:text-white">Avtive Studio</span>
+        </div>
+
+        <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-[#050913] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('desktop')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'desktop'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <Monitor className="w-3.5 h-3.5" />
+            <span>Desktop</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('mobile')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'mobile'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>Mobile</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('both')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'both'
+                ? 'bg-white text-slate-900 shadow-xs dark:bg-white/10 dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <span>Both</span>
+          </button>
+        </div>
+      </div>
+
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN WORKING WORKSPACE (Clean Minimalist Window)          */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 flex flex-row items-stretch justify-center gap-6 min-w-[1100px] xl:min-w-0 max-w-[1920px] mx-auto my-auto">
+      <main className={`flex-1 w-full p-2.5 sm:p-5 lg:p-6 flex flex-row items-stretch justify-center gap-6 max-w-[1920px] mx-auto min-w-0 min-h-0 box-border ${
+        activeScreenTab === 'both' ? 'overflow-x-auto xl:overflow-x-visible' : 'overflow-x-hidden'
+      }`}>
         
         {/* ======================================================================= */}
         {/* WORKING SCREEN 1: DESKTOP PROFILE STUDIO EDITOR                        */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[560px] max-w-[1240px] flex flex-col rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors"
+          className={`flex-1 min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0 ${
+            activeScreenTab === 'mobile' ? 'hidden xl:flex' : 'flex'
+          }`}
         >
           {/* Desktop Frame Window Bar */}
-          <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
+          <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors overflow-x-auto sm:overflow-visible">
             
             {/* macOS Window Controls + Hamburger Toggle Button */}
             <div className="flex items-center gap-3 shrink-0">
@@ -173,13 +308,23 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                 <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block border border-emerald-600/40" />
               </div>
 
-              {/* Hamburger Button to Open Slide-in Sidebar Panel */}
+              {/* Sections Trigger Button: Hover to Open + Click/Tap + Keyboard */}
               <button
                 type="button"
-                onClick={() => setIsSidebarOpen(prev => !prev)}
+                onClick={handleTriggerClick}
+                onMouseEnter={handleTriggerMouseEnter}
+                onMouseLeave={handleTriggerMouseLeave}
+                onTouchStart={() => { isTouchRef.current = true; }}
+                onKeyDown={handleTriggerKeyDown}
+                aria-expanded={isSidebarOpen}
+                aria-haspopup="true"
                 aria-label={isSidebarOpen ? "Close section sidebar" : "Open section sidebar"}
-                title={isSidebarOpen ? "Close Sections Menu" : "Open Sections Menu"}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 dark:border-white/10 transition-all cursor-pointer active:scale-95"
+                title={isSidebarOpen ? "Close Sections Menu" : "Open Sections Menu (Hover to open)"}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 ${
+                  isSidebarOpen
+                    ? 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30 shadow-xs'
+                    : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 dark:border-white/10'
+                }`}
               >
                 {isSidebarOpen ? (
                   <X className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
@@ -192,14 +337,26 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
 
             {/* Public Profile Navigation with Intuitive ArrowLeft Icon */}
             <div className="flex items-center gap-2 shrink-0">
-              <Link
-                href={`/profile/${identifier}`}
-                aria-label="Return to Public Profile"
-                title="Return to Public Profile"
-                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-              </Link>
+              {onReturnToView ? (
+                <button
+                  type="button"
+                  onClick={() => onReturnToView(profile)}
+                  aria-label="Return to Public Profile"
+                  title="Return to Public Profile"
+                  className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </button>
+              ) : (
+                <Link
+                  href={`/profile/${identifier}`}
+                  aria-label="Return to Public Profile"
+                  title="Return to Public Profile"
+                  className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </Link>
+              )}
             </div>
 
             {/* Inside Action Buttons: Functional Buttons Moved Inside Screen */}
@@ -279,7 +436,7 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
           </div>
 
           {/* Desktop Editor Canvas (Relative container for slide-in drawer) */}
-          <div className="flex-1 w-full overflow-hidden flex flex-row relative">
+          <div className="flex-1 w-full min-h-0 overflow-hidden flex flex-row relative">
             
             {/* Animated Slide-In Sidebar Drawer on the Same Desktop Screen */}
             <AnimatePresence>
@@ -291,28 +448,43 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    onClick={() => setIsSidebarOpen(false)}
-                    className="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-30 cursor-pointer"
+                    transition={{ duration: 0.15 }}
+                    onClick={handleCloseSidebar}
+                    className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-30 cursor-pointer"
                   />
 
-                  {/* Slide-In Drawer Panel */}
+                  {/* Slide-In Drawer Panel with Hover Buffer */}
                   <motion.div
                     key="desktop-sidebar-drawer"
                     initial={{ x: -340, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -340, opacity: 0 }}
-                    transition={{ type: 'spring', damping: 26, stiffness: 240 }}
-                    className="absolute top-0 bottom-0 left-0 z-40 h-full shadow-2xl"
+                    transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+                    onMouseEnter={handlePanelMouseEnter}
+                    onMouseLeave={handlePanelMouseLeave}
+                    className="absolute top-0 bottom-0 left-0 z-40 h-full shadow-2xl max-w-full"
                   >
-                    <DesktopProfileSidebar onClose={() => setIsSidebarOpen(false)} />
+                    <DesktopProfileSidebar onClose={handleCloseSidebar} />
                   </motion.div>
                 </>
               )}
             </AnimatePresence>
 
+            {/* Left Edge Hover Trigger Strip (Like Chrome vertical tabs / Instagram Web) */}
+            {!isSidebarOpen && (
+              <div
+                onMouseEnter={handleTriggerMouseEnter}
+                onMouseLeave={handleTriggerMouseLeave}
+                onClick={handleTriggerClick}
+                title="Hover or click to open Sections"
+                className="hidden sm:flex flex-col items-center justify-start pt-3 w-2.5 hover:w-6 hover:bg-cyan-500/10 border-r border-transparent hover:border-cyan-500/20 transition-all duration-200 cursor-pointer z-20 group shrink-0"
+              >
+                <div className="w-1 h-6 rounded-full bg-slate-300 dark:bg-white/20 group-hover:bg-cyan-500 transition-colors" />
+              </div>
+            )}
+
             {/* Main Desktop Profile Editor Content */}
-            <div className="flex-1 w-full h-full overflow-hidden">
+            <div className="flex-1 w-full h-full min-h-0 min-w-0 overflow-hidden">
               <DesktopProfileContent hideRightPreview={true} />
             </div>
           </div>
@@ -323,10 +495,12 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center justify-center"
+          className={`w-full max-w-[375px] shrink-0 flex flex-col items-center justify-center min-w-0 ${
+            activeScreenTab === 'desktop' ? 'hidden xl:flex' : 'flex'
+          }`}
         >
-          {/* Smartphone Chassis Frame (Standard 375px × 667px) */}
-          <div className="w-[375px] min-w-[375px] max-w-[375px] h-[667px] min-h-[667px] max-h-[667px] rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors">
+          {/* Smartphone Chassis Frame (Responsive, fits viewport height) */}
+          <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] max-h-[calc(100vh-100px)] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors min-h-0">
             
             {/* Phone Status Bar (9:41, Wifi, Battery) */}
             <div className="w-full bg-slate-100 dark:bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-700 dark:text-slate-300 shrink-0 border-b border-slate-200 dark:border-white/5 select-none transition-colors">
@@ -341,9 +515,9 @@ function EditProfileClientInner({ initialProfile, userProfiles }: EditProfileCli
               </div>
             </div>
 
-            {/* Mobile Editor Canvas: Fixed 375px internal website design viewport */}
-            <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-50 dark:bg-[#050811] transition-colors">
-              <div className="w-full flex-1 flex flex-col overflow-x-hidden">
+            {/* Mobile Editor Canvas: Responsive 375px internal website design viewport */}
+            <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-50 dark:bg-[#050811] transition-colors">
+              <div className="w-full flex-1 flex flex-col overflow-x-hidden min-h-0">
                 <MobileSliderProfileView onSave={onGlobalSave} />
               </div>
             </div>

@@ -143,7 +143,10 @@ function DetailsStepContent() {
       }
 
       const targetId = data.profile?.slug || data.profile?.id;
-      router.push(`/profile/${targetId}`);
+      try {
+        sessionStorage.setItem('avtive_open_edit_mode', targetId);
+      } catch {}
+      router.push(`/profile/${targetId}?edit=true`);
       router.refresh();
     } catch (err) {
       console.error(err);
