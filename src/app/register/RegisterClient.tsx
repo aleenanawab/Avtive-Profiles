@@ -26,30 +26,11 @@ export default function RegisterClient() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-
-  // Client-side session check: Existing authenticated users must not stay on registration
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !sessionStorage.getItem('avtive_active_session')) {
-      return;
-    }
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
-          if (hasProfiles) {
-            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug || data.user.id;
-            router.replace(`/profile/${targetSlug}`);
-          } else {
-            router.replace('/onboarding/role');
-          }
-        }
-      })
-      .catch(() => {});
-  }, [router]);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -103,6 +84,11 @@ export default function RegisterClient() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match. Please verify both passwords.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -113,7 +99,7 @@ export default function RegisterClient() {
           name: name.trim(),
           email: email.trim(),
           password,
-          confirmPassword: password
+          confirmPassword
         })
       });
 
@@ -132,12 +118,8 @@ export default function RegisterClient() {
 
       // First-time registered user: route to role selection onboarding
       const targetSlug = data.profileSlug || data.profile?.slug || data.profile?.id;
-      if (targetSlug) {
-        router.push(`/profile/${targetSlug}`);
-      } else {
-        router.push('/onboarding/role');
-      }
-      router.refresh();
+      const targetUrl = targetSlug ? `/profile/${targetSlug}` : '/onboarding/role';
+      window.location.href = targetUrl;
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during registration. Please try again.');
@@ -266,10 +248,32 @@ export default function RegisterClient() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Confirm Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repeat your password"
+                  className="w-full pl-4 pr-11 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer"
+                  aria-label="Toggle confirm password visibility"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -401,10 +405,32 @@ export default function RegisterClient() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Confirm Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repeat your password"
+                  className="w-full pl-3 pr-9 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 cursor-pointer"
+                  aria-label="Toggle confirm password visibility"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>

@@ -103,28 +103,37 @@ export default function LoginClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: 'google' })
       });
-      const data = await res.json();
+      let data: any;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        console.error('Failed to parse Google auth response:', parseErr);
+        setErrorMessage('Server returned an invalid response. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
       if (!res.ok) {
-        setErrorMessage(data.error || 'Google authentication failed.');
+        setErrorMessage(data?.error || 'Google authentication failed.');
         setIsLoading(false);
         return;
       }
       try {
+        sessionStorage.setItem('avtive_active_session', 'true');
         localStorage.setItem('avtive_returning_user', 'true');
       } catch {}
 
+      const returnUrl = getReturnUrl();
+      let targetPath = '/onboarding/role';
       if (data.hasProfile) {
-        const returnUrl = getReturnUrl();
         const targetId = data.profileSlug || data.user?.id;
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
-          router.push(returnUrl);
-        } else {
-          router.push(`/profile/${targetId}`);
+          targetPath = returnUrl;
+        } else if (targetId) {
+          targetPath = `/profile/${targetId}`;
         }
-      } else {
-        router.push('/onboarding/role');
       }
-      router.refresh();
+      window.location.href = targetPath;
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during Google authentication.');
@@ -163,31 +172,39 @@ export default function LoginClient() {
         body: JSON.stringify({ email: trimmedEmail, password })
       });
 
-      const data = await res.json();
+      let data: any;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        console.error('Failed to parse login response:', parseErr);
+        setErrorMessage('Server returned an invalid response. Please try again.');
+        setIsLoading(false);
+        return;
+      }
 
       if (!res.ok) {
-        setErrorMessage(data.error || 'Invalid credentials. Please check email and password.');
+        setErrorMessage(data?.error || 'Invalid credentials. Please check email and password.');
         setIsLoading(false);
         return;
       }
 
       try {
+        sessionStorage.setItem('avtive_active_session', 'true');
         localStorage.setItem('avtive_returning_user', 'true');
       } catch {}
 
       const returnUrl = getReturnUrl();
+      let targetPath = '/onboarding/role';
       if (data.hasProfile) {
         const targetId = data.profileSlug || data.user?.id;
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
-          router.push(returnUrl);
-        } else {
-          router.push(`/profile/${targetId}`);
+          targetPath = returnUrl;
+        } else if (targetId) {
+          targetPath = `/profile/${targetId}`;
         }
-      } else {
-        router.push('/onboarding/role');
       }
 
-      router.refresh();
+      window.location.href = targetPath;
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during login. Please try again.');

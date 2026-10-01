@@ -84,8 +84,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
 
-    // Auto-login: set session cookie immediately upon registration
+    response.headers.set('Cache-Control', 'no-store, max-age=0');
     await setSessionCookie(sessionUser, response);
+    setReturningUserCookie(response);
 
     // Set backup user cache cookie for resilient cross-lambda authentication
     try {

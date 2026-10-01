@@ -43,7 +43,6 @@ export async function POST(request: NextRequest) {
         name: user.name,
         email: user.email
       };
-      await setSessionCookie(sessionUser);
 
       const userProfile = await getProfileByUserId(user.id);
       const profileSlug = userProfile?.slug || userProfile?.id || null;
@@ -56,6 +55,8 @@ export async function POST(request: NextRequest) {
         hasProfile: Boolean(userProfile),
         profileSlug
       });
+
+      await setSessionCookie(sessionUser, response);
 
       response.cookies.set(RETURNING_USER_COOKIE_NAME, 'true', {
         path: '/',
@@ -81,7 +82,6 @@ export async function POST(request: NextRequest) {
         name: user.name,
         email: user.email
       };
-      await setSessionCookie(sessionUser);
 
       const response = NextResponse.json({
         success: true,
@@ -91,6 +91,8 @@ export async function POST(request: NextRequest) {
         hasProfile: false,
         profileSlug: null
       }, { status: 201 });
+
+      await setSessionCookie(sessionUser, response);
 
       response.cookies.set(RETURNING_USER_COOKIE_NAME, 'true', {
         path: '/',

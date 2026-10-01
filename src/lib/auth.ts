@@ -114,25 +114,22 @@ export async function getSession(): Promise<UserSession | null> {
  */
 export async function setSessionCookie(user: UserSession, response?: any): Promise<string> {
   const token = createSessionToken(user);
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: SESSION_DURATION_SECONDS
+  };
+
   try {
     const cookieStore = await cookies();
-    cookieStore.set(SESSION_COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/'
-      // Session cookie: omitted maxAge ensures deletion when browser tab/session closes
-    });
+    cookieStore.set(SESSION_COOKIE_NAME, token, cookieOptions);
   } catch {}
 
   if (response && response.cookies) {
     try {
-      response.cookies.set(SESSION_COOKIE_NAME, token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/'
-      });
+      response.cookies.set(SESSION_COOKIE_NAME, token, cookieOptions);
     } catch {}
   }
 

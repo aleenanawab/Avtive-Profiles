@@ -4,28 +4,28 @@
       "id": "user-mesum",
       "name": "Syed Mesum Raza Shah",
       "email": "mesum@avtive.app",
-      "passwordHash": "$2b$10$Ir51W2U3LIOYqaYPKOLxx.YyZixtzvHQUjaI51xAa5kR8GmZAD.yq",
+      "passwordHash": "$2b$10$9zEYV.WlrEkP6.0SQyPCzOIAiBgpH6cIRW0iunCz74tZscxVd/Bju",
       "createdAt": "2026-09-07T11:53:51.861Z"
     },
     {
       "id": "user-hamza",
       "name": "Hamza Malik",
       "email": "hamza@avtive.app",
-      "passwordHash": "$2b$10$Ir51W2U3LIOYqaYPKOLxx.YyZixtzvHQUjaI51xAa5kR8GmZAD.yq",
+      "passwordHash": "$2b$10$9zEYV.WlrEkP6.0SQyPCzOIAiBgpH6cIRW0iunCz74tZscxVd/Bju",
       "createdAt": "2026-09-07T11:53:51.862Z"
     },
     {
       "id": "user-abcd",
       "name": "ABCD User",
       "email": "abcd@gmail.com",
-      "passwordHash": "$2b$10$LTILF6Ei/y3Q5iXTfHHAO.egd.Dw6sU4ASMOaCmzoEllKURxQHZJi",
+      "passwordHash": "$2b$10$IOFLDDTRgLG/FxXEZ1iNY.S.d/aZ1IWgPZNZB47Lmny/9/G1JlaHW",
       "createdAt": "2026-09-15T06:00:00.000Z"
     },
     {
       "id": "user-leap",
       "name": "The Leap Pakistan",
       "email": "theleappakistan22@gmail.com",
-      "passwordHash": "$2b$10$LTILF6Ei/y3Q5iXTfHHAO.egd.Dw6sU4ASMOaCmzoEllKURxQHZJi",
+      "passwordHash": "$2b$10$IOFLDDTRgLG/FxXEZ1iNY.S.d/aZ1IWgPZNZB47Lmny/9/G1JlaHW",
       "createdAt": "2026-09-25T11:00:00.000Z",
       "resetToken": "e6cf985c4141b6f6a9e81f1cc8e5861848e7a66dfa24feab03ce24e33f34e6ad",
       "resetTokenExpires": "2026-09-25T12:36:03.103Z"
@@ -48,7 +48,7 @@
       "id": "user-1788782534301-5ohgq",
       "name": "ALEENA NAWAB",
       "email": "aleenaknawab@gmail.com",
-      "passwordHash": "$2b$10$7oliayuAZWQm8AXUyT/dveDvxJzqun1ewrfKiO7Wty0yBlESRId5.",
+      "passwordHash": "$2b$10$IOFLDDTRgLG/FxXEZ1iNY.S.d/aZ1IWgPZNZB47Lmny/9/G1JlaHW",
       "createdAt": "2026-09-07T12:02:14.301Z",
       "resetToken": "b539dcd0f51ce313eb1b14d9b2deb3f376bb731addc00a2c415b8d293563aacb",
       "resetTokenExpires": "2026-09-25T12:35:14.848Z"
@@ -211,7 +211,7 @@
       "id": "user-aleena",
       "name": "Aleena Nawab",
       "email": "aleena@avtive.app",
-      "passwordHash": "$2b$10$7oliayuAZWQm8AXUyT/dveDvxJzqun1ewrfKiO7Wty0yBlESRId5.",
+      "passwordHash": "$2b$10$IOFLDDTRgLG/FxXEZ1iNY.S.d/aZ1IWgPZNZB47Lmny/9/G1JlaHW",
       "createdAt": "2026-09-14T10:55:37.839Z"
     },
     {
