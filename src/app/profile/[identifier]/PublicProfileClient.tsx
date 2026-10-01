@@ -514,16 +514,30 @@ function PublicProfileClientInner({
             activeScreenTab === 'desktop' ? 'hidden xl:flex' : 'flex'
           }`}
         >
-          {/* Top Label */}
-          <div className="w-full flex items-center justify-between px-2 mb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+          {/* Top Label with Synchronized Sections Control */}
+          <div className="w-full flex items-center justify-between px-2 mb-2 text-[11px] font-mono text-slate-500 dark:text-slate-400 gap-2">
+            <span className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300 shrink-0">
               <Smartphone className="w-3.5 h-3.5 text-cyan-500" />
-              <span>Mobile Screen &middot; 375×667 px</span>
+              <span className="hidden sm:inline">Mobile Screen &middot; 375×667 px</span>
+              <span className="sm:hidden">Mobile Screen</span>
             </span>
-            <span className="text-emerald-500 font-semibold flex items-center gap-1">
-              <span className={`w-1.5 h-1.5 rounded-full ${isEditing ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
-              <span>{isEditing ? 'Editing View' : 'Live Card'}</span>
-            </span>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsSectionsSidePanelOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-white hover:bg-slate-200/80 text-slate-800 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white border border-slate-200 dark:border-white/10 transition-all shadow-2xs cursor-pointer active:scale-95"
+                title="Open Sections Side Panel (80/20 Ratio)"
+              >
+                <Layers className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Sections</span>
+              </button>
+
+              <span className="text-emerald-500 font-semibold flex items-center gap-1">
+                <span className={`w-1.5 h-1.5 rounded-full ${isEditing ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
+                <span className="hidden sm:inline">{isEditing ? 'Editing View' : 'Live Card'}</span>
+              </span>
+            </div>
           </div>
 
           {/* Smartphone Chassis Frame with Original Live PhonePreview */}
@@ -534,6 +548,7 @@ function PublicProfileClientInner({
               canEdit={isOwner}
               isEditing={isEditing}
               onOpenEdit={() => setIsEditing(true)}
+              onOpenSections={() => setIsSectionsSidePanelOpen(true)}
               onOpenShare={() => setIsShareModalOpen(true)}
               onOpenConnect={() => showToast('Connected!')}
               onSaveContact={() => showToast('Contact information saved!')}
