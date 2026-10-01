@@ -117,14 +117,7 @@ export default function RegisterClient() {
       } catch {}
 
       // First-time registered user: route to role selection onboarding
-      const targetSlug = data.profileSlug || data.profile?.slug || data.profile?.id;
-      if (targetSlug) {
-        try {
-          sessionStorage.setItem('avtive_open_edit_mode', targetSlug);
-        } catch {}
-      }
-      const targetUrl = targetSlug ? `/profile/${targetSlug}?edit=true` : '/onboarding/role';
-      window.location.href = targetUrl;
+      window.location.href = '/onboarding/role';
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during registration. Please try again.');

@@ -21,6 +21,14 @@ export default async function OnboardingLayout({
     redirect('/login?returnUrl=/onboarding/role');
   }
 
+  // If user already has an existing profile, redirect directly to profile view so onboarding is never shown again
+  const { getProfileByUserId } = await import('@/lib/db');
+  const profile = await getProfileByUserId(session.id);
+  if (profile) {
+    const slug = profile.slug || profile.id;
+    redirect(`/profile/${encodeURIComponent(slug)}`);
+  }
+
   return (
     <div className="w-full min-h-[calc(100vh-65px)] flex flex-col">
       {children}

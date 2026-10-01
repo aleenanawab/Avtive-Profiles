@@ -14,10 +14,15 @@ export async function GET() {
       getProfilesByUserId(session.id)
     ]);
 
+    const userProfile = profile || (profiles && profiles.length > 0 ? profiles[0] : null);
+
     return NextResponse.json({
       user: session,
-      profile: profile || null,
-      profiles
+      profile: userProfile || null,
+      profiles,
+      hasProfile: Boolean(userProfile),
+      role: userProfile?.type || null,
+      profileSlug: userProfile?.slug || userProfile?.id || null
     });
 
   } catch (error) {

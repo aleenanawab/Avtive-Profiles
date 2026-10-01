@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import { supabaseAdmin, SUPABASE_DEFAULT_AVATAR, SUPABASE_DEFAULT_COVER } from '@/lib/supabase';
-import { ProfileData, UserRecord, ProfileTheme, UserConnection, SharingSettings, normalizeProfileType } from '@/types/profile';
+import { ProfileData, UserRecord, ProfileTheme, ProfileType, UserConnection, SharingSettings, normalizeProfileType } from '@/types/profile';
 import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
 
 import {
@@ -127,6 +127,18 @@ function getInitialSeedData(): DatabaseSchema {
     theme: 'editorial'
   };
 
+  const seededAleenaProfile: ProfileData = {
+    ...founderProfile,
+    id: 'prof-aleena',
+    slug: 'aleena-nawab',
+    userId: aleenaUser.id,
+    name: 'Aleena Nawab',
+    email: 'aleenaknawab@gmail.com',
+    profileName: 'Primary Profile',
+    designation: 'Lead Product Designer',
+    theme: 'editorial'
+  };
+
   return {
     users: [founderUser, teamUser, abcdUser, leapUser, aleenaUser],
     profiles: {
@@ -137,7 +149,9 @@ function getInitialSeedData(): DatabaseSchema {
       [seededCompanyProfile.id]: seededCompanyProfile,
       [seededCompanyProfile.slug]: seededCompanyProfile,
       [seededAbcdProfile.id]: seededAbcdProfile,
-      [seededAbcdProfile.slug]: seededAbcdProfile
+      [seededAbcdProfile.slug]: seededAbcdProfile,
+      [seededAleenaProfile.id]: seededAleenaProfile,
+      [seededAleenaProfile.slug]: seededAleenaProfile
     }
   };
 }
@@ -370,6 +384,7 @@ export async function createUser(data: {
   name: string;
   email: string;
   passwordHash: string;
+  role?: ProfileType;
   createProfile?: boolean;
 }): Promise<{ user: UserRecord; profile?: ProfileData }> {
   const db = loadDb();
@@ -380,6 +395,7 @@ export async function createUser(data: {
     name: data.name.trim(),
     email: data.email.toLowerCase().trim(),
     passwordHash: data.passwordHash,
+    role: data.role ? normalizeProfileType(data.role) : undefined,
     createdAt: new Date().toISOString()
   };
 
@@ -614,6 +630,10 @@ export async function createProfileForUser(
   if (newProfile.username) {
     db.profiles[newProfile.username] = newProfile;
   }
+  const targetUser = db.users.find((u) => u.id === userId);
+  if (targetUser) {
+    targetUser.role = normalizeProfileType(data.type);
+  }
   saveDb(db);
 
   // Sync profile to Supabase so it is accessible across serverless lambdas
@@ -745,6 +765,46 @@ export async function getProfileByUserId(userId: string): Promise<ProfileData | 
   const profile = Object.values(db.profiles).find((p) => p.userId === userId);
   if (profile) return profile;
 
+  // Check if profile exists by matching user's email
+  const user = db.users.find((u) => u.id === userId);
+  if (user && user.email) {
+    const userEmail = user.email.toLowerCase().trim();
+    const byEmail = Object.values(db.profiles).find(
+      (p) => p.email && p.email.toLowerCase().trim() === userEmail
+    );
+    if (byEmail) {
+      byEmail.userId = userId;
+      saveDb(db);
+      return byEmail;
+    }
+  }
+
+  // Supabase lookup fallback across serverless lambdas
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .or(`user_id.eq.${userId}${user?.email ? `,email.eq.${user.email}` : ''}`)
+      .maybeSingle();
+
+    if (data && !error) {
+      const sp: ProfileData = {
+        ...(data.data || {}),
+        id: data.id,
+        userId: userId,
+        slug: data.slug,
+        name: data.name,
+        email: data.email,
+        type: data.type || 'individual',
+        theme: data.theme || 'editorial'
+      };
+      normalizeProfiles({ [sp.id]: sp });
+      db.profiles[sp.id] = sp;
+      db.profiles[sp.slug] = sp;
+      return sp;
+    }
+  } catch {}
+
   try {
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
@@ -765,9 +825,14 @@ export async function getProfileByUserId(userId: string): Promise<ProfileData | 
 
 export async function getProfilesByUserId(userId: string): Promise<ProfileData[]> {
   const db = loadDb();
+  const user = db.users.find((u) => u.id === userId);
+  const userEmail = user?.email?.toLowerCase().trim();
   const unique = new Map<string, ProfileData>();
   for (const p of Object.values(db.profiles)) {
-    if (p.userId === userId) {
+    if (p.userId === userId || (userEmail && p.email && p.email.toLowerCase().trim() === userEmail)) {
+      if (p.userId !== userId) {
+        p.userId = userId;
+      }
       unique.set(p.id, p);
     }
   }
@@ -777,14 +842,14 @@ export async function getProfilesByUserId(userId: string): Promise<ProfileData[]
       const { data, error } = await supabaseAdmin
         .from('profiles')
         .select('*')
-        .eq('user_id', userId);
+        .or(`user_id.eq.${userId}${userEmail ? `,email.eq.${userEmail}` : ''}`);
 
       if (data && !error && data.length > 0) {
         for (const item of data) {
           const sp: ProfileData = {
             ...(item.data || {}),
             id: item.id,
-            userId: item.user_id,
+            userId: userId,
             slug: item.slug,
             name: item.name,
             email: item.email,

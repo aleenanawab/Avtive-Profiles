@@ -36,9 +36,26 @@ export interface EditProfileClientProps {
 }
 
 export function EditProfileClient({ initialProfile, userProfiles, onReturnToView }: EditProfileClientProps) {
+  const handleReturnOrRedirect = (saved?: ProfileData) => {
+    if (onReturnToView) {
+      onReturnToView(saved);
+    } else {
+      const slug = saved?.slug || saved?.id || initialProfile.slug || initialProfile.id;
+      window.location.href = `/profile/${encodeURIComponent(slug)}`;
+    }
+  };
+
   return (
-    <ProfileEditorProvider initialProfile={initialProfile} userProfiles={userProfiles}>
-      <EditProfileClientInner initialProfile={initialProfile} userProfiles={userProfiles} onReturnToView={onReturnToView} />
+    <ProfileEditorProvider
+      initialProfile={initialProfile}
+      userProfiles={userProfiles}
+      onSaveSuccess={handleReturnOrRedirect}
+    >
+      <EditProfileClientInner
+        initialProfile={initialProfile}
+        userProfiles={userProfiles}
+        onReturnToView={handleReturnOrRedirect}
+      />
     </ProfileEditorProvider>
   );
 }
@@ -171,11 +188,21 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
     } catch {
       await saveProfile();
     }
+    if (onReturnToView) {
+      onReturnToView(profile);
+    } else {
+      const targetSlug = profile.slug || profile.id || initialProfile.slug || initialProfile.id || identifier;
+      window.location.href = `/profile/${encodeURIComponent(targetSlug)}`;
+    }
   };
 
   const handleTopBarNext = async () => {
     try {
-      await onGlobalSave();
+      if (handleSaveChanges) {
+        await handleSaveChanges();
+      } else {
+        await saveProfile();
+      }
     } catch (err) {
       console.error('Error auto-saving before next section:', err);
     }

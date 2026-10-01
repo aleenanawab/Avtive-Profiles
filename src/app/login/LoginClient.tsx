@@ -124,12 +124,26 @@ export default function LoginClient() {
       } catch {}
 
       const returnUrl = getReturnUrl();
-      const targetId = data.profileSlug || data.user?.id;
-      let targetPath = targetId ? `/profile/${targetId}` : '/dashboard';
+      let targetPath = '/dashboard';
+
+      if (data.hasProfile && data.profileSlug) {
+        // Existing user with profile -> direct Profile View
+        targetPath = `/profile/${data.profileSlug}`;
+      } else if (!data.hasProfile) {
+        // User with no profile -> check if role already selected
+        if (data.role) {
+          targetPath = '/edit-profile';
+        } else {
+          targetPath = '/onboarding/role';
+        }
+      } else if (data.profileSlug) {
+        targetPath = `/profile/${data.profileSlug}`;
+      } else if (data.user?.id) {
+        targetPath = `/profile/${data.user.id}`;
+      }
+
       if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
         targetPath = returnUrl;
-      } else if (targetId) {
-        targetPath = `/profile/${targetId}`;
       }
       window.location.href = targetPath;
     } catch (err) {
@@ -192,12 +206,26 @@ export default function LoginClient() {
       } catch {}
 
       const returnUrl = getReturnUrl();
-      const targetId = data.profileSlug || data.user?.id;
-      let targetPath = targetId ? `/profile/${targetId}` : '/dashboard';
+      let targetPath = '/dashboard';
+
+      if (data.hasProfile && data.profileSlug) {
+        // Existing user with profile -> direct Profile View
+        targetPath = `/profile/${data.profileSlug}`;
+      } else if (!data.hasProfile) {
+        // User with no profile -> check if role already selected
+        if (data.role) {
+          targetPath = '/edit-profile';
+        } else {
+          targetPath = '/onboarding/role';
+        }
+      } else if (data.profileSlug) {
+        targetPath = `/profile/${data.profileSlug}`;
+      } else if (data.user?.id) {
+        targetPath = `/profile/${data.user.id}`;
+      }
+
       if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
         targetPath = returnUrl;
-      } else if (targetId) {
-        targetPath = `/profile/${targetId}`;
       }
 
       window.location.href = targetPath;

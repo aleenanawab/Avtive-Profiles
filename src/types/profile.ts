@@ -127,6 +127,7 @@ export interface UserRecord {
   email: string;
   passwordHash: string;
   createdAt: string;
+  role?: ProfileType;
   resetToken?: string;
   resetTokenExpires?: string;
 }

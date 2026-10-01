@@ -82,7 +82,8 @@ export async function POST(request: NextRequest) {
       message: 'Login successful.',
       user: sessionUser,
       hasProfile: Boolean(userProfile),
-      profileSlug: userProfile?.slug || userProfile?.id || null
+      profileSlug: userProfile?.slug || userProfile?.id || null,
+      role: userProfile?.type || user.role || null
     });
 
     response.headers.set('Cache-Control', 'no-store, max-age=0');
