@@ -12,6 +12,7 @@ import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { PhonePreview } from '@/components/PhonePreview';
 import { getThemeConfig, PROFILE_THEMES } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
+import { SectionsSidePanel } from '@/components/profiles/SectionsSidePanel';
 import { ProfileEditorProvider } from '@/context/ProfileEditorContext';
 import { 
   Share2, 
@@ -30,7 +31,8 @@ import {
   LayoutGrid,
   LogIn,
   Check,
-  Palette
+  Palette,
+  Layers
 } from 'lucide-react';
 
 export interface PublicProfileClientProps {
@@ -79,6 +81,7 @@ function PublicProfileClientInner({
   const [isSavingGlobal, setIsSavingGlobal] = useState(false);
   const [activeScreenTab, setActiveScreenTab] = useState<'both' | 'desktop' | 'mobile'>('both');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isSectionsSidePanelOpen, setIsSectionsSidePanelOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<UserSession | null>(session);
 
@@ -319,6 +322,17 @@ function PublicProfileClientInner({
               )
             )}
 
+            {/* Sections Side Panel Button */}
+            <button
+              type="button"
+              onClick={() => setIsSectionsSidePanelOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0"
+              title="Open Profile Sections Panel"
+            >
+              <Layers className="w-3.5 h-3.5 text-cyan-500" />
+              <span>Sections</span>
+            </button>
+
             {currentUser && (
               <Link
                 href="/dashboard"
@@ -444,9 +458,18 @@ function PublicProfileClientInner({
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-mono text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2.5 text-xs font-mono text-slate-500 dark:text-slate-400">
+              <button
+                type="button"
+                onClick={() => setIsSectionsSidePanelOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold bg-white hover:bg-slate-200/80 text-slate-800 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white border border-slate-200 dark:border-white/10 transition-all shadow-2xs cursor-pointer active:scale-95"
+                title="Open Sections Side Panel"
+              >
+                <Layers className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Sections</span>
+              </button>
               <span className={`w-1.5 h-1.5 rounded-full ${isEditing ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
-              <span>{isEditing ? 'Editing Mode Active' : 'Live Public Representation'}</span>
+              <span className="hidden sm:inline">{isEditing ? 'Editing Mode Active' : 'Live Public Representation'}</span>
             </div>
           </div>
 
@@ -539,6 +562,27 @@ function PublicProfileClientInner({
           profile={profile}
         />
       )}
+
+      {/* Sections Side Panel (Slides over the existing profile without navigating away) */}
+      <SectionsSidePanel
+        isOpen={isSectionsSidePanelOpen}
+        onClose={() => setIsSectionsSidePanelOpen(false)}
+        profile={profile}
+        onUpdateProfile={(updated) => {
+          setProfile(updated);
+          try {
+            if (updated.slug) localStorage.setItem(`avtive_profile_${updated.slug}`, JSON.stringify(updated));
+            if (updated.id) localStorage.setItem(`avtive_profile_${updated.id}`, JSON.stringify(updated));
+            localStorage.setItem('avtive_last_saved_profile', JSON.stringify(updated));
+            window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: updated }));
+          } catch {}
+        }}
+        onSaveProfile={async (profileToSave) => {
+          await handleSaveEdits(profileToSave || profile);
+        }}
+        isSaving={isSavingGlobal}
+        isOwner={isOwner}
+      />
 
     </div>
   );

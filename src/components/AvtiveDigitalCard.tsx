@@ -303,11 +303,17 @@ export function AvtiveDigitalCard({
           const visibility = draftProfile.sectionVisibility || {};
 
           const isSectionVisible = (key: string): boolean => {
-            if (isEditing) return true;
             // 1. Direct sectionVisibility dictionary check if explicitly defined
             if (typeof visibility[key] === 'boolean') {
               return visibility[key];
             }
+            // Check aliases
+            if (key === 'about' && typeof visibility['personalDetails'] === 'boolean') return visibility['personalDetails'];
+            if (key === 'contact' && typeof visibility['contactInfo'] === 'boolean') return visibility['contactInfo'];
+            if (key === 'custom-fields' && typeof visibility['customFields'] === 'boolean') return visibility['customFields'];
+            if (key === 'socialLinks' && typeof visibility['socials'] === 'boolean') return visibility['socials'];
+            if (key === 'skills' && typeof visibility['services'] === 'boolean') return visibility['services'];
+
             // Check individual custom fields
             if (key.startsWith('custom-field-')) {
               const fieldId = key.replace('custom-field-', '');
@@ -318,8 +324,8 @@ export function AvtiveDigitalCard({
             switch (key) {
               case 'company': return sharing.companySection !== false;
               case 'about': return sharing.bio !== false;
-              case 'contact': return true;
-              case 'custom-fields': return true;
+              case 'contact': return sharing.contactInfo !== false;
+              case 'custom-fields': return sharing.customFields !== false;
               case 'services':
               case 'skills': return sharing.services !== false || sharing.skills !== false;
               case 'experience': return sharing.experience !== false;
@@ -337,11 +343,13 @@ export function AvtiveDigitalCard({
           };
 
           const renderSection = (sectionKey: string) => {
+            if (!isSectionVisible(sectionKey)) return null;
+
+            let sectionContent: React.ReactNode = null;
             switch (sectionKey) {
               case 'company':
-                if (!isSectionVisible('company')) return null;
                 if (isCompany) {
-                  return (
+                  sectionContent = (
                     <TeamSection
                       key="team"
                       profile={draftProfile}
@@ -353,23 +361,24 @@ export function AvtiveDigitalCard({
                       onSelectSection={onSelectSection}
                     />
                   );
+                } else {
+                  sectionContent = (
+                    <CompanyCard
+                      key="company"
+                      companyInfo={draftProfile.companyInfo}
+                      onViewCompany={onViewCompany ? () => onViewCompany(draftProfile.companyId || 'avtive-company') : undefined}
+                      theme={theme}
+                      canEdit={canEdit}
+                      isEditing={isEditing}
+                      onUpdateField={handleFieldUpdate}
+                      onSelectSection={onSelectSection}
+                    />
+                  );
                 }
-                return (
-                  <CompanyCard
-                    key="company"
-                    companyInfo={draftProfile.companyInfo}
-                    onViewCompany={onViewCompany ? () => onViewCompany(draftProfile.companyId || 'avtive-company') : undefined}
-                    theme={theme}
-                    canEdit={canEdit}
-                    isEditing={isEditing}
-                    onUpdateField={handleFieldUpdate}
-                    onSelectSection={onSelectSection}
-                  />
-                );
+                break;
 
               case 'about':
-                if (!isSectionVisible('about')) return null;
-                return (
+                sectionContent = (
                   <AboutSection 
                     key="about"
                     profile={draftProfile} 
@@ -380,10 +389,10 @@ export function AvtiveDigitalCard({
                     theme={theme}
                   />
                 );
+                break;
 
               case 'contact':
-                if (!isSectionVisible('contact')) return null;
-                return (
+                sectionContent = (
                   <ProfileContactSection
                     key="contact"
                     profile={draftProfile}
@@ -394,10 +403,10 @@ export function AvtiveDigitalCard({
                     theme={theme}
                   />
                 );
+                break;
 
               case 'custom-fields':
-                if (!isSectionVisible('custom-fields')) return null;
-                return (
+                sectionContent = (
                   <CustomFieldsSection
                     key="custom-fields"
                     profile={draftProfile}
@@ -408,11 +417,11 @@ export function AvtiveDigitalCard({
                     theme={theme}
                   />
                 );
+                break;
 
               case 'services':
               case 'skills':
-                if (!isSectionVisible('services') && !isSectionVisible('skills')) return null;
-                return (
+                sectionContent = (
                   <SkillsServicesSection
                     key="skills"
                     profile={draftProfile}
@@ -424,10 +433,10 @@ export function AvtiveDigitalCard({
                     theme={theme}
                   />
                 );
+                break;
 
               case 'experience':
-                if (!isSectionVisible('experience')) return null;
-                return (
+                sectionContent = (
                   <ExperienceSection 
                     key="experience" 
                     profile={draftProfile} 
@@ -438,10 +447,10 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'education':
-                if (!isSectionVisible('education')) return null;
-                return (
+                sectionContent = (
                   <EducationSection 
                     key="education" 
                     profile={draftProfile} 
@@ -452,10 +461,10 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'projects':
-                if (!isSectionVisible('projects')) return null;
-                return (
+                sectionContent = (
                   <PortfolioSection
                     key="projects"
                     profile={draftProfile}
@@ -467,10 +476,10 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'certifications':
-                if (!isSectionVisible('certifications')) return null;
-                return (
+                sectionContent = (
                   <CertificationsSection 
                     key="certifications" 
                     profile={draftProfile} 
@@ -481,10 +490,10 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'volunteer':
-                if (!isSectionVisible('volunteer')) return null;
-                return (
+                sectionContent = (
                   <VolunteerSection 
                     key="volunteer" 
                     profile={draftProfile} 
@@ -495,10 +504,10 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'languages':
-                if (!isSectionVisible('languages')) return null;
-                return (
+                sectionContent = (
                   <LanguagesSection 
                     key="languages" 
                     profile={draftProfile} 
@@ -509,10 +518,10 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'recommendations':
-                if (!isSectionVisible('recommendations')) return null;
-                return (
+                sectionContent = (
                   <RecommendationsSection 
                     key="recommendations" 
                     profile={draftProfile} 
@@ -523,11 +532,11 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'socialLinks':
               case 'socials':
-                if (!isSectionVisible('socialLinks') && !isSectionVisible('socials')) return null;
-                return (
+                sectionContent = (
                   <SocialLinksSection 
                     key="socials" 
                     profile={draftProfile} 
@@ -537,10 +546,10 @@ export function AvtiveDigitalCard({
                     onSelectSection={onSelectSection}
                   />
                 );
+                break;
 
               case 'virtual-card':
-                if (!isSectionVisible('virtual-card')) return null;
-                return (
+                sectionContent = (
                   <div key="virtual-card" id="virtual-card-section" className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
@@ -561,6 +570,7 @@ export function AvtiveDigitalCard({
                     />
                   </div>
                 );
+                break;
 
               default: {
                 if (sectionKey.startsWith('custom-field-')) {
@@ -574,7 +584,7 @@ export function AvtiveDigitalCard({
                     const isEmail = customField.type === 'email' || (val.includes('@') && !val.includes(' '));
                     const isPhone = customField.type === 'phone';
 
-                    return (
+                    sectionContent = (
                       <div 
                         key={sectionKey} 
                         onClick={() => canEdit && onSelectSection?.('customFields', customField.id)}
@@ -653,7 +663,7 @@ export function AvtiveDigitalCard({
                 const dynamicSection = (draftProfile.dynamicSections || []).find((s) => s.key === sectionKey || s.id === sectionKey);
                 if (dynamicSection) {
                   if (!isSectionVisible(sectionKey) || dynamicSection.visible === false) return null;
-                  return (
+                  sectionContent = (
                     <div key={dynamicSection.id || dynamicSection.key} className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
                       <div className="flex items-center justify-between mb-4">
                         <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
@@ -676,9 +686,22 @@ export function AvtiveDigitalCard({
                     </div>
                   );
                 }
-                return null;
+                break;
               }
             }
+
+            if (!sectionContent) return null;
+
+            return (
+              <div 
+                key={sectionKey} 
+                id={`profile-section-${sectionKey}`} 
+                data-section-id={sectionKey}
+                className="scroll-mt-16 transition-all"
+              >
+                {sectionContent}
+              </div>
+            );
           };
 
           if (viewMode === 'web') {
