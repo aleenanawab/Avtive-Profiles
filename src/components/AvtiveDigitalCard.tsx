@@ -348,6 +348,8 @@ export function AvtiveDigitalCard({
                       onSelectTeamMember={onSelectTeamMember}
                       theme={theme}
                       canEdit={canEdit}
+                      isEditing={isEditing}
+                      onUpdateField={handleFieldUpdate}
                       onSelectSection={onSelectSection}
                     />
                   );
@@ -359,6 +361,8 @@ export function AvtiveDigitalCard({
                     onViewCompany={onViewCompany ? () => onViewCompany(draftProfile.companyId || 'avtive-company') : undefined}
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -400,6 +404,7 @@ export function AvtiveDigitalCard({
                     isEditing={isEditing}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
+                    onUpdateField={handleFieldUpdate}
                     theme={theme}
                   />
                 );
@@ -428,6 +433,8 @@ export function AvtiveDigitalCard({
                     profile={draftProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -440,6 +447,8 @@ export function AvtiveDigitalCard({
                     profile={draftProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -453,6 +462,8 @@ export function AvtiveDigitalCard({
                     onSelectProject={onSelectProject}
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -465,6 +476,8 @@ export function AvtiveDigitalCard({
                     profile={draftProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -477,6 +490,8 @@ export function AvtiveDigitalCard({
                     profile={draftProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -489,6 +504,8 @@ export function AvtiveDigitalCard({
                     profile={draftProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -501,6 +518,8 @@ export function AvtiveDigitalCard({
                     profile={draftProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -513,6 +532,8 @@ export function AvtiveDigitalCard({
                     key="socials" 
                     profile={draftProfile} 
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
