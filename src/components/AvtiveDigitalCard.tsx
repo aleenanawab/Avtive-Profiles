@@ -286,14 +286,14 @@ export function AvtiveDigitalCard({
           const effectiveOrder: string[] = [];
           
           for (const s of userOrder) {
-            const normalized = s === 'services' ? 'skills' : s;
+            const normalized = (s === 'services' || s === 'skills') ? 'skills' : (s === 'socials' ? 'socialLinks' : s);
             if (!effectiveOrder.includes(normalized) && defaultCardSectionOrder.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
           }
           
           for (const s of allKnownSections) {
-            const normalized = s === 'skills' ? 'services' : s;
+            const normalized = (s === 'services' || s === 'skills') ? 'skills' : (s === 'socials' ? 'socialLinks' : s);
             if (!effectiveOrder.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
@@ -323,11 +323,14 @@ export function AvtiveDigitalCard({
               case 'services':
               case 'skills': return sharing.services !== false || sharing.skills !== false;
               case 'experience': return sharing.experience !== false;
+              case 'education': return sharing.education !== false;
               case 'projects': return sharing.projects !== false;
               case 'certifications': return sharing.certifications !== false;
               case 'volunteer': return sharing.volunteer !== false;
               case 'languages': return sharing.languages !== false;
               case 'recommendations': return sharing.recommendations !== false;
+              case 'socialLinks':
+              case 'socials': return sharing.socialLinks !== false;
               case 'virtual-card': return sharing.nfcCard !== false;
               default: return true;
             }
@@ -337,27 +340,28 @@ export function AvtiveDigitalCard({
             switch (sectionKey) {
               case 'company':
                 if (!isSectionVisible('company')) return null;
-                if (!isCompany && draftProfile.companyInfo && onViewCompany) {
-                  return (
-                    <CompanyCard
-                      key="company"
-                      companyInfo={draftProfile.companyInfo}
-                      onViewCompany={() => onViewCompany(draftProfile.companyId || 'avtive-company')}
-                      theme={theme}
-                    />
-                  );
-                }
-                if (isCompany && draftProfile.teamMembers && onSelectTeamMember) {
+                if (isCompany) {
                   return (
                     <TeamSection
                       key="team"
                       profile={draftProfile}
                       onSelectTeamMember={onSelectTeamMember}
                       theme={theme}
+                      canEdit={canEdit}
+                      onSelectSection={onSelectSection}
                     />
                   );
                 }
-                return null;
+                return (
+                  <CompanyCard
+                    key="company"
+                    companyInfo={draftProfile.companyInfo}
+                    onViewCompany={onViewCompany ? () => onViewCompany(draftProfile.companyId || 'avtive-company') : undefined}
+                    theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
+                );
 
               case 'about':
                 if (!isSectionVisible('about')) return null;
@@ -374,7 +378,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'contact':
-                if (!isEditing && sharing.contactInfo === false && sharing.email === false && sharing.phone === false) return null;
+                if (!isSectionVisible('contact')) return null;
                 return (
                   <ProfileContactSection
                     key="contact"
@@ -405,7 +409,7 @@ export function AvtiveDigitalCard({
                 if (!isSectionVisible('services') && !isSectionVisible('skills')) return null;
                 return (
                   <SkillsServicesSection
-                    key="services"
+                    key="skills"
                     profile={draftProfile}
                     isEditing={isEditing}
                     canEdit={canEdit}
@@ -418,7 +422,6 @@ export function AvtiveDigitalCard({
 
               case 'experience':
                 if (!isSectionVisible('experience')) return null;
-                if (!isEditing && (!draftProfile.experiences || draftProfile.experiences.length === 0)) return null;
                 return (
                   <ExperienceSection 
                     key="experience" 
@@ -430,15 +433,19 @@ export function AvtiveDigitalCard({
                 );
 
               case 'education':
-                if (!isEditing && sharing.education === false) return null;
-                if (!isEditing && (!draftProfile.education || draftProfile.education.length === 0)) return null;
+                if (!isSectionVisible('education')) return null;
                 return (
-                  <EducationSection key="education" profile={draftProfile} theme={theme} />
+                  <EducationSection 
+                    key="education" 
+                    profile={draftProfile} 
+                    theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
                 );
 
               case 'projects':
                 if (!isSectionVisible('projects')) return null;
-                if (!isEditing && (!draftProfile.projects || draftProfile.projects.length === 0)) return null;
                 return (
                   <PortfolioSection
                     key="projects"
@@ -452,36 +459,62 @@ export function AvtiveDigitalCard({
 
               case 'certifications':
                 if (!isSectionVisible('certifications')) return null;
-                if (!isEditing && (!draftProfile.certifications || draftProfile.certifications.length === 0)) return null;
                 return (
-                  <CertificationsSection key="certifications" profile={draftProfile} theme={theme} />
+                  <CertificationsSection 
+                    key="certifications" 
+                    profile={draftProfile} 
+                    theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
                 );
 
               case 'volunteer':
                 if (!isSectionVisible('volunteer')) return null;
-                if (!isEditing && (!draftProfile.volunteerExperiences || draftProfile.volunteerExperiences.length === 0)) return null;
                 return (
-                  <VolunteerSection key="volunteer" profile={draftProfile} theme={theme} />
+                  <VolunteerSection 
+                    key="volunteer" 
+                    profile={draftProfile} 
+                    theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
                 );
 
               case 'languages':
                 if (!isSectionVisible('languages')) return null;
-                if (!isEditing && (!draftProfile.languages || draftProfile.languages.length === 0)) return null;
                 return (
-                  <LanguagesSection key="languages" profile={draftProfile} theme={theme} />
+                  <LanguagesSection 
+                    key="languages" 
+                    profile={draftProfile} 
+                    theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
                 );
 
               case 'recommendations':
                 if (!isSectionVisible('recommendations')) return null;
                 return (
-                  <RecommendationsSection key="recommendations" profile={draftProfile} theme={theme} />
+                  <RecommendationsSection 
+                    key="recommendations" 
+                    profile={draftProfile} 
+                    theme={theme}
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
                 );
 
               case 'socialLinks':
               case 'socials':
-                if (!isEditing && sharing.socialLinks === false) return null;
+                if (!isSectionVisible('socialLinks') && !isSectionVisible('socials')) return null;
                 return (
-                  <SocialLinksSection key="socials" profile={draftProfile} />
+                  <SocialLinksSection 
+                    key="socials" 
+                    profile={draftProfile} 
+                    canEdit={canEdit}
+                    onSelectSection={onSelectSection}
+                  />
                 );
 
               case 'virtual-card':

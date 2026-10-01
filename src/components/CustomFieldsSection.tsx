@@ -34,7 +34,32 @@ export function CustomFieldsSection({
     (f) => isEditing || f.visible !== false
   );
 
-  if (fields.length === 0) return null;
+  if (fields.length === 0) {
+    return (
+      <div className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} transition-colors space-y-3 shadow-2xs`}>
+        <div 
+          onClick={() => canEdit && onSelectSection?.('customFields')}
+          className={`flex items-center justify-between pb-1 border-b border-black/5 dark:border-white/5 ${
+            canEdit ? 'cursor-pointer group/cfheader' : ''
+          }`}
+          title={canEdit ? 'Click to edit Custom Fields in Studio' : undefined}
+        >
+          <div className="flex items-center gap-2">
+            <h3 className={`text-xs font-bold uppercase tracking-wider font-mono ${theme.textMuted} flex items-center gap-1.5`}>
+              <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+              <span>Custom Fields</span>
+            </h3>
+          </div>
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-semibold`}>
+            0 Fields
+          </span>
+        </div>
+        <p className={`text-xs ${theme.textSecondary} italic py-1`}>
+          No custom fields added yet.
+        </p>
+      </div>
+    );
+  }
 
   const renderFieldIcon = (field: CustomFieldItem) => {
     switch (field.type) {

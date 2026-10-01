@@ -36,10 +36,6 @@ export function ProfileContactSection({
     profile.website
   );
 
-  if (!hasContactInfo && !isEditing) {
-    return null;
-  }
-
   return (
     <section className={`relative group/contact px-6 sm:px-8 py-5 space-y-3 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors ${
       canEdit && onSelectSection ? 'hover:bg-accent/5' : ''
@@ -141,7 +137,7 @@ export function ProfileContactSection({
             />
           </div>
         </div>
-      ) : (
+      ) : hasContactInfo ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
           {profile.email && sharing.email !== false && (
             <a
@@ -238,6 +234,12 @@ export function ProfileContactSection({
               </div>
             </a>
           )}
+        </div>
+      ) : (
+        <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>
+          <p className={`text-xs ${theme.textMuted}`}>
+            No contact information provided yet.
+          </p>
         </div>
       )}
     </section>

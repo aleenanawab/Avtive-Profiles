@@ -14,15 +14,13 @@ interface AboutSectionProps {
 
 export function AboutSection({ 
   profile, 
-  canEdit = false,
+  canEdit = false, 
   isEditing = false, 
   onUpdateField,
   onSelectSection,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: AboutSectionProps) {
-  if (!profile.about && !profile.fullBio && !profile.shortBio && !profile.tagline && !isEditing) {
-    return null;
-  }
+  const hasBio = Boolean(profile.about || profile.fullBio || profile.shortBio || profile.tagline);
 
   return (
     <section 
@@ -71,7 +69,7 @@ export function AboutSection({
             />
           </div>
         </div>
-      ) : (
+      ) : hasBio ? (
         <div className="space-y-2">
           {profile.tagline && (
             <p className={`text-xs sm:text-sm font-medium italic ${theme.accentText}`}>
@@ -83,6 +81,12 @@ export function AboutSection({
               {profile.about || profile.fullBio || profile.shortBio}
             </p>
           )}
+        </div>
+      ) : (
+        <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>
+          <p className={`text-xs ${theme.textMuted}`}>
+            No bio or story added yet.
+          </p>
         </div>
       )}
     </section>

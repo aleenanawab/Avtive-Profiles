@@ -89,6 +89,8 @@ export const DEFAULT_SECTION_VISIBILITY: Record<string, boolean> = {
   volunteer: true,
   languages: true,
   recommendations: true,
+  socialLinks: true,
+  socials: true,
   'virtual-card': true,
   company: true
 };
@@ -107,6 +109,7 @@ export const DEFAULT_SECTION_ORDER: string[] = [
   'volunteer',
   'languages',
   'recommendations',
+  'socialLinks',
   'virtual-card',
   'company'
 ];

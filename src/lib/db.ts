@@ -1126,6 +1126,8 @@ export function sanitizeProfileForPublic(profile: ProfileData, isOwner: boolean 
   }
 
   if (settings.bio === false) {
+    sanitized.bio = '';
+    sanitized.about = '';
     sanitized.shortBio = '';
     sanitized.fullBio = '';
   }
@@ -1141,6 +1143,7 @@ export function sanitizeProfileForPublic(profile: ProfileData, isOwner: boolean 
 
   if (settings.socialLinks === false) {
     sanitized.socials = [];
+    sanitized.socialLinks = [];
   }
 
   if (settings.skills === false) {
@@ -1149,6 +1152,11 @@ export function sanitizeProfileForPublic(profile: ProfileData, isOwner: boolean 
 
   if (settings.experience === false) {
     sanitized.experiences = [];
+    sanitized.experience = [];
+  }
+
+  if (settings.education === false) {
+    sanitized.education = [];
   }
 
   if (settings.certifications === false) {
@@ -1178,6 +1186,7 @@ export function sanitizeProfileForPublic(profile: ProfileData, isOwner: boolean 
 
   if (settings.companySection === false) {
     sanitized.companyInfo = undefined;
+    sanitized.teamMembers = [];
   }
 
   if (settings.nfcCard === false) {

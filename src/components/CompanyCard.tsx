@@ -1,21 +1,65 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Building2 } from 'lucide-react';
 import { CompanyInfo } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface CompanyCardProps {
-  companyInfo: CompanyInfo;
-  onViewCompany: () => void;
+  companyInfo?: CompanyInfo | null;
+  onViewCompany?: () => void;
   theme?: ThemeConfig;
+  canEdit?: boolean;
+  onSelectSection?: (sectionId: string) => void;
 }
 
-export function CompanyCard({ companyInfo, onViewCompany, theme = getThemeConfig('elegant') }: CompanyCardProps) {
+export function CompanyCard({ 
+  companyInfo, 
+  onViewCompany, 
+  theme = getThemeConfig('elegant'),
+  canEdit,
+  onSelectSection
+}: CompanyCardProps) {
+  if (!companyInfo || !companyInfo.name) {
+    return (
+      <section 
+        onClick={() => canEdit && onSelectSection?.('company')}
+        className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+          canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
+        }`}
+      >
+        <div className={`p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-left`}>
+          <div className="flex items-center gap-3.5">
+            <div className={`w-12 h-12 rounded-xl ${theme.badgeBg} flex items-center justify-center shrink-0 border ${theme.cardBorder} shadow-2xs`}>
+              <Building2 className={`w-6 h-6 ${theme.textMuted}`} />
+            </div>
+            <div>
+              <h3 className={`text-sm font-bold ${theme.textPrimary}`}>
+                Company Profile
+              </h3>
+              <p className={`text-[11px] ${theme.textSecondary} mt-0.5 font-medium italic`}>
+                No company profile linked yet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
+    <section 
+      onClick={() => canEdit && onSelectSection?.('company')}
+      className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+        canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
+      }`}
+    >
       <div
-        onClick={onViewCompany}
+        onClick={(e) => {
+          if (onViewCompany) {
+            onViewCompany();
+          }
+        }}
         className={`cursor-pointer group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} transition-all shadow-2xs hover:shadow-xs text-left`}
       >
         <div className="flex items-center gap-3.5 min-w-0">

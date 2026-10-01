@@ -25,8 +25,6 @@ export function SkillsServicesSection({
   const hasServices = profile.services && profile.services.length > 0;
   const hasSkills = profile.skills && profile.skills.length > 0;
 
-  if (!hasServices && !hasSkills && !isEditing) return null;
-
   const handleAddService = () => {
     const newService: ServiceItem = {
       id: `svc-${Date.now()}`,
@@ -118,6 +116,13 @@ export function SkillsServicesSection({
               )}
             </div>
           ))}
+          {!hasServices && !isEditing && (
+            <div className={`col-span-2 sm:col-span-3 p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>
+              <p className={`text-xs ${theme.textMuted}`}>
+                No services listed yet.
+              </p>
+            </div>
+          )}
           {isEditing && (!profile.services || profile.services.length === 0) && (
             <button
               type="button"
@@ -131,12 +136,12 @@ export function SkillsServicesSection({
         </div>
       </div>
 
-      {/* Skills Pills matching Screen 11 & 12 */}
-      {hasSkills && (
-        <div className="space-y-2.5 pt-1 text-left">
-          <h2 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
-            Skills
-          </h2>
+      {/* Skills Pills */}
+      <div className="space-y-2.5 pt-1 text-left">
+        <h2 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
+          Skills
+        </h2>
+        {hasSkills ? (
           <div className="flex flex-wrap gap-1.5">
             {profile.skills?.map((skill, idx) => {
               const skillLabel = typeof skill === 'string' ? skill : skill.name;
@@ -150,8 +155,14 @@ export function SkillsServicesSection({
               );
             })}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>
+            <p className={`text-xs ${theme.textMuted}`}>
+              No skills added yet.
+            </p>
+          </div>
+        )}
+      </div>
     </section>
   );
 }

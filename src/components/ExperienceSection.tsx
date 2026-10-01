@@ -17,9 +17,12 @@ export function ExperienceSection({
   canEdit = false,
   onSelectSection
 }: ExperienceSectionProps) {
-  if (!profile.experiences || profile.experiences.length === 0) {
-    return null;
-  }
+  const experiences = (profile.experiences && profile.experiences.length > 0)
+    ? profile.experiences
+    : (profile.experience && profile.experience.length > 0)
+    ? profile.experience
+    : [];
+  const hasExperience = experiences.length > 0;
 
   return (
     <section 
@@ -37,45 +40,53 @@ export function ExperienceSection({
         )}
       </div>
 
-      <div className="space-y-3">
-        {profile.experiences.map((exp) => (
-          <div
-            key={exp.id}
-            className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-1.5 shadow-2xs`}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className={`text-sm font-bold ${theme.textPrimary}`}>
-                  {exp.company}
-                </h3>
-                {exp.role && (
-                  <p className={`text-xs font-semibold ${theme.accentText} mt-0.5`}>
-                    {exp.role}
-                  </p>
+      {hasExperience ? (
+        <div className="space-y-3">
+          {experiences.map((exp) => (
+            <div
+              key={exp.id}
+              className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-1.5 shadow-2xs`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className={`text-sm font-bold ${theme.textPrimary}`}>
+                    {exp.company}
+                  </h3>
+                  {exp.role && (
+                    <p className={`text-xs font-semibold ${theme.accentText} mt-0.5`}>
+                      {exp.role}
+                    </p>
+                  )}
+                </div>
+
+                {exp.period && (
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${theme.badgeBg} ${theme.badgeText} border ${theme.cardBorder} shrink-0 font-mono`}>
+                    {exp.period}
+                  </span>
                 )}
               </div>
 
-              {exp.period && (
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-md ${theme.badgeBg} ${theme.badgeText} border ${theme.cardBorder} shrink-0 font-mono`}>
-                  {exp.period}
-                </span>
+              {exp.location && (
+                <p className={`text-[11px] ${theme.textSecondary} font-medium`}>
+                  {exp.location}
+                </p>
+              )}
+
+              {exp.description && (
+                <p className={`text-xs ${theme.textSecondary} leading-relaxed pt-1`}>
+                  {exp.description}
+                </p>
               )}
             </div>
-
-            {exp.location && (
-              <p className={`text-[11px] ${theme.textSecondary} font-medium`}>
-                {exp.location}
-              </p>
-            )}
-
-            {exp.description && (
-              <p className={`text-xs ${theme.textSecondary} leading-relaxed pt-1`}>
-                {exp.description}
-              </p>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>
+          <p className={`text-xs ${theme.textMuted}`}>
+            No work experience added yet.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

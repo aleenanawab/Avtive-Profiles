@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Users } from 'lucide-react';
 import { ProfileData, TeamMemberItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
@@ -9,19 +9,47 @@ interface TeamSectionProps {
   profile: ProfileData;
   onSelectTeamMember?: (member: TeamMemberItem) => void;
   theme?: ThemeConfig;
+  canEdit?: boolean;
+  onSelectSection?: (sectionId: string) => void;
 }
 
 export function TeamSection({ 
   profile, 
   onSelectTeamMember,
-  theme = getThemeConfig(profile.theme || 'elegant') 
+  theme = getThemeConfig(profile.theme || 'elegant'),
+  canEdit,
+  onSelectSection
 }: TeamSectionProps) {
   if (!profile.teamMembers || profile.teamMembers.length === 0) {
-    return null;
+    return (
+      <section 
+        onClick={() => canEdit && onSelectSection?.('company')}
+        className={`px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+          canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+            Our Team
+          </h2>
+          <span className={`text-[11px] ${theme.textMuted} font-semibold font-mono`}>
+            0 Members
+          </span>
+        </div>
+        <p className={`text-xs ${theme.textSecondary} italic py-1`}>
+          No team members listed yet.
+        </p>
+      </section>
+    );
   }
 
   return (
-    <section className={`px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
+    <section 
+      onClick={() => canEdit && onSelectSection?.('company')}
+      className={`px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+        canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
+      }`}
+    >
       <div className="flex items-center justify-between">
         <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
           Our Team

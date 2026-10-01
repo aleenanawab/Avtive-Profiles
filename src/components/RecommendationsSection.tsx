@@ -8,78 +8,99 @@ import { ThemeConfig, getThemeConfig } from './themeStyles';
 interface RecommendationsSectionProps {
   profile: ProfileData;
   theme?: ThemeConfig;
+  canEdit?: boolean;
+  onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
 export function RecommendationsSection({ 
   profile, 
-  theme = getThemeConfig(profile.theme || 'elegant') 
+  theme = getThemeConfig(profile.theme || 'elegant'),
+  canEdit = false,
+  onSelectSection
 }: RecommendationsSectionProps) {
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
-
-  if (!profile.recommendations || profile.recommendations.length === 0) {
-    return null;
-  }
+  const hasRecommendations = profile.recommendations && profile.recommendations.length > 0;
 
   const toggleExpand = (id: string) => {
     setExpandedIds(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
-    <section className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors`}>
-      <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-        Recommendations
-      </h2>
-
-      <div className="space-y-3">
-        {profile.recommendations.map((rec) => {
-          const isExpanded = !!expandedIds[rec.id];
-
-          return (
-            <div
-              key={rec.id}
-              className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-3 shadow-2xs transition-all`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-8 h-8 rounded-full ${theme.badgeBg} ${theme.accentText} flex items-center justify-center shrink-0 border ${theme.cardBorder}`}>
-                    <Quote className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <h4 className={`text-xs font-bold ${theme.textPrimary}`}>
-                      {rec.author}
-                    </h4>
-                    {rec.designation && (
-                      <p className={`text-[10px] ${theme.textSecondary}`}>
-                        {rec.designation} {rec.company ? `• ${rec.company}` : ''}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => toggleExpand(rec.id)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold ${theme.textPrimary} ${theme.cardBg} border ${theme.subCardBorder} transition-colors shadow-2xs active:scale-95`}
-                >
-                  <span>{isExpanded ? 'Hide' : 'View Recommendation'}</span>
-                  {isExpanded ? (
-                    <ChevronUp className={`w-3 h-3 ${theme.accentText}`} />
-                  ) : (
-                    <ChevronDown className={`w-3 h-3 ${theme.accentText}`} />
-                  )}
-                </button>
-              </div>
-
-              {isExpanded && (
-                <div className={`pt-2 border-t ${theme.divider} space-y-2 text-xs leading-relaxed ${theme.textSecondary}`}>
-                  <p className="italic font-serif">
-                    &ldquo;{rec.fullText || rec.summary}&rdquo;
-                  </p>
-                </div>
-              )}
-            </div>
-          );
-        })}
+    <section 
+      onClick={() => canEdit && onSelectSection?.('recommendations')}
+      className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+        canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
+      }`}
+    >
+      <div className="flex items-center justify-between">
+        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+          Recommendations
+        </h2>
+        {canEdit && onSelectSection && (
+          <span className="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded font-medium">
+            Click to edit
+          </span>
+        )}
       </div>
+
+      {hasRecommendations ? (
+        <div className="space-y-3">
+          {profile.recommendations!.map((rec) => {
+            const isExpanded = !!expandedIds[rec.id];
+
+            return (
+              <div
+                key={rec.id}
+                className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-3 shadow-2xs transition-all`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-8 h-8 rounded-full ${theme.badgeBg} ${theme.accentText} flex items-center justify-center shrink-0 border ${theme.cardBorder}`}>
+                      <Quote className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <h4 className={`text-xs font-bold ${theme.textPrimary}`}>
+                        {rec.author || (rec as any).authorName}
+                      </h4>
+                      {rec.designation && (
+                        <p className={`text-[10px] ${theme.textSecondary}`}>
+                          {rec.designation} {rec.company ? `• ${rec.company}` : ''}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => toggleExpand(rec.id)}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold ${theme.textPrimary} ${theme.cardBg} border ${theme.subCardBorder} transition-colors shadow-2xs active:scale-95`}
+                  >
+                    <span>{isExpanded ? 'Hide' : 'View Recommendation'}</span>
+                    {isExpanded ? (
+                      <ChevronUp className={`w-3 h-3 ${theme.accentText}`} />
+                    ) : (
+                      <ChevronDown className={`w-3 h-3 ${theme.accentText}`} />
+                    )}
+                  </button>
+                </div>
+
+                {isExpanded && (
+                  <div className={`pt-2 border-t ${theme.divider} space-y-2 text-xs leading-relaxed ${theme.textSecondary}`}>
+                    <p className="italic font-serif">
+                      &ldquo;{rec.fullText || rec.summary}&rdquo;
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>
+          <p className={`text-xs ${theme.textMuted}`}>
+            No recommendations added yet.
+          </p>
+        </div>
+      )}
     </section>
   );
 }
