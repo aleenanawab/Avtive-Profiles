@@ -77,6 +77,7 @@ interface AvtiveDigitalCardProps {
   isDark: boolean;
   viewMode?: 'standard' | 'web';
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
+  onLiveUpdate?: (updatedProfile: ProfileData) => void;
 }
 
 export function AvtiveDigitalCard({
@@ -103,19 +104,18 @@ export function AvtiveDigitalCard({
   onSendMessage,
   onOpenMyCard,
   isDark,
-  viewMode = 'standard'
+  viewMode = 'standard',
+  onLiveUpdate
 }: AvtiveDigitalCardProps) {
   const [draftProfile, setDraftProfile] = useState<ProfileData>(profile);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Sync draft with external profile when not actively editing
+  // Sync draft whenever external profile changes
   useEffect(() => {
-    if (!isEditing) {
-      setDraftProfile(profile);
-      setErrorMessage(null);
-    }
-  }, [profile, isEditing]);
+    setDraftProfile(profile);
+    setErrorMessage(null);
+  }, [profile]);
 
   const activeThemeKey = draftProfile.theme || 'elegant';
   const theme = getThemeConfig(activeThemeKey);
@@ -124,11 +124,15 @@ export function AvtiveDigitalCard({
   const companyName = draftProfile.company || draftProfile.companyInfo?.name || 'Avtive';
 
   const handleFieldUpdate = (field: keyof ProfileData, value: any) => {
-    setDraftProfile((prev) => ({
-      ...prev,
+    const nextProfile: ProfileData = {
+      ...draftProfile,
       [field]: value
-    }));
+    };
+    setDraftProfile(nextProfile);
     if (errorMessage) setErrorMessage(null);
+    if (onLiveUpdate) {
+      onLiveUpdate(nextProfile);
+    }
   };
 
   const handleThemeChange = (selectedTheme: ProfileTheme) => {

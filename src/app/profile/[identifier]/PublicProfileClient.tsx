@@ -483,6 +483,7 @@ function PublicProfileClientInner({
               onOpenEdit={() => setIsEditing(true)}
               onCancelEdit={handleCancelEdits}
               onSaveEdits={handleSaveEdits}
+              onLiveUpdate={(updated) => setProfile(updated)}
               onThemePreview={(theme) => setActiveTheme(theme)}
               onSaveContact={() => showToast('Contact information saved!')}
               onOpenShare={() => setIsShareModalOpen(true)}
@@ -549,6 +550,7 @@ function PublicProfileClientInner({
               isEditing={isEditing}
               onOpenEdit={() => setIsEditing(true)}
               onOpenSections={() => setIsSectionsSidePanelOpen(true)}
+              onLiveUpdate={(updated) => setProfile(updated)}
               onOpenShare={() => setIsShareModalOpen(true)}
               onOpenConnect={() => showToast('Connected!')}
               onSaveContact={() => showToast('Contact information saved!')}

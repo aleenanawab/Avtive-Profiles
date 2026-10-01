@@ -22,6 +22,7 @@ interface PhonePreviewProps {
   headerTitle?: string;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   onOpenSections?: () => void;
+  onLiveUpdate?: (updatedProfile: ProfileData) => void;
 }
 
 export function PhonePreview({ 
@@ -40,7 +41,8 @@ export function PhonePreview({
   hideHeaderLabel = false,
   headerTitle = 'Live Mobile Preview',
   onSelectSection,
-  onOpenSections
+  onOpenSections,
+  onLiveUpdate
 }: PhonePreviewProps) {
   return (
     <div className="w-[375px] min-w-[375px] max-w-[375px] flex flex-col items-center select-none">
@@ -120,6 +122,7 @@ export function PhonePreview({
               isDark={isDark}
               viewMode="standard"
               onSelectSection={onSelectSection}
+              onLiveUpdate={onLiveUpdate}
             />
           </div>
 

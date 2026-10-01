@@ -263,7 +263,7 @@ export function SectionsSidePanel({
     onUpdateProfile(updated);
   };
 
-  // Smooth scroll to a section on the visible profile behind the panel
+  // Smooth scroll to a section on the visible profile behind the panel (Desktop & Mobile Synchronized)
   const handleScrollToSection = (sectionId: string) => {
     const elementIds = [
       `profile-section-${sectionId}`,
@@ -278,13 +278,15 @@ export function SectionsSidePanel({
     ].filter(Boolean);
 
     for (const elId of elementIds) {
-      const target = document.getElementById(elId);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        target.classList.add('ring-2', 'ring-cyan-500', 'ring-offset-2', 'transition-all');
-        setTimeout(() => {
-          target.classList.remove('ring-2', 'ring-cyan-500', 'ring-offset-2');
-        }, 1800);
+      const targets = document.querySelectorAll(`[id="${elId}"]`);
+      if (targets && targets.length > 0) {
+        targets.forEach((target) => {
+          (target as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.classList.add('ring-2', 'ring-cyan-500', 'ring-offset-2', 'transition-all');
+          setTimeout(() => {
+            target.classList.remove('ring-2', 'ring-cyan-500', 'ring-offset-2');
+          }, 1800);
+        });
         break;
       }
     }
