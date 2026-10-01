@@ -72,6 +72,23 @@ export function SectionsSidePanel({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Click outside detection on the remaining ~20% outside area
+  useEffect(() => {
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handlePointerDown);
+      document.addEventListener('touchstart', handlePointerDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, [isOpen, onClose]);
+
   // Extract base list of section definitions
   const sectionMetaMap = React.useMemo(() => {
     const map = new Map<string, ProfileSectionMeta>();
@@ -300,10 +317,10 @@ export function SectionsSidePanel({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden flex">
+        <div className="fixed inset-0 z-50 overflow-hidden flex flex-row">
           
           {/* ──────────────────────────────────────────────────────────────────── */}
-          {/* 1. Translucent Backdrop Overlay (Keeps Profile Visible Behind)       */}
+          {/* 1. Translucent Backdrop Overlay (Full-screen click listener)         */}
           {/* ──────────────────────────────────────────────────────────────────── */}
           <motion.div
             key="sections-panel-backdrop"
@@ -313,21 +330,21 @@ export function SectionsSidePanel({
             transition={{ duration: 0.2 }}
             onClick={onClose}
             aria-hidden="true"
-            className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-[2px] cursor-pointer"
+            className="fixed inset-0 bg-black/35 dark:bg-black/55 backdrop-blur-[2px] cursor-pointer"
           />
 
           {/* ──────────────────────────────────────────────────────────────────── */}
-          {/* 2. Slide-In Side Panel Drawer over the Existing Profile              */}
+          {/* 2. Task B3: 80% Panel Layout                                         */}
           {/* ──────────────────────────────────────────────────────────────────── */}
           <motion.aside
             key="sections-panel-drawer"
             ref={panelRef}
-            initial={{ x: -440, opacity: 0 }}
+            initial={{ x: '-100%', opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -440, opacity: 0 }}
-            transition={{ type: 'spring', damping: 26, stiffness: 240 }}
-            aria-label="Sections Side Panel"
-            className="relative z-50 w-[min(440px,calc(100vw-24px))] sm:w-[410px] xl:w-[440px] max-w-full h-full min-h-0 bg-white dark:bg-[#0A0F1D] border-r border-slate-200 dark:border-white/10 shadow-2xl flex flex-col select-none transition-colors"
+            exit={{ x: '-100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+            aria-label="Sections Side Panel (80% View)"
+            className="relative z-50 w-[80vw] max-w-[80vw] h-full min-h-0 bg-white dark:bg-[#0A0F1D] border-r border-slate-200 dark:border-white/10 shadow-2xl flex flex-col select-none transition-colors"
           >
             
             {/* ── TOP HEADER ──────────────────────────────────────────────────── */}
@@ -338,15 +355,18 @@ export function SectionsSidePanel({
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white tracking-tight">
                       Profile Sections
                     </h2>
                     <span className="px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 font-mono text-[10px] font-bold border border-cyan-500/25">
                       {visibleSections.length} Visible
                     </span>
+                    <span className="hidden sm:inline text-[11px] text-slate-400 font-mono">
+                      80% Panel View
+                    </span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Live drag reorder &amp; visibility controls
+                    Live drag reorder &amp; visibility controls &middot; Click outside or &ldquo;Done&rdquo; to close
                   </p>
                 </div>
               </div>
@@ -356,7 +376,7 @@ export function SectionsSidePanel({
                 type="button"
                 onClick={onClose}
                 aria-label="Close sections panel"
-                title="Close panel (Esc)"
+                title="Close panel (Esc or click outside)"
                 className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-200/60 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-300/60 dark:border-white/10 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
@@ -364,39 +384,37 @@ export function SectionsSidePanel({
             </div>
 
             {/* ── TABS & QUICK SEARCH ─────────────────────────────────────────── */}
-            <div className="px-4 py-2.5 border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A0F1D] flex flex-col gap-2 shrink-0">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 w-full text-xs font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('layout')}
-                    className={`flex-1 py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                      activeTab === 'layout'
-                        ? 'bg-white dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-200 shadow-xs border border-slate-200/80 dark:border-cyan-500/30'
-                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-500" />
-                    <span>Layout &amp; Order</span>
-                  </button>
+            <div className="px-4 sm:px-6 py-3 border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A0F1D] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 max-w-md text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('layout')}
+                  className={`flex-1 py-1.5 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    activeTab === 'layout'
+                      ? 'bg-white dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-200 shadow-xs border border-slate-200/80 dark:border-cyan-500/30'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-500" />
+                  <span>Layout &amp; Order</span>
+                </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab('manage')}
-                    className={`flex-1 py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                      activeTab === 'manage'
-                        ? 'bg-white dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-200 shadow-xs border border-slate-200/80 dark:border-cyan-500/30'
-                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                    }`}
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-                    <span>Custom Fields</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('manage')}
+                  className={`flex-1 py-1.5 px-4 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    activeTab === 'manage'
+                      ? 'bg-white dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-200 shadow-xs border border-slate-200/80 dark:border-cyan-500/30'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                  <span>Custom Fields ({profile.customFields?.length || 0})</span>
+                </button>
               </div>
 
               {activeTab === 'layout' && (
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-1 max-w-sm">
                   <input
                     type="text"
                     value={activeSearch}
@@ -418,13 +436,14 @@ export function SectionsSidePanel({
             </div>
 
             {/* ── SCROLLABLE SECTIONS BODY ─────────────────────────────────────── */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-5 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-white/10">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-white/10">
               
-              {/* TAB 1: LAYOUT & REORDERING */}
+              {/* TAB 1: LAYOUT & REORDERING (Spacious 80% Grid Layout) */}
               {activeTab === 'layout' && (
-                <>
-                  {/* Group 1: Visible Sections with Drag-and-Drop */}
-                  <div className="space-y-2">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  
+                  {/* Column 1: Visible Sections with Drag-and-Drop (lg:col-span-8) */}
+                  <div className="lg:col-span-8 space-y-3">
                     <div className="flex items-center justify-between text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">
                       <span className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -436,7 +455,7 @@ export function SectionsSidePanel({
                     </div>
 
                     {filteredVisible.length === 0 ? (
-                      <div className="p-4 rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-white/[0.02] text-center text-xs text-slate-500 dark:text-slate-400">
+                      <div className="p-6 rounded-2xl border border-dashed border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-white/[0.02] text-center text-xs text-slate-500 dark:text-slate-400">
                         {activeSearch ? 'No matching visible sections.' : 'All sections are currently hidden.'}
                       </div>
                     ) : (
@@ -444,7 +463,7 @@ export function SectionsSidePanel({
                         axis="y"
                         values={visibleSections}
                         onReorder={handleReorderVisible}
-                        className="space-y-2"
+                        className="space-y-2.5"
                       >
                         {filteredVisible.map((id, index) => {
                           const meta = sectionMetaMap.get(id);
@@ -456,12 +475,12 @@ export function SectionsSidePanel({
                             <Reorder.Item
                               key={id}
                               value={id}
-                              className="group relative flex items-center justify-between p-2.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] hover:border-cyan-400/60 dark:hover:border-cyan-500/40 shadow-xs hover:shadow-md transition-all select-none"
+                              className="group relative flex items-center justify-between p-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] hover:border-cyan-400/60 dark:hover:border-cyan-500/40 shadow-xs hover:shadow-md transition-all select-none"
                             >
                               {/* Left: Drag Handle */}
                               <div
                                 title="Drag to reorder section"
-                                className="p-1 text-slate-400 hover:text-cyan-600 dark:text-slate-500 dark:hover:text-cyan-400 cursor-grab active:cursor-grabbing shrink-0"
+                                className="p-1.5 text-slate-400 hover:text-cyan-600 dark:text-slate-500 dark:hover:text-cyan-400 cursor-grab active:cursor-grabbing shrink-0"
                               >
                                 <GripVertical className="w-4 h-4" />
                               </div>
@@ -471,28 +490,28 @@ export function SectionsSidePanel({
                                 type="button"
                                 onClick={() => handleScrollToSection(id)}
                                 title={`Scroll to ${label} on profile`}
-                                className="flex-1 flex items-center gap-2.5 min-w-0 px-1 text-left cursor-pointer group/jump"
+                                className="flex-1 flex items-center gap-3 min-w-0 px-1 text-left cursor-pointer group/jump"
                               >
-                                <div className="w-7 h-7 rounded-lg bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400 shrink-0">
-                                  <IconComponent className="w-3.5 h-3.5" />
+                                <div className="w-8 h-8 rounded-xl bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400 shrink-0 shadow-2xs">
+                                  <IconComponent className="w-4 h-4" />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-1.5">
-                                    <h3 className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover/jump:text-cyan-600 dark:group-hover/jump:text-cyan-400 transition-colors">
+                                  <div className="flex items-center gap-2">
+                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate group-hover/jump:text-cyan-600 dark:group-hover/jump:text-cyan-400 transition-colors">
                                       {label}
                                     </h3>
-                                    <span className="text-[9px] font-mono text-slate-400 dark:text-slate-500 opacity-0 group-hover/jump:opacity-100 transition-opacity">
+                                    <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400 opacity-0 group-hover/jump:opacity-100 transition-opacity bg-cyan-50 dark:bg-cyan-950/40 px-1.5 py-0.2 rounded-md">
                                       jump ↗
                                     </span>
                                   </div>
-                                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                                     {desc}
                                   </p>
                                 </div>
                               </button>
 
                               {/* Right: Up/Down Arrows + Eye Hide Toggle */}
-                              <div className="flex items-center gap-1 shrink-0">
+                              <div className="flex items-center gap-1.5 shrink-0">
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -501,7 +520,7 @@ export function SectionsSidePanel({
                                   }}
                                   disabled={index === 0}
                                   title="Move section up"
-                                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors disabled:opacity-30 cursor-pointer"
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors disabled:opacity-30 cursor-pointer"
                                 >
                                   <ArrowUp className="w-3.5 h-3.5" />
                                 </button>
@@ -513,7 +532,7 @@ export function SectionsSidePanel({
                                   }}
                                   disabled={index === visibleSections.length - 1}
                                   title="Move section down"
-                                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors disabled:opacity-30 cursor-pointer"
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors disabled:opacity-30 cursor-pointer"
                                 >
                                   <ArrowDown className="w-3.5 h-3.5" />
                                 </button>
@@ -525,9 +544,9 @@ export function SectionsSidePanel({
                                     handleToggleVisibility(id, false);
                                   }}
                                   title="Hide section from public profile"
-                                  className="p-1.5 rounded-lg text-cyan-600 dark:text-cyan-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
+                                  className="p-2 rounded-xl text-cyan-600 dark:text-cyan-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                                 >
-                                  <Eye className="w-3.5 h-3.5" />
+                                  <Eye className="w-4 h-4" />
                                 </button>
                               </div>
                             </Reorder.Item>
@@ -537,76 +556,93 @@ export function SectionsSidePanel({
                     )}
                   </div>
 
-                  {/* Group 2: Hidden Sections */}
-                  <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10">
-                    <div className="flex items-center justify-between text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-slate-400" />
-                        <span>Hidden Sections ({filteredHidden.length})</span>
-                      </span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
-                        click eye to restore
-                      </span>
+                  {/* Column 2: Hidden Sections & Jump Helper (lg:col-span-4) */}
+                  <div className="lg:col-span-4 space-y-4">
+                    
+                    {/* Hidden Sections Box */}
+                    <div className="p-4 rounded-3xl border border-slate-200 dark:border-white/10 bg-slate-50/60 dark:bg-white/[0.02] space-y-3">
+                      <div className="flex items-center justify-between text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-slate-400" />
+                          <span>Hidden Sections ({filteredHidden.length})</span>
+                        </span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
+                          click show
+                        </span>
+                      </div>
+
+                      {filteredHidden.length === 0 ? (
+                        <div className="p-4 rounded-2xl border border-slate-200/60 dark:border-white/5 bg-white dark:bg-[#111827] text-center text-xs text-slate-400 dark:text-slate-500">
+                          All sections are active on your profile.
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {filteredHidden.map((id) => {
+                            const meta = sectionMetaMap.get(id);
+                            const label = meta ? meta.label : id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+                            const desc = meta ? meta.description : 'Section is currently hidden';
+                            const IconComponent = meta?.icon || Tag;
+
+                            return (
+                              <div
+                                key={id}
+                                className="flex items-center justify-between p-2.5 rounded-2xl border border-slate-200/70 dark:border-white/5 bg-white dark:bg-[#111827] opacity-80 hover:opacity-100 transition-all"
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0 px-1">
+                                  <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 shrink-0">
+                                    <IconComponent className="w-3.5 h-3.5" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <h3 className="text-xs font-semibold text-slate-700 dark:text-slate-300 line-through truncate">
+                                      {label}
+                                    </h3>
+                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">
+                                      {desc}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleVisibility(id, true)}
+                                  title="Show and restore section"
+                                  className="p-1.5 px-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-emerald-700 dark:text-slate-300 dark:hover:text-emerald-400 bg-slate-50 hover:bg-emerald-50 dark:bg-white/5 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-white/10 flex items-center gap-1 transition-colors cursor-pointer"
+                                >
+                                  <EyeOff className="w-3.5 h-3.5 text-slate-400 hover:text-emerald-500" />
+                                  <span>Show</span>
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
 
-                    {filteredHidden.length === 0 ? (
-                      <div className="p-3.5 rounded-2xl border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01] text-center text-xs text-slate-400 dark:text-slate-500">
-                        No hidden sections. All profile sections are active.
+                    {/* Quick Tip Box */}
+                    <div className="p-4 rounded-3xl border border-cyan-500/20 bg-cyan-50/40 dark:bg-cyan-950/20 text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
+                      <div className="flex items-center gap-1.5 font-bold text-cyan-800 dark:text-cyan-300 text-xs">
+                        <Info className="w-3.5 h-3.5 text-cyan-500" />
+                        <span>Live 80/20 Twin-Screen View</span>
                       </div>
-                    ) : (
-                      <div className="space-y-1.5">
-                        {filteredHidden.map((id) => {
-                          const meta = sectionMetaMap.get(id);
-                          const label = meta ? meta.label : id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-                          const desc = meta ? meta.description : 'Section is currently hidden';
-                          const IconComponent = meta?.icon || Tag;
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Changes to visibility and order update the profile card behind this panel immediately. Click the 20% area on the right to close anytime.
+                      </p>
+                    </div>
 
-                          return (
-                            <div
-                              key={id}
-                              className="flex items-center justify-between p-2.5 rounded-2xl border border-slate-200/70 dark:border-white/5 bg-slate-100/60 dark:bg-white/[0.02] opacity-75 hover:opacity-100 transition-all"
-                            >
-                              <div className="flex items-center gap-2.5 min-w-0 px-1">
-                                <div className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 shrink-0">
-                                  <IconComponent className="w-3.5 h-3.5" />
-                                </div>
-                                <div className="min-w-0">
-                                  <h3 className="text-xs font-semibold text-slate-700 dark:text-slate-300 line-through truncate">
-                                    {label}
-                                  </h3>
-                                  <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">
-                                    {desc}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <button
-                                type="button"
-                                onClick={() => handleToggleVisibility(id, true)}
-                                title="Show and restore section"
-                                className="p-1.5 px-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-emerald-700 dark:text-slate-300 dark:hover:text-emerald-400 bg-white hover:bg-emerald-50 dark:bg-white/5 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-white/10 flex items-center gap-1 transition-colors cursor-pointer"
-                              >
-                                <EyeOff className="w-3.5 h-3.5 text-slate-400 hover:text-emerald-500" />
-                                <span>Show</span>
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
                   </div>
-                </>
+
+                </div>
               )}
 
-              {/* TAB 2: CUSTOM FIELDS & DYNAMIC SECTIONS MANAGER */}
+              {/* TAB 2: CUSTOM FIELDS & DYNAMIC SECTIONS MANAGER (Responsive 2-Column Grid) */}
               {activeTab === 'manage' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                         Custom Dynamic Fields
                       </h3>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         Add customized links, metadata badges or custom fields to your profile.
                       </p>
                     </div>
@@ -629,25 +665,25 @@ export function SectionsSidePanel({
                           customFields: newFields
                         });
                       }}
-                      className="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white flex items-center gap-1 shadow-xs transition-colors cursor-pointer"
+                      className="px-3 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-4 h-4" />
                       <span>Add Field</span>
                     </button>
                   </div>
 
                   {(!profile.customFields || profile.customFields.length === 0) ? (
-                    <div className="p-5 rounded-2xl border border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
-                      <Tag className="w-6 h-6 text-purple-400 mx-auto" />
-                      <p>No custom fields added yet.</p>
-                      <p className="text-[11px] text-slate-400">Click &ldquo;+ Add Field&rdquo; to insert custom attributes like Calendly links, certificates, or Discord handles.</p>
+                    <div className="p-8 rounded-3xl border border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
+                      <Tag className="w-8 h-8 text-purple-400 mx-auto" />
+                      <p className="font-semibold text-sm text-slate-700 dark:text-slate-300">No custom fields added yet.</p>
+                      <p className="text-xs text-slate-400 max-w-md mx-auto">Click &ldquo;+ Add Field&rdquo; to insert custom attributes like Calendly links, certificates, or Discord handles.</p>
                     </div>
                   ) : (
-                    <div className="space-y-2.5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {profile.customFields.map((field, fIdx) => (
                         <div
                           key={field.id || fIdx}
-                          className="p-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] space-y-2"
+                          className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] space-y-3 shadow-xs"
                         >
                           <div className="flex items-center justify-between gap-2">
                             <input
@@ -669,7 +705,7 @@ export function SectionsSidePanel({
                                 copy.splice(fIdx, 1);
                                 onUpdateProfile({ ...profile, customFields: copy });
                               }}
-                              className="p-1 text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer"
+                              className="p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer"
                               title="Delete field"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -686,7 +722,7 @@ export function SectionsSidePanel({
                                 onUpdateProfile({ ...profile, customFields: copy });
                               }}
                               placeholder="Value or URL..."
-                              className="flex-1 p-2 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-purple-500"
+                              className="flex-1 p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-purple-500"
                             />
 
                             <select
@@ -696,7 +732,7 @@ export function SectionsSidePanel({
                                 copy[fIdx] = { ...copy[fIdx], type: e.target.value as any };
                                 onUpdateProfile({ ...profile, customFields: copy });
                               }}
-                              className="p-2 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 focus:outline-none"
+                              className="p-2.5 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 focus:outline-none"
                             >
                               <option value="text">Text</option>
                               <option value="link">Link</option>
@@ -714,26 +750,26 @@ export function SectionsSidePanel({
             </div>
 
             {/* ── BOTTOM STICKY FOOTER ────────────────────────────────────────── */}
-            <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-[#0A0F1D]/95 backdrop-blur-md flex items-center justify-between gap-3 shrink-0">
+            <div className="p-4 sm:p-5 border-t border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-[#0A0F1D]/95 backdrop-blur-md flex items-center justify-between gap-3 shrink-0">
               {saveSuccessNotice ? (
                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                   <Check className="w-4 h-4" />
-                  <span>Changes saved!</span>
+                  <span>Changes saved successfully!</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                   <Info className="w-3.5 h-3.5 text-cyan-500" />
-                  <span>Live on profile behind</span>
+                  <span>Live preview active &middot; Profile visible in 20% area</span>
                 </div>
               )}
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 {isOwner && onSaveProfile && (
                   <button
                     type="button"
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 active:scale-95"
+                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 active:scale-95"
                   >
                     {isSaving ? (
                       <>
@@ -752,7 +788,7 @@ export function SectionsSidePanel({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
                 >
                   Done
                 </button>
@@ -760,6 +796,21 @@ export function SectionsSidePanel({
             </div>
 
           </motion.aside>
+
+          {/* ──────────────────────────────────────────────────────────────────── */}
+          {/* 3. Task B3: 20% Outside Area (Explicit Clickable Outside Target)     */}
+          {/* ──────────────────────────────────────────────────────────────────── */}
+          <div
+            onClick={onClose}
+            aria-label="Click outside area to close panel"
+            title="Click outside to close panel"
+            className="relative z-50 w-[20vw] h-full cursor-pointer flex items-center justify-center group shrink-0"
+          >
+            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 text-white text-[11px] font-semibold backdrop-blur-md opacity-0 group-hover:opacity-90 transition-opacity pointer-events-none shadow-lg border border-white/20">
+              <X className="w-3.5 h-3.5" />
+              <span>Click outside to close</span>
+            </div>
+          </div>
 
         </div>
       )}
