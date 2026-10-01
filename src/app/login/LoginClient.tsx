@@ -124,14 +124,12 @@ export default function LoginClient() {
       } catch {}
 
       const returnUrl = getReturnUrl();
-      let targetPath = '/onboarding/role';
-      if (data.hasProfile) {
-        const targetId = data.profileSlug || data.user?.id;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
-          targetPath = returnUrl;
-        } else if (targetId) {
-          targetPath = `/profile/${targetId}`;
-        }
+      const targetId = data.profileSlug || data.user?.id;
+      let targetPath = targetId ? `/profile/${targetId}` : '/dashboard';
+      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
+        targetPath = returnUrl;
+      } else if (targetId) {
+        targetPath = `/profile/${targetId}`;
       }
       window.location.href = targetPath;
     } catch (err) {
@@ -194,14 +192,12 @@ export default function LoginClient() {
       } catch {}
 
       const returnUrl = getReturnUrl();
-      let targetPath = '/onboarding/role';
-      if (data.hasProfile) {
-        const targetId = data.profileSlug || data.user?.id;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
-          targetPath = returnUrl;
-        } else if (targetId) {
-          targetPath = `/profile/${targetId}`;
-        }
+      const targetId = data.profileSlug || data.user?.id;
+      let targetPath = targetId ? `/profile/${targetId}` : '/dashboard';
+      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
+        targetPath = returnUrl;
+      } else if (targetId) {
+        targetPath = `/profile/${targetId}`;
       }
 
       window.location.href = targetPath;

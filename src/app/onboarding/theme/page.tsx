@@ -63,6 +63,7 @@ function ThemeStepContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTheme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
+  const role = searchParams.get('role') || 'individual';
   const { setTheme: setContextTheme } = usePortfolioTheme();
 
   // Shared theme state between Desktop and Mobile screens
@@ -70,6 +71,17 @@ function ThemeStepContent() {
 
   // If user is already authenticated with a profile, redirect immediately so theme is not asked again
   React.useEffect(() => {
+    try {
+      const lastSaved = localStorage.getItem('avtive_last_saved_profile');
+      if (lastSaved) {
+        const parsed = JSON.parse(lastSaved);
+        if (parsed?.slug || parsed?.id) {
+          router.replace(`/profile/${parsed.slug || parsed.id}`);
+          return;
+        }
+      }
+    } catch {}
+
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
@@ -91,17 +103,16 @@ function ThemeStepContent() {
 
   const handleNext = () => {
     setContextTheme(selectedTheme as PortfolioTheme);
-    router.push(`/onboarding/role?theme=${selectedTheme}`);
+    router.push(`/onboarding/create?role=${role}&theme=${selectedTheme}`);
   };
 
   const handleSkip = () => {
-    // Preserve default theme without saving invalid data or corrupting state
     setContextTheme('editorial');
-    router.push(`/onboarding/role?theme=editorial`);
+    router.push(`/onboarding/create?role=${role}&theme=editorial`);
   };
 
   const handleBack = () => {
-    router.push('/dashboard');
+    router.push(`/onboarding/role?role=${role}&theme=${selectedTheme}`);
   };
 
   // ──────────────────────────────────────────────────────────────────────────

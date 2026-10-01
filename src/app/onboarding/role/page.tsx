@@ -55,13 +55,25 @@ function RoleStepContent() {
 
   // Route protection: If user already has a profile/role, redirect them so onboarding is not repeated
   useEffect(() => {
+    try {
+      const isReturning = localStorage.getItem('avtive_returning_user');
+      const lastSaved = localStorage.getItem('avtive_last_saved_profile');
+      if (lastSaved) {
+        const parsed = JSON.parse(lastSaved);
+        if (parsed?.slug || parsed?.id) {
+          router.replace(`/profile/${parsed.slug || parsed.id}`);
+          return;
+        }
+      }
+    } catch {}
+
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
         if (data.user) {
           const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
           if (hasProfiles) {
-            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug;
+            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
             if (targetSlug) {
               router.replace(`/profile/${targetSlug}`);
             } else {
@@ -74,11 +86,14 @@ function RoleStepContent() {
   }, [router]);
 
   const handleBack = () => {
-    router.push(`/onboarding/theme?theme=${theme}`);
+    router.push('/register');
   };
 
   const handleNext = () => {
-    router.push(`/onboarding/create?theme=${theme}&role=${selectedRole}`);
+    try {
+      localStorage.setItem('avtive_selected_role', selectedRole);
+    } catch {}
+    router.push(`/onboarding/theme?role=${selectedRole}&theme=${theme}`);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
