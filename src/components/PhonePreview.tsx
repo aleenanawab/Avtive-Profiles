@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Wifi, Battery, Signal, Smartphone } from 'lucide-react';
+import { Wifi, Battery, Signal, Smartphone, Layers } from 'lucide-react';
 import { ProfileData } from '@/types/profile';
 import { AvtiveDigitalCard } from './AvtiveDigitalCard';
 
@@ -21,6 +21,8 @@ interface PhonePreviewProps {
   hideHeaderLabel?: boolean;
   headerTitle?: string;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
+  onOpenSections?: () => void;
+  onLiveUpdate?: (updatedProfile: ProfileData) => void;
 }
 
 export function PhonePreview({ 
@@ -38,23 +40,38 @@ export function PhonePreview({
   onSelectProject,
   hideHeaderLabel = false,
   headerTitle = 'Live Mobile Preview',
-  onSelectSection
+  onSelectSection,
+  onOpenSections,
+  onLiveUpdate
 }: PhonePreviewProps) {
   return (
     <div className="w-[375px] min-w-[375px] max-w-[375px] flex flex-col items-center select-none">
       {/* Phone Header Label */}
       {!hideHeaderLabel && (
         <div 
-          className="w-full flex items-center justify-between pb-2 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all"
+          className="w-full flex items-center justify-between pb-2 px-3 text-xs font-bold text-slate-500 dark:text-zinc-400 transition-all gap-2"
         >
           <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px] truncate font-mono">
             <Smartphone className="w-3.5 h-3.5 shrink-0 text-cyan-500" />
             <span className="truncate">{headerTitle}</span>
           </span>
-          <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Standard 375×667 px
-          </span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {onOpenSections && (
+              <button
+                type="button"
+                onClick={onOpenSections}
+                className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20 transition-all cursor-pointer shadow-2xs"
+                title="Open Profile Sections"
+              >
+                <Layers className="w-3 h-3 text-cyan-500" />
+                <span>Sections</span>
+              </button>
+            )}
+            <span className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              375×667 px
+            </span>
+          </div>
         </div>
       )}
 
@@ -92,6 +109,7 @@ export function PhonePreview({
               isEditing={isEditing}
               isConnected={false}
               onOpenEdit={onOpenEdit || (() => {})}
+              onOpenSections={onOpenSections}
               onCancelEdit={() => {}}
               onSaveEdits={onSaveEdits}
               onSaveContact={onSaveContact || (() => {})}
@@ -105,6 +123,7 @@ export function PhonePreview({
               isDark={isDark}
               viewMode="standard"
               onSelectSection={onSelectSection}
+              onLiveUpdate={onLiveUpdate}
             />
           </div>
 

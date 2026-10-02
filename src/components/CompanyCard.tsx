@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { ArrowRight, Building2 } from 'lucide-react';
-import { CompanyInfo } from '../types/profile';
+import { CompanyInfo, ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface CompanyCardProps {
@@ -10,6 +10,8 @@ interface CompanyCardProps {
   onViewCompany?: () => void;
   theme?: ThemeConfig;
   canEdit?: boolean;
+  isEditing?: boolean;
+  onUpdateField?: (field: keyof ProfileData, value: any) => void;
   onSelectSection?: (sectionId: string) => void;
 }
 
@@ -18,15 +20,66 @@ export function CompanyCard({
   onViewCompany, 
   theme = getThemeConfig('elegant'),
   canEdit,
+  isEditing = false,
+  onUpdateField,
   onSelectSection
 }: CompanyCardProps) {
+  const currentCompany = companyInfo || { name: '', tagline: '', logo: '', website: '' };
+
+  const handleUpdate = (key: keyof CompanyInfo, val: string) => {
+    onUpdateField?.('companyInfo', {
+      ...currentCompany,
+      [key]: val
+    });
+  };
+
+  if (isEditing) {
+    return (
+      <section className={`px-6 sm:px-8 py-4 ${theme.cardBg} border-b ${theme.divider} transition-colors text-left`}>
+        <div className={`p-4 rounded-2xl ${theme.subCardBg} border ${theme.cardBorder} space-y-3`}>
+          <div className="flex items-center gap-2">
+            <Building2 className={`w-4 h-4 ${theme.accentText}`} />
+            <h3 className={`text-xs font-bold uppercase tracking-wider font-mono ${theme.textPrimary}`}>
+              Associated Company Details
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
+                Company Name
+              </label>
+              <input
+                type="text"
+                value={currentCompany.name || ''}
+                onChange={(e) => handleUpdate('name', e.target.value)}
+                placeholder="e.g. Avtive Corp"
+                className={`w-full p-2 rounded-xl text-xs font-semibold ${theme.cardBg} border ${theme.cardBorder} ${theme.textPrimary} focus:outline-none`}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
+                Company Tagline / Industry
+              </label>
+              <input
+                type="text"
+                value={currentCompany.tagline || ''}
+                onChange={(e) => handleUpdate('tagline', e.target.value)}
+                placeholder="e.g. Digital Identity Solutions"
+                className={`w-full p-2 rounded-xl text-xs font-semibold ${theme.cardBg} border ${theme.cardBorder} ${theme.textPrimary} focus:outline-none`}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (!companyInfo || !companyInfo.name) {
     return (
       <section 
-        onClick={() => canEdit && onSelectSection?.('company')}
-        className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
-          canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
-        }`}
+        className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors`}
       >
         <div className={`p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-left`}>
           <div className="flex items-center gap-3.5">
@@ -49,10 +102,7 @@ export function CompanyCard({
 
   return (
     <section 
-      onClick={() => canEdit && onSelectSection?.('company')}
-      className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
-        canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
-      }`}
+      className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors`}
     >
       <div
         onClick={(e) => {
