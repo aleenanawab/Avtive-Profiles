@@ -109,6 +109,7 @@ export function PhonePreview({
               isEditing={isEditing}
               isConnected={false}
               onOpenEdit={onOpenEdit || (() => {})}
+              onOpenSections={onOpenSections}
               onCancelEdit={() => {}}
               onSaveEdits={onSaveEdits}
               onSaveContact={onSaveContact || (() => {})}

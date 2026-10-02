@@ -481,6 +481,7 @@ function PublicProfileClientInner({
               isEditing={isEditing}
               isConnected={false}
               onOpenEdit={() => setIsEditing(true)}
+              onOpenSections={() => setIsSectionsSidePanelOpen(true)}
               onCancelEdit={handleCancelEdits}
               onSaveEdits={handleSaveEdits}
               onLiveUpdate={(updated) => setProfile(updated)}

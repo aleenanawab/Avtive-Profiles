@@ -18,7 +18,8 @@ import {
   MapPin,
   Sparkles,
   Loader2,
-  Check
+  Check,
+  Layers
 } from 'lucide-react';
 import { ProfileData, normalizeProfileType, SocialLink } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
@@ -36,6 +37,7 @@ interface HeroSectionProps {
   isConnected?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
   onOpenEdit?: () => void;
+  onOpenSections?: () => void;
   onOpenShare?: () => void;
   onOpenConnect?: () => void;
   onNavigateToCompany?: (companyId?: string) => void;
@@ -51,6 +53,7 @@ export function HeroSection({
   theme = getThemeConfig(profile.theme || 'editorial'),
   onUpdateField,
   onOpenEdit,
+  onOpenSections,
   onOpenShare,
   onOpenConnect,
   onSelectSection
@@ -204,6 +207,20 @@ export function HeroSection({
         {/* Cover Header Controls: Switcher & Edit Button */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-5 flex items-center gap-2 z-20">
           <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} />
+          {onOpenSections && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenSections();
+              }}
+              className="px-3 py-1.5 rounded-full bg-cyan-950/80 hover:bg-cyan-900/90 text-cyan-200 border border-cyan-500/40 backdrop-blur-md shadow-md flex items-center gap-1.5 text-xs font-semibold transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              title="Open Profile Sections (80/20 Ratio)"
+            >
+              <Layers className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Sections</span>
+            </button>
+          )}
           {canEdit && !isEditing && (
             <button
               type="button"
@@ -437,26 +454,38 @@ export function HeroSection({
             )}
 
             {/* Action Buttons Below Avatar */}
-            <div className="flex items-center gap-2 sm:gap-3 pt-2 max-w-md w-full">
+            <div className="flex items-center gap-1.5 sm:gap-2 pt-2 max-w-md w-full">
               {canEdit ? (
                 <>
                   <button
                     type="button"
                     onClick={onOpenEdit}
-                    className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-700 dark:border-white/20"
+                    className="flex-1 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-700 dark:border-white/20"
                     title="Edit Profile on this page"
                   >
-                    <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-purple-400 dark:text-purple-600" />
+                    <Pencil className="w-3.5 h-3.5 shrink-0 text-purple-400 dark:text-purple-600" />
                     <span className="truncate">Edit Profile</span>
                   </button>
+
+                  {onOpenSections && (
+                    <button
+                      type="button"
+                      onClick={onOpenSections}
+                      className="flex-1 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-xs shadow-cyan-500/20 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-cyan-500/30"
+                      title="Open Profile Sections (80/20 Ratio)"
+                    >
+                      <Layers className="w-3.5 h-3.5 shrink-0 text-white" />
+                      <span className="truncate">Sections</span>
+                    </button>
+                  )}
 
                   <button
                     type="button"
                     onClick={onOpenShare}
-                    className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-200 dark:border-white/10"
+                    className="flex-1 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/10"
                   >
-                    <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 dark:text-amber-400 shrink-0" />
-                    <span className="truncate">Share Profile</span>
+                    <Share2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
+                    <span className="truncate">Share</span>
                   </button>
                 </>
               ) : (

@@ -12,7 +12,8 @@ import {
   Loader2, 
   Check, 
   AlertCircle,
-  Tag 
+  Tag,
+  Layers
 } from 'lucide-react';
 import { 
   ProfileData, 
@@ -59,6 +60,7 @@ interface AvtiveDigitalCardProps {
   isEditing?: boolean;
   isConnected?: boolean;
   onOpenEdit?: () => void;
+  onOpenSections?: () => void;
   onSaveEdits?: (updatedProfile: ProfileData) => Promise<void>;
   onCancelEdit?: () => void;
   onThemePreview?: (theme: ProfileTheme) => void;
@@ -88,6 +90,7 @@ export function AvtiveDigitalCard({
   isConnected = false,
   onSelectSection,
   onOpenEdit,
+  onOpenSections,
   onSaveEdits,
   onCancelEdit,
   onThemePreview,
@@ -196,6 +199,17 @@ export function AvtiveDigitalCard({
               </div>
 
               <div className="flex items-center gap-2">
+                {onOpenSections && (
+                  <button
+                    type="button"
+                    onClick={onOpenSections}
+                    className={`py-1.5 px-3 rounded-full text-xs font-semibold border transition-all ${theme.cardBorder} ${theme.textSecondary} hover:opacity-80 flex items-center gap-1.5 cursor-pointer bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/30`}
+                    title="Open Profile Sections Panel"
+                  >
+                    <Layers className="w-3.5 h-3.5 text-cyan-500" />
+                    <span>Sections</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={handleCancel}
@@ -244,6 +258,7 @@ export function AvtiveDigitalCard({
           isConnected={isConnected}
           onUpdateField={handleFieldUpdate}
           onOpenEdit={onOpenEdit}
+          onOpenSections={onOpenSections}
           onOpenShare={onOpenShare}
           onOpenConnect={onOpenConnect}
           onOpenVirtualCard={() => {
