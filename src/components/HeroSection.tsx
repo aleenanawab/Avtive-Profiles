@@ -118,10 +118,10 @@ export function HeroSection({
           </div>
         )}
 
-        {/* Cover Header Controls: Multi-Role Persona Switcher & Edit Icon */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-5 flex items-center gap-2 z-20">
-          <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} />
-          {canEdit && (
+        {/* Cover Header Controls: Multi-Role Persona Switcher & Edit Icon (Owner Only) */}
+        {canEdit && (
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-5 flex items-center gap-2 z-20">
+            <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} />
             <button
               type="button"
               onClick={(e) => {
@@ -133,8 +133,8 @@ export function HeroSection({
             >
               <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* 2. Identity Header */}

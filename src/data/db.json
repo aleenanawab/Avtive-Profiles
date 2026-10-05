@@ -17547,6 +17547,131 @@
       "dynamicSections": [],
       "createdAt": "2026-10-01T12:03:41.495Z",
       "updatedAt": "2026-10-01T12:03:41.555Z"
+    },
+    "aleena-nawab-professional-profile-agef": {
+      "id": "prof-1788782534301",
+      "userId": "user-1788782534301-5ohgq",
+      "slug": "aleena-nawab-professional-profile-agef",
+      "type": "individual",
+      "name": "ALEENA NAWAB",
+      "email": "aleenaknawab@gmail.com",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "www.linkedin.com/in/aleena-nawab-69128b3aa",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ],
+      "profileName": "Professional",
+      "profession": "Professional",
+      "createdAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-09-15T12:19:52.265Z",
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "projects": true,
+        "certifications": true
+      },
+      "sectionOrder": [
+        "experience",
+        "projects",
+        "certifications",
+        "photo",
+        "skills",
+        "nameAndTitle",
+        "bio",
+        "contactInfo",
+        "socialLinks",
+        "education"
+      ],
+      "firstName": "ALEENA",
+      "secondName": "NAWAB",
+      "lastName": "NAWAB",
+      "professionalTitle": "Professional",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Connect with me directly via phone, WhatsApp, or email.",
+      "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "Avtive Profiles Platform",
+          "description": "Verified digital identity cards and granular privacy profiles built with Next.js and Tailwind CSS.",
+          "tags": [
+            "Next.js",
+            "TypeScript",
+            "Tailwind CSS"
+          ],
+          "link": "https://www.avtive.app",
+          "image": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
+          "category": "Web App"
+        }
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "www.linkedin.com/in/aleena-nawab-69128b3aa",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website"
+        }
+      ],
+      "username": "aleena-nawab-professional-profile-agef",
+      "customFields": [],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      }
     }
   },
   "connections": [
@@ -17589,6 +17714,26 @@
       "toUserId": "user-mesum",
       "createdAt": "2026-09-07T16:48:41.000Z",
       "note": "Great connecting with you!"
+    },
+    {
+      "id": "conn-1791188365948-wcq2r",
+      "fromUserId": "visitor-1791188365948",
+      "fromUserName": "Sarah Connor",
+      "fromUserEmail": "sarah.connor@example.com",
+      "toProfileId": "prof-1788782534301",
+      "toUserId": "user-1788782534301-5ohgq",
+      "createdAt": "2026-10-05T08:19:25.948Z",
+      "note": "Interested in digital design consulting."
+    },
+    {
+      "id": "conn-1791188396429-iv74z",
+      "fromUserId": "visitor-1791188396429",
+      "fromUserName": "Sarah Connor",
+      "fromUserEmail": "sarah.connor@example.com",
+      "toProfileId": "prof-1788782534301",
+      "toUserId": "user-1788782534301-5ohgq",
+      "createdAt": "2026-10-05T08:19:56.429Z",
+      "note": "Interested in digital design consulting."
     }
   ]
 }

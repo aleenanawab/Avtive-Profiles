@@ -21,19 +21,19 @@ import { ThemeConfig, getThemeConfig } from './themeStyles';
 
 interface HeaderNavProps {
   currentProfile: ProfileData;
-  profileType: ProfileType;
-  onSelectProfileType: (type: ProfileType, origin?: 'company' | 'my_card' | 'direct' | 'team') => void;
-  onOpenEdit: () => void;
-  onOpenShare: () => void;
-  canEdit: boolean;
+  profileType?: ProfileType;
+  onSelectProfileType?: (type: ProfileType, origin?: 'company' | 'my_card' | 'direct' | 'team') => void;
+  onOpenEdit?: () => void;
+  onOpenShare?: () => void;
+  canEdit?: boolean;
   isEditing?: boolean;
-  userRole: UserRole;
-  onChangeUserRole: (role: UserRole) => void;
-  isDark: boolean;
-  onToggleTheme: () => void;
-  viewMode: 'desktop' | 'mobile';
-  onToggleViewMode: (mode: 'desktop' | 'mobile') => void;
-  onOpenMyCard: () => void;
+  userRole?: UserRole;
+  onChangeUserRole?: (role: UserRole) => void;
+  isDark?: boolean;
+  onToggleTheme?: () => void;
+  viewMode?: 'desktop' | 'mobile';
+  onToggleViewMode?: (mode: 'desktop' | 'mobile') => void;
+  onOpenMyCard?: () => void;
   session?: UserSession | null;
   onLogout?: () => void;
   theme?: ThemeConfig;
@@ -41,46 +41,34 @@ interface HeaderNavProps {
 
 export function HeaderNav({
   currentProfile,
-  profileType,
+  profileType = 'individual',
   onSelectProfileType,
   onOpenEdit,
   onOpenShare,
-  canEdit,
+  canEdit = false,
   isEditing = false,
-  userRole,
-  onChangeUserRole,
-  isDark,
+  isDark = false,
   onToggleTheme,
-  viewMode,
-  onToggleViewMode,
   onOpenMyCard,
   session,
   onLogout,
-  theme = getThemeConfig(currentProfile.theme || 'elegant')
+  theme = getThemeConfig(currentProfile.theme || 'editorial')
 }: HeaderNavProps) {
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
-
-  const getRoleLabel = (role: UserRole) => {
-    switch (role) {
-      case 'owner':
-        return { label: 'Owner (Mesum)', icon: '👑' };
-      case 'team_member':
-        return { label: 'Team (Hamza)', icon: '👤' };
-      case 'company_admin':
-        return { label: 'Company Admin', icon: '🏢' };
-      case 'visitor':
-        return { label: 'Public Visitor', icon: '👁️' };
-    }
-  };
+  const hasTeamOrCompany = Boolean(
+    currentProfile.companyId || 
+    currentProfile.companyInfo || 
+    (currentProfile.teamMembers && currentProfile.teamMembers.length > 0) || 
+    profileType === 'team'
+  );
 
   return (
     <header className={`sticky top-0 z-40 w-full backdrop-blur-md ${theme.headerBg} border-b ${theme.divider} transition-colors shadow-2xs`}>
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 sm:gap-3">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
         {/* Left: Avtive Brand */}
-        <div 
-          onClick={() => onSelectProfileType('team', 'direct')}
-          className="flex items-center gap-2 cursor-pointer group"
-          title="Go to Avtive Team Profile"
+        <Link 
+          href="/"
+          className="flex items-center gap-2 group cursor-pointer"
+          title="Avtive Digital Identity"
         >
           <div className="h-8 flex items-center">
             <img 
@@ -99,213 +87,127 @@ export function HeaderNav({
               </span>
             </div>
             <p className={`text-[10px] ${theme.textMuted} font-medium`}>
-              Islamabad, Pakistan
+              Digital Identity Platform
             </p>
           </div>
-        </div>
+        </Link>
 
-        {/* Center: Navigation Options (Individual + Team) */}
-        <div className={`flex items-center p-0.5 sm:p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
-          {/* 1. Individual */}
-          <button
-            onClick={onOpenMyCard}
-            className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all ${
-              profileType === 'individual'
-                ? `${theme.btnPrimary} shadow-xs`
-                : `${theme.textMuted} hover:${theme.textPrimary}`
-            }`}
-          >
-            <CreditCard className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden xs:inline sm:inline">Individual</span>
-            <span className="xs:hidden sm:hidden">Me</span>
-          </button>
-          
-          {/* 2. Team */}
-          <button
-            onClick={() => onSelectProfileType('team', 'team')}
-            className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all ${
-              profileType === 'team'
-                ? `${theme.btnPrimary} shadow-xs`
-                : `${theme.textMuted} hover:${theme.textPrimary}`
-            }`}
-          >
-            <Users className="w-3.5 h-3.5 shrink-0" />
-            <span>Team</span>
-          </button>
-        </div>
-
-        {/* Right Controls: Permissions Switcher, Edit Button, Theme & Share */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {/* Permissions / Role Switcher */}
-          <div className="relative shrink-0">
+        {/* Center: Navigation Options (Only shown when profile has both Individual and Team profiles) */}
+        {hasTeamOrCompany && onSelectProfileType && (
+          <div className={`flex items-center p-0.5 sm:p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
+            {/* 1. Individual */}
             <button
-              onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.cardBg} text-xs font-bold ${theme.textPrimary} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs`}
-              title="Switch user permission role"
+              type="button"
+              onClick={onOpenMyCard}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                profileType === 'individual'
+                  ? `${theme.btnPrimary} shadow-xs`
+                  : `${theme.textMuted} hover:${theme.textPrimary}`
+              }`}
             >
-              <span>{getRoleLabel(userRole).icon}</span>
-              <span className="hidden lg:inline text-[11px]">{getRoleLabel(userRole).label}</span>
-              <ChevronDown className={`w-3 h-3 ${theme.textMuted}`} />
+              <CreditCard className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden xs:inline">Individual</span>
+              <span className="xs:hidden">Me</span>
             </button>
-
-            {isRoleDropdownOpen && (
-              <div className={`absolute right-0 top-full mt-1.5 w-48 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} shadow-xl p-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150`}>
-                <p className={`px-2.5 py-1 text-[10px] font-bold ${theme.textMuted} uppercase tracking-wider font-mono`}>
-                  Test Permissions
-                </p>
-                <button
-                  onClick={() => {
-                    onChangeUserRole('owner');
-                    setIsRoleDropdownOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'owner' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
-                  }`}
-                >
-                  <span>👑</span>
-                  <span>Owner (Mesum Raza)</span>
-                </button>
-                <button
-                  onClick={() => {
-                    onChangeUserRole('team_member');
-                    setIsRoleDropdownOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'team_member' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
-                  }`}
-                >
-                  <span>👤</span>
-                  <span>Team (Hamza Malik)</span>
-                </button>
-                <button
-                  onClick={() => {
-                    onChangeUserRole('company_admin');
-                    setIsRoleDropdownOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'company_admin' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
-                  }`}
-                >
-                  <span>🏢</span>
-                  <span>Company Admin</span>
-                </button>
-                <button
-                  onClick={() => {
-                    onChangeUserRole('visitor');
-                    setIsRoleDropdownOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-left transition-colors ${
-                    userRole === 'visitor' ? `${theme.badgeBg} font-bold ${theme.accentText}` : `${theme.textPrimary} hover:${theme.badgeBg}`
-                  }`}
-                >
-                  <span>👁️</span>
-                  <span>Public Visitor</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Edit Profile Button (Header Action) */}
-          {canEdit && !isEditing && (
+            
+            {/* 2. Team */}
             <button
+              type="button"
+              onClick={() => onSelectProfileType('team', 'team')}
+              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                profileType === 'team'
+                  ? `${theme.btnPrimary} shadow-xs`
+                  : `${theme.textMuted} hover:${theme.textPrimary}`
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 shrink-0" />
+              <span>Team</span>
+            </button>
+          </div>
+        )}
+
+        {/* Right Controls: Edit Button (Owner Only), Theme Toggle, Share, and Auth Action */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Edit Profile Button (Visible only to authenticated profile owner) */}
+          {canEdit && !isEditing && onOpenEdit && (
+            <button
+              type="button"
               onClick={onOpenEdit}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer`}
+              title="Edit Profile"
             >
               <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
-              <span className="hidden sm:inline">Edit ✎</span>
+              <span>Edit</span>
             </button>
           )}
 
-          {/* View Mode (Desktop vs Mobile Preview) */}
-          <div className={`hidden lg:flex items-center p-0.5 rounded-xl ${theme.cardBg} border ${theme.cardBorder} shrink-0`}>
+          {/* Theme Toggle (Light / Dark) */}
+          {onToggleTheme && (
             <button
-              onClick={() => onToggleViewMode('desktop')}
-              className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'desktop' ? `${theme.btnPrimary} shadow-xs` : `${theme.textMuted}`
-              }`}
-              title="Desktop View"
+              type="button"
+              onClick={onToggleTheme}
+              aria-label="Toggle Theme"
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1 shrink-0 cursor-pointer`}
             >
-              <Tv className="w-3.5 h-3.5" />
+              {isDark ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-400" />
+                  <span className="hidden md:inline">Light</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-[#475569]" />
+                  <span className="hidden md:inline">Dark</span>
+                </>
+              )}
             </button>
-            <button
-              onClick={() => onToggleViewMode('mobile')}
-              className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'mobile' ? `${theme.btnPrimary} shadow-xs` : `${theme.textMuted}`
-              }`}
-              title="Mobile Card View"
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Theme Toggle (☀ Light / 🌙 Dark) */}
-          <button
-            onClick={onToggleTheme}
-            aria-label="Toggle Theme"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1 shrink-0`}
-          >
-            {isDark ? (
-              <>
-                <Sun className="w-4 h-4 text-amber-400" />
-                <span className="hidden md:inline">Light</span>
-              </>
-            ) : (
-              <>
-                <Moon className="w-4 h-4 text-[#475569]" />
-                <span className="hidden md:inline">Dark</span>
-              </>
-            )}
-          </button>
+          )}
 
           {/* Share Button */}
-          <button
-            onClick={onOpenShare}
-            className={`flex items-center gap-1 p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0`}
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Share</span>
-          </button>
+          {onOpenShare && (
+            <button
+              type="button"
+              onClick={onOpenShare}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer`}
+              title="Share Profile"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Share</span>
+            </button>
+          )}
 
-          {/* Auth State Button (Sign In or Logout) */}
+          {/* Auth State Button */}
           {session ? (
-            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-              <Link
-                href="/my-profile"
-                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.badgeBg} ${theme.badgeText} text-xs font-bold transition-colors shadow-2xs hover:opacity-90 shrink-0`}
-                title="View My Profile"
-              >
-                <span>My Profile</span>
-              </Link>
-              <button
-                onClick={async () => {
-                  if (onLogout) {
-                    onLogout();
-                  } else {
-                    try {
-                      await fetch('/api/auth/logout', { method: 'POST' });
-                    } catch {}
-                    try {
-                      sessionStorage.removeItem('avtive_active_session');
-                    } catch {}
-                    window.location.replace('/login');
-                  }
-                }}
-                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors`}
-                title="Sign Out"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden xl:inline">Logout</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                if (onLogout) {
+                  onLogout();
+                } else {
+                  try {
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                  } catch {}
+                  try {
+                    sessionStorage.removeItem('avtive_active_session');
+                  } catch {}
+                  window.location.replace('/login');
+                }
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0`}
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
           ) : (
             <Link
               href="/login"
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0`}
-              title="Sign In"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0`}
+              title="Sign In to Avtive"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign In</span>
+              <span>Sign In</span>
             </Link>
           )}
         </div>

@@ -4,18 +4,6 @@ import { createConnection, checkIsConnected, getUserConnections } from '@/lib/db
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Enforce authentication on the server
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json(
-        { 
-          error: 'Unauthorized: Please sign in to connect with other profiles.',
-          authenticated: false 
-        },
-        { status: 401 }
-      );
-    }
-
     const body = await request.json().catch(() => ({}));
     const targetProfileId = body.targetProfileId || body.profileId;
     const note = body.note || (body.contactInfo ? `Exchanged contact: ${body.contactInfo.name || ''} - ${body.contactInfo.email || ''}` : undefined);
@@ -24,6 +12,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'targetProfileId or profileId is required.' },
         { status: 400 }
+      );
+    }
+
+    // 1. Enforce authentication or visitor contact exchange
+    const session = await getSession();
+    if (!session) {
+      if (body.contactInfo && (body.contactInfo.name || body.contactInfo.email)) {
+        const result = await createConnection({
+          fromUserId: `visitor-${Date.now()}`,
+          fromUserName: body.contactInfo.name || 'Public Visitor',
+          fromUserEmail: body.contactInfo.email || 'visitor@avtive.app',
+          toProfileId: targetProfileId,
+          note
+        });
+
+        if (!result.success) {
+          return NextResponse.json(
+            { error: result.error || 'Failed to establish connection.' },
+            { status: result.status }
+          );
+        }
+
+        return NextResponse.json(
+          {
+            success: true,
+            connected: true,
+            message: 'Connection established successfully.',
+            connection: result.connection
+          },
+          { status: 200 }
+        );
+      }
+
+      return NextResponse.json(
+        { 
+          error: 'Unauthorized: Please sign in or provide contact details to connect.',
+          authenticated: false 
+        },
+        { status: 401 }
       );
     }
 

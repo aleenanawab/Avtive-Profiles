@@ -41,11 +41,6 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
 
   const session = await getSession();
 
-  // 1. Mandatory Gatekeeper: Register/Login must come first before profile access (Req 13 & 47)
-  if (!session) {
-    redirect(`/login?returnUrl=/profile/${encodeURIComponent(identifier)}`);
-  }
-
   const profile = await getProfileByIdOrSlug(identifier);
 
   // 1. If Profile was not found on server, use ProfileNotFoundFallback to hydrate from localStorage if available
