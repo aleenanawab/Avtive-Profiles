@@ -13,6 +13,8 @@ interface PhonePreviewProps {
   onOpenEdit?: () => void;
   onOpenShare?: () => void;
   onOpenConnect?: () => void;
+  onOpenQRModal?: () => void;
+  onOpenResumeModal?: () => void;
   onSaveContact?: () => void;
   onSaveEdits?: (data: ProfileData) => Promise<void>;
   onSelectTeamMember?: (member: any) => void;
@@ -31,6 +33,8 @@ export function PhonePreview({
   onOpenEdit,
   onOpenShare,
   onOpenConnect,
+  onOpenQRModal,
+  onOpenResumeModal,
   onSaveContact,
   onSaveEdits,
   onSelectTeamMember,
@@ -97,8 +101,8 @@ export function PhonePreview({
               onSaveContact={onSaveContact || (() => {})}
               onOpenShare={onOpenShare || (() => {})}
               onOpenConnect={onOpenConnect || (() => {})}
-              onOpenQRModal={() => {}}
-              onOpenResumeModal={() => {}}
+              onOpenQRModal={onOpenQRModal || (() => {})}
+              onOpenResumeModal={onOpenResumeModal || (() => {})}
               onSelectProject={onSelectProject || (() => {})}
               onSelectTeamMember={onSelectTeamMember || (() => {})}
               onViewCompany={onViewCompany || (() => {})}
