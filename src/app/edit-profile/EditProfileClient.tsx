@@ -145,10 +145,25 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 1280) {
+        setActiveScreenTab('desktop');
+      }
+      const handleResize = () => {
+        if (window.innerWidth < 1280 && activeScreenTab === 'both') {
+          setActiveScreenTab('desktop');
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        clearCloseTimer();
+      };
+    }
     return () => {
       clearCloseTimer();
     };
-  }, []);
+  }, [activeScreenTab]);
 
   // Session guard
   useEffect(() => {

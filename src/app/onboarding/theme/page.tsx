@@ -127,7 +127,7 @@ function ThemeStepContent() {
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider mb-1">
             <span>Onboarding Flow</span>
             <span>&middot;</span>
-            <span>Step 1 of 3</span>
+            <span>Step 2 of 3</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Choose Your Design Theme
@@ -150,7 +150,7 @@ function ThemeStepContent() {
             onClick={handleNext}
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
           >
-            <span>Next: Select Role</span>
+            <span>Next: Profile Details</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -252,7 +252,7 @@ function ThemeStepContent() {
                 Skip
               </button>
               <span className="text-xs font-mono font-medium tracking-wider text-slate-500 dark:text-slate-400">
-                1/3
+                2/3
               </span>
             </div>
           </div>
@@ -350,8 +350,8 @@ function ThemeStepContent() {
 
   return (
     <DualScreenWorkspace
-      workflowTitle="3. Choose Theme"
-      workflowSubtitle="Onboarding Step 1 of 3"
+      workflowTitle="2. Choose Theme"
+      workflowSubtitle="Onboarding Step 2 of 3"
       currentUrlPath={`/onboarding/theme?theme=${selectedTheme}`}
       desktopContent={desktopView}
       mobileContent={mobileView}

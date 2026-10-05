@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, ArrowRight, ArrowLeft, User, Users, Shield, Sparkles, Building2, Loader2 } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, User, Users, Shield, Sparkles, Building2 } from 'lucide-react';
 import { ProfileType, ProfileTheme, normalizeProfileType } from '@/types/profile';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
@@ -52,7 +52,6 @@ function RoleStepContent() {
 
   // Shared state between Desktop and Mobile screens
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Route protection: If user already has a profile/role, redirect them so onboarding is not repeated
   useEffect(() => {
@@ -89,43 +88,11 @@ function RoleStepContent() {
     router.push('/register');
   };
 
-  const handleNext = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
+  const handleNext = () => {
     try {
-      try {
-        localStorage.setItem('avtive_selected_role', selectedRole);
-        localStorage.setItem('avtive_returning_user', 'true');
-      } catch {}
-
-      // Create or initialize the profile for the authenticated user with the chosen role
-      const res = await fetch('/api/profile/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: selectedRole,
-          theme: theme || 'editorial'
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.profile) {
-        const targetSlug = data.profile.slug || data.profile.id;
-        try {
-          sessionStorage.setItem('avtive_open_edit_mode', targetSlug);
-          localStorage.setItem('avtive_last_saved_profile', JSON.stringify(data.profile));
-        } catch {}
-        window.location.href = `/profile/${encodeURIComponent(targetSlug)}?edit=true`;
-      } else {
-        // Fallback to /edit-profile which auto-resolves profile and redirects to ?edit=true
-        window.location.href = '/edit-profile';
-      }
-    } catch (err) {
-      console.error('Failed to initialize profile from role selection:', err);
-      window.location.href = '/edit-profile';
-    } finally {
-      setIsSubmitting(false);
-    }
+      localStorage.setItem('avtive_selected_role', selectedRole);
+    } catch {}
+    router.push(`/onboarding/theme?role=${selectedRole}&theme=${theme}`);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -140,7 +107,7 @@ function RoleStepContent() {
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider mb-1">
             <span>Onboarding Flow</span>
             <span>&middot;</span>
-            <span>Step 1 of 2</span>
+            <span>Step 1 of 3</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Select Your Profile Type
@@ -154,28 +121,17 @@ function RoleStepContent() {
           <button
             type="button"
             onClick={handleBack}
-            disabled={isSubmitting}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
           >
             Back
           </button>
           <button
             type="button"
             onClick={handleNext}
-            disabled={isSubmitting}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Opening Editor...</span>
-              </>
-            ) : (
-              <>
-                <span>Next: Profile Editor</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </>
-            )}
+            <span>Next: Choose Theme</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -271,7 +227,7 @@ function RoleStepContent() {
               <ArrowLeft className="w-4 h-4" />
             </button>
             <span className="text-xs font-mono font-medium tracking-wider text-slate-500 dark:text-slate-400">
-              1/2
+              1/3
             </span>
           </div>
 
@@ -340,20 +296,10 @@ function RoleStepContent() {
         <button
           type="button"
           onClick={handleNext}
-          disabled={isSubmitting}
-          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Opening Editor...</span>
-            </>
-          ) : (
-            <>
-              <span>Continue to Editor</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </>
-          )}
+          <span>Continue to Theme</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -362,8 +308,8 @@ function RoleStepContent() {
 
   return (
     <DualScreenWorkspace
-      workflowTitle="Role Selection"
-      workflowSubtitle="Select Profile Type to Begin Editing"
+      workflowTitle="1. Select Profile Type"
+      workflowSubtitle="Onboarding Step 1 of 3"
       currentUrlPath={`/onboarding/role?theme=${theme}&role=${selectedRole}`}
       desktopContent={desktopView}
       mobileContent={mobileView}

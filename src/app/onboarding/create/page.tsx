@@ -221,12 +221,12 @@ function CreateProfileContent() {
             }
           }
           sessionStorage.setItem('avtive_open_edit_mode', targetSlug);
+          localStorage.setItem('avtive_returning_user', 'true');
         } catch {}
-        router.push(`/profile/${targetSlug}?edit=true`);
+        window.location.href = `/profile/${encodeURIComponent(targetSlug)}?edit=true`;
       } else {
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       }
-      router.refresh();
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error creating profile.');
