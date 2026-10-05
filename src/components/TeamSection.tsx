@@ -21,15 +21,17 @@ export function TeamSection({
   onSelectSection
 }: TeamSectionProps) {
   if (!profile.teamMembers || profile.teamMembers.length === 0) {
+    if (!canEdit) return null;
+
     return (
       <section 
         onClick={() => canEdit && onSelectSection?.('company')}
-        className={`px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+        className={`px-4 sm:px-6 md:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
           canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
         }`}
       >
         <div className="flex items-center justify-between">
-          <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+          <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
             Our Team
           </h2>
           <span className={`text-[11px] ${theme.textMuted} font-semibold font-mono`}>
@@ -46,12 +48,12 @@ export function TeamSection({
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('company')}
-      className={`px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
         canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
       }`}
     >
       <div className="flex items-center justify-between">
-        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
           Our Team
         </h2>
         <span className={`text-[11px] ${theme.textMuted} font-semibold font-mono`}>

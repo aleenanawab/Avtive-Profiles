@@ -35,8 +35,10 @@ export function CustomFieldsSection({
   );
 
   if (fields.length === 0) {
+    if (!canEdit) return null;
+
     return (
-      <div className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} transition-colors space-y-3 shadow-2xs`}>
+      <div className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} transition-colors space-y-3 shadow-xs`}>
         <div 
           onClick={() => canEdit && onSelectSection?.('customFields')}
           className={`flex items-center justify-between pb-1 border-b border-black/5 dark:border-white/5 ${
@@ -45,7 +47,7 @@ export function CustomFieldsSection({
           title={canEdit ? 'Click to edit Custom Fields in Studio' : undefined}
         >
           <div className="flex items-center gap-2">
-            <h3 className={`text-xs font-bold uppercase tracking-wider font-mono ${theme.textMuted} flex items-center gap-1.5`}>
+            <h3 className={`text-sm font-bold tracking-tight ${theme.textPrimary} flex items-center gap-1.5`}>
               <Sparkles className="w-3.5 h-3.5 text-purple-500" />
               <span>Custom Fields</span>
             </h3>

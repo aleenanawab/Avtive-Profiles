@@ -22,10 +22,14 @@ export function AboutSection({
 }: AboutSectionProps) {
   const hasBio = Boolean(profile.about || profile.fullBio || profile.shortBio || profile.tagline);
 
+  if (!hasBio && !canEdit && !isEditing) {
+    return null;
+  }
+
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('about', 'about')}
-      className={`px-6 sm:px-8 py-5 space-y-2 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
         canEdit ? 'cursor-pointer group/about hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
       }`}
       title={canEdit ? 'Click to edit Story & Bio in Studio' : undefined}

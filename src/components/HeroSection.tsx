@@ -182,19 +182,19 @@ export function HeroSection({
                 </span>
               )}
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
               <span>{profile.name}</span>
             </h1>
-            <p className="text-sm sm:text-base md:text-lg font-medium text-slate-500 dark:text-zinc-400">
+            <p className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words`}>
               {profile.profession || profile.designation || profile.profileName || 'Professional'}
             </p>
             {profile.tagline && (
-              <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-zinc-300 italic pt-0.5">
+              <p className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words`}>
                 &ldquo;{profile.tagline}&rdquo;
               </p>
             )}
             {profile.location && (
-              <p className="text-xs sm:text-sm text-slate-400 dark:text-zinc-500">
+              <p className={`text-xs sm:text-sm ${theme.textMuted} break-words`}>
                 {profile.location}
               </p>
             )}
@@ -210,7 +210,7 @@ export function HeroSection({
             }`}
             title={canEdit ? 'Click to edit Bio in Studio' : undefined}
           >
-            <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-zinc-300 leading-relaxed max-w-2xl">
+            <p className={`text-xs sm:text-sm md:text-base ${theme.textSecondary} leading-relaxed max-w-2xl break-words`}>
               {profile.shortBio}
             </p>
             {canEdit && (
@@ -229,19 +229,19 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-700 dark:border-white/20"
+                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                 title="Edit Profile in Studio"
               >
-                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-purple-400" />
+                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                 <span className="truncate">Edit Profile</span>
               </button>
 
               <button
                 type="button"
                 onClick={onOpenShare}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-white text-slate-900 dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-200 dark:border-white/10"
+                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
               >
-                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 dark:text-amber-400 shrink-0" />
+                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                 <span className="truncate">Share Profile</span>
               </button>
             </>
@@ -250,7 +250,7 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={onOpenConnect}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-white text-slate-950 dark:bg-white dark:text-black font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-200 dark:border-white/20"
+                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
               >
                 <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                 <span className="truncate">Connect</span>
@@ -259,9 +259,9 @@ export function HeroSection({
               <button
                 type="button"
                 onClick={onOpenShare}
-                className="flex-1 py-2 sm:py-2.5 px-3 sm:px-5 rounded-full bg-slate-900 text-white dark:bg-zinc-800 dark:text-white font-bold text-xs shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 border border-slate-700 dark:border-white/10"
+                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
               >
-                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
+                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                 <span className="truncate">Share</span>
               </button>
             </>

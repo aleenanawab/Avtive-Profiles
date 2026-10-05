@@ -520,9 +520,9 @@ export function AvtiveDigitalCard({
               case 'virtual-card':
                 if (!isSectionVisible('virtual-card')) return null;
                 return (
-                  <div key="virtual-card" id="virtual-card-section" className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
+                  <div key="virtual-card" id="virtual-card-section" className={`px-4 sm:px-6 md:px-8 py-5 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+                      <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
                         Virtual Card Preview
                       </h2>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-bold font-mono`}>
@@ -557,7 +557,7 @@ export function AvtiveDigitalCard({
                       <div 
                         key={sectionKey} 
                         onClick={() => canEdit && onSelectSection?.('customFields', customField.id)}
-                        className={`relative group/cf px-6 sm:px-8 py-5 ${theme.cardBg} border-t ${theme.divider} transition-colors space-y-2.5 ${
+                        className={`relative group/cf px-4 sm:px-6 md:px-8 py-5 ${theme.cardBg} border-t ${theme.divider} transition-colors space-y-2.5 ${
                           canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
                         }`}
                       >
@@ -570,7 +570,7 @@ export function AvtiveDigitalCard({
                           </div>
                         )}
                         <div className="flex items-center justify-between">
-                          <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono flex items-center gap-1.5`}>
+                          <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary} flex items-center gap-1.5`}>
                             <Tag className="w-3.5 h-3.5 text-purple-500" />
                             <span>{title}</span>
                           </h2>
@@ -633,9 +633,9 @@ export function AvtiveDigitalCard({
                 if (dynamicSection) {
                   if (!isSectionVisible(sectionKey) || dynamicSection.visible === false) return null;
                   return (
-                    <div key={dynamicSection.id || dynamicSection.key} className={`px-6 sm:px-8 py-6 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
+                    <div key={dynamicSection.id || dynamicSection.key} className={`px-4 sm:px-6 md:px-8 py-5 ${theme.cardBg} border-t ${theme.divider} transition-colors`}>
                       <div className="flex items-center justify-between mb-4">
-                        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+                        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
                           {dynamicSection.title}
                         </h2>
                       </div>

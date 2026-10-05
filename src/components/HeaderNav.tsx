@@ -63,11 +63,11 @@ export function HeaderNav({
 
   return (
     <header className={`sticky top-0 z-40 w-full backdrop-blur-md ${theme.headerBg} border-b ${theme.divider} transition-colors shadow-2xs`}>
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 sm:gap-3">
         {/* Left: Avtive Brand */}
         <Link 
           href="/"
-          className="flex items-center gap-2 group cursor-pointer"
+          className="flex items-center gap-2 group cursor-pointer shrink-0"
           title="Avtive Digital Identity"
         >
           <div className="h-8 flex items-center">
@@ -82,11 +82,11 @@ export function HeaderNav({
               <span className={`font-bold text-sm ${theme.accentText} tracking-tight`}>
                 Avtive
               </span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${theme.badgeBg} ${theme.badgeText} font-bold font-mono`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${theme.badgeBg} ${theme.badgeText} font-bold font-mono leading-none`}>
                 Official
               </span>
             </div>
-            <p className={`text-[10px] ${theme.textMuted} font-medium`}>
+            <p className={`text-[10px] ${theme.textMuted} font-medium leading-tight`}>
               Digital Identity Platform
             </p>
           </div>
@@ -94,7 +94,7 @@ export function HeaderNav({
 
         {/* Center: Navigation Options (Only shown when profile has both Individual and Team profiles) */}
         {hasTeamOrCompany && onSelectProfileType && (
-          <div className={`flex items-center p-0.5 sm:p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
+          <div className={`hidden sm:flex items-center p-0.5 sm:p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
             {/* 1. Individual */}
             <button
               type="button"
@@ -106,8 +106,7 @@ export function HeaderNav({
               }`}
             >
               <CreditCard className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden xs:inline">Individual</span>
-              <span className="xs:hidden">Me</span>
+              <span>Individual</span>
             </button>
             
             {/* 2. Team */}
@@ -133,11 +132,11 @@ export function HeaderNav({
             <button
               type="button"
               onClick={onOpenEdit}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer`}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8`}
               title="Edit Profile"
             >
               <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
-              <span>Edit</span>
+              <span className="hidden sm:inline">Edit</span>
             </button>
           )}
 
@@ -148,7 +147,7 @@ export function HeaderNav({
               onClick={onToggleTheme}
               aria-label="Toggle Theme"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1 shrink-0 cursor-pointer`}
+              className={`px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1 shrink-0 cursor-pointer h-8`}
             >
               {isDark ? (
                 <>
@@ -157,7 +156,7 @@ export function HeaderNav({
                 </>
               ) : (
                 <>
-                  <Moon className="w-4 h-4 text-[#475569]" />
+                  <Moon className={`w-4 h-4 ${theme.textSecondary}`} />
                   <span className="hidden md:inline">Dark</span>
                 </>
               )}
@@ -169,7 +168,7 @@ export function HeaderNav({
             <button
               type="button"
               onClick={onOpenShare}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer`}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer h-8`}
               title="Share Profile"
             >
               <Share2 className="w-3.5 h-3.5" />
@@ -194,7 +193,7 @@ export function HeaderNav({
                   window.location.replace('/login');
                 }
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0 h-8`}
               title="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -203,7 +202,7 @@ export function HeaderNav({
           ) : (
             <Link
               href="/login"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0 h-8`}
               title="Sign In to Avtive"
             >
               <LogIn className="w-3.5 h-3.5" />

@@ -24,10 +24,14 @@ export function ExperienceSection({
     : [];
   const hasExperience = experiences.length > 0;
 
+  if (!hasExperience && !canEdit) {
+    return null;
+  }
+
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('experience')}
-      className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${canEdit ? 'cursor-pointer hover:ring-1 hover:ring-emerald-500/40 rounded-xl transition-all' : ''}`}
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${canEdit ? 'cursor-pointer hover:bg-accent/5 transition-all' : ''}`}
     >
       <div className="flex items-center justify-between">
         <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>

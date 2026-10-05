@@ -22,8 +22,12 @@ export function PortfolioSection({
 }: PortfolioSectionProps) {
   const hasProjects = profile.projects && profile.projects.length > 0;
 
+  if (!hasProjects && !canEdit) {
+    return null;
+  }
+
   return (
-    <section className={`relative group/port px-6 sm:px-8 py-5 space-y-4 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+    <section className={`relative group/port px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
       canEdit && onSelectSection ? 'hover:bg-accent/5 transition-all' : ''
     }`}>
       {/* Interactive section edit badge */}

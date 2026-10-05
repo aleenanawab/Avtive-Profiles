@@ -21,6 +21,10 @@ export function RecommendationsSection({
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
   const hasRecommendations = profile.recommendations && profile.recommendations.length > 0;
 
+  if (!hasRecommendations && !canEdit) {
+    return null;
+  }
+
   const toggleExpand = (id: string) => {
     setExpandedIds(prev => ({ ...prev, [id]: !prev[id] }));
   };
@@ -28,12 +32,12 @@ export function RecommendationsSection({
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('recommendations')}
-      className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
         canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
       }`}
     >
       <div className="flex items-center justify-between">
-        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
           Recommendations
         </h2>
         {canEdit && onSelectSection && (

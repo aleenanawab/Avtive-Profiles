@@ -44,15 +44,17 @@ export function SocialLinksSection({ profile, canEdit, onSelectSection }: Social
   };
 
   if (rawSocials.length === 0) {
+    if (!canEdit) return null;
+
     return (
       <section 
         onClick={() => canEdit && onSelectSection?.('socialLinks')}
-        className={`px-6 sm:px-8 py-5 space-y-3 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+        className={`px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
           canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
         }`}
       >
-        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-          SOCIAL & PROFESSIONAL LINKS
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+          Social & Professional Links
         </h2>
         <p className={`text-xs ${theme.textSecondary} italic py-1`}>
           No social or professional links added yet.
@@ -64,12 +66,12 @@ export function SocialLinksSection({ profile, canEdit, onSelectSection }: Social
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('socialLinks')}
-      className={`px-6 sm:px-8 py-5 space-y-3 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
         canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
       }`}
     >
-      <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-        SOCIAL & PROFESSIONAL LINKS
+      <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+        Social & Professional Links
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">

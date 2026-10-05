@@ -20,20 +20,21 @@ export function EducationSection({
 }: EducationSectionProps) {
   const hasEducation = profile.education && profile.education.length > 0;
 
+  if (!hasEducation && !canEdit) {
+    return null;
+  }
+
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('education')}
-      className={`px-6 sm:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
         canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
       }`}
     >
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <GraduationCap className={`w-4 h-4 ${theme.accentText}`} />
-          <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
-            Education
-          </h2>
-        </div>
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+          Education
+        </h2>
         {canEdit && onSelectSection && (
           <span className="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded font-medium">
             Click to edit

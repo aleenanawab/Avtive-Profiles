@@ -281,7 +281,7 @@ function PublicProfileClientInner({
 
       {/* Main Responsive Profile Container - Single Source of Truth */}
       <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8 min-w-0">
-        <div className="w-full rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#0E1528] shadow-xl overflow-hidden">
+        <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden`}>
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
             canEdit={isOwner}

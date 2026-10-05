@@ -36,8 +36,12 @@ export function ProfileContactSection({
     profile.website
   );
 
+  if (!isEditing && !hasContactInfo && !canEdit) {
+    return null;
+  }
+
   return (
-    <section className={`relative group/contact px-6 sm:px-8 py-5 space-y-3 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors ${
+    <section className={`relative group/contact px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors ${
       canEdit && onSelectSection ? 'hover:bg-accent/5' : ''
     }`}>
       {/* Interactive edit badge */}

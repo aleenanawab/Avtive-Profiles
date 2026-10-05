@@ -21,16 +21,18 @@ export function CompanyCard({
   onSelectSection
 }: CompanyCardProps) {
   if (!companyInfo || !companyInfo.name) {
+    if (!canEdit) return null;
+
     return (
       <section 
         onClick={() => canEdit && onSelectSection?.('company')}
-        className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+        className={`px-4 sm:px-6 md:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
           canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
         }`}
       >
         <div className={`p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-left`}>
           <div className="flex items-center gap-3.5">
-            <div className={`w-12 h-12 rounded-xl ${theme.badgeBg} flex items-center justify-center shrink-0 border ${theme.cardBorder} shadow-2xs`}>
+            <div className={`w-12 h-12 rounded-xl ${theme.badgeBg} flex items-center justify-center shrink-0 border ${theme.cardBorder} shadow-xs`}>
               <Building2 className={`w-6 h-6 ${theme.textMuted}`} />
             </div>
             <div>
@@ -50,7 +52,7 @@ export function CompanyCard({
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('company')}
-      className={`px-6 sm:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+      className={`px-4 sm:px-6 md:px-8 py-3.5 ${theme.cardBg} border-b ${theme.divider} transition-colors ${
         canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
       }`}
     >
@@ -60,7 +62,7 @@ export function CompanyCard({
             onViewCompany();
           }
         }}
-        className={`cursor-pointer group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} transition-all shadow-2xs hover:shadow-xs text-left`}
+        className={`cursor-pointer group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} transition-all shadow-xs hover:shadow-sm text-left`}
       >
         <div className="flex items-center gap-3.5 min-w-0">
           <div className={`w-12 h-12 rounded-xl ${theme.cardBg} p-2 flex items-center justify-center shrink-0 border ${theme.cardBorder} shadow-2xs`}>

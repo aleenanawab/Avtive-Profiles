@@ -20,15 +20,19 @@ export function LanguagesSection({
 }: LanguagesSectionProps) {
   const hasLanguages = profile.languages && profile.languages.length > 0;
 
+  if (!hasLanguages && !canEdit) {
+    return null;
+  }
+
   return (
     <section 
       onClick={() => canEdit && onSelectSection?.('languages')}
-      className={`px-6 sm:px-8 py-5 space-y-3 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left ${theme.cardBg} border-b ${theme.divider} transition-colors ${
         canEdit && onSelectSection ? 'cursor-pointer hover:bg-accent/5' : ''
       }`}
     >
       <div className="flex items-center justify-between">
-        <h2 className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
+        <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
           Languages
         </h2>
         {canEdit && onSelectSection && (
