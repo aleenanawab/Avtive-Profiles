@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { getProfileByUserId, createProfileForUser, setProfileResponseCookies } from '@/lib/db';
+import { ensureSupabaseAssetUrl } from '@/lib/supabase';
 import { normalizeProfileType } from '@/types/profile';
 
 export async function POST(request: NextRequest) {
@@ -17,6 +18,18 @@ export async function POST(request: NextRequest) {
     const profileName = (body.profileName || body.designation || 'Professional Profile').trim();
     const name = (body.name || session.name || 'Professional').trim();
     const email = (body.email || session.email || '').trim();
+
+    // Auto-upload base64 images to Supabase Storage
+    const avatar = await ensureSupabaseAssetUrl(body.avatar || session.avatar, 'avatars');
+    const coverImage = await ensureSupabaseAssetUrl(body.coverImage, 'profiles');
+
+    // Process projects images
+    let projects = Array.isArray(body.projects) ? [...body.projects] : [];
+    for (let i = 0; i < projects.length; i++) {
+      if (projects[i] && projects[i].image) {
+        projects[i].image = await ensureSupabaseAssetUrl(projects[i].image, 'profiles');
+      }
+    }
 
     // Parse skills if string or array
     let skills: string[] = [];
@@ -52,8 +65,8 @@ export async function POST(request: NextRequest) {
       designation: body.designation?.trim() || body.professionalTitle?.trim() || body.profession?.trim() || 'Professional',
       company: body.company?.trim() || 'Avtive Network',
       location: body.location?.trim() || 'Global',
-      avatar: body.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
-      coverImage: body.coverImage,
+      avatar: avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
+      coverImage: coverImage,
       phone: body.phone?.trim() || '',
       whatsapp: body.whatsapp?.trim() || body.phone?.trim() || '',
       bio: body.bio?.trim() || body.shortBio?.trim() || 'Welcome to my digital profile on Avtive.',

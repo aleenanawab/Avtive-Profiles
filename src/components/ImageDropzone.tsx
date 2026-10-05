@@ -9,6 +9,7 @@ interface ImageDropzoneProps {
   label: string;
   aspect?: 'square' | 'banner';
   className?: string;
+  bucket?: string;
 }
 
 const ALLOWED_TYPES = [
@@ -31,7 +32,8 @@ export function ImageDropzone({
   onChange,
   label,
   aspect = 'square',
-  className = ''
+  className = '',
+  bucket
 }: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -70,6 +72,8 @@ export function ImageDropzone({
     try {
       const formData = new FormData();
       formData.append('file', file);
+      const targetBucket = bucket || (label.toLowerCase().includes('avatar') ? 'avatars' : 'profiles');
+      formData.append('bucket', targetBucket);
 
       const res = await fetch('/api/upload', {
         method: 'POST',

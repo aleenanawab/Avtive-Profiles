@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { updateProfile, getProfileByIdOrSlug, getProfileByUserId, setProfileResponseCookies } from '@/lib/db';
+import { ensureSupabaseAssetUrl } from '@/lib/supabase';
 import { ProfileData } from '@/types/profile';
 
 async function handleProfileUpdate(request: NextRequest) {
@@ -24,7 +25,7 @@ async function handleProfileUpdate(request: NextRequest) {
       delete rawUpdatedData.profileId;
       delete rawUpdatedData.id;
     }
-    const updatedData = rawUpdatedData;
+    const updatedData = { ...rawUpdatedData };
 
     const identifier = profileId || body.profileSlug || body.slug;
     if (!identifier && !updatedData) {
@@ -32,6 +33,23 @@ async function handleProfileUpdate(request: NextRequest) {
         { error: 'Invalid request: profile identifier and updatedData are required.' },
         { status: 400 }
       );
+    }
+
+    // Process and auto-upload any base64 images to Supabase Storage
+    if (updatedData.avatar) {
+      updatedData.avatar = await ensureSupabaseAssetUrl(updatedData.avatar, 'avatars');
+    }
+    if (updatedData.coverImage) {
+      updatedData.coverImage = await ensureSupabaseAssetUrl(updatedData.coverImage, 'profiles');
+    }
+    if (Array.isArray(updatedData.projects)) {
+      const processedProjects = [...updatedData.projects];
+      for (let i = 0; i < processedProjects.length; i++) {
+        if (processedProjects[i] && processedProjects[i].image) {
+          processedProjects[i].image = await ensureSupabaseAssetUrl(processedProjects[i].image, 'profiles');
+        }
+      }
+      updatedData.projects = processedProjects;
     }
 
     // 2. Perform update with automatic upsert fallback for serverless persistence

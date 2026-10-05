@@ -25,9 +25,16 @@ interface DatabaseSchema {
 
 const globalForDb = globalThis as unknown as { __AVTIVE_DB__?: DatabaseSchema };
 
+async function withTimeout<T>(promise: PromiseLike<T>, ms: number = 2000): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+  ]);
+}
+
 async function asyncSyncSupabase(action: PromiseLike<any>) {
   try {
-    await action;
+    await withTimeout(action, 2000);
   } catch {}
 }
 
@@ -299,11 +306,13 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
 
   // Supabase lookup fallback
   try {
-    const { data, error } = await supabaseAdmin
-      .from('users')
-      .select('*')
-      .eq('email', normalizedEmail)
-      .maybeSingle();
+    const { data, error } = await withTimeout(
+      supabaseAdmin
+        .from('users')
+        .select('*')
+        .eq('email', normalizedEmail)
+        .maybeSingle()
+    );
 
     if (data && !error) {
       const su: UserRecord = {
@@ -356,11 +365,13 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
 
   // Supabase lookup fallback
   try {
-    const { data, error } = await supabaseAdmin
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
+    const { data, error } = await withTimeout(
+      supabaseAdmin
+        .from('users')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+    );
 
     if (data && !error) {
       const su: UserRecord = {
@@ -381,25 +392,38 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
 }
 
 export async function createUser(data: {
+  id?: string;
   name: string;
   email: string;
-  passwordHash: string;
+  passwordHash?: string;
+  avatar?: string;
   role?: ProfileType;
   createProfile?: boolean;
 }): Promise<{ user: UserRecord; profile?: ProfileData }> {
   const db = loadDb();
-  const userId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const userId = data.id || `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
   const newUser: UserRecord = {
     id: userId,
     name: data.name.trim(),
     email: data.email.toLowerCase().trim(),
-    passwordHash: data.passwordHash,
+    passwordHash: data.passwordHash || `oauth_verified_${Date.now()}`,
+    avatar: data.avatar,
     role: data.role ? normalizeProfileType(data.role) : undefined,
+    onboardingCompleted: data.createProfile ? true : false,
     createdAt: new Date().toISOString()
   };
 
-  db.users.push(newUser);
+  // Check if existing user with same ID already in DB
+  const existingIndex = db.users.findIndex((u) => u.id === userId || u.email.toLowerCase().trim() === newUser.email);
+  if (existingIndex !== -1) {
+    db.users[existingIndex] = {
+      ...db.users[existingIndex],
+      ...newUser
+    };
+  } else {
+    db.users.push(newUser);
+  }
 
   // Sync user to Supabase
   try {
@@ -409,6 +433,9 @@ export async function createUser(data: {
         name: newUser.name,
         email: newUser.email,
         password_hash: newUser.passwordHash,
+        avatar_url: newUser.avatar,
+        role: newUser.role,
+        onboarding_completed: newUser.onboardingCompleted,
         created_at: newUser.createdAt
       })
     );
@@ -636,6 +663,7 @@ export async function createProfileForUser(
   const targetUser = db.users.find((u) => u.id === userId);
   if (targetUser) {
     targetUser.role = normalizeProfileType(data.type);
+    targetUser.onboardingCompleted = true;
   }
   saveDb(db);
 
@@ -726,11 +754,13 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
 
   // Supabase lookup fallback across serverless lambdas
   try {
-    const { data, error } = await supabaseAdmin
-      .from('profiles')
-      .select('*')
-      .or(`id.eq.${idOrSlug},slug.eq.${idOrSlug},slug.eq.${clean},user_id.eq.${idOrSlug}`)
-      .maybeSingle();
+    const { data, error } = await withTimeout(
+      supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .or(`id.eq.${idOrSlug},slug.eq.${idOrSlug},slug.eq.${clean},user_id.eq.${idOrSlug}`)
+        .maybeSingle()
+    );
 
     if (data && !error) {
       const sp: ProfileData = {
@@ -797,11 +827,13 @@ export async function getProfileByUserId(userId: string): Promise<ProfileData | 
 
   // Supabase lookup fallback across serverless lambdas
   try {
-    const { data, error } = await supabaseAdmin
-      .from('profiles')
-      .select('*')
-      .or(`user_id.eq.${userId}${user?.email ? `,email.eq.${user.email}` : ''}`)
-      .maybeSingle();
+    const { data, error } = await withTimeout(
+      supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .or(`user_id.eq.${userId}${user?.email ? `,email.eq.${user.email}` : ''}`)
+        .maybeSingle()
+    );
 
     if (data && !error) {
       const sp: ProfileData = {
@@ -855,10 +887,12 @@ export async function getProfilesByUserId(userId: string): Promise<ProfileData[]
 
   if (unique.size === 0) {
     try {
-      const { data, error } = await supabaseAdmin
-        .from('profiles')
-        .select('*')
-        .or(`user_id.eq.${userId}${userEmail ? `,email.eq.${userEmail}` : ''}`);
+      const { data, error } = await withTimeout(
+        supabaseAdmin
+          .from('profiles')
+          .select('*')
+          .or(`user_id.eq.${userId}${userEmail ? `,email.eq.${userEmail}` : ''}`)
+      );
 
       if (data && !error && data.length > 0) {
         for (const item of data) {

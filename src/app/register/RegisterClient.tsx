@@ -19,6 +19,8 @@ import {
 import { motion } from 'framer-motion';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
+import { supabase } from '@/lib/supabase';
+
 export default function RegisterClient() {
   const router = useRouter();
 
@@ -36,6 +38,21 @@ export default function RegisterClient() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
+      // 1. Try real Supabase Google OAuth if configured
+      try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/api/auth/callback`
+          }
+        });
+        if (!error && data?.url) {
+          window.location.href = data.url;
+          return;
+        }
+      } catch {}
+
+      // 2. Direct social authentication fallback
       const res = await fetch('/api/auth/social', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,7 +70,7 @@ export default function RegisterClient() {
       } catch {}
 
       if (data.hasProfile && data.profileSlug) {
-        router.push(`/profile/${data.profileSlug}`);
+        router.push('/dashboard');
       } else {
         try {
           localStorage.removeItem('avtive_last_saved_profile');

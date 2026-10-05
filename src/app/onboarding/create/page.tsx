@@ -93,9 +93,12 @@ function CreateProfileContent() {
       .then((res) => res.json())
       .then((data) => {
         if (data.user) {
-          const names = data.user.name?.split(' ') || [];
-          if (!firstName) setFirstName(names[0] || 'Aleena');
-          if (!secondName) setSecondName(names.slice(1).join(' ') || 'Nawab');
+          const names = data.user.name ? data.user.name.trim().split(/\s+/) : [];
+          if (!firstName && names.length > 0) setFirstName(names[0]);
+          if (!secondName && names.length > 1) setSecondName(names.slice(1).join(' '));
+          if (data.user.avatar) {
+            setAvatar(data.user.avatar);
+          }
           if (!professionalTitle) {
             setProfessionalTitle(role === 'team' ? 'Lead Organization' : 'Full Stack Developer');
           }
@@ -108,7 +111,7 @@ function CreateProfileContent() {
         }
       })
       .catch(() => {});
-  }, [role]);
+  }, [role, firstName, secondName, professionalTitle, company, bio]);
 
   const handleAddSkill = () => {
     if (skillInput.trim() && !skills.includes(skillInput.trim())) {

@@ -116,6 +116,7 @@ export interface UserSession {
   id: string;
   name: string;
   email: string;
+  avatar?: string;
 }
 
 export interface UserRecord {
@@ -125,8 +126,10 @@ export interface UserRecord {
   passwordHash: string;
   createdAt: string;
   role?: ProfileType;
+  avatar?: string;
   resetToken?: string;
   resetTokenExpires?: string;
+  onboardingCompleted?: boolean;
 }
 
 export interface UserConnection {

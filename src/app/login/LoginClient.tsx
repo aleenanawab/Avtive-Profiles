@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 import { usePortfolioTheme } from '@/context/ThemeContext';
+import { supabase } from '@/lib/supabase';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -98,6 +99,21 @@ export default function LoginClient() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
+      // 1. Try real Supabase Google OAuth if configured
+      try {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/api/auth/callback`
+          }
+        });
+        if (!error && data?.url) {
+          window.location.href = data.url;
+          return;
+        }
+      } catch {}
+
+      // 2. Direct social authentication fallback
       const res = await fetch('/api/auth/social', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -126,24 +142,21 @@ export default function LoginClient() {
       const returnUrl = getReturnUrl();
       let targetPath = '/onboarding/role';
 
-      if (data.hasProfile && data.profileSlug) {
-        // Existing user with profile -> direct Profile View
-        targetPath = `/profile/${data.profileSlug}`;
-      } else if (!data.hasProfile) {
+      if (data.hasProfile) {
+        // Existing user with profile -> direct Dashboard (or returnUrl)
+        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
+          targetPath = returnUrl;
+        } else {
+          targetPath = '/dashboard';
+        }
+      } else {
         try {
           localStorage.removeItem('avtive_last_saved_profile');
           sessionStorage.removeItem('avtive_open_edit_mode');
         } catch {}
         targetPath = '/onboarding/role';
-      } else if (data.profileSlug) {
-        targetPath = `/profile/${data.profileSlug}`;
-      } else if (data.user?.id) {
-        targetPath = `/profile/${data.user.id}`;
       }
 
-      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
-        targetPath = returnUrl;
-      }
       window.location.href = targetPath;
     } catch (err) {
       console.error(err);

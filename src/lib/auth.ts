@@ -46,6 +46,7 @@ export function createSessionToken(user: UserSession): string {
     id: user.id,
     name: user.name,
     email: user.email,
+    avatar: user.avatar,
     exp: Math.floor(Date.now() / 1000) + SESSION_DURATION_SECONDS
   };
 
@@ -86,7 +87,8 @@ export function verifySessionToken(token: string): UserSession | null {
     return {
       id: payload.id,
       name: payload.name,
-      email: payload.email
+      email: payload.email,
+      avatar: payload.avatar
     };
   } catch {
     return null;

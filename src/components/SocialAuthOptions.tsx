@@ -95,11 +95,11 @@ export function SocialAuthOptions({ onSuccess, onError }: SocialAuthOptionsProps
         } else {
           router.push('/onboarding/role');
         }
-      } else if (data.hasProfile && data.profileSlug) {
+      } else if (data.hasProfile) {
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/create-profile') && !returnUrl.includes('/onboarding')) {
           router.push(returnUrl);
         } else {
-          router.push(`/profile/${data.profileSlug}`);
+          router.push('/dashboard');
         }
       } else {
         router.push('/onboarding/role');

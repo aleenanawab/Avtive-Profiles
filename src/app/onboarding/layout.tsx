@@ -21,12 +21,12 @@ export default async function OnboardingLayout({
     redirect('/login?returnUrl=/onboarding/role');
   }
 
-  // If user already has an existing profile, redirect directly to profile view so onboarding is never shown again
-  const { getProfileByUserId } = await import('@/lib/db');
+  // If user already has an existing profile, redirect directly to dashboard so onboarding is never shown again
+  const { getProfileByUserId, getProfilesByUserId } = await import('@/lib/db');
   const profile = await getProfileByUserId(session.id);
-  if (profile) {
-    const slug = profile.slug || profile.id;
-    redirect(`/profile/${encodeURIComponent(slug)}`);
+  const profiles = profile ? [profile] : await getProfilesByUserId(session.id);
+  if (profile || (profiles && profiles.length > 0)) {
+    redirect('/dashboard');
   }
 
   return (

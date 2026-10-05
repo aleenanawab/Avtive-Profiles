@@ -59,6 +59,9 @@ function DetailsStepContent() {
         if (data.user?.name && !fullName) {
           setFullName(data.user.name);
         }
+        if (data.user?.avatar) {
+          setAvatar(data.user.avatar);
+        }
       })
       .catch(() => {});
   }, [fullName]);

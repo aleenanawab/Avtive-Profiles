@@ -10,5 +10,12 @@ export default async function MyProfilePage() {
     redirect('/login?returnUrl=/my-profile');
   }
 
+  const { getProfileByUserId, getProfilesByUserId } = await import('@/lib/db');
+  const profile = await getProfileByUserId(session.id);
+  const profiles = profile ? [profile] : await getProfilesByUserId(session.id);
+  if (!profile && (!profiles || profiles.length === 0)) {
+    redirect('/onboarding/role');
+  }
+
   redirect('/dashboard');
 }

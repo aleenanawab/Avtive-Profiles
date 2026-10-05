@@ -112,13 +112,51 @@ export async function uploadToSupabaseStorage(
 
     return {
       success: false,
-      error: lastError?.message || 'Failed to upload to Supabase Storage bucket.'
+      error: lastError?.message || 'Storage upload failed'
     };
   } catch (err: any) {
     return {
       success: false,
-      error: err?.message || 'Error communicating with Supabase Storage.'
+      error: err?.message || 'Unexpected upload error'
     };
   }
+}
+
+/**
+ * Ensure any image asset (base64 Data URI or file buffer) is saved to Supabase Storage
+ * and returned as a permanent public CDN URL.
+ */
+export async function ensureSupabaseAssetUrl(
+  imageSource?: string | null,
+  preferredBucket: string = PROFILES_STORAGE_BUCKET
+): Promise<string> {
+  if (!imageSource || typeof imageSource !== 'string') return '';
+  
+  // If already a hosted URL (CDN or external), keep as is
+  if (imageSource.startsWith('http://') || imageSource.startsWith('https://')) {
+    return imageSource;
+  }
+
+  // If base64 data URI, upload directly to Supabase storage
+  if (imageSource.startsWith('data:')) {
+    try {
+      const matches = imageSource.match(/^data:([a-zA-Z0-9/+.-]+);base64,(.+)$/);
+      if (matches && matches[2]) {
+        const mimeType = matches[1] || 'image/jpeg';
+        const buffer = Buffer.from(matches[2], 'base64');
+        const ext = mimeType.includes('png') ? '.png' : mimeType.includes('webp') ? '.webp' : '.jpg';
+        const filename = `${preferredBucket}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
+
+        const uploadRes = await uploadToSupabaseStorage(buffer, filename, mimeType, preferredBucket);
+        if (uploadRes.success && uploadRes.url) {
+          return uploadRes.url;
+        }
+      }
+    } catch (err) {
+      console.warn('Auto Supabase asset upload fallback:', err);
+    }
+  }
+
+  return imageSource;
 }
 
