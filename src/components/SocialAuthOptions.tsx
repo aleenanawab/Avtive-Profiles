@@ -85,18 +85,24 @@ export function SocialAuthOptions({ onSuccess, onError }: SocialAuthOptionsProps
 
       const returnUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('returnUrl') : null;
 
-      if (data.hasProfile && data.profileSlug) {
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/create-profile')) {
+      if (!data.hasProfile) {
+        try {
+          localStorage.removeItem('avtive_last_saved_profile');
+          sessionStorage.removeItem('avtive_open_edit_mode');
+        } catch {}
+        if (returnUrl && returnUrl.includes('/onboarding')) {
+          router.push(returnUrl);
+        } else {
+          router.push('/onboarding/role');
+        }
+      } else if (data.hasProfile && data.profileSlug) {
+        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/create-profile') && !returnUrl.includes('/onboarding')) {
           router.push(returnUrl);
         } else {
           router.push(`/profile/${data.profileSlug}`);
         }
       } else {
-        if (returnUrl) {
-          router.push(`/create-profile?returnUrl=${encodeURIComponent(returnUrl)}`);
-        } else {
-          router.push('/create-profile');
-        }
+        router.push('/onboarding/role');
       }
       router.refresh();
     } catch (err: any) {

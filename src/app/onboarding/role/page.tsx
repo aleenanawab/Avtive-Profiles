@@ -53,19 +53,8 @@ function RoleStepContent() {
   // Shared state between Desktop and Mobile screens
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
 
-  // Route protection: If user already has a profile/role, redirect them so onboarding is not repeated
+  // Route protection: If user already has an active profile on server, redirect them
   useEffect(() => {
-    try {
-      const lastSaved = localStorage.getItem('avtive_last_saved_profile');
-      if (lastSaved) {
-        const parsed = JSON.parse(lastSaved);
-        if (parsed?.slug || parsed?.id) {
-          router.replace(`/profile/${parsed.slug || parsed.id}`);
-          return;
-        }
-      }
-    } catch {}
-
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {

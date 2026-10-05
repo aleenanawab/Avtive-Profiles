@@ -124,25 +124,24 @@ export default function LoginClient() {
       } catch {}
 
       const returnUrl = getReturnUrl();
-      let targetPath = '/dashboard';
+      let targetPath = '/onboarding/role';
 
       if (data.hasProfile && data.profileSlug) {
         // Existing user with profile -> direct Profile View
         targetPath = `/profile/${data.profileSlug}`;
       } else if (!data.hasProfile) {
-        // User with no profile -> check if role already selected
-        if (data.role) {
-          targetPath = '/edit-profile';
-        } else {
-          targetPath = '/onboarding/role';
-        }
+        try {
+          localStorage.removeItem('avtive_last_saved_profile');
+          sessionStorage.removeItem('avtive_open_edit_mode');
+        } catch {}
+        targetPath = '/onboarding/role';
       } else if (data.profileSlug) {
         targetPath = `/profile/${data.profileSlug}`;
       } else if (data.user?.id) {
         targetPath = `/profile/${data.user.id}`;
       }
 
-      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
+      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register')) {
         targetPath = returnUrl;
       }
       window.location.href = targetPath;

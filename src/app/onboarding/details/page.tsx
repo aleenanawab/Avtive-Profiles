@@ -143,11 +143,24 @@ function DetailsStepContent() {
       }
 
       const targetId = data.profile?.slug || data.profile?.id;
-      try {
-        sessionStorage.setItem('avtive_open_edit_mode', targetId);
-      } catch {}
-      router.push(`/profile/${targetId}?edit=true`);
-      router.refresh();
+      if (targetId) {
+        try {
+          if (data.profile) {
+            localStorage.setItem('avtive_last_saved_profile', JSON.stringify(data.profile));
+            if (data.profile.slug) {
+              localStorage.setItem(`avtive_profile_${data.profile.slug}`, JSON.stringify(data.profile));
+            }
+            if (data.profile.id) {
+              localStorage.setItem(`avtive_profile_${data.profile.id}`, JSON.stringify(data.profile));
+            }
+          }
+          sessionStorage.setItem('avtive_open_edit_mode', targetId);
+          localStorage.setItem('avtive_returning_user', 'true');
+        } catch {}
+        window.location.href = `/profile/${encodeURIComponent(targetId)}?edit=true`;
+      } else {
+        window.location.href = '/dashboard';
+      }
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error creating profile.');

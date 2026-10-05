@@ -55,6 +55,10 @@ export default function RegisterClient() {
       if (data.hasProfile && data.profileSlug) {
         router.push(`/profile/${data.profileSlug}`);
       } else {
+        try {
+          localStorage.removeItem('avtive_last_saved_profile');
+          sessionStorage.removeItem('avtive_open_edit_mode');
+        } catch {}
         router.push('/onboarding/role');
       }
       router.refresh();

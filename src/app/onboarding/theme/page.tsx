@@ -71,17 +71,6 @@ function ThemeStepContent() {
 
   // If user is already authenticated with a profile, redirect immediately so theme is not asked again
   React.useEffect(() => {
-    try {
-      const lastSaved = localStorage.getItem('avtive_last_saved_profile');
-      if (lastSaved) {
-        const parsed = JSON.parse(lastSaved);
-        if (parsed?.slug || parsed?.id) {
-          router.replace(`/profile/${parsed.slug || parsed.id}`);
-          return;
-        }
-      }
-    } catch {}
-
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
