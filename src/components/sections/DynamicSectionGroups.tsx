@@ -107,13 +107,7 @@ export const ALL_PROFILE_SECTIONS: ProfileSectionMeta[] = [
     description: 'Professional credentials, licenses & certificates',
     icon: Award
   },
-  {
-    id: 'volunteer',
-    key: 'volunteer',
-    label: 'Volunteer Experience',
-    description: 'Community leadership, non-profit work & causes',
-    icon: Sparkles
-  },
+
   {
     id: 'languages',
     key: 'languages',

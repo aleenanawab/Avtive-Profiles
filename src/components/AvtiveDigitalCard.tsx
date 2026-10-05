@@ -29,7 +29,6 @@ import { SkillsServicesSection } from './SkillsServicesSection';
 import { ExperienceSection } from './ExperienceSection';
 import { PortfolioSection } from './PortfolioSection';
 import { CertificationsSection } from './CertificationsSection';
-import { VolunteerSection } from './VolunteerSection';
 import { LanguagesSection } from './LanguagesSection';
 import { RecommendationsSection } from './RecommendationsSection';
 import { ProfileContactSection } from './ProfileContactSection';
@@ -269,7 +268,6 @@ export function AvtiveDigitalCard({
             'experience',
             'education',
             'certifications',
-            'volunteer',
             'languages',
             'recommendations',
             'socialLinks',
@@ -282,7 +280,7 @@ export function AvtiveDigitalCard({
 
           const allKnownSections = [...defaultCardSectionOrder, ...dynamicSectionKeys, ...customFieldKeys];
 
-          const userOrder = (draftProfile.sectionOrder || []).filter((s) => s !== 'hero');
+          const userOrder = (draftProfile.sectionOrder || []).filter((s) => s !== 'hero' && s !== 'volunteer');
           const effectiveOrder: string[] = [];
           
           for (const s of userOrder) {
@@ -303,6 +301,7 @@ export function AvtiveDigitalCard({
           const visibility = draftProfile.sectionVisibility || {};
 
           const isSectionVisible = (key: string): boolean => {
+            if (key === 'volunteer') return false;
             if (isEditing) return true;
             // 1. Direct sectionVisibility dictionary check if explicitly defined
             if (typeof visibility[key] === 'boolean') {
@@ -326,7 +325,6 @@ export function AvtiveDigitalCard({
               case 'education': return sharing.education !== false;
               case 'projects': return sharing.projects !== false;
               case 'certifications': return sharing.certifications !== false;
-              case 'volunteer': return sharing.volunteer !== false;
               case 'languages': return sharing.languages !== false;
               case 'recommendations': return sharing.recommendations !== false;
               case 'socialLinks':
@@ -462,18 +460,6 @@ export function AvtiveDigitalCard({
                 return (
                   <CertificationsSection 
                     key="certifications" 
-                    profile={draftProfile} 
-                    theme={theme}
-                    canEdit={canEdit}
-                    onSelectSection={onSelectSection}
-                  />
-                );
-
-              case 'volunteer':
-                if (!isSectionVisible('volunteer')) return null;
-                return (
-                  <VolunteerSection 
-                    key="volunteer" 
                     profile={draftProfile} 
                     theme={theme}
                     canEdit={canEdit}
