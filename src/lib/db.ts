@@ -602,14 +602,17 @@ export async function createProfileForUser(
       : Array.isArray(data.socials)
       ? data.socials.map(s => ({ platform: s.platform, url: s.url, label: s.label }))
       : [],
-    skills: data.skills || ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
+    skills: Array.isArray(data.skills)
+      ? data.skills
+      : typeof data.skills === 'string'
+      ? (data.skills as string).split(',').map((s) => s.trim()).filter(Boolean)
+      : ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
     experience: data.experience || data.experiences || [],
     experiences: data.experiences || data.experience || [],
     education: data.education || [],
     projects: data.projects || [],
     services: data.services || [],
     certifications: data.certifications || [],
-    volunteerExperiences: data.volunteerExperiences || [],
     languages: data.languages || [],
     recommendations: data.recommendations || [],
     testimonials: data.testimonials || [],

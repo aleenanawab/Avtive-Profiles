@@ -56,21 +56,22 @@ export function ProfileNotFoundFallback({ identifier, session, initialIsEditing 
           }
         }
 
-        // 3. Fallback: Query /api/auth/me from client to recover user profile
+        // 3. Fallback: Query /api/auth/me or /api/profile/list from client to recover user profile
         if (!candidate) {
           try {
-            const res = await fetch('/api/auth/me');
+            const res = await fetch('/api/profile/list');
             if (res.ok) {
               const data = await res.json();
-              if (data.profiles && data.profiles.length > 0) {
-                const matched = data.profiles.find((p: any) => p.slug === identifier || p.id === identifier);
+              if (data.profiles && Array.isArray(data.profiles)) {
+                const matched = data.profiles.find((p: any) => 
+                  p.slug === identifier || 
+                  p.id === identifier ||
+                  (p.slug && identifier && p.slug.toLowerCase() === identifier.toLowerCase()) ||
+                  (p.id && identifier && p.id.toLowerCase() === identifier.toLowerCase())
+                );
                 if (matched) {
                   candidate = matched;
-                } else if (session?.id && data.user?.id === session.id) {
-                  candidate = data.profiles[0];
                 }
-              } else if (data.profile) {
-                candidate = data.profile;
               }
             }
           } catch {}

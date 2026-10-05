@@ -16,19 +16,41 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const profileName = (body.profileName || body.designation || 'Professional Profile').trim();
     const name = (body.name || session.name || 'Professional').trim();
+    const email = (body.email || session.email || '').trim();
+
+    // Parse skills if string or array
+    let skills: string[] = [];
+    if (Array.isArray(body.skills)) {
+      skills = body.skills.map((s: any) => String(s).trim()).filter(Boolean);
+    } else if (typeof body.skills === 'string') {
+      skills = body.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+    if (skills.length === 0) {
+      skills = ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'];
+    }
+
+    // Build socials / website links
+    const socials = Array.isArray(body.socials) ? [...body.socials] : [];
+    if (body.website && !socials.some((s: any) => s.platform === 'website')) {
+      socials.push({
+        platform: 'website',
+        url: body.website.startsWith('http') ? body.website : `https://${body.website}`,
+        label: 'Website'
+      });
+    }
 
     const newProfile = await createProfileForUser(session.id, {
       name,
-      firstName: body.firstName,
-      secondName: body.secondName || body.lastName,
-      lastName: body.lastName || body.secondName,
+      firstName: body.firstName || name.split(' ')[0] || '',
+      secondName: body.secondName || body.lastName || name.split(' ').slice(1).join(' ') || '',
+      lastName: body.lastName || body.secondName || name.split(' ').slice(1).join(' ') || '',
       type: normalizeProfileType(body.type || 'individual'),
       profileName,
       profession: body.profession?.trim() || body.professionalTitle?.trim() || body.designation?.trim() || 'Professional',
       professionalTitle: body.professionalTitle?.trim() || body.designation?.trim() || body.profession?.trim() || 'Professional',
-      email: session.email,
+      email,
       designation: body.designation?.trim() || body.professionalTitle?.trim() || body.profession?.trim() || 'Professional',
-      company: body.company?.trim() || 'Avtive',
+      company: body.company?.trim() || 'Avtive Network',
       location: body.location?.trim() || 'Global',
       avatar: body.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop',
       coverImage: body.coverImage,
@@ -40,21 +62,21 @@ export async function POST(request: NextRequest) {
       fullBio: body.fullBio?.trim() || body.about?.trim() || 'Connect with me directly via phone, WhatsApp, or email.',
       tagline: body.tagline?.trim() || '',
       theme: body.theme || 'editorial',
-      skills: body.skills || [],
+      skills,
       experience: body.experience || body.experiences || [],
       experiences: body.experiences || body.experience || [],
       education: body.education || [],
       projects: body.projects || [],
       services: body.services || [],
       certifications: body.certifications || [],
-      socials: body.socials || [],
-      socialLinks: body.socialLinks || [],
+      socials,
+      socialLinks: socials.map((s: any) => ({ platform: s.platform, url: s.url, label: s.label || s.platform })),
       sharingSettings: body.sharingSettings,
       sectionOrder: body.sectionOrder,
       sectionVisibility: body.sectionVisibility,
       username: body.username,
-      customFields: body.customFields,
-      dynamicSections: body.dynamicSections
+      customFields: body.customFields || [],
+      dynamicSections: body.dynamicSections || []
     });
 
     const response = NextResponse.json(

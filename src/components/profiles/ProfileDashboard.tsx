@@ -51,23 +51,34 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
   const activeProfile = profiles.find((p) => p.id === activeProfileId) || profiles[0] || initialProfiles[0];
 
   useEffect(() => {
-    // 1. Sync from localStorage cached profiles on mount if any updates were saved
+    // 1. Sync from localStorage cached profiles on mount if any updates or new profiles were saved
     try {
-      setProfiles((prev) => {
-        return prev.map((p) => {
-          const cachedSlug = localStorage.getItem(`avtive_profile_${p.slug}`);
-          const cachedId = localStorage.getItem(`avtive_profile_${p.id}`);
-          const cached = cachedSlug || cachedId;
-          if (cached) {
-            try {
-              const parsed = JSON.parse(cached);
-              if (parsed && (parsed.id === p.id || parsed.slug === p.slug)) {
-                return { ...p, ...parsed };
+      const localProfiles: ProfileData[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('avtive_profile_') || key === 'avtive_last_saved_profile')) {
+          try {
+            const p = JSON.parse(localStorage.getItem(key) || '{}');
+            if (p && (p.id || p.slug) && (p.name || p.profileName)) {
+              if (!localProfiles.some((lp) => (lp.id && lp.id === p.id) || (lp.slug && lp.slug === p.slug))) {
+                localProfiles.push(p);
               }
-            } catch {}
+            }
+          } catch {}
+        }
+      }
+
+      setProfiles((prev) => {
+        const combined = [...prev];
+        localProfiles.forEach((lp) => {
+          const idx = combined.findIndex((cp) => (cp.id && cp.id === lp.id) || (cp.slug && cp.slug === lp.slug));
+          if (idx >= 0) {
+            combined[idx] = { ...combined[idx], ...lp };
+          } else {
+            combined.push(lp);
           }
-          return p;
         });
+        return combined;
       });
     } catch {}
 
@@ -76,7 +87,17 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
       .then((res) => res.json())
       .then((data) => {
         if (data.profiles && Array.isArray(data.profiles) && data.profiles.length > 0) {
-          setProfiles(data.profiles);
+          setProfiles((prev) => {
+            const serverProfiles: ProfileData[] = data.profiles;
+            const merged = [...serverProfiles];
+            // Preserve any local profiles not yet returned by server
+            prev.forEach((localP) => {
+              if (!merged.some((sp) => sp.id === localP.id || sp.slug === localP.slug)) {
+                merged.push(localP);
+              }
+            });
+            return merged;
+          });
         }
       })
       .catch(() => {});
@@ -101,9 +122,13 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
         try {
           const updated = JSON.parse(e.newValue);
           if (updated && (updated.id || updated.slug)) {
-            setProfiles((prev) =>
-              prev.map((p) => (p.id === updated.id || p.slug === updated.slug ? { ...p, ...updated } : p))
-            );
+            setProfiles((prev) => {
+              const exists = prev.some((p) => p.id === updated.id || p.slug === updated.slug);
+              if (exists) {
+                return prev.map((p) => (p.id === updated.id || p.slug === updated.slug ? { ...p, ...updated } : p));
+              }
+              return [...prev, updated];
+            });
           }
         } catch {}
       }
@@ -218,10 +243,10 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
         <div className="flex items-center gap-3 shrink-0">
           <Link
             href="/create-profile"
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 transition-all active:scale-95"
+            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Create New Profile</span>
+            <span>Create New Profile</span>
           </Link>
         </div>
       </div>
