@@ -428,7 +428,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
       updateField('socials', copy as any);
       showToast?.(`${platform} is now ${copy[index].visible ? 'Visible' : 'Hidden'}`);
     } else {
-      const updated = [...current, { id: `link-${platform}-${Date.now()}`, platform: platform as any, title: platform.charAt(0).toUpperCase() + platform.slice(1), url: '', visible: false }];
+      const updated = [...current, { id: `link-${platform}-${current.length}`, platform: platform as any, title: platform.charAt(0).toUpperCase() + platform.slice(1), url: '', visible: false }];
       setSocialLinks(updated);
       updateField('socialLinks', updated as any);
       updateField('socials', updated as any);

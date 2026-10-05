@@ -159,7 +159,7 @@ export async function sendPasswordResetEmail({
   if (transporter) {
     try {
       const user = process.env.SMTP_USER || '';
-      let rawFrom = process.env.SMTP_FROM || user || 'no-reply@avtive.app';
+      const rawFrom = process.env.SMTP_FROM || user || 'no-reply@avtive.app';
       
       // Clean up fromAddress
       let fromAddress = rawFrom.trim();

@@ -16,7 +16,7 @@ interface CompanyCardProps {
 export function CompanyCard({ 
   companyInfo, 
   onViewCompany, 
-  theme = getThemeConfig('elegant'),
+  theme = getThemeConfig('editorial'),
   canEdit,
   onSelectSection
 }: CompanyCardProps) {

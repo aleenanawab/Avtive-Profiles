@@ -468,7 +468,7 @@ export async function createUser(data: {
 export async function createPasswordResetToken(email: string): Promise<{ token: string; user: UserRecord } | null> {
   const db = loadDb();
   const normalizedEmail = email.toLowerCase().trim();
-  let user = await getUserByEmail(normalizedEmail);
+  const user = await getUserByEmail(normalizedEmail);
   if (!user) return null;
 
   const crypto = await import('crypto');
@@ -516,7 +516,7 @@ export async function resetUserPassword(email: string, token: string, newPasswor
   const normalizedEmail = email.toLowerCase().trim();
   const userIndex = db.users.findIndex((u) => u.email.toLowerCase().trim() === normalizedEmail);
 
-  let user = userIndex !== -1 ? db.users[userIndex] : await getUserByEmail(normalizedEmail);
+  const user = userIndex !== -1 ? db.users[userIndex] : await getUserByEmail(normalizedEmail);
   if (!user) return null;
   if (!user.resetToken || user.resetToken !== token) return null;
   if (!user.resetTokenExpires || new Date(user.resetTokenExpires).getTime() < Date.now()) return null;
