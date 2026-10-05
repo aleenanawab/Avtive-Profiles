@@ -94,60 +94,77 @@ export function HeaderNav({
 
         {/* Center: Navigation Options (Only shown when profile has both Individual and Team profiles) */}
         {hasTeamOrCompany && onSelectProfileType && (
-          <div className={`hidden sm:flex items-center p-0.5 sm:p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
+          <div className={`flex items-center p-0.5 rounded-xl sm:rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
             {/* 1. Individual */}
             <button
               type="button"
               onClick={onOpenMyCard}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+              title="Switch to Individual profile"
+              className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl font-bold transition-all cursor-pointer text-xs ${
                 profileType === 'individual'
                   ? `${theme.btnPrimary} shadow-xs`
                   : `${theme.textMuted} hover:${theme.textPrimary}`
               }`}
             >
               <CreditCard className="w-3.5 h-3.5 shrink-0" />
-              <span>Individual</span>
+              <span className="hidden xs:inline">Individual</span>
             </button>
             
             {/* 2. Team */}
             <button
               type="button"
               onClick={() => onSelectProfileType('team', 'team')}
-              className={`flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+              title="Switch to Team profile"
+              className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl font-bold transition-all cursor-pointer text-xs ${
                 profileType === 'team'
                   ? `${theme.btnPrimary} shadow-xs`
                   : `${theme.textMuted} hover:${theme.textPrimary}`
               }`}
             >
               <Users className="w-3.5 h-3.5 shrink-0" />
-              <span>Team</span>
+              <span className="hidden xs:inline">Team</span>
             </button>
           </div>
         )}
 
-        {/* Right Controls: Edit Button (Owner Only), Theme Toggle, Share, and Auth Action */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Edit Profile Button (Visible only to authenticated profile owner) */}
+        {/* Right Controls: Prioritized Hierarchy (Edit -> Share -> Theme -> Auth) */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {/* Primary Action: Edit Profile (Owner Only) */}
           {canEdit && !isEditing && onOpenEdit && (
             <button
               type="button"
               onClick={onOpenEdit}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8`}
+              aria-label="Edit Profile"
               title="Edit Profile"
+              className={`flex items-center justify-center gap-1.5 p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8 w-8 sm:w-auto`}
             >
               <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
               <span className="hidden sm:inline">Edit</span>
             </button>
           )}
 
-          {/* Theme Toggle (Light / Dark) */}
+          {/* Secondary Action: Share Button */}
+          {onOpenShare && (
+            <button
+              type="button"
+              onClick={onOpenShare}
+              aria-label="Share Profile"
+              title="Share Profile"
+              className={`flex items-center justify-center gap-1.5 p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer h-8 w-8 sm:w-auto`}
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Share</span>
+            </button>
+          )}
+
+          {/* Tertiary Action: Theme Toggle (Light / Dark) */}
           {onToggleTheme && (
             <button
               type="button"
               onClick={onToggleTheme}
               aria-label="Toggle Theme"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className={`px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1 shrink-0 cursor-pointer h-8`}
+              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center justify-center gap-1 shrink-0 cursor-pointer h-8 w-8 sm:w-auto`}
             >
               {isDark ? (
                 <>
@@ -163,20 +180,7 @@ export function HeaderNav({
             </button>
           )}
 
-          {/* Share Button */}
-          {onOpenShare && (
-            <button
-              type="button"
-              onClick={onOpenShare}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer h-8`}
-              title="Share Profile"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Share</span>
-            </button>
-          )}
-
-          {/* Auth State Button */}
+          {/* Quaternary Action: Auth State Button */}
           {session ? (
             <button
               type="button"
@@ -193,8 +197,9 @@ export function HeaderNav({
                   window.location.replace('/login');
                 }
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0 h-8`}
+              aria-label="Sign Out"
               title="Sign Out"
+              className={`flex items-center justify-center gap-1.5 p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0 h-8 w-8 sm:w-auto`}
             >
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Logout</span>
@@ -202,11 +207,12 @@ export function HeaderNav({
           ) : (
             <Link
               href="/login"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0 h-8`}
+              aria-label="Sign In to Avtive"
               title="Sign In to Avtive"
+              className={`flex items-center justify-center gap-1.5 p-1.5 sm:px-3 sm:py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0 h-8 w-8 sm:w-auto`}
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Sign In</span>
+              <span className="hidden sm:inline">Sign In</span>
             </Link>
           )}
         </div>

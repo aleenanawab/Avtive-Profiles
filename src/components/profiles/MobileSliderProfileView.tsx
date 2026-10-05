@@ -1765,24 +1765,10 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
                   ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
               }`}
-              title="Full Edit Form"
+              title="Profile Editor"
             >
               <Pencil className="w-2.5 h-2.5" />
-              <span>Form</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setViewMode('split')}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                viewMode === 'split'
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-              title="Split Slider View"
-            >
-              <Columns className="w-2.5 h-2.5" />
-              <span>Split</span>
+              <span>Editor</span>
             </button>
 
             <button
