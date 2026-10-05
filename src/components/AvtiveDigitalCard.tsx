@@ -231,29 +231,27 @@ export function AvtiveDigitalCard({
         {/* ========================================================================= */}
         {/* 1. HERO SECTION (Includes Direct Contact section immediately below CTA)   */}
         {/* ========================================================================= */}
-        <div id="section-hero" className="w-full scroll-mt-14 sm:scroll-mt-16">
-          <HeroSection
-            profile={draftProfile}
-            navigationOrigin={navigationOrigin}
-            canEdit={canEdit}
-            isEditing={isEditing}
-            isConnected={isConnected}
-            onUpdateField={handleFieldUpdate}
-            onOpenEdit={onOpenEdit}
-            onOpenShare={onOpenShare}
-            onOpenConnect={onOpenConnect}
-            onOpenVirtualCard={() => {
-              const el = document.getElementById('section-virtual-card') || document.getElementById('virtual-card-section');
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-            onNavigateToCompany={onViewCompany}
-            onNavigateBack={onNavigateBack}
-            theme={theme}
-            onSelectSection={onSelectSection}
-          />
-        </div>
+        <HeroSection
+          profile={draftProfile}
+          navigationOrigin={navigationOrigin}
+          canEdit={canEdit}
+          isEditing={isEditing}
+          isConnected={isConnected}
+          onUpdateField={handleFieldUpdate}
+          onOpenEdit={onOpenEdit}
+          onOpenShare={onOpenShare}
+          onOpenConnect={onOpenConnect}
+          onOpenVirtualCard={() => {
+            const el = document.getElementById('virtual-card-section');
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          onNavigateToCompany={onViewCompany}
+          onNavigateBack={onNavigateBack}
+          theme={theme}
+          onSelectSection={onSelectSection}
+        />
 
         {/* ========================================================================= */}
         {/* DYNAMIC PROFILE SECTIONS RENDERED ACCORDING TO sectionOrder & sectionVisibility */}
@@ -337,20 +335,6 @@ export function AvtiveDigitalCard({
           };
 
           const renderSection = (sectionKey: string) => {
-            const content = renderSectionContent(sectionKey);
-            if (!content) return null;
-            return (
-              <div 
-                key={sectionKey} 
-                id={`section-${sectionKey}`} 
-                className="scroll-mt-14 sm:scroll-mt-16 w-full"
-              >
-                {content}
-              </div>
-            );
-          };
-
-          const renderSectionContent = (sectionKey: string) => {
             switch (sectionKey) {
               case 'company':
                 if (!isSectionVisible('company')) return null;

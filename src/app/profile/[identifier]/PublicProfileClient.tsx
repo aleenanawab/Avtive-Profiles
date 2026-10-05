@@ -10,8 +10,8 @@ import {
   ProfileType 
 } from '@/types/profile';
 import { HeaderNav } from '@/components/HeaderNav';
-import { SectionNav } from '@/components/SectionNav';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
+import { PhonePreview } from '@/components/PhonePreview';
 import { getThemeConfig } from '@/components/themeStyles';
 import { ShareModal } from '@/components/ShareModal';
 import { ExchangeContactModal } from '@/components/ExchangeContactModal';
@@ -21,6 +21,13 @@ import { ProjectDetailModal } from '@/components/ProjectDetailModal';
 import { EditProfileClient } from '@/app/edit-profile/EditProfileClient';
 import { ProfileEditorProvider } from '@/context/ProfileEditorContext';
 import { downloadVCard } from '@/lib/vcard';
+import { 
+  Monitor, 
+  Smartphone, 
+  Sparkles, 
+  LayoutGrid,
+  Edit3
+} from 'lucide-react';
 
 export interface PublicProfileClientProps {
   initialProfile: ProfileData;
@@ -65,6 +72,7 @@ function PublicProfileClientInner({
   );
   const [isDark, setIsDark] = useState(false);
   const [isEditing, setIsEditing] = useState(Boolean(initialIsEditing && isOwner));
+  const [activeScreenTab, setActiveScreenTab] = useState<'both' | 'desktop' | 'mobile'>('both');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
@@ -280,51 +288,208 @@ function PublicProfileClientInner({
         theme={activeThemeConfig}
       />
 
-      {/* Main Responsive Profile Container - 80/20 Layout on Mobile & Desktop */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-1.5 xs:px-2.5 sm:px-6 py-3 sm:py-8 min-w-0">
-        <div className="flex flex-row items-start justify-center gap-1.5 xs:gap-2 sm:gap-4 md:gap-5 w-full min-w-0">
+      {/* Sticky Top Viewport & Platform Status Toolbar */}
+      <div className={`sticky top-[53px] z-30 w-full backdrop-blur-md ${activeThemeConfig.headerBg} border-b ${activeThemeConfig.divider} transition-colors py-2 px-3 sm:px-6 shadow-2xs shrink-0`}>
+        <div className="max-w-[1920px] mx-auto flex items-center justify-between gap-3">
           
-          {/* 80% (approx) Profile Area */}
-          <div className="w-[78%] xs:w-[80%] sm:w-[82%] md:flex-1 min-w-0">
-            <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden`}>
-              <AvtiveDigitalCard
-                profile={{ ...profile, type: profileType, theme: activeTheme }}
-                canEdit={isOwner}
-                isEditing={false}
-                isConnected={false}
-                onOpenEdit={() => setIsEditing(true)}
-                onCancelEdit={() => setIsEditing(false)}
-                onSaveEdits={handleSaveEdits}
-                onSaveContact={handleSaveContact}
-                onOpenShare={() => setIsShareModalOpen(true)}
-                onOpenConnect={() => setIsConnectModalOpen(true)}
-                onOpenQRModal={() => setIsQRModalOpen(true)}
-                onOpenResumeModal={() => setIsResumeModalOpen(true)}
-                onSelectProject={(project) => setSelectedProject(project)}
-                onSelectTeamMember={(member) => {
-                  const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
-                  router.push(`/profile/${slug}`);
-                }}
-                onViewCompany={() => {
-                  if (profile.companyId) {
-                    router.push(`/profile/${profile.companyId}`);
-                  }
-                }}
-                isDark={isDark}
-                viewMode="standard"
-              />
+          {/* Left: Persona Info & Verified Badge */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+            <span className="text-xs font-bold font-mono uppercase tracking-wider truncate">
+              {profile.profileName || profile.name}
+            </span>
+            <span className={`text-[11px] ${activeThemeConfig.textMuted} hidden md:inline truncate`}>
+              &middot; {profile.designation || 'Verified Digital Pass'}
+            </span>
+          </div>
+
+          {/* Center: Live Twin-Screen Synchronization Indicator */}
+          <div className="hidden lg:flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-600 dark:text-cyan-300 text-xs font-semibold shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span>Responsive Platform &middot; Desktop ⇄ Mobile Synchronized View</span>
+          </div>
+
+          {/* Right: Viewport Mode Switcher Buttons */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className={`flex items-center gap-1 p-0.5 sm:p-1 rounded-xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg}`}>
+              <button
+                type="button"
+                onClick={() => setActiveScreenTab('desktop')}
+                aria-label="Desktop view"
+                title="Desktop View"
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeScreenTab === 'desktop'
+                    ? `${activeThemeConfig.btnPrimary} shadow-xs`
+                    : `${activeThemeConfig.textMuted} hover:${activeThemeConfig.textPrimary}`
+                }`}
+              >
+                <Monitor className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Desktop</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveScreenTab('mobile')}
+                aria-label="Mobile smartphone view"
+                title="Mobile Smartphone View"
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeScreenTab === 'mobile'
+                    ? `${activeThemeConfig.btnPrimary} shadow-xs`
+                    : `${activeThemeConfig.textMuted} hover:${activeThemeConfig.textPrimary}`
+                }`}
+              >
+                <Smartphone className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Mobile</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveScreenTab('both')}
+                aria-label="Both Desktop and Mobile views"
+                title="Both Views (Side-by-Side)"
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeScreenTab === 'both'
+                    ? `${activeThemeConfig.btnPrimary} shadow-xs`
+                    : `${activeThemeConfig.textMuted} hover:${activeThemeConfig.textPrimary}`
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Both</span>
+              </button>
+            </div>
+
+            {isOwner && (
+              <button
+                type="button"
+                onClick={() => setIsEditing(true)}
+                className={`hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} hover:opacity-90 transition-colors shadow-2xs shrink-0 cursor-pointer`}
+                title="Open Studio Editor"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Editor</span>
+              </button>
+            )}
+          </div>
+
+        </div>
+      </div>
+
+      {/* ────────────────────────────────────────────────────────────────────────── */}
+      {/* RESPONSIVE DUAL-VIEWPORT MAIN STAGE                                        */}
+      {/* ────────────────────────────────────────────────────────────────────────── */}
+      <main className={`flex-1 w-full p-2.5 sm:p-5 lg:p-6 flex flex-row items-start justify-center gap-4 sm:gap-6 max-w-[1920px] mx-auto min-w-0 box-border ${
+        activeScreenTab === 'both' ? 'overflow-x-auto xl:overflow-x-visible' : 'overflow-x-hidden'
+      }`}>
+        
+        {/* ======================================================================= */}
+        {/* VIEW 1: DESKTOP PUBLIC PROFILE CARD                                     */}
+        {/* ======================================================================= */}
+        <section 
+          aria-label="Desktop Working View"
+          className={`flex-1 min-w-0 ${
+            activeScreenTab === 'desktop' ? 'max-w-4xl mx-auto' : 'max-w-[1240px]'
+          } flex flex-col rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-2xl overflow-hidden transition-all ${
+            activeScreenTab === 'mobile' ? 'hidden xl:flex' : 'flex'
+          }`}
+        >
+          {/* Desktop Frame Window Header Bar */}
+          <div className={`w-full ${activeThemeConfig.headerBg} border-b ${activeThemeConfig.divider} px-4 py-2 flex items-center justify-between gap-3 shrink-0`}>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
+              <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
+              <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
+              <span className={`text-[11px] font-mono font-semibold ${activeThemeConfig.textMuted} ml-2 flex items-center gap-1.5`}>
+                <Monitor className="w-3.5 h-3.5 text-cyan-500" />
+                <span>Desktop View &middot; Full Responsive Profile</span>
+              </span>
+            </div>
+
+            <div className={`flex items-center gap-2 text-xs font-mono ${activeThemeConfig.textMuted}`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="hidden sm:inline">Live Profile Representation</span>
             </div>
           </div>
 
-          {/* 20% (approx) Section Navigation Area */}
-          <aside className="w-[22%] xs:w-[20%] sm:w-[18%] md:w-16 lg:w-20 shrink-0 sticky top-14 sm:top-16 z-30 pt-1">
-            <SectionNav
+          {/* Desktop Profile Card Content */}
+          <div className="flex-1 w-full overflow-y-auto p-4 sm:p-6 min-w-0">
+            <AvtiveDigitalCard
               profile={{ ...profile, type: profileType, theme: activeTheme }}
-              theme={activeThemeConfig}
+              canEdit={isOwner}
+              isEditing={false}
+              isConnected={false}
+              onOpenEdit={() => setIsEditing(true)}
+              onCancelEdit={() => setIsEditing(false)}
+              onSaveEdits={handleSaveEdits}
+              onSaveContact={handleSaveContact}
+              onOpenShare={() => setIsShareModalOpen(true)}
+              onOpenConnect={() => setIsConnectModalOpen(true)}
+              onOpenQRModal={() => setIsQRModalOpen(true)}
+              onOpenResumeModal={() => setIsResumeModalOpen(true)}
+              onSelectProject={(project) => setSelectedProject(project)}
+              onSelectTeamMember={(member) => {
+                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                router.push(`/profile/${slug}`);
+              }}
+              onViewCompany={() => {
+                if (profile.companyId) {
+                  router.push(`/profile/${profile.companyId}`);
+                }
+              }}
+              isDark={isDark}
+              viewMode="standard"
             />
-          </aside>
+          </div>
+        </section>
 
-        </div>
+        {/* ======================================================================= */}
+        {/* VIEW 2: LIVE SMARTPHONE MOBILE VIEW (Standard 375×667 px)               */}
+        {/* ======================================================================= */}
+        <aside 
+          aria-label="Mobile Smartphone View"
+          className={`w-full max-w-[375px] shrink-0 flex flex-col items-center min-w-0 ${
+            activeScreenTab === 'desktop' ? 'hidden xl:flex' : 'flex'
+          }`}
+        >
+          {/* Top Mobile Status Header */}
+          <div className={`w-full flex items-center justify-between px-2 mb-2 text-[11px] font-mono ${activeThemeConfig.textMuted}`}>
+            <span className={`flex items-center gap-1.5 font-bold ${activeThemeConfig.textPrimary}`}>
+              <Smartphone className="w-3.5 h-3.5 text-cyan-500" />
+              <span>Mobile View &middot; 375×667 px</span>
+            </span>
+            <span className="text-emerald-500 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Live Card</span>
+            </span>
+          </div>
+
+          {/* Smartphone Chassis Frame with Live Interactive PhonePreview */}
+          <div className="w-full flex justify-center">
+            <PhonePreview
+              profile={{ ...profile, type: profileType, theme: activeTheme }}
+              isDark={isDark}
+              canEdit={isOwner}
+              onOpenEdit={() => setIsEditing(true)}
+              onOpenShare={() => setIsShareModalOpen(true)}
+              onOpenConnect={() => setIsConnectModalOpen(true)}
+              onOpenQRModal={() => setIsQRModalOpen(true)}
+              onOpenResumeModal={() => setIsResumeModalOpen(true)}
+              onSaveContact={handleSaveContact}
+              onSaveEdits={handleSaveEdits}
+              onSelectProject={(project) => setSelectedProject(project)}
+              onSelectTeamMember={(member) => {
+                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                router.push(`/profile/${slug}`);
+              }}
+              onViewCompany={() => {
+                if (profile.companyId) {
+                  router.push(`/profile/${profile.companyId}`);
+                }
+              }}
+              hideHeaderLabel={true}
+            />
+          </div>
+        </aside>
+
       </main>
 
       {/* Connect / Exchange Contact Modal */}

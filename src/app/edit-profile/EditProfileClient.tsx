@@ -9,18 +9,24 @@ import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditor
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
 import { DesktopProfileContent } from '@/components/profiles/DesktopProfileContent';
+import { MobileSliderProfileView } from '@/components/profiles/MobileSliderProfileView';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { 
   ArrowLeft, 
   ExternalLink, 
   Save, 
   Loader2, 
+  Signal, 
+  Wifi, 
+  Battery,
   LogOut,
   Menu,
   X,
   ArrowRight,
   Sun,
-  Moon
+  Moon,
+  Monitor,
+  Smartphone
 } from 'lucide-react';
 
 export interface EditProfileClientProps {
@@ -57,6 +63,7 @@ export function EditProfileClient({ initialProfile, userProfiles, onReturnToView
 function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }: EditProfileClientProps) {
   const router = useRouter();
   const { isDark, toggleDarkMode } = usePortfolioTheme();
+  const [activeScreenTab, setActiveScreenTab] = useState<'both' | 'desktop' | 'mobile'>('both');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarPinned, setIsSidebarPinned] = useState(false);
   const closeTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -138,10 +145,25 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 1280) {
+        setActiveScreenTab('desktop');
+      }
+      const handleResize = () => {
+        if (window.innerWidth < 1280 && activeScreenTab === 'both') {
+          setActiveScreenTab('desktop');
+        }
+      };
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        clearCloseTimer();
+      };
+    }
     return () => {
       clearCloseTimer();
     };
-  }, []);
+  }, [activeScreenTab]);
 
   // Session guard
   useEffect(() => {
@@ -251,11 +273,71 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
         </div>
       )}
 
-      {/* Responsive Profile Studio Editor Window */}
-      <main className="flex-1 w-full max-w-5xl mx-auto p-2.5 sm:p-5 lg:p-6 flex flex-col items-center justify-start min-w-0 min-h-0 box-border">
+      {/* Responsive Viewport Switcher for Small Screens (< xl) */}
+      <div className="w-full flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-white/5 xl:hidden shrink-0 bg-white/90 dark:bg-[#0A101E]/90 backdrop-blur-md transition-colors z-20">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-xs">
+            A
+          </div>
+          <span className="text-xs font-bold text-slate-900 dark:text-white">Avtive Studio</span>
+        </div>
+
+        <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-[#050913] p-1 rounded-xl border border-slate-200 dark:border-white/10">
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('desktop')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'desktop'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <Monitor className="w-3.5 h-3.5" />
+            <span>Desktop</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('mobile')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'mobile'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>Mobile</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveScreenTab('both')}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeScreenTab === 'both'
+                ? 'bg-white text-slate-900 shadow-xs dark:bg-white/10 dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+            }`}
+          >
+            <span>Both</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ────────────────────────────────────────────────────────────────────────── */}
+      {/* PERMANENT TWIN-SCREEN WORKING WORKSPACE (Clean Minimalist Window)          */}
+      {/* ────────────────────────────────────────────────────────────────────────── */}
+      <main className={`flex-1 w-full p-2.5 sm:p-5 lg:p-6 flex flex-row items-stretch justify-center gap-6 max-w-[1920px] mx-auto min-w-0 min-h-0 box-border ${
+        activeScreenTab === 'both' ? 'overflow-x-auto xl:overflow-x-visible' : 'overflow-x-hidden'
+      }`}>
         
-        <div 
-          className="w-full flex-1 min-w-0 flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0"
+        {/* ======================================================================= */}
+        {/* WORKING SCREEN 1: DESKTOP PROFILE STUDIO EDITOR                        */}
+        {/* ======================================================================= */}
+        <section 
+          aria-label="Desktop Working Screen"
+          className={`flex-1 min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0 ${
+            activeScreenTab === 'mobile' ? 'hidden xl:flex' : 'flex'
+          }`}
         >
           {/* Desktop Frame Window Bar */}
           <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors overflow-x-auto sm:overflow-visible">
@@ -448,7 +530,48 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
               <DesktopProfileContent hideRightPreview={true} />
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* ======================================================================= */}
+        {/* WORKING SCREEN 2: MOBILE SMARTPHONE WORKING EDITOR (Standard 375×667)   */}
+        {/* ======================================================================= */}
+        <aside 
+          aria-label="Mobile Working Screen"
+          className={`w-full max-w-[375px] shrink-0 flex flex-col items-center justify-center min-w-0 ${
+            activeScreenTab === 'desktop' ? 'hidden xl:flex' : 'flex'
+          }`}
+        >
+          {/* Smartphone Chassis Frame (Responsive, fits viewport height) */}
+          <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] max-h-[calc(100vh-100px)] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors min-h-0">
+            
+            {/* Phone Status Bar (9:41, Wifi, Battery) */}
+            <div className="w-full bg-slate-100 dark:bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-700 dark:text-slate-300 shrink-0 border-b border-slate-200 dark:border-white/5 select-none transition-colors">
+              <span>9:41</span>
+              <div className="w-20 h-4 rounded-full bg-slate-900 dark:bg-black border border-slate-700 dark:border-white/10 flex items-center justify-center">
+                <span className="w-2 h-2 rounded-full bg-slate-800 dark:bg-slate-900 border border-slate-600 dark:border-white/20" />
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+                <Signal className="w-3 h-3" />
+                <Wifi className="w-3 h-3" />
+                <Battery className="w-3.5 h-3.5" />
+              </div>
+            </div>
+
+            {/* Mobile Editor Canvas: Responsive 375px internal website design viewport */}
+            <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-50 dark:bg-[#050811] transition-colors">
+              <div className="w-full flex-1 flex flex-col overflow-x-hidden min-h-0">
+                <MobileSliderProfileView onSave={onGlobalSave} />
+              </div>
+            </div>
+
+            {/* Phone Bottom Home Bar */}
+            <div className="w-full py-1.5 bg-slate-100 dark:bg-[#090E1B] flex items-center justify-center shrink-0 border-t border-slate-200 dark:border-white/5 transition-colors">
+              <div className="w-28 h-1 rounded-full bg-slate-400 dark:bg-white/30" />
+            </div>
+
+          </div>
+        </aside>
+
       </main>
 
     </div>

@@ -68,7 +68,7 @@ export function FigmaProfileEditorView() {
           >
             <Columns className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
             <span className="hidden sm:inline">Side-by-Side</span>
-            <span className="sm:hidden">Dual</span>
+            <span className="sm:hidden">Split</span>
           </button>
 
           <button
