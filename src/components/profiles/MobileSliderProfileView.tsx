@@ -1755,65 +1755,6 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
         </span>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          {/* 4 View Presets: Form, Split, Drawer, Live Card */}
-          <div className="flex items-center gap-0.5 bg-slate-100 dark:bg-[#070D18]/80 backdrop-blur-md border border-slate-200 dark:border-cyan-500/30 rounded-lg p-0.5 shadow-inner transition-colors">
-            <button
-              type="button"
-              onClick={() => setViewMode('form')}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                viewMode === 'form'
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-              title="Full Edit Form"
-            >
-              <Pencil className="w-2.5 h-2.5" />
-              <span>Form</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setViewMode('split')}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                viewMode === 'split'
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-              title="Split Slider View"
-            >
-              <Columns className="w-2.5 h-2.5" />
-              <span>Split</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setViewMode('drawer')}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                viewMode === 'drawer'
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-              title="Sections Menu"
-            >
-              <Layers className="w-2.5 h-2.5" />
-              <span>Menu</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setViewMode('card')}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                viewMode === 'card'
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-              }`}
-              title="Live Pass Preview"
-            >
-              <Eye className="w-2.5 h-2.5" />
-              <span>Pass</span>
-            </button>
-          </div>
-
           {/* Minimal Dark Mode Toggle Button */}
           <button
             type="button"

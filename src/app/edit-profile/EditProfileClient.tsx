@@ -273,56 +273,6 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
         </div>
       )}
 
-      {/* Responsive Viewport Switcher for Small Screens (< xl) */}
-      <div className="w-full flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-white/5 xl:hidden shrink-0 bg-white/90 dark:bg-[#0A101E]/90 backdrop-blur-md transition-colors z-20">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-xs">
-            A
-          </div>
-          <span className="text-xs font-bold text-slate-900 dark:text-white">Avtive Studio</span>
-        </div>
-
-        <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-[#050913] p-1 rounded-xl border border-slate-200 dark:border-white/10">
-          <button
-            type="button"
-            onClick={() => setActiveScreenTab('desktop')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeScreenTab === 'desktop'
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span>Desktop</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveScreenTab('mobile')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeScreenTab === 'mobile'
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Mobile</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveScreenTab('both')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeScreenTab === 'both'
-                ? 'bg-white text-slate-900 shadow-xs dark:bg-white/10 dark:text-white'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
-          >
-            <span>Both</span>
-          </button>
-        </div>
-      </div>
-
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN WORKING WORKSPACE (Clean Minimalist Window)          */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
@@ -335,9 +285,7 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className={`flex-1 min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0 ${
-            activeScreenTab === 'mobile' ? 'hidden xl:flex' : 'flex'
-          }`}
+          className="flex-1 min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0 flex"
         >
           {/* Desktop Frame Window Bar */}
           <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors overflow-x-auto sm:overflow-visible">
@@ -506,7 +454,14 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
                     onMouseLeave={handlePanelMouseLeave}
                     className="absolute top-0 bottom-0 left-0 z-40 h-full shadow-2xl max-w-full"
                   >
-                    <DesktopProfileSidebar onClose={handleCloseSidebar} />
+                    <DesktopProfileSidebar 
+                      onClose={handleCloseSidebar} 
+                      onSelectSection={() => {
+                        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                          setIsSidebarOpen(false);
+                        }
+                      }}
+                    />
                   </motion.div>
                 </>
               )}
@@ -518,8 +473,9 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
                 onMouseEnter={handleTriggerMouseEnter}
                 onMouseLeave={handleTriggerMouseLeave}
                 onClick={handleTriggerClick}
+                onTouchStart={() => { isTouchRef.current = true; }}
                 title="Hover or click to open Sections"
-                className="hidden sm:flex flex-col items-center justify-start pt-3 w-2.5 hover:w-6 hover:bg-cyan-500/10 border-r border-transparent hover:border-cyan-500/20 transition-all duration-200 cursor-pointer z-20 group shrink-0"
+                className="flex flex-col items-center justify-start pt-3 w-3 sm:w-2.5 hover:w-6 hover:bg-cyan-500/10 border-r border-transparent hover:border-cyan-500/20 transition-all duration-200 cursor-pointer z-20 group shrink-0"
               >
                 <div className="w-1 h-6 rounded-full bg-slate-300 dark:bg-white/20 group-hover:bg-cyan-500 transition-colors" />
               </div>
