@@ -61,9 +61,13 @@ import { LinkedInIcon, GithubIcon, TwitterIcon, WhatsAppIcon } from '@/component
 
 export interface DesktopProfileContentProps {
   hideRightPreview?: boolean;
+  instanceId?: string;
 }
 
-export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfileContentProps) {
+export function DesktopProfileContent({ 
+  hideRightPreview = false,
+  instanceId = 'desktop'
+}: DesktopProfileContentProps) {
   const router = useRouter();
   const { isDark, toggleDarkMode } = usePortfolioTheme();
   const { 
@@ -76,13 +80,22 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
     saveProfile,
     showToast,
     activeTheme,
-    setActiveTheme
+    setActiveTheme,
+    expandedSections: sharedExpandedSections,
+    setExpandedSections: setSharedExpandedSections,
+    toggleSectionExpanded: sharedToggleSectionExpanded,
+    toggleAllSections: sharedToggleAllSections
   } = useProfileEditor();
 
-  // Multi-section expanded state for single-page editing
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Multi-section expanded state for single-page editing (synchronized via context or local fallback)
+  const [localExpandedSections, setLocalExpandedSections] = useState<Record<string, boolean>>({
     profile: true
   });
+  const expandedSections = sharedExpandedSections || localExpandedSections;
+  const setExpandedSections = setSharedExpandedSections || setLocalExpandedSections;
+
   const pinnedSectionsRef = useRef<Record<string, boolean>>({ profile: true });
   const closeTimersRef = useRef<Record<string, NodeJS.Timeout>>({});
   const isTouchRef = useRef(false);
@@ -108,22 +121,33 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
     };
   }, [isSectionsDropdownOpen]);
 
-  const handleSelectSectionFromDropdown = (secKey: string) => {
-    setIsSectionsDropdownOpen(false);
-    setActiveSection(secKey);
+  const scrollSectionIntoView = (secKey: string) => {
+    if (!containerRef.current) return;
     if (secKey === 'profile') {
-      const topEl = document.getElementById('top-profile-header');
+      const topEl = 
+        containerRef.current.querySelector('[data-section="profile"]') ||
+        containerRef.current.querySelector(`#top-profile-header-${instanceId}`) ||
+        containerRef.current.querySelector('#top-profile-header');
       if (topEl) {
         topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
       return;
     }
-    pinnedSectionsRef.current[secKey] = true;
-    setExpandedSections(prev => ({ ...prev, [secKey]: true }));
-    const el = document.getElementById(`section-card-${secKey}`);
+    const el = 
+      containerRef.current.querySelector(`[data-section="${secKey}"]`) ||
+      containerRef.current.querySelector(`#section-card-${instanceId}-${secKey}`) ||
+      containerRef.current.querySelector(`#section-card-${secKey}`);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+  };
+
+  const handleSelectSectionFromDropdown = (secKey: string) => {
+    setIsSectionsDropdownOpen(false);
+    setActiveSection(secKey);
+    pinnedSectionsRef.current[secKey] = true;
+    setExpandedSections(prev => ({ ...prev, [secKey]: true }));
+    scrollSectionIntoView(secKey);
   };
 
   const isSectionExpanded = (key: string) => Boolean(expandedSections[key]);
@@ -162,45 +186,43 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
       clearTimeout(closeTimersRef.current[key]);
       delete closeTimersRef.current[key];
     }
-    setExpandedSections(prev => {
-      const nextVal = !prev[key];
-      pinnedSectionsRef.current[key] = nextVal;
-      return { ...prev, [key]: nextVal };
-    });
+    if (sharedToggleSectionExpanded) {
+      sharedToggleSectionExpanded(key);
+    } else {
+      setExpandedSections(prev => {
+        const nextVal = !prev[key];
+        pinnedSectionsRef.current[key] = nextVal;
+        return { ...prev, [key]: nextVal };
+      });
+    }
   };
 
-  // Sync with activeSection from sidebar drawer, preview click, or mobile
+  // Sync with activeSection from sidebar drawer, preview click, or other screen
   useEffect(() => {
     if (activeSection) {
-      if (activeSection === 'profile') {
-        const topEl = document.getElementById('top-profile-header');
-        if (topEl) {
-          topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-        return;
-      }
       pinnedSectionsRef.current[activeSection] = true;
       setExpandedSections(prev => ({ ...prev, [activeSection]: true }));
-      const el = document.getElementById(`section-card-${activeSection}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+      scrollSectionIntoView(activeSection);
     }
   }, [activeSection]);
 
   const handleToggleAll = () => {
-    const allKeys = [
-      'contactInfo', 'personalDetails', 'skills', 'experience',
-      'education', 'projects', 'socialLinks', 'enhanceProfile', 'limitations',
-      'accountInfo', 'archive', 'security', 'settings'
-    ];
-    const anyClosed = allKeys.some(k => !expandedSections[k]);
-    const newState: Record<string, boolean> = {};
-    allKeys.forEach(k => {
-      newState[k] = anyClosed;
-      pinnedSectionsRef.current[k] = anyClosed;
-    });
-    setExpandedSections(newState);
+    if (sharedToggleAllSections) {
+      sharedToggleAllSections();
+    } else {
+      const allKeys = [
+        'contactInfo', 'personalDetails', 'skills', 'experience',
+        'education', 'projects', 'socialLinks', 'enhanceProfile', 'limitations',
+        'accountInfo', 'archive', 'security', 'settings'
+      ];
+      const anyClosed = allKeys.some(k => !expandedSections[k]);
+      const newState: Record<string, boolean> = {};
+      allKeys.forEach(k => {
+        newState[k] = anyClosed;
+        pinnedSectionsRef.current[k] = anyClosed;
+      });
+      setExpandedSections(newState);
+    }
   };
 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -524,7 +546,8 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
     return (
       <div
         key={secKey}
-        id={`section-card-${secKey}`}
+        id={`section-card-${instanceId}-${secKey}`}
+        data-section={secKey}
         onMouseEnter={() => handleSectionMouseEnter(secKey)}
         onMouseLeave={() => handleSectionMouseLeave(secKey)}
         onTouchStart={() => { isTouchRef.current = true; }}
@@ -627,7 +650,10 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
   };
 
   return (
-    <div className="flex-1 h-full min-h-0 flex overflow-hidden bg-slate-50 dark:bg-[#080D1A] transition-colors min-w-0">
+    <div 
+      ref={containerRef}
+      className="flex-1 h-full min-h-0 flex overflow-hidden bg-slate-50 dark:bg-[#080D1A] transition-colors min-w-0"
+    >
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* SINGLE-PAGE SCROLLABLE SECTIONS EDIT PANEL                                 */}
@@ -745,7 +771,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
         {/* ══════════════════════════════════════════════════════════════════════════ */}
         {/* LINKEDIN-STYLE PERMANENT TOP PROFILE HEADER (Always Visible at Top)        */}
         {/* ══════════════════════════════════════════════════════════════════════════ */}
-        <div id="top-profile-header" className="rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xs dark:shadow-sm transition-colors">
+        <div id={`top-profile-header-${instanceId}`} data-section="profile" className="rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xs dark:shadow-sm transition-colors">
           {/* Cover Photo / Background Banner */}
           <div className="relative h-36 sm:h-48 md:h-52 w-full bg-slate-200 dark:bg-slate-800">
             <img 

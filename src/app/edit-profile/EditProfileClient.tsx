@@ -9,7 +9,6 @@ import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditor
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
 import { DesktopProfileContent } from '@/components/profiles/DesktopProfileContent';
-import { MobileSliderProfileView } from '@/components/profiles/MobileSliderProfileView';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { 
   ArrowLeft, 
@@ -456,7 +455,7 @@ function EditProfileClientInner({
 
             {/* Main Desktop Profile Editor Content */}
             <div className="flex-1 w-full h-full min-h-0 min-w-0 overflow-hidden">
-              <DesktopProfileContent hideRightPreview={true} />
+              <DesktopProfileContent hideRightPreview={true} instanceId="desktop" />
             </div>
           </div>
         </section>
@@ -484,11 +483,9 @@ function EditProfileClientInner({
               </div>
             </div>
 
-            {/* Mobile Editor Canvas: Responsive 375px internal website design viewport */}
-            <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-50 dark:bg-[#050811] transition-colors">
-              <div className="w-full flex-1 flex flex-col overflow-x-hidden min-h-0">
-                <MobileSliderProfileView onSave={onGlobalSave} onNext={handleTopBarNext} />
-              </div>
+            {/* Mobile Editor Canvas: Renders the SAME Profile Editor in 375px viewport */}
+            <div className="flex-1 w-full min-h-0 overflow-hidden flex flex-col bg-slate-50 dark:bg-[#050811] transition-colors">
+              <DesktopProfileContent hideRightPreview={true} instanceId="mobile" />
             </div>
 
             {/* Phone Bottom Home Bar */}

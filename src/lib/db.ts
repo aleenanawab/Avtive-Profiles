@@ -951,10 +951,15 @@ export async function getAllProfiles(): Promise<ProfileData[]> {
 export async function updateProfile(
   profileId: string,
   updatedData: Partial<ProfileData>,
-  sessionUserId: string
+  sessionUserId: string,
+  sessionUserEmail?: string
 ): Promise<{ success: boolean; profile?: ProfileData; error?: string; status: number }> {
   const db = loadDb();
   let target = await getProfileByIdOrSlug(profileId);
+
+  if (!target && (updatedData as any)?.id) {
+    target = await getProfileByIdOrSlug((updatedData as any).id);
+  }
 
   if (!target && (updatedData as any)?.slug) {
     target = await getProfileByIdOrSlug((updatedData as any).slug);
@@ -984,7 +989,7 @@ export async function updateProfile(
       username: effectiveUsername,
       type: normalizeProfileType(updatedData.type),
       name: updatedData.name || 'Professional',
-      email: updatedData.email || '',
+      email: updatedData.email || sessionUserEmail || '',
       ...updatedData,
       customFields: Array.isArray(updatedData.customFields) ? updatedData.customFields : [],
       dynamicSections: Array.isArray(updatedData.dynamicSections) ? updatedData.dynamicSections : [],
@@ -1005,13 +1010,23 @@ export async function updateProfile(
     return { success: true, profile: newProfile, status: 200 };
   }
 
-  // Strict ownership check: Only the verified owner can perform edits
-  if (target.userId && target.userId !== sessionUserId) {
+  // Ownership verification: Allow if sessionUserId matches target.userId OR if caller email matches target email
+  const sessionUser = sessionUserEmail ? { email: sessionUserEmail } : await getUserById(sessionUserId);
+  const normalizedSessionEmail = (sessionUser?.email || sessionUserEmail || '').toLowerCase().trim();
+  const normalizedTargetEmail = (target.email || '').toLowerCase().trim();
+  const isOwnerByEmail = Boolean(normalizedSessionEmail && normalizedTargetEmail && normalizedSessionEmail === normalizedTargetEmail);
+
+  if (target.userId && target.userId !== sessionUserId && !isOwnerByEmail) {
     return {
       success: false,
       error: 'Forbidden: You do not own this profile. Only the verified owner can perform edits.',
       status: 403
     };
+  }
+
+  // If verified by email or if unassigned, bind target ownership to current session user
+  if (!target.userId || (isOwnerByEmail && target.userId !== sessionUserId)) {
+    target.userId = sessionUserId;
   }
 
   // Handle username update if provided

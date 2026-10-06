@@ -196,6 +196,10 @@ export interface ProfileEditorContextValue {
   userProfiles?: ProfileData[];
   currentIdentifier: string;
   handleSwitchPersona: (newProf: ProfileData) => void;
+  expandedSections: Record<string, boolean>;
+  setExpandedSections: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  toggleSectionExpanded: (secKey: string) => void;
+  toggleAllSections: () => void;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -240,6 +244,10 @@ const DEFAULT_PROFILE_EDITOR_CONTEXT: ProfileEditorContextValue = {
   updateProfilePartial: () => {},
   toastMessage: null,
   showToast: () => {},
+  expandedSections: { profile: true },
+  setExpandedSections: () => {},
+  toggleSectionExpanded: () => {},
+  toggleAllSections: () => {},
   username: '',
   setUsername: () => {},
   fullName: '',
@@ -535,6 +543,32 @@ export function ProfileEditorProvider({
   } | null>(null);
   const [isDark, setIsDark] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Synchronized multi-section expanded state across both desktop and mobile working screens
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    profile: true
+  });
+
+  const toggleSectionExpanded = useCallback((secKey: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [secKey]: !prev[secKey]
+    }));
+  }, []);
+
+  const toggleAllSections = useCallback(() => {
+    const allKeys = [
+      'contactInfo', 'personalDetails', 'skills', 'experience',
+      'education', 'projects', 'socialLinks', 'enhanceProfile', 'limitations',
+      'accountInfo', 'archive', 'security', 'settings'
+    ];
+    setExpandedSections((prev) => {
+      const anyClosed = allKeys.some(k => !prev[k]);
+      const next: Record<string, boolean> = { profile: true };
+      allKeys.forEach(k => { next[k] = anyClosed; });
+      return next;
+    });
+  }, []);
 
   // Sync dark mode from document using MutationObserver subscription
   useEffect(() => {
@@ -918,6 +952,8 @@ export function ProfileEditorProvider({
         initialProfile.slug ||
         initialProfile.id;
 
+      const reliableProfileId = dataToSave.id || profile.id || initialProfile.id;
+
       const res = await fetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -925,8 +961,12 @@ export function ProfileEditorProvider({
           profileId: profileIdentifier,
           profileSlug: profileIdentifier,
           slug: profileIdentifier,
+          id: reliableProfileId,
           userId: dataToSave.userId || profile.userId || initialProfile.userId,
-          updatedData: dataToSave,
+          updatedData: {
+            ...dataToSave,
+            id: reliableProfileId,
+          },
         }),
       });
 
@@ -1095,6 +1135,10 @@ export function ProfileEditorProvider({
       userProfiles: _userProfiles,
       currentIdentifier,
       handleSwitchPersona,
+      expandedSections,
+      setExpandedSections,
+      toggleSectionExpanded,
+      toggleAllSections,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -1106,6 +1150,7 @@ export function ProfileEditorProvider({
       fullName, liveProfile, activeSocialsPayload,
       isUploadingAvatar, isUploadingCover, isSaving, isConfirmed, statusMessage, copySuccess,
       activeSection, activeSectionTarget, isDark, toastMessage, _userProfiles, currentIdentifier,
+      expandedSections,
     ]
   );
 

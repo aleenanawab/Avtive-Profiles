@@ -60,7 +60,8 @@ async function handleProfileUpdate(request: NextRequest) {
         ...updatedData,
         ...(effectiveSlug ? { slug: effectiveSlug } : {})
       },
-      session.id
+      session.id,
+      session.email
     );
 
     if (!result.success || !result.profile) {
