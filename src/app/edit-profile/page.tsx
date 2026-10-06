@@ -1,7 +1,8 @@
 import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser } from '@/lib/db';
+import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser, updateProfile } from '@/lib/db';
+import { normalizeProfileType, ProfileTheme } from '@/types/profile';
 import { EditProfileClient } from './EditProfileClient';
 import type { Metadata } from 'next';
 
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 interface EditProfilePageProps {
-  searchParams: Promise<{ id?: string }>;
+  searchParams: Promise<{ id?: string; role?: string; theme?: string }>;
 }
 
 export default async function EditProfilePage({ searchParams }: EditProfilePageProps) {
@@ -23,7 +24,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
     redirect('/login?returnUrl=/edit-profile');
   }
 
-  const { id } = await searchParams;
+  const { id, role, theme } = await searchParams;
 
   let targetProfile = null;
   if (id) {
@@ -35,15 +36,31 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
     const userProfiles = await getProfilesByUserId(session.id);
     if (userProfiles.length > 0) {
       targetProfile = userProfiles[0];
+      if (role || theme) {
+        const updateRes = await updateProfile(
+          targetProfile.id,
+          {
+            ...(role ? { type: normalizeProfileType(role) } : {}),
+            ...(theme ? { theme: theme as ProfileTheme } : {})
+          },
+          session.id
+        );
+        if (updateRes.profile) {
+          targetProfile = updateRes.profile;
+        }
+      }
     } else if (targetProfile) {
       targetProfile.userId = session.id;
     } else {
+      const selectedRole = normalizeProfileType(role || 'individual');
+      const selectedTheme = (theme && theme !== 'default' ? theme : 'editorial') as ProfileTheme;
       targetProfile = await createProfileForUser(session.id, {
         name: session.name,
         email: session.email,
-        profileName: 'Primary Profile',
+        profileName: selectedRole === 'team' ? 'Company Profile' : 'Primary Profile',
         designation: 'Professional',
-        type: 'individual'
+        type: selectedRole,
+        theme: selectedTheme
       });
     }
   }

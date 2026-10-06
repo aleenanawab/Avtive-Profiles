@@ -1005,18 +1005,13 @@ export async function updateProfile(
     return { success: true, profile: newProfile, status: 200 };
   }
 
-  // Ownership check: If target is claimed or session user matches
+  // Strict ownership check: Only the verified owner can perform edits
   if (target.userId && target.userId !== sessionUserId) {
-    const isOtherRegisteredUser = db.users.some((u) => u.id === target?.userId && u.id !== sessionUserId);
-    if (!isOtherRegisteredUser) {
-      target.userId = sessionUserId;
-    } else {
-      return {
-        success: false,
-        error: 'Forbidden: You do not own this profile. Only the verified owner can perform edits.',
-        status: 403
-      };
-    }
+    return {
+      success: false,
+      error: 'Forbidden: You do not own this profile. Only the verified owner can perform edits.',
+      status: 403
+    };
   }
 
   // Handle username update if provided

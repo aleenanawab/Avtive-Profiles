@@ -92,12 +92,12 @@ function ThemeStepContent() {
 
   const handleNext = () => {
     setContextTheme(selectedTheme as PortfolioTheme);
-    router.push(`/onboarding/create?role=${role}&theme=${selectedTheme}`);
+    window.location.href = `/edit-profile?role=${encodeURIComponent(role)}&theme=${encodeURIComponent(selectedTheme)}`;
   };
 
   const handleSkip = () => {
     setContextTheme('editorial');
-    router.push(`/onboarding/create?role=${role}&theme=editorial`);
+    window.location.href = `/edit-profile?role=${encodeURIComponent(role)}&theme=editorial`;
   };
 
   const handleBack = () => {

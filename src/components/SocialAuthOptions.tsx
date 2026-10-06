@@ -85,23 +85,20 @@ export function SocialAuthOptions({ onSuccess, onError }: SocialAuthOptionsProps
 
       const returnUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('returnUrl') : null;
 
-      if (!data.hasProfile) {
+      if (data.hasProfile && (data.profileSlug || data.user?.id)) {
+        // EXISTING SOCIAL USER -> Direct to their own profile in VIEW MODE
+        const targetSlug = data.profileSlug || data.user?.id;
+        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/create-profile') && !returnUrl.includes('/onboarding')) {
+          router.push(returnUrl);
+        } else {
+          router.push(`/profile/${targetSlug}`);
+        }
+      } else {
+        // NEW SOCIAL USER -> Must complete Role -> Theme/Skip -> Existing Editor
         try {
           localStorage.removeItem('avtive_last_saved_profile');
           sessionStorage.removeItem('avtive_open_edit_mode');
         } catch {}
-        if (returnUrl && returnUrl.includes('/onboarding')) {
-          router.push(returnUrl);
-        } else {
-          router.push('/onboarding/role');
-        }
-      } else if (data.hasProfile) {
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/create-profile') && !returnUrl.includes('/onboarding')) {
-          router.push(returnUrl);
-        } else {
-          router.push('/dashboard');
-        }
-      } else {
         router.push('/onboarding/role');
       }
       router.refresh();

@@ -133,12 +133,11 @@ export default function RegisterClient() {
       }
 
       try {
-        sessionStorage.setItem('avtive_active_session', 'true');
-        localStorage.setItem('avtive_returning_user', 'true');
+        sessionStorage.removeItem('avtive_active_session');
       } catch {}
 
-      // First-time registered user: route to role selection onboarding
-      window.location.href = '/onboarding/role';
+      // Account created -> Return to Login Page for authentication
+      window.location.href = '/login?registered=true';
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during registration. Please try again.');

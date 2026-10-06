@@ -43,6 +43,10 @@ function CreateProfileContent() {
   const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
   const role = normalizeProfileType(searchParams.get('role') || 'individual');
 
+  useEffect(() => {
+    window.location.href = `/edit-profile?role=${encodeURIComponent(role)}&theme=${encodeURIComponent(theme)}`;
+  }, [role, theme]);
+
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 

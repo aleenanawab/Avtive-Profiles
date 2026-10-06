@@ -58,9 +58,7 @@ export default async function ProfilePage({ params, searchParams }: PageProps) {
   const isOwner = Boolean(
     session?.id && (
       (profile.userId && session.id === profile.userId) ||
-      (profile.email && session.email && profile.email.toLowerCase().trim() === session.email.toLowerCase().trim()) ||
-      (profile.id === session.id) ||
-      (profile.slug === session.id)
+      (profile.email && session.email && profile.email.toLowerCase().trim() === session.email.toLowerCase().trim())
     )
   );
 

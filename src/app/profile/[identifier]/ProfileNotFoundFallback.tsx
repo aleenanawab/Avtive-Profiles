@@ -116,9 +116,7 @@ export function ProfileNotFoundFallback({ identifier, session, initialIsEditing 
     const isOwner = Boolean(
       session?.id && (
         (cachedProfile.userId && session.id === cachedProfile.userId) ||
-        (cachedProfile.email && session.email && cachedProfile.email.toLowerCase().trim() === session.email.toLowerCase().trim()) ||
-        (cachedProfile.id === session.id) ||
-        (cachedProfile.slug === session.id)
+        (cachedProfile.email && session.email && cachedProfile.email.toLowerCase().trim() === session.email.toLowerCase().trim())
       )
     );
 
@@ -127,7 +125,7 @@ export function ProfileNotFoundFallback({ identifier, session, initialIsEditing 
         initialProfile={cachedProfile}
         session={session}
         isOwner={isOwner}
-        initialIsEditing={initialIsEditing}
+        initialIsEditing={Boolean(initialIsEditing && isOwner)}
       />
     );
   }

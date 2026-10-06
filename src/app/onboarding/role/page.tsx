@@ -74,7 +74,7 @@ function RoleStepContent() {
   }, [router]);
 
   const handleBack = () => {
-    router.push('/register');
+    router.push('/login');
   };
 
   const handleNext = () => {

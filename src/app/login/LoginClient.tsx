@@ -142,12 +142,11 @@ export default function LoginClient() {
       const returnUrl = getReturnUrl();
       let targetPath = '/onboarding/role';
 
-      if (data.hasProfile) {
-        // Existing user with profile -> direct Dashboard (or returnUrl)
+      if (data.hasProfile && (data.profileSlug || data.user?.id)) {
+        // EXISTING GOOGLE USER -> Direct to their own profile in VIEW MODE
+        targetPath = `/profile/${data.profileSlug || data.user.id}`;
         if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
           targetPath = returnUrl;
-        } else {
-          targetPath = '/dashboard';
         }
       } else {
         try {
@@ -218,26 +217,21 @@ export default function LoginClient() {
       } catch {}
 
       const returnUrl = getReturnUrl();
-      let targetPath = '/dashboard';
+      let targetPath = '/onboarding/role';
 
-      if (data.hasProfile && data.profileSlug) {
-        // Existing user with profile -> direct Profile View
-        targetPath = `/profile/${data.profileSlug}`;
-      } else if (!data.hasProfile) {
-        // User with no profile -> check if role already selected
-        if (data.role) {
-          targetPath = '/edit-profile';
-        } else {
-          targetPath = '/onboarding/role';
+      if (data.hasProfile && (data.profileSlug || data.user?.id)) {
+        // EXISTING USER DETECTED -> Direct to their own profile in VIEW MODE
+        targetPath = `/profile/${data.profileSlug || data.user.id}`;
+        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
+          targetPath = returnUrl;
         }
-      } else if (data.profileSlug) {
-        targetPath = `/profile/${data.profileSlug}`;
-      } else if (data.user?.id) {
-        targetPath = `/profile/${data.user.id}`;
-      }
-
-      if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
-        targetPath = returnUrl;
+      } else {
+        // NEW USER DETECTED -> Must complete Role -> Theme/Skip -> Existing Editor
+        try {
+          localStorage.removeItem('avtive_last_saved_profile');
+          sessionStorage.removeItem('avtive_open_edit_mode');
+        } catch {}
+        targetPath = '/onboarding/role';
       }
 
       window.location.href = targetPath;

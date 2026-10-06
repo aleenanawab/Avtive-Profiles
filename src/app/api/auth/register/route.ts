@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json(
       {
         success: true,
-        autoLogin: true,
-        message: 'Account created successfully.',
+        autoLogin: false,
+        message: 'Account created successfully. Please sign in with your email and password.',
         user: sessionUser,
         hasProfile: false,
         profile: null,
@@ -85,7 +85,6 @@ export async function POST(request: NextRequest) {
     );
 
     response.headers.set('Cache-Control', 'no-store, max-age=0');
-    await setSessionCookie(sessionUser, response);
     setReturningUserCookie(response);
 
     // Set backup user cache cookie for resilient cross-lambda authentication
