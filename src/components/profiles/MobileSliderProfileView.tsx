@@ -217,12 +217,7 @@ export function MobileSliderProfileView({ onSave, onNext, className = '' }: Mobi
     }
   };
 
-  const handleNextTrigger = async () => {
-    try {
-      await handleSaveTrigger();
-    } catch (e) {
-      console.error(e);
-    }
+  const handleNextTrigger = () => {
     if (onNext) {
       onNext();
     } else {

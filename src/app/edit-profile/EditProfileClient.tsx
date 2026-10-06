@@ -33,37 +33,48 @@ export interface EditProfileClientProps {
   initialProfile: ProfileData;
   userProfiles?: ProfileData[];
   onReturnToView?: (updatedProfile?: ProfileData) => void;
+  onCancel?: () => void;
+  onSaveProfile?: (savedProfile?: ProfileData) => void;
 }
 
-export function EditProfileClient({ initialProfile, userProfiles, onReturnToView }: EditProfileClientProps) {
-  const handleReturnOrRedirect = (saved?: ProfileData) => {
-    if (onReturnToView) {
-      onReturnToView(saved);
-    } else {
-      const slug = saved?.slug || saved?.id || initialProfile.slug || initialProfile.id;
-      window.location.href = `/profile/${encodeURIComponent(slug)}`;
-    }
+export function EditProfileClient({ 
+  initialProfile, 
+  userProfiles, 
+  onReturnToView,
+  onCancel,
+  onSaveProfile
+}: EditProfileClientProps) {
+  const handleSavedProfileUpdate = (saved?: ProfileData) => {
+    // Notify parent without navigating away from editor
+    onSaveProfile?.(saved);
   };
 
   return (
     <ProfileEditorProvider
       initialProfile={initialProfile}
       userProfiles={userProfiles}
-      onSaveSuccess={handleReturnOrRedirect}
+      onSaveSuccess={handleSavedProfileUpdate}
     >
       <EditProfileClientInner
         initialProfile={initialProfile}
         userProfiles={userProfiles}
-        onReturnToView={handleReturnOrRedirect}
+        onReturnToView={onReturnToView}
+        onCancel={onCancel}
+        onSaveProfile={onSaveProfile}
       />
     </ProfileEditorProvider>
   );
 }
 
-function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }: EditProfileClientProps) {
+function EditProfileClientInner({ 
+  initialProfile, 
+  userProfiles, 
+  onReturnToView,
+  onCancel,
+  onSaveProfile 
+}: EditProfileClientProps) {
   const router = useRouter();
   const { isDark, toggleDarkMode } = usePortfolioTheme();
-  const [activeScreenTab, setActiveScreenTab] = useState<'both' | 'desktop' | 'mobile'>('both');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarPinned, setIsSidebarPinned] = useState(false);
   const closeTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -145,25 +156,10 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (window.innerWidth < 1280) {
-        setActiveScreenTab('desktop');
-      }
-      const handleResize = () => {
-        if (window.innerWidth < 1280 && activeScreenTab === 'both') {
-          setActiveScreenTab('desktop');
-        }
-      };
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        clearCloseTimer();
-      };
-    }
     return () => {
       clearCloseTimer();
     };
-  }, [activeScreenTab]);
+  }, []);
 
   // Session guard
   useEffect(() => {
@@ -193,6 +189,20 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
 
   const identifier = profile.slug || profile.id || initialProfile.slug || initialProfile.id || currentIdentifier;
 
+  // Back button MUST ONLY perform navigation and NEVER save profile data
+  const handleBackNavigation = () => {
+    if (onCancel) {
+      onCancel();
+    } else if (onReturnToView) {
+      onReturnToView(undefined); // Explicitly undefined so no unsaved changes are applied
+    } else if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(`/profile/${encodeURIComponent(identifier)}`);
+    }
+  };
+
+  // Explicit Save action saves data but preserves mobile preview and stays in editor
   const onGlobalSave = async () => {
     try {
       if (handleSaveChanges) {
@@ -203,24 +213,10 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
     } catch {
       await saveProfile();
     }
-    if (onReturnToView) {
-      onReturnToView(profile);
-    } else {
-      const targetSlug = profile.slug || profile.id || initialProfile.slug || initialProfile.id || identifier;
-      window.location.href = `/profile/${encodeURIComponent(targetSlug)}`;
-    }
   };
 
-  const handleTopBarNext = async () => {
-    try {
-      if (handleSaveChanges) {
-        await handleSaveChanges();
-      } else {
-        await saveProfile();
-      }
-    } catch (err) {
-      console.error('Error auto-saving before next section:', err);
-    }
+  // Next button is navigation only — advances to next section without auto-saving or exiting
+  const handleTopBarNext = () => {
     const sectionKeys = [
       'profile',
       'personalDetails',
@@ -241,11 +237,7 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
     if (currentIndex >= 0 && currentIndex < sectionKeys.length - 1) {
       setActiveSection(sectionKeys[currentIndex + 1]);
     } else {
-      if (onReturnToView) {
-        onReturnToView(profile);
-      } else {
-        router.push(`/profile/${identifier}`);
-      }
+      setActiveSection(sectionKeys[0]);
     }
   };
 
@@ -276,9 +268,7 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN WORKING WORKSPACE (Clean Minimalist Window)          */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <main className={`flex-1 w-full p-2.5 sm:p-5 lg:p-6 flex flex-row items-stretch justify-center gap-6 max-w-[1920px] mx-auto min-w-0 min-h-0 box-border ${
-        activeScreenTab === 'both' ? 'overflow-x-auto xl:overflow-x-visible' : 'overflow-x-hidden'
-      }`}>
+      <main className="flex-1 w-full p-2.5 sm:p-4 lg:p-6 flex flex-row items-stretch justify-center gap-4 lg:gap-6 max-w-[1920px] mx-auto min-w-0 min-h-0 box-border overflow-x-auto xl:overflow-x-visible">
         
         {/* ======================================================================= */}
         {/* WORKING SCREEN 1: DESKTOP PROFILE STUDIO EDITOR                        */}
@@ -325,28 +315,17 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
               </button>
             </div>
 
-            {/* Public Profile Navigation with Intuitive ArrowLeft Icon */}
+            {/* Navigation Back Button - Navigation ONLY, Never Saves */}
             <div className="flex items-center gap-2 shrink-0">
-              {onReturnToView ? (
-                <button
-                  type="button"
-                  onClick={() => onReturnToView(profile)}
-                  aria-label="Return to Public Profile"
-                  title="Return to Public Profile"
-                  className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                </button>
-              ) : (
-                <Link
-                  href={`/profile/${identifier}`}
-                  aria-label="Return to Public Profile"
-                  title="Return to Public Profile"
-                  className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                </Link>
-              )}
+              <button
+                type="button"
+                onClick={handleBackNavigation}
+                aria-label="Back"
+                title="Back to previous screen"
+                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             {/* Inside Action Buttons: Functional Buttons Moved Inside Screen */}
@@ -493,9 +472,7 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className={`w-full max-w-[375px] shrink-0 flex flex-col items-center justify-center min-w-0 ${
-            activeScreenTab === 'desktop' ? 'hidden xl:flex' : 'flex'
-          }`}
+          className="w-full max-w-[375px] shrink-0 flex flex-col items-center justify-center min-w-0"
         >
           {/* Smartphone Chassis Frame (Responsive, fits viewport height) */}
           <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] max-h-[calc(100vh-100px)] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors min-h-0">
@@ -516,7 +493,7 @@ function EditProfileClientInner({ initialProfile, userProfiles, onReturnToView }
             {/* Mobile Editor Canvas: Responsive 375px internal website design viewport */}
             <div className="flex-1 w-full min-h-0 overflow-y-auto overflow-x-hidden flex flex-col items-center bg-slate-50 dark:bg-[#050811] transition-colors">
               <div className="w-full flex-1 flex flex-col overflow-x-hidden min-h-0">
-                <MobileSliderProfileView onSave={onGlobalSave} />
+                <MobileSliderProfileView onSave={onGlobalSave} onNext={handleTopBarNext} />
               </div>
             </div>
 

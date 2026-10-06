@@ -320,12 +320,29 @@ function PublicProfileClientInner({
       <EditProfileClient
         initialProfile={profile}
         userProfiles={userProfiles && userProfiles.length > 0 ? userProfiles : [profile]}
+        onSaveProfile={(savedProfile) => {
+          if (savedProfile) {
+            setProfile(savedProfile);
+            if (savedProfile.theme) setActiveTheme(savedProfile.theme);
+          }
+        }}
         onReturnToView={(updatedProfile) => {
           if (updatedProfile) {
             setProfile(updatedProfile);
             if (updatedProfile.theme) setActiveTheme(updatedProfile.theme);
           }
           setIsEditing(false);
+        }}
+        onCancel={() => {
+          // Navigation ONLY — Discard any unsaved changes without saving
+          if (typeof window !== 'undefined' && (document.referrer?.includes('/onboarding') || (initialIsEditing && window.history.length > 1))) {
+            router.back();
+          } else if (initialIsEditing) {
+            router.push('/onboarding/theme');
+          } else {
+            setIsEditing(false);
+            router.replace(`/profile/${encodeURIComponent(profile.slug || profile.id)}`);
+          }
         }}
       />
     );
