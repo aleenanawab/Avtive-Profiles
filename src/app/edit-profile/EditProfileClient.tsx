@@ -271,7 +271,7 @@ function EditProfileClientInner({
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[320px] max-w-[1050px] 2xl:max-w-[1150px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0 flex"
+          className="flex-1 min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0 flex"
         >
           {/* Desktop Frame Window Bar */}
           <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors overflow-x-auto sm:overflow-visible">
@@ -464,11 +464,11 @@ function EditProfileClientInner({
         </section>
 
         {/* ======================================================================= */}
-        {/* SCREEN 2: MOBILE SMARTPHONE LIVE PREVIEW (Standard 375×667)             */}
+        {/* WORKING SCREEN 2: MOBILE SMARTPHONE WORKING EDITOR (Standard 375×667)   */}
         {/* ======================================================================= */}
         <aside 
-          aria-label="Mobile Live Preview Screen"
-          className="w-[320px] sm:w-[350px] lg:w-[375px] shrink-0 flex flex-col items-center justify-center min-w-0"
+          aria-label="Mobile Working Screen"
+          className="w-full max-w-[375px] shrink-0 flex flex-col items-center justify-center min-w-0"
         >
           {/* Smartphone Chassis Frame (Responsive, fits viewport height) */}
           <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] max-h-[calc(100vh-100px)] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors min-h-0">

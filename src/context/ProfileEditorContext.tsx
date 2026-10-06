@@ -952,19 +952,6 @@ export function ProfileEditorProvider({
         data.updatedProfile || data.profile || { ...dataToSave, slug: savedSlug };
 
       setProfile(finalProfile);
-      if (finalProfile.name) {
-        const parts = finalProfile.name.trim().split(' ');
-        setFirstName(parts[0] || '');
-        setSecondName(parts.slice(1).join(' '));
-      }
-      if (finalProfile.professionalTitle || finalProfile.designation) {
-        setProfessionalTitle(finalProfile.professionalTitle || finalProfile.designation || '');
-      }
-      if (finalProfile.bio || finalProfile.shortBio) setBio(finalProfile.bio || finalProfile.shortBio || '');
-      if (finalProfile.about || finalProfile.fullBio) setAbout(finalProfile.about || finalProfile.fullBio || '');
-      if (finalProfile.avatar) setAvatar(finalProfile.avatar);
-      if (finalProfile.coverImage) setCoverImage(finalProfile.coverImage);
-      if (finalProfile.theme) setActiveTheme(finalProfile.theme);
 
       // Cache locally and dispatch update event
       try {

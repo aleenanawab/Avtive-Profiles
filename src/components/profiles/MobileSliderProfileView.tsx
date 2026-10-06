@@ -1,15 +1,21 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Save,
   Loader2,
+  Menu,
+  X,
   Sun,
-  Moon
+  Moon,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
+import { DESKTOP_SIDEBAR_SECTIONS } from './DesktopProfileSidebar';
 import { downloadVCard } from '@/lib/vcard';
 
 export interface MobileSliderProfileViewProps {
@@ -25,10 +31,33 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
     saveProfile,
     activeSection,
     setActiveSection,
+    sectionVisibility,
+    handleToggleSectionVisibility
   } = useProfileEditor();
 
   const { isDark, toggleDarkMode } = usePortfolioTheme();
+
+  // Mobile sections dropdown state (tap to toggle)
+  const [isSectionsDropdownOpen, setIsSectionsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const previewScrollRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click/tap outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsSectionsDropdownOpen(false);
+      }
+    };
+    if (isSectionsDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isSectionsDropdownOpen]);
 
   // Unified save handler
   const handleSave = async () => {
@@ -39,7 +68,7 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
     }
   };
 
-  // Automatically scroll mobile preview to matching section whenever activeSection changes on desktop
+  // Automatically scroll mobile preview to matching section whenever activeSection changes
   useEffect(() => {
     if (!activeSection) return;
     if (activeSection === 'profile') {
@@ -81,6 +110,7 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
     };
     const target = map[sectionKey] || sectionKey;
     setActiveSection(target);
+    setIsSectionsDropdownOpen(false);
 
     // Synchronize desktop editor position
     const desktopEl =
@@ -112,26 +142,121 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
     <div className={`w-full h-full flex flex-col bg-white dark:bg-[#070D18] relative overflow-hidden select-none ${className}`}>
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* TOP HEADER: Clean Live Preview Bar (No duplicate editing dropdown)         */}
+      {/* TOP HEADER: Clean & Compact Mobile Bar with Top-Left Section Control       */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
       <div className="w-full bg-slate-50/95 dark:bg-[#0A101E]/95 backdrop-blur-md border-b border-slate-200 dark:border-white/10 px-3 py-2 flex items-center justify-between shrink-0 z-30 transition-colors">
         
-        {/* Left: Live Sync Indicator Badge */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-2xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Live Mobile Preview</span>
+        {/* Top-Left: Sections Control Button (Opens Dropdown Directly Beneath) */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsSectionsDropdownOpen((prev) => !prev)}
+            aria-expanded={isSectionsDropdownOpen}
+            aria-haspopup="true"
+            aria-label="Sections Menu"
+            title="Sections Menu"
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 border shrink-0 ${
+              isSectionsDropdownOpen
+                ? 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 shadow-2xs'
+                : 'bg-white hover:bg-slate-100 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-300 border-slate-200 dark:border-white/10'
+            }`}
+          >
+            {isSectionsDropdownOpen ? (
+              <X className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
+            ) : (
+              <Menu className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
+            )}
+            <span className="text-[11px] font-medium">Sections</span>
+          </button>
+
+          {/* ──────────────────────────────────────────────────────────────────────── */}
+          {/* MOBILE SECTIONS DROPDOWN MENU (Tap/Click Triggered from Top-Left)        */}
+          {/* ──────────────────────────────────────────────────────────────────────── */}
+          <AnimatePresence>
+            {isSectionsDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="absolute top-10 left-0 w-64 max-h-[380px] bg-white dark:bg-[#0B1222] border border-slate-200 dark:border-white/15 rounded-2xl shadow-2xl p-2 z-50 flex flex-col overflow-hidden backdrop-blur-md"
+              >
+                <div className="px-2 py-1.5 border-b border-slate-100 dark:border-white/10 mb-1 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Sections</span>
+                  <span className="text-[10px] font-mono font-medium text-cyan-600 dark:text-cyan-400">Tap to jump</span>
+                </div>
+
+                <div className="flex-1 overflow-y-auto space-y-0.5 pr-0.5">
+                  {DESKTOP_SIDEBAR_SECTIONS.map((sec) => {
+                    const Icon = sec.icon;
+                    const isActive = activeSection === sec.key;
+                    const isVisible = sectionVisibility[sec.key] !== false;
+
+                    return (
+                      <div
+                        key={sec.key}
+                        className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all group ${
+                          isActive
+                            ? 'bg-cyan-50 dark:bg-cyan-500/20 text-cyan-800 dark:text-cyan-200 border border-cyan-400/40 font-bold shadow-2xs'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent'
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => handleSelectSection(sec.key)}
+                          className="flex-1 flex items-center gap-2 min-w-0 text-left cursor-pointer"
+                        >
+                          <Icon className={`w-3.5 h-3.5 shrink-0 ${
+                            isActive ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-400 dark:text-slate-500'
+                          }`} />
+                          <span className={`truncate text-xs ${!isVisible ? 'line-through text-slate-400 dark:text-slate-600' : ''}`}>
+                            {sec.label}
+                          </span>
+                        </button>
+
+                        <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                          {isActive && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400 shrink-0" />
+                          )}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleSectionVisibility(sec.key);
+                              if (sec.key === 'personalDetails') handleToggleSectionVisibility('about');
+                              if (sec.key === 'contactInfo') handleToggleSectionVisibility('contact');
+                            }}
+                            title={isVisible ? `Hide ${sec.label}` : `Show ${sec.label}`}
+                            aria-label={isVisible ? `Hide ${sec.label}` : `Show ${sec.label}`}
+                            className="p-1 rounded-md hover:bg-slate-200 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                          >
+                            {isVisible ? (
+                              <Eye className="w-3 h-3 text-cyan-600 dark:text-cyan-400" />
+                            ) : (
+                              <EyeOff className="w-3 h-3 text-slate-400 dark:text-slate-600" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
         </div>
 
-        {/* Right: Theme Toggle & Unified Save Controls */}
+        {/* Right: Theme Toggle & Save Controls */}
         <div className="flex items-center gap-1.5">
-          {/* Mobile Save Button — Uses the exact same underlying save logic */}
+          {/* Mobile Save Icon Button — Uses same save logic as desktop */}
           <button
             type="button"
             onClick={handleSave}
             disabled={isSaving}
             aria-label="Save Profile"
             title="Save Profile"
-            className="p-1 px-2.5 rounded-lg text-white bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 transition-all cursor-pointer disabled:opacity-50 active:scale-95 shadow-2xs shrink-0 flex items-center gap-1 text-xs font-semibold"
+            className="p-1.5 px-2.5 rounded-lg text-white bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 transition-all cursor-pointer disabled:opacity-50 active:scale-95 shadow-2xs shrink-0 flex items-center gap-1 text-xs font-semibold"
           >
             {isSaving ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -159,7 +284,7 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
       </div>
 
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      {/* LIVE PROFILE VISUAL PREVIEW — REALISTIC MOBILE PROFILE VIEW (canEdit=false)*/}
+      {/* LIVE PROFILE PREVIEW ONLY — NO SECOND EDITOR, NO DUPLICATE FORMS          */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
       <div 
         ref={previewScrollRef} 
@@ -168,7 +293,7 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
         <AvtiveDigitalCard
           profile={liveProfile}
           isDark={isDark}
-          canEdit={false}
+          canEdit={true}
           isEditing={false}
           isConnected={false}
           viewMode="standard"
