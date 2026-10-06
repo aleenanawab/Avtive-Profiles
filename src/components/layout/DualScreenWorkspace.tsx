@@ -1,18 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { 
   Wifi, 
   Battery, 
   Signal, 
-  Lock,
-  LogOut,
-  Sun,
-  Moon,
-  LayoutGrid,
-  Monitor,
-  Smartphone
+  Lock, 
+  LogOut, 
+  Sun, 
+  Moon, 
+  LayoutGrid 
 } from 'lucide-react';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 
@@ -38,7 +36,6 @@ export function DualScreenWorkspace({
   className = ''
 }: DualScreenWorkspaceProps) {
   const { isDark, toggleDarkMode } = usePortfolioTheme();
-  const [activeScreenTab, setActiveScreenTab] = useState<'both' | 'desktop' | 'mobile'>('both');
 
   const handleLogout = async () => {
     try {
@@ -54,73 +51,19 @@ export function DualScreenWorkspace({
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col justify-center bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-x-hidden ${className}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-start xl:justify-center bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-x-auto ${className}`}>
       
-      {/* Responsive Viewport Switcher for Small Screens */}
-      <div className="w-full flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-white/5 xl:hidden shrink-0 bg-white/90 dark:bg-[#0A101E]/90 backdrop-blur-md transition-colors">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-xs">
-            A
-          </div>
-          <span className="text-xs font-bold text-slate-900 dark:text-white">Avtive Twin-Screen</span>
-        </div>
-
-        <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-[#050913] p-1 rounded-xl border border-slate-200 dark:border-white/10">
-          <button
-            type="button"
-            onClick={() => setActiveScreenTab('desktop')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeScreenTab === 'desktop'
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
-          >
-            <Monitor className="w-3.5 h-3.5" />
-            <span>Desktop</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveScreenTab('mobile')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeScreenTab === 'mobile'
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Mobile</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveScreenTab('both')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeScreenTab === 'both'
-                ? 'bg-white text-slate-900 shadow-xs dark:bg-white/10 dark:text-white'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-            }`}
-          >
-            <span>Both</span>
-          </button>
-        </div>
-      </div>
-
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className={`flex-1 w-full p-2.5 sm:p-5 lg:p-7 flex flex-row items-stretch justify-center gap-6 max-w-[1920px] mx-auto my-auto box-border overflow-x-hidden xl:overflow-x-visible ${
-        activeScreenTab === 'both' ? 'min-w-0 xl:min-w-0' : 'min-w-0'
-      }`}>
+      <div className="flex-1 w-full p-2.5 sm:p-5 lg:p-7 flex flex-row items-stretch justify-start xl:justify-center gap-6 max-w-[1920px] mx-auto my-auto box-border min-w-[880px] sm:min-w-[1000px] xl:min-w-0">
         
         {/* ======================================================================= */}
         {/* SCREEN 1: DESKTOP WORKING SCREEN (Clean Minimalist Window)              */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className={`flex-1 min-w-0 sm:min-w-[480px] max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors ${
-            activeScreenTab === 'mobile' ? 'hidden xl:flex' : 'flex'
-          }`}
+          className="flex-1 min-w-[480px] sm:min-w-[600px] max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
         >
           {/* Desktop Browser Window Header Frame */}
           <div className="w-full bg-slate-50/90 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
@@ -185,9 +128,7 @@ export function DualScreenWorkspace({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className={`w-full max-w-[375px] shrink-0 flex flex-col items-center justify-center box-border transition-colors ${
-            activeScreenTab === 'desktop' ? 'hidden xl:flex' : 'flex'
-          }`}
+          className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center justify-center box-border transition-colors flex"
         >
           {/* Smartphone Chassis Frame (Standard 375px × 667px) */}
           <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-xl shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors box-border">

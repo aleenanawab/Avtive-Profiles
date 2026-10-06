@@ -23,6 +23,8 @@ import { ProfileEditorProvider } from '@/context/ProfileEditorContext';
 import { downloadVCard } from '@/lib/vcard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
+import { Edit3 } from 'lucide-react';
+import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 export interface PublicProfileClientProps {
   initialProfile: ProfileData;
@@ -348,18 +350,24 @@ function PublicProfileClientInner({
     );
   }
 
-  return (
-    <div 
-      data-theme={activeTheme}
-      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans overflow-x-hidden`}
-    >
-      {/* Toast Notification Banner */}
-      {toastMessage && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold shadow-xl border border-white/10 dark:border-black/10 animate-in fade-in slide-in-from-top-2">
-          {toastMessage}
-        </div>
+  const desktopToolbarRight = (
+    <div className="flex items-center gap-1.5 sm:gap-2">
+      {isOwner && (
+        <button
+          type="button"
+          onClick={() => setIsEditing(true)}
+          className="px-2.5 py-1 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95"
+          title="Edit Profile"
+        >
+          <Edit3 className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Edit Profile</span>
+        </button>
       )}
+    </div>
+  );
 
+  const desktopView = (
+    <div className="w-full flex-1 flex flex-col min-h-0 relative">
       {/* Clean Public & Owner Header */}
       <HeaderNav
         currentProfile={{ ...profile, theme: activeTheme }}
@@ -385,7 +393,7 @@ function PublicProfileClientInner({
           onTouchStart={() => { isTouchRef.current = true; }}
           title="Hover or tap to open Sections"
           aria-label="Open Sections Navigation"
-          className="fixed left-0 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center py-6 w-3 sm:w-2.5 hover:w-6 bg-slate-400/20 dark:bg-white/10 hover:bg-cyan-500/20 border-r border-y border-slate-300 dark:border-white/20 hover:border-cyan-500/40 rounded-r-xl transition-all duration-200 cursor-pointer group shadow-sm select-none"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center py-6 w-3 sm:w-2.5 hover:w-6 bg-slate-400/20 dark:bg-white/10 hover:bg-cyan-500/20 border-r border-y border-slate-300 dark:border-white/20 hover:border-cyan-500/40 rounded-r-xl transition-all duration-200 cursor-pointer group shadow-sm select-none"
         >
           <div className="w-1 h-8 rounded-full bg-slate-400 dark:bg-white/40 group-hover:bg-cyan-500 transition-colors" />
         </div>
@@ -402,7 +410,7 @@ function PublicProfileClientInner({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={handleCloseSidebar}
-              className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-40 cursor-pointer"
+              className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-40 cursor-pointer"
             />
             <motion.div
               key="public-sidebar-drawer"
@@ -412,7 +420,7 @@ function PublicProfileClientInner({
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
               onMouseEnter={handlePanelMouseEnter}
               onMouseLeave={handlePanelMouseLeave}
-              className="fixed top-0 bottom-0 left-0 z-50 h-full shadow-2xl max-w-full"
+              className="absolute top-0 bottom-0 left-0 z-50 h-full shadow-2xl max-w-full"
             >
               <DesktopProfileSidebar
                 onClose={handleCloseSidebar}
@@ -424,8 +432,8 @@ function PublicProfileClientInner({
         )}
       </AnimatePresence>
 
-      {/* Main Responsive Profile Container - Single Source of Truth */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8 min-w-0 relative">
+      {/* Main Responsive Profile Container */}
+      <div className="flex-1 w-full max-w-3xl mx-auto p-3 sm:p-6 lg:p-8 min-w-0">
         <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden relative`}>
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
@@ -454,7 +462,61 @@ function PublicProfileClientInner({
             viewMode="standard"
           />
         </div>
-      </main>
+      </div>
+    </div>
+  );
+
+  const mobileView = (
+    <div className="w-full flex-1 flex flex-col min-h-0">
+      <AvtiveDigitalCard
+        profile={{ ...profile, type: profileType, theme: activeTheme }}
+        canEdit={isOwner}
+        isEditing={false}
+        isConnected={false}
+        onOpenEdit={() => setIsEditing(true)}
+        onCancelEdit={() => setIsEditing(false)}
+        onSaveEdits={handleSaveEdits}
+        onSaveContact={handleSaveContact}
+        onOpenShare={() => setIsShareModalOpen(true)}
+        onOpenConnect={() => setIsConnectModalOpen(true)}
+        onOpenQRModal={() => setIsQRModalOpen(true)}
+        onOpenResumeModal={() => setIsResumeModalOpen(true)}
+        onSelectProject={(project) => setSelectedProject(project)}
+        onSelectTeamMember={(member) => {
+          const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+          router.push(`/profile/${slug}`);
+        }}
+        onViewCompany={() => {
+          if (profile.companyId) {
+            router.push(`/profile/${profile.companyId}`);
+          }
+        }}
+        isDark={isDark}
+        viewMode="standard"
+      />
+    </div>
+  );
+
+  return (
+    <div 
+      data-theme={activeTheme}
+      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans`}
+    >
+      {/* Toast Notification Banner */}
+      {toastMessage && (
+        <div className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold shadow-xl border border-white/10 dark:border-black/10 animate-in fade-in slide-in-from-top-2">
+          {toastMessage}
+        </div>
+      )}
+
+      <DualScreenWorkspace
+        workflowTitle="Digital Pass Identity"
+        workflowSubtitle="Verified Public Profile"
+        currentUrlPath={`/profile/${profile.slug || profile.id}`}
+        desktopToolbarRight={desktopToolbarRight}
+        desktopContent={desktopView}
+        mobileContent={mobileView}
+      />
 
       {/* Connect / Exchange Contact Modal */}
       {isConnectModalOpen && (
