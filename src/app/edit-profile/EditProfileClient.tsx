@@ -307,7 +307,7 @@ function EditProfileClientInner({
                 ) : (
                   <Menu className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
                 )}
-                <span className="hidden sm:inline text-[11px] font-medium">Sections</span>
+                <span className="text-[11px] font-medium">Sections</span>
               </button>
             </div>
 

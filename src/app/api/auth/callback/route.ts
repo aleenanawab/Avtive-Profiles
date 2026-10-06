@@ -100,11 +100,12 @@ export async function GET(request: NextRequest) {
     let destinationPath = '/onboarding/role';
 
     if (hasCompletedOnboarding) {
-      // Completed user: redirect directly to dashboard (or valid returnUrl)
+      // Completed user: redirect directly to their own profile in view mode (or valid returnUrl)
       if (next && !next.includes('/login') && !next.includes('/register') && !next.includes('/onboarding')) {
         destinationPath = next;
       } else {
-        destinationPath = '/dashboard';
+        const targetSlug = profile?.slug || profile?.id || profiles?.[0]?.slug || profiles?.[0]?.id || user.id;
+        destinationPath = `/profile/${targetSlug}`;
       }
     } else {
       // New user or incomplete onboarding: redirect to role onboarding step

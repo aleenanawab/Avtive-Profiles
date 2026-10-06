@@ -17,5 +17,6 @@ export default async function MyProfilePage() {
     redirect('/onboarding/role');
   }
 
-  redirect('/dashboard');
+  const targetSlug = profile?.slug || profile?.id || profiles?.[0]?.slug || profiles?.[0]?.id || session.id;
+  redirect(`/profile/${targetSlug}`);
 }

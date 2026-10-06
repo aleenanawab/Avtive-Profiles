@@ -99,67 +99,25 @@ export default function LoginClient() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      // 1. Try real Supabase Google OAuth if configured
-      try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/api/auth/callback`
-          }
-        });
-        if (!error && data?.url) {
-          window.location.href = data.url;
-          return;
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl
         }
-      } catch {}
-
-      // 2. Direct social authentication fallback
-      const res = await fetch('/api/auth/social', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider: 'google' })
       });
-      let data: any;
-      try {
-        data = await res.json();
-      } catch (parseErr) {
-        console.error('Failed to parse Google auth response:', parseErr);
-        setErrorMessage('Server returned an invalid response. Please try again.');
-        setIsLoading(false);
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
         return;
       }
-
-      if (!res.ok) {
-        setErrorMessage(data?.error || 'Google authentication failed.');
-        setIsLoading(false);
-        return;
-      }
-      try {
-        sessionStorage.setItem('avtive_active_session', 'true');
-        localStorage.setItem('avtive_returning_user', 'true');
-      } catch {}
-
-      const returnUrl = getReturnUrl();
-      let targetPath = '/onboarding/role';
-
-      if (data.hasProfile && (data.profileSlug || data.user?.id)) {
-        // EXISTING GOOGLE USER -> Direct to their own profile in VIEW MODE
-        targetPath = `/profile/${data.profileSlug || data.user.id}`;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
-          targetPath = returnUrl;
-        }
-      } else {
-        try {
-          localStorage.removeItem('avtive_last_saved_profile');
-          sessionStorage.removeItem('avtive_open_edit_mode');
-        } catch {}
-        targetPath = '/onboarding/role';
-      }
-
-      window.location.href = targetPath;
-    } catch (err) {
-      console.error(err);
-      setErrorMessage('Network error during Google authentication.');
+    } catch (err: any) {
+      console.error('Google Sign In Error:', err);
+      setErrorMessage(err?.message || 'Google authentication could not be initiated. Please check your connection and configuration.');
       setIsLoading(false);
     }
   };

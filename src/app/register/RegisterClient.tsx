@@ -38,50 +38,25 @@ export default function RegisterClient() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      // 1. Try real Supabase Google OAuth if configured
-      try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/api/auth/callback`
-          }
-        });
-        if (!error && data?.url) {
-          window.location.href = data.url;
-          return;
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl
         }
-      } catch {}
-
-      // 2. Direct social authentication fallback
-      const res = await fetch('/api/auth/social', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider: 'google' })
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setErrorMessage(data.error || 'Google authentication failed.');
-        setIsLoading(false);
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
         return;
       }
-      try {
-        sessionStorage.setItem('avtive_active_session', 'true');
-        localStorage.setItem('avtive_returning_user', 'true');
-      } catch {}
-
-      if (data.hasProfile && data.profileSlug) {
-        router.push('/dashboard');
-      } else {
-        try {
-          localStorage.removeItem('avtive_last_saved_profile');
-          sessionStorage.removeItem('avtive_open_edit_mode');
-        } catch {}
-        router.push('/onboarding/role');
-      }
-      router.refresh();
-    } catch (err) {
-      console.error(err);
-      setErrorMessage('Network error during Google authentication.');
+    } catch (err: any) {
+      console.error('Google Sign In Error:', err);
+      setErrorMessage(err?.message || 'Google authentication could not be initiated. Please check your connection and configuration.');
       setIsLoading(false);
     }
   };

@@ -49,8 +49,6 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
           targetProfile = updateRes.profile;
         }
       }
-    } else if (targetProfile) {
-      targetProfile.userId = session.id;
     } else {
       const selectedRole = normalizeProfileType(role || 'individual');
       const selectedTheme = (theme && theme !== 'default' ? theme : 'editorial') as ProfileTheme;
