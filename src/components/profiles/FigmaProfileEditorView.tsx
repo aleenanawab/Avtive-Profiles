@@ -40,7 +40,7 @@ export function FigmaProfileEditorView() {
 
   const onGlobalSave = async () => {
     try {
-      await handleSaveChanges();
+      await saveProfile();
     } catch {
       await saveProfile();
     }

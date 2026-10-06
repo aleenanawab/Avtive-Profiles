@@ -205,13 +205,9 @@ function EditProfileClientInner({
   // Explicit Save action saves data but preserves mobile preview and stays in editor
   const onGlobalSave = async () => {
     try {
-      if (handleSaveChanges) {
-        await handleSaveChanges();
-      } else {
-        await saveProfile();
-      }
-    } catch {
       await saveProfile();
+    } catch (err) {
+      console.error('Error saving profile:', err);
     }
   };
 

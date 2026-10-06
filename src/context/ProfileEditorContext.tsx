@@ -458,7 +458,7 @@ export function ProfileEditorProvider({
   const [copySuccess, setCopySuccess] = useState(false);
 
   // ── Derived values ────────────────────────────────────────────────────────
-  const fullName = `${firstName} ${secondName}`.trim();
+  const fullName = (profile.name || `${firstName} ${secondName}`).trim();
 
   const activeSocialsPayload = useMemo<SocialLink[]>(
     () =>
@@ -471,32 +471,36 @@ export function ProfileEditorProvider({
   const liveProfile = useMemo<ProfileData>(
     () => ({
       ...profile,
-      username: username.trim(),
-      name: fullName,
-      firstName: firstName.trim(),
-      secondName: secondName.trim(),
-      lastName: secondName.trim(),
-      professionalTitle: professionalTitle.trim(),
-      designation: professionalTitle.trim(),
-      profession: professionalTitle.trim(),
-      bio: bio.trim(),
-      shortBio: bio.trim(),
-      about: about.trim(),
-      fullBio: about.trim(),
-      tagline: tagline.trim(),
-      company: company.trim(),
-      location: location.trim(),
+      username: (username || profile.username || profile.slug || '').trim().replace(/^@/, ''),
+      slug: (profile.slug || username || initialProfile.slug || initialProfile.id || '').trim().replace(/^@/, ''),
+      name: profile.name || fullName,
+      firstName: firstName.trim() || (profile.name ? profile.name.split(' ')[0] : ''),
+      secondName: secondName.trim() || (profile.name ? profile.name.split(' ').slice(1).join(' ') : ''),
+      lastName: secondName.trim() || (profile.name ? profile.name.split(' ').slice(1).join(' ') : ''),
+      professionalTitle: (professionalTitle || profile.professionalTitle || profile.designation || '').trim(),
+      designation: (professionalTitle || profile.designation || profile.professionalTitle || '').trim(),
+      profession: (professionalTitle || profile.profession || profile.professionalTitle || '').trim(),
+      bio: (bio || profile.bio || profile.shortBio || '').trim(),
+      shortBio: (bio || profile.shortBio || profile.bio || '').trim(),
+      about: (about || profile.about || profile.fullBio || '').trim(),
+      fullBio: (about || profile.fullBio || profile.about || '').trim(),
+      tagline: (tagline || profile.tagline || '').trim(),
+      company: (company || profile.company || '').trim(),
+      location: (location || profile.location || '').trim(),
+      email: profile.email || '',
+      phone: profile.phone || '',
+      whatsapp: profile.whatsapp || '',
       theme: activeTheme,
-      avatar,
-      coverImage,
-      skills,
-      projects,
-      experience: experiences,
-      experiences,
-      education,
-      socials: activeSocialsPayload,
-      socialLinks: activeSocialsPayload,
-      customFields,
+      avatar: avatar || profile.avatar || '',
+      coverImage: coverImage || profile.coverImage || '',
+      skills: skills.length > 0 ? skills : (profile.skills || []),
+      projects: projects.length > 0 ? projects : (profile.projects || []),
+      experience: experiences.length > 0 ? experiences : (profile.experience || profile.experiences || []),
+      experiences: experiences.length > 0 ? experiences : (profile.experiences || profile.experience || []),
+      education: education.length > 0 ? education : (profile.education || []),
+      socials: activeSocialsPayload.length > 0 ? activeSocialsPayload : (profile.socials || []),
+      socialLinks: activeSocialsPayload.length > 0 ? activeSocialsPayload : (profile.socialLinks || []),
+      customFields: customFields.length > 0 ? customFields : (profile.customFields || []),
       dynamicSections,
       sectionOrder,
       sectionVisibility,
@@ -510,6 +514,7 @@ export function ProfileEditorProvider({
       skills, projects, experiences, education,
       activeSocialsPayload, customFields, dynamicSections,
       sectionOrder, sectionVisibility, sharingSettings,
+      initialProfile.slug, initialProfile.id,
     ]
   );
 
@@ -553,19 +558,28 @@ export function ProfileEditorProvider({
       [key]: val,
     }));
     // Also sync corresponding atoms
+    if (key === 'name' && typeof val === 'string') {
+      const parts = val.trim().split(' ');
+      setFirstName(parts[0] || '');
+      setSecondName(parts.slice(1).join(' '));
+    }
     if (key === 'theme' && typeof val === 'string') setActiveTheme(val as ProfileTheme);
     if (key === 'firstName' && typeof val === 'string') setFirstName(val);
     if (key === 'secondName' && typeof val === 'string') setSecondName(val);
     if (key === 'username' && typeof val === 'string') setUsername(val);
     if (key === 'professionalTitle' && typeof val === 'string') setProfessionalTitle(val);
+    if (key === 'designation' && typeof val === 'string') setProfessionalTitle(val);
+    if (key === 'profession' && typeof val === 'string') setProfessionalTitle(val);
     if (key === 'bio' && typeof val === 'string') setBio(val);
+    if (key === 'shortBio' && typeof val === 'string') setBio(val);
+    if (key === 'about' && typeof val === 'string') setAbout(val);
+    if (key === 'fullBio' && typeof val === 'string') setAbout(val);
     if (key === 'tagline' && typeof val === 'string') setTagline(val);
     if (key === 'company' && typeof val === 'string') setCompany(val);
     if (key === 'location' && typeof val === 'string') setLocation(val);
     if (key === 'avatar' && typeof val === 'string') setAvatar(val);
     if (key === 'coverImage' && typeof val === 'string') setCoverImage(val);
     if (key === 'skills' && Array.isArray(val)) setSkills((val as (string | { name: string })[]).map(s => typeof s === 'string' ? s : s.name));
-    if (key === 'about' && typeof val === 'string') setAbout(val);
     if (key === 'projects' && Array.isArray(val)) setProjects(val as ProjectItem[]);
     if (key === 'experiences' && Array.isArray(val)) setExperiences(val as ExperienceItem[]);
     if (key === 'education' && Array.isArray(val)) setEducation(val as EducationItem[]);
@@ -885,74 +899,58 @@ export function ProfileEditorProvider({
     }, 3500);
   }, []);
 
-  // ── Save All Changes ──────────────────────────────────────────────────────
-  const handleSaveChanges = useCallback(async () => {
+  // ── Centralized Save Profile ──────────────────────────────────────────────
+  const saveProfile = useCallback(async (overrideData?: Partial<ProfileData>): Promise<boolean> => {
     setIsSaving(true);
     setStatusMessage(null);
-
-    const updatedData: Partial<ProfileData> = {
-      name: fullName,
-      firstName: firstName.trim(),
-      secondName: secondName.trim(),
-      lastName: secondName.trim(),
-      username: username.trim().replace(/^@/, ''),
-      professionalTitle: professionalTitle.trim(),
-      designation: professionalTitle.trim(),
-      profession: professionalTitle.trim(),
-      bio: bio.trim(),
-      shortBio: bio.trim(),
-      about: about.trim(),
-      fullBio: about.trim(),
-      tagline: tagline.trim(),
-      company: company.trim(),
-      location: location.trim(),
-      theme: activeTheme,
-      avatar,
-      coverImage,
-      skills,
-      projects,
-      experience: experiences,
-      experiences,
-      education,
-      socials: activeSocialsPayload,
-      socialLinks: activeSocialsPayload,
-      customFields,
-      dynamicSections,
-      sectionOrder,
-      sectionVisibility,
-      sharingSettings,
-    };
-
     try {
+      const dataToSave: ProfileData = {
+        ...profile,
+        ...liveProfile,
+        ...(overrideData || {}),
+      };
+
+      const profileIdentifier =
+        dataToSave.slug ||
+        dataToSave.id ||
+        profile.slug ||
+        profile.id ||
+        initialProfile.slug ||
+        initialProfile.id;
+
       const res = await fetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          profileId: profile.id || initialProfile.id,
-          profileSlug: profile.slug || initialProfile.slug,
-          slug: profile.slug || initialProfile.slug,
-          userId: profile.userId || initialProfile.userId,
-          updatedData,
+          profileId: profileIdentifier,
+          profileSlug: profileIdentifier,
+          slug: profileIdentifier,
+          userId: dataToSave.userId || profile.userId || initialProfile.userId,
+          updatedData: dataToSave,
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setStatusMessage({ type: 'error', text: data.error || 'Failed to save changes.' });
-        showToast(data.error || 'Failed to save changes.');
+        const errorMsg = data.error || 'Failed to save changes.';
+        setStatusMessage({ type: 'error', text: errorMsg });
+        showToast(errorMsg);
         setIsSaving(false);
-        return;
+        return false;
       }
 
       const savedSlug =
         data.updatedProfile?.slug ||
         data.profile?.slug ||
+        dataToSave.slug ||
         profile.slug ||
         initialProfile.slug ||
         initialProfile.id;
+
       const finalProfile: ProfileData =
-        data.updatedProfile || data.profile || { ...profile, ...updatedData, slug: savedSlug };
+        data.updatedProfile || data.profile || { ...dataToSave, slug: savedSlug };
+
       setProfile(finalProfile);
 
       // Cache locally and dispatch update event
@@ -970,9 +968,10 @@ export function ProfileEditorProvider({
         console.error('Failed to cache profile in localStorage:', e);
       }
 
+      const successMsg = '✓ Profile saved successfully! All changes persisted.';
       setStatusMessage({
         type: 'success',
-        text: '✓ Profile saved successfully! Live preview updated.',
+        text: successMsg,
       });
       showToast('✓ Profile saved successfully!');
 
@@ -981,23 +980,23 @@ export function ProfileEditorProvider({
       setTimeout(() => {
         setStatusMessage((prev) => (prev?.type === 'success' ? null : prev));
       }, 4000);
+
+      return true;
     } catch (err: unknown) {
-      console.error('Save changes error:', err);
-      setStatusMessage({ type: 'error', text: 'Network error while saving changes.' });
-      showToast('Network error while saving changes.');
+      console.error('Save profile error:', err);
+      const networkErr = 'Network error while saving changes.';
+      setStatusMessage({ type: 'error', text: networkErr });
+      showToast(networkErr);
+      return false;
     } finally {
       setIsSaving(false);
     }
-  }, [
-    fullName, firstName, secondName, username,
-    professionalTitle, bio, about, tagline, company, location,
-    activeTheme, avatar, coverImage,
-    skills, projects, experiences, education,
-    activeSocialsPayload, customFields, dynamicSections,
-    sectionOrder, sectionVisibility, sharingSettings,
-    profile, initialProfile, onSaveSuccess, showToast
-  ]);
+  }, [profile, liveProfile, initialProfile, showToast, onSaveSuccess]);
 
+  // Alias handleSaveChanges directly to saveProfile for 100% unified save behavior across desktop and mobile
+  const handleSaveChanges = useCallback(async () => {
+    await saveProfile();
+  }, [saveProfile]);
 
   // Update multiple fields at once
   const updateProfilePartial = useCallback((partial: Partial<ProfileData>) => {
@@ -1023,67 +1022,6 @@ export function ProfileEditorProvider({
   const currentIdentifier = useMemo(() => {
     return profile.slug || profile.id || initialProfile.slug || initialProfile.id || '';
   }, [profile.slug, profile.id, initialProfile.slug, initialProfile.id]);
-
-  // Centralized Save Profile
-  const saveProfile = useCallback(async (overrideData?: Partial<ProfileData>): Promise<boolean> => {
-    setIsSaving(true);
-    try {
-      const dataToSave = overrideData ? { ...liveProfile, ...overrideData } : liveProfile;
-      const res = await fetch('/api/profile/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          profileId: dataToSave.id || initialProfile.id,
-          profileSlug: dataToSave.slug || initialProfile.slug,
-          slug: dataToSave.slug || initialProfile.slug,
-          userId: dataToSave.userId || initialProfile.userId,
-          updatedData: dataToSave,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        showToast(data.error || 'Failed to save changes.');
-        setIsSaving(false);
-        return false;
-      }
-
-      const savedSlug =
-        data.updatedProfile?.slug ||
-        data.profile?.slug ||
-        dataToSave.slug ||
-        initialProfile.slug ||
-        initialProfile.id;
-      const finalProfile: ProfileData =
-        data.updatedProfile || data.profile || { ...dataToSave, slug: savedSlug };
-      setProfile(finalProfile);
-
-      try {
-        localStorage.setItem(`avtive_profile_${savedSlug}`, JSON.stringify(finalProfile));
-        if (finalProfile.id) {
-          localStorage.setItem(`avtive_profile_${finalProfile.id}`, JSON.stringify(finalProfile));
-        }
-        if (initialProfile.slug) {
-          localStorage.setItem(`avtive_profile_${initialProfile.slug}`, JSON.stringify(finalProfile));
-        }
-        localStorage.setItem('avtive_last_saved_profile', JSON.stringify(finalProfile));
-        window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: finalProfile }));
-      } catch (e) {
-        console.error('Failed to cache profile in localStorage:', e);
-      }
-
-      showToast('✓ Profile saved successfully!');
-      onSaveSuccess?.(finalProfile);
-      return true;
-    } catch (err: unknown) {
-      console.error('Save profile error:', err);
-      showToast('Network error while saving changes.');
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  }, [liveProfile, initialProfile, showToast, onSaveSuccess]);
 
   // ── Context value ─────────────────────────────────────────────────────────
   const value = useMemo<ProfileEditorContextValue>(
