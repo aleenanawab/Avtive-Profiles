@@ -116,11 +116,12 @@ export function AvtiveDigitalCard({
     }
   }, [profile, isEditing]);
 
-  const activeThemeKey = draftProfile.theme || 'elegant';
+  const activeProfile = isEditing ? draftProfile : profile;
+  const activeThemeKey = activeProfile.theme || 'elegant';
   const theme = getThemeConfig(activeThemeKey);
 
-  const isCompany = normalizeProfileType(draftProfile.type) === 'team';
-  const companyName = draftProfile.company || draftProfile.companyInfo?.name || 'Avtive';
+  const isCompany = normalizeProfileType(activeProfile.type) === 'team';
+  const companyName = activeProfile.company || activeProfile.companyInfo?.name || 'Avtive';
 
   const handleFieldUpdate = (field: keyof ProfileData, value: any) => {
     setDraftProfile((prev) => ({
@@ -234,7 +235,7 @@ export function AvtiveDigitalCard({
         <div id="section-profile" className="scroll-mt-16">
           <div id="section-hero">
             <HeroSection
-              profile={draftProfile}
+              profile={activeProfile}
               navigationOrigin={navigationOrigin}
               canEdit={canEdit}
               isEditing={isEditing}
@@ -279,12 +280,12 @@ export function AvtiveDigitalCard({
           ];
 
           // Dynamic sections registered by the user
-          const dynamicSectionKeys = (draftProfile.dynamicSections || []).map(s => s.key || s.id);
-          const customFieldKeys = (draftProfile.customFields || []).map(f => `custom-field-${f.id}`);
+          const dynamicSectionKeys = (activeProfile.dynamicSections || []).map(s => s.key || s.id);
+          const customFieldKeys = (activeProfile.customFields || []).map(f => `custom-field-${f.id}`);
 
           const allKnownSections = [...defaultCardSectionOrder, ...dynamicSectionKeys, ...customFieldKeys];
 
-          const userOrder = (draftProfile.sectionOrder || []).filter((s) => s !== 'hero' && s !== 'volunteer');
+          const userOrder = (activeProfile.sectionOrder || []).filter((s) => s !== 'hero' && s !== 'volunteer');
           const effectiveOrder: string[] = [];
           
           for (const s of userOrder) {
@@ -301,8 +302,8 @@ export function AvtiveDigitalCard({
             }
           }
 
-          const sharing = draftProfile.sharingSettings || {};
-          const visibility = draftProfile.sectionVisibility || {};
+          const sharing = activeProfile.sharingSettings || {};
+          const visibility = activeProfile.sectionVisibility || {};
 
           const isSectionVisible = (key: string): boolean => {
             if (key === 'volunteer') return false;
@@ -314,7 +315,7 @@ export function AvtiveDigitalCard({
             // Check individual custom fields
             if (key.startsWith('custom-field-')) {
               const fieldId = key.replace('custom-field-', '');
-              const cf = (draftProfile.customFields || []).find(f => f.id === fieldId || `custom-field-${f.id}` === key);
+              const cf = (activeProfile.customFields || []).find(f => f.id === fieldId || `custom-field-${f.id}` === key);
               return cf ? cf.visible !== false : true;
             }
             // 2. Fallback to sharingSettings for legacy profiles
@@ -346,7 +347,7 @@ export function AvtiveDigitalCard({
                   return (
                     <TeamSection
                       key="team"
-                      profile={draftProfile}
+                      profile={activeProfile}
                       onSelectTeamMember={onSelectTeamMember}
                       theme={theme}
                       canEdit={canEdit}
@@ -357,8 +358,8 @@ export function AvtiveDigitalCard({
                 return (
                   <CompanyCard
                     key="company"
-                    companyInfo={draftProfile.companyInfo}
-                    onViewCompany={onViewCompany ? () => onViewCompany(draftProfile.companyId || 'avtive-company') : undefined}
+                    companyInfo={activeProfile.companyInfo}
+                    onViewCompany={onViewCompany ? () => onViewCompany(activeProfile.companyId || 'avtive-company') : undefined}
                     theme={theme}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -370,7 +371,7 @@ export function AvtiveDigitalCard({
                 return (
                   <AboutSection 
                     key="about"
-                    profile={draftProfile} 
+                    profile={activeProfile} 
                     isEditing={isEditing}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -384,7 +385,7 @@ export function AvtiveDigitalCard({
                 return (
                   <ProfileContactSection
                     key="contact"
-                    profile={draftProfile}
+                    profile={activeProfile}
                     isEditing={isEditing}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -398,7 +399,7 @@ export function AvtiveDigitalCard({
                 return (
                   <CustomFieldsSection
                     key="custom-fields"
-                    profile={draftProfile}
+                    profile={activeProfile}
                     isEditing={isEditing}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -412,7 +413,7 @@ export function AvtiveDigitalCard({
                 return (
                   <SkillsServicesSection
                     key="skills"
-                    profile={draftProfile}
+                    profile={activeProfile}
                     isEditing={isEditing}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -427,7 +428,7 @@ export function AvtiveDigitalCard({
                 return (
                   <ExperienceSection 
                     key="experience" 
-                    profile={draftProfile} 
+                    profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -439,7 +440,7 @@ export function AvtiveDigitalCard({
                 return (
                   <EducationSection 
                     key="education" 
-                    profile={draftProfile} 
+                    profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -451,7 +452,7 @@ export function AvtiveDigitalCard({
                 return (
                   <PortfolioSection
                     key="projects"
-                    profile={draftProfile}
+                    profile={activeProfile}
                     onSelectProject={onSelectProject}
                     theme={theme}
                     canEdit={canEdit}
@@ -464,7 +465,7 @@ export function AvtiveDigitalCard({
                 return (
                   <CertificationsSection 
                     key="certifications" 
-                    profile={draftProfile} 
+                    profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -476,7 +477,7 @@ export function AvtiveDigitalCard({
                 return (
                   <LanguagesSection 
                     key="languages" 
-                    profile={draftProfile} 
+                    profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -488,7 +489,7 @@ export function AvtiveDigitalCard({
                 return (
                   <RecommendationsSection 
                     key="recommendations" 
-                    profile={draftProfile} 
+                    profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
@@ -501,7 +502,7 @@ export function AvtiveDigitalCard({
                 return (
                   <SocialLinksSection 
                     key="socials" 
-                    profile={draftProfile} 
+                    profile={activeProfile} 
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
                   />
@@ -521,7 +522,7 @@ export function AvtiveDigitalCard({
                     </div>
 
                     <NFCCardPreview
-                      profile={draftProfile}
+                      profile={activeProfile}
                       onViewCompany={onViewCompany}
                       onDownloadCard={onSaveContact}
                       onOpenShare={onOpenShare}
@@ -534,7 +535,7 @@ export function AvtiveDigitalCard({
               default: {
                 if (sectionKey.startsWith('custom-field-')) {
                   const fieldId = sectionKey.replace('custom-field-', '');
-                  const customField = (draftProfile.customFields || []).find((f) => f.id === fieldId || `custom-field-${f.id}` === sectionKey);
+                  const customField = (activeProfile.customFields || []).find((f) => f.id === fieldId || `custom-field-${f.id}` === sectionKey);
                   if (customField) {
                     if (!isSectionVisible(sectionKey) || customField.visible === false) return null;
                     const val = customField.value || (customField as any).content || '';
@@ -619,7 +620,7 @@ export function AvtiveDigitalCard({
                   }
                 }
 
-                const dynamicSection = (draftProfile.dynamicSections || []).find((s) => s.key === sectionKey || s.id === sectionKey);
+                const dynamicSection = (activeProfile.dynamicSections || []).find((s) => s.key === sectionKey || s.id === sectionKey);
                 if (dynamicSection) {
                   if (!isSectionVisible(sectionKey) || dynamicSection.visible === false) return null;
                   return (

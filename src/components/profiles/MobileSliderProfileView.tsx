@@ -90,26 +90,48 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
 
   // Section selection
   const handleSelectSection = (sectionKey: string) => {
-    setActiveSection(sectionKey);
+    const map: Record<string, string> = {
+      hero: 'profile',
+      basicInfo: 'profile',
+      about: 'personalDetails',
+      personal: 'personalDetails',
+      personalDetails: 'personalDetails',
+      skills: 'skills',
+      services: 'skills',
+      projects: 'projects',
+      education: 'education',
+      contact: 'contactInfo',
+      contactInfo: 'contactInfo',
+      socials: 'socialLinks',
+      socialLinks: 'socialLinks',
+      experience: 'experience',
+      customFields: 'enhanceProfile',
+      'custom-fields': 'enhanceProfile'
+    };
+    const target = map[sectionKey] || sectionKey;
+    setActiveSection(target);
     setIsSectionsDropdownOpen(false);
 
     // Synchronize desktop editor position
-    const desktopEl = document.getElementById(`section-card-${sectionKey}`);
+    const desktopEl =
+      document.getElementById(`section-card-${target}`) ||
+      document.getElementById(`section-card-${sectionKey}`) ||
+      (target === 'profile' ? document.getElementById('top-profile-header') : null);
     if (desktopEl) {
       desktopEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     // Scroll mobile preview if matching element exists
-    if (sectionKey === 'profile') {
+    if (target === 'profile') {
       previewScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const mobileEl =
-        previewScrollRef.current?.querySelector(`[data-section="${sectionKey}"]`) ||
-        previewScrollRef.current?.querySelector(`#section-${sectionKey}`) ||
-        (sectionKey === 'personalDetails' ? previewScrollRef.current?.querySelector(`[data-section="about"]`) : null) ||
-        (sectionKey === 'contactInfo' ? previewScrollRef.current?.querySelector(`[data-section="contact"]`) : null) ||
-        (sectionKey === 'socialLinks' ? previewScrollRef.current?.querySelector(`[data-section="socials"]`) : null) ||
-        (sectionKey === 'enhanceProfile' ? previewScrollRef.current?.querySelector(`[data-section="virtual-card"]`) : null);
+        previewScrollRef.current?.querySelector(`[data-section="${target}"]`) ||
+        previewScrollRef.current?.querySelector(`#section-${target}`) ||
+        (target === 'personalDetails' ? previewScrollRef.current?.querySelector(`[data-section="about"]`) : null) ||
+        (target === 'contactInfo' ? previewScrollRef.current?.querySelector(`[data-section="contact"]`) : null) ||
+        (target === 'socialLinks' ? previewScrollRef.current?.querySelector(`[data-section="socials"]`) : null) ||
+        (target === 'enhanceProfile' ? previewScrollRef.current?.querySelector(`[data-section="virtual-card"]`) : null);
       if (mobileEl) {
         mobileEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -271,10 +293,11 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
         <AvtiveDigitalCard
           profile={liveProfile}
           isDark={isDark}
-          canEdit={false}
+          canEdit={true}
           isEditing={false}
           isConnected={false}
           viewMode="standard"
+          onSelectSection={(secKey) => handleSelectSection(secKey)}
           onSaveContact={() => downloadVCard(liveProfile)}
           onOpenShare={() => {}}
           onOpenConnect={() => {}}

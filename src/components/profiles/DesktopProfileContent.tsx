@@ -40,11 +40,15 @@ import {
   Archive,
   ShieldCheck,
   Settings,
-  Layers
+  Layers,
+  Menu,
+  X
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { PhonePreview } from '@/components/PhonePreview';
+import { DESKTOP_SIDEBAR_SECTIONS } from './DesktopProfileSidebar';
 import { 
   ProfileTheme, 
   ProjectItem, 
@@ -82,6 +86,45 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
   const pinnedSectionsRef = useRef<Record<string, boolean>>({ profile: true });
   const closeTimersRef = useRef<Record<string, NodeJS.Timeout>>({});
   const isTouchRef = useRef(false);
+
+  // Section dropdown state for LinkedIn-style dropdown navigation
+  const [isSectionsDropdownOpen, setIsSectionsDropdownOpen] = useState(false);
+  const sectionsDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close sections dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (sectionsDropdownRef.current && !sectionsDropdownRef.current.contains(e.target as Node)) {
+        setIsSectionsDropdownOpen(false);
+      }
+    };
+    if (isSectionsDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isSectionsDropdownOpen]);
+
+  const handleSelectSectionFromDropdown = (secKey: string) => {
+    setIsSectionsDropdownOpen(false);
+    setActiveSection(secKey);
+    if (secKey === 'profile') {
+      const topEl = document.getElementById('top-profile-header');
+      if (topEl) {
+        topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
+    pinnedSectionsRef.current[secKey] = true;
+    setExpandedSections(prev => ({ ...prev, [secKey]: true }));
+    const el = document.getElementById(`section-card-${secKey}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
 
   const isSectionExpanded = (key: string) => Boolean(expandedSections[key]);
 
@@ -126,9 +169,16 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
     });
   };
 
-  // Sync with activeSection from sidebar drawer or preview click
+  // Sync with activeSection from sidebar drawer, preview click, or mobile
   useEffect(() => {
     if (activeSection) {
+      if (activeSection === 'profile') {
+        const topEl = document.getElementById('top-profile-header');
+        if (topEl) {
+          topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        return;
+      }
       pinnedSectionsRef.current[activeSection] = true;
       setExpandedSections(prev => ({ ...prev, [activeSection]: true }));
       const el = document.getElementById(`section-card-${activeSection}`);
@@ -140,7 +190,7 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
 
   const handleToggleAll = () => {
     const allKeys = [
-      'profile', 'contactInfo', 'personalDetails', 'skills', 'experience',
+      'contactInfo', 'personalDetails', 'skills', 'experience',
       'education', 'projects', 'socialLinks', 'enhanceProfile', 'limitations',
       'accountInfo', 'archive', 'security', 'settings'
     ];
@@ -584,18 +634,79 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
       {/* ────────────────────────────────────────────────────────────────────────── */}
       <div className="flex-1 h-full min-h-0 overflow-y-auto p-3 sm:p-5 xl:p-6 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-white/10 space-y-4 min-w-0">
         
-        {/* Top Header: Title, Global Actions, Save All, Expand All */}
+        {/* Top Header Bar: ☰ Sections Dropdown Control at TOP-LEFT CORNER, Global Actions */}
         <div className="flex items-center justify-between gap-4 pb-3 border-b border-slate-200 dark:border-white/10 min-w-0">
-          <div>
-            <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Profile &amp; Identity Studio
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              All profile sections available on one page. Hover or click the yellow arrows to edit.
-            </p>
+          
+          {/* TOP-LEFT CORNER: ☰ Sections Dropdown Control (Requirements 8, 9 & 15) */}
+          <div className="relative" ref={sectionsDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsSectionsDropdownOpen(prev => !prev)}
+              aria-expanded={isSectionsDropdownOpen}
+              aria-haspopup="true"
+              aria-label="Sections Menu"
+              title="Select profile section to edit"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 border shrink-0 ${
+                isSectionsDropdownOpen
+                  ? 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/30 shadow-xs'
+                  : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200 shadow-2xs dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-200 dark:border-white/10'
+              }`}
+            >
+              <Menu className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+              <span className="font-semibold">Sections</span>
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isSectionsDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* SECTIONS DROPDOWN MENU */}
+            <AnimatePresence>
+              {isSectionsDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="absolute top-11 left-0 w-64 max-h-[420px] bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/15 rounded-2xl shadow-2xl p-2 z-50 flex flex-col overflow-hidden backdrop-blur-md"
+                >
+                  <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-white/10 mb-1 flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Profile Sections</span>
+                    <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-400">Select to jump</span>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-0.5 pr-0.5">
+                    {DESKTOP_SIDEBAR_SECTIONS.map((sec) => {
+                      const Icon = sec.icon;
+                      const isActive = activeSection === sec.key;
+                      return (
+                        <button
+                          key={sec.key}
+                          type="button"
+                          onClick={() => handleSelectSectionFromDropdown(sec.key)}
+                          className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all text-left cursor-pointer ${
+                            isActive
+                              ? 'bg-cyan-50 dark:bg-cyan-500/20 text-cyan-800 dark:text-cyan-200 border border-cyan-400/40 font-bold shadow-2xs'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-transparent'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <Icon className={`w-3.5 h-3.5 shrink-0 ${
+                              isActive ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-400 dark:text-slate-500'
+                            }`} />
+                            <span className="truncate">{sec.label}</span>
+                          </div>
+                          {isActive && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400 shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Right Action Controls: Toggle All, Save, Dark/Light Mode */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={handleToggleAll}
@@ -632,162 +743,171 @@ export function DesktopProfileContent({ hideRightPreview = false }: DesktopProfi
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════════════ */}
-        {/* 1. PROFILE & IDENTITY SECTION                                              */}
+        {/* LINKEDIN-STYLE PERMANENT TOP PROFILE HEADER (Always Visible at Top)        */}
         {/* ══════════════════════════════════════════════════════════════════════════ */}
-        {renderSectionCard(
-          'profile',
-          'Profile & Identity',
-          User,
-          'Avatar, header cover banner, full name, username, title, bio, and custom CTA',
-          profile.name || 'Ready to edit',
-          true,
-          (
-            <div className="space-y-4">
-              {/* Cover Banner & Avatar Upload Card */}
-              <div className="rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xs dark:shadow-sm transition-colors">
-                <div className="relative h-32 sm:h-40 w-full bg-slate-200 dark:bg-slate-800">
+        <div id="top-profile-header" className="rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xs dark:shadow-sm transition-colors">
+          {/* Cover Photo / Background Banner */}
+          <div className="relative h-36 sm:h-48 md:h-52 w-full bg-slate-200 dark:bg-slate-800">
+            <img 
+              src={profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'} 
+              alt="Cover" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+            
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              disabled={isUploadingCover}
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/90 text-white text-xs font-semibold backdrop-blur-md border border-white/20 shadow-md cursor-pointer transition-all"
+            >
+              {isUploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5 text-cyan-400" />}
+              <span>Change Cover</span>
+            </button>
+            <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleCoverUpload(file);
+            }} />
+          </div>
+
+          {/* Profile Photo (Front / Overlapping Cover) + Name + Username + Actions */}
+          <div className="p-4 sm:p-6 relative -mt-12 sm:-mt-14">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-end gap-3.5 sm:gap-4">
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-[#0E1526] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-xl shrink-0 group">
                   <img 
-                    src={profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'} 
-                    alt="Cover" 
+                    src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'} 
+                    alt="Avatar" 
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
-                  
                   <button
                     type="button"
-                    onClick={() => coverInputRef.current?.click()}
-                    disabled={isUploadingCover}
-                    className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/90 text-white text-xs font-semibold backdrop-blur-md border border-white/20 shadow-md cursor-pointer transition-all"
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={isUploadingAvatar}
+                    className="absolute inset-0 bg-black/60 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    title="Upload Avatar"
                   >
-                    {isUploadingCover ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5 text-cyan-400" />}
-                    <span>Change Cover</span>
+                    {isUploadingAvatar ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-5 h-5 text-cyan-400" />}
+                    <span className="text-[9px] font-bold mt-0.5">Upload</span>
                   </button>
-                  <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
+                  <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) handleCoverUpload(file);
+                    if (file) handleAvatarUpload(file);
                   }} />
                 </div>
 
-                <div className="p-4 sm:p-5 relative -mt-10 flex items-end justify-between gap-4">
-                  <div className="flex items-end gap-3.5">
-                    <div className="relative w-18 h-18 sm:w-22 sm:h-22 rounded-full border-4 border-white dark:border-[#0E1526] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-xl shrink-0 group">
-                      <img 
-                        src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'} 
-                        alt="Avatar" 
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => avatarInputRef.current?.click()}
-                        disabled={isUploadingAvatar}
-                        className="absolute inset-0 bg-black/60 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                        title="Upload Avatar"
-                      >
-                        {isUploadingAvatar ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-5 h-5 text-cyan-400" />}
-                        <span className="text-[9px] font-bold mt-0.5">Upload</span>
-                      </button>
-                      <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleAvatarUpload(file);
-                      }} />
-                    </div>
-
-                    <div className="pb-1">
-                      <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{profile.name || 'Full Name'}</h2>
-                      <p className="text-xs text-cyan-600 dark:text-cyan-400 font-medium">@{profile.username || profile.slug}</p>
-                    </div>
-                  </div>
-
-                  <div className="pb-1">
-                    <button
-                      type="button"
-                      onClick={() => avatarInputRef.current?.click()}
-                      className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
-                    >
-                      Change Photo
-                    </button>
-                  </div>
+                <div className="pb-1">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                    {profile.name || 'Full Name'}
+                  </h2>
+                  <p className="text-xs text-cyan-600 dark:text-cyan-400 font-medium">
+                    @{profile.username || profile.slug}
+                  </p>
                 </div>
               </div>
 
-              {/* Core Identity Inputs */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
-                    <input
-                      type="text"
-                      value={profile.name || ''}
-                      onChange={(e) => updateField('name', e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-                      placeholder="e.g. Syed Mesum Raza"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
-                    <div className="relative">
-                      <span className="absolute left-3.5 top-2.5 text-xs text-slate-400 dark:text-slate-500">@</span>
-                      <input
-                        type="text"
-                        value={profile.username || profile.slug || ''}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/^@/, '');
-                          updateField('username', val);
-                          updateField('slug', val);
-                        }}
-                        className="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-                        placeholder="username"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Professional Title</label>
-                  <input
-                    type="text"
-                    value={profile.professionalTitle || profile.designation || ''}
-                    onChange={(e) => {
-                      updateField('professionalTitle', e.target.value);
-                      updateField('designation', e.target.value);
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-                    placeholder="e.g. Full Stack Engineer &amp; UI Architect"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Short Bio</label>
-                  <input
-                    type="text"
-                    value={profile.shortBio || profile.bio || ''}
-                    onChange={(e) => {
-                      updateField('shortBio', e.target.value);
-                      updateField('bio', e.target.value);
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-                    placeholder="Brief 1-line headline (e.g. Building next-generation digital identities)"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">About</label>
-                  <textarea
-                    rows={3}
-                    value={profile.about || profile.fullBio || ''}
-                    onChange={(e) => {
-                      updateField('about', e.target.value);
-                      updateField('fullBio', e.target.value);
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
-                    placeholder="Comprehensive background, achievements, and details..."
-                  />
-                </div>
+              <div className="pb-1 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
+                >
+                  Change Photo
+                </button>
               </div>
             </div>
-          )
-        )}
+
+            {/* In-Place Identity Editable Inputs */}
+            <div className="pt-4 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
+                  <input
+                    type="text"
+                    value={profile.name || ''}
+                    onChange={(e) => updateField('name', e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
+                    placeholder="e.g. Aleeza Nawab"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-2.5 text-xs text-slate-400 dark:text-slate-500">@</span>
+                    <input
+                      type="text"
+                      value={profile.username || profile.slug || ''}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/^@/, '');
+                        updateField('username', val);
+                        updateField('slug', val);
+                      }}
+                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
+                      placeholder="username"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Professional Title</label>
+                <input
+                  type="text"
+                  value={profile.professionalTitle || profile.designation || ''}
+                  onChange={(e) => {
+                    updateField('professionalTitle', e.target.value);
+                    updateField('designation', e.target.value);
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
+                  placeholder="e.g. Botanist & Research Scientist"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Short Bio / Headline</label>
+                <input
+                  type="text"
+                  value={profile.shortBio || profile.bio || ''}
+                  onChange={(e) => {
+                    updateField('shortBio', e.target.value);
+                    updateField('bio', e.target.value);
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
+                  placeholder="Brief 1-line headline (e.g. Building next-generation digital identities)"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">About</label>
+                <textarea
+                  rows={3}
+                  value={profile.about || profile.fullBio || ''}
+                  onChange={(e) => {
+                    updateField('about', e.target.value);
+                    updateField('fullBio', e.target.value);
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
+                  placeholder="Comprehensive background, achievements, and details..."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ────────────────────────────────────────────────────────────────────────── */}
+        {/* SECTION NAVIGATION DIVIDER (LinkedIn-Style Structure)                       */}
+        {/* ────────────────────────────────────────────────────────────────────────── */}
+        <div className="flex items-center justify-between pt-2 pb-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              Profile Information Sections
+            </h2>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400">
+              {DESKTOP_SIDEBAR_SECTIONS.length - 1} Sections
+            </span>
+          </div>
+        </div>
 
         {/* ══════════════════════════════════════════════════════════════════════════ */}
         {/* 2. CONTACT INFORMATION SECTION                                             */}
