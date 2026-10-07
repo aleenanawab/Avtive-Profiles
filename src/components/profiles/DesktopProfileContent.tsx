@@ -42,13 +42,16 @@ import {
   Settings,
   Layers,
   Menu,
-  X
+  X,
+  Building2,
+  Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { PhonePreview } from '@/components/PhonePreview';
 import { DESKTOP_SIDEBAR_SECTIONS } from './DesktopProfileSidebar';
+import { CompanyTeamManager } from './CompanyTeamManager';
 import { 
   ProfileTheme, 
   ProjectItem, 
@@ -87,6 +90,7 @@ export function DesktopProfileContent({
     toggleAllSections: sharedToggleAllSections
   } = useProfileEditor();
 
+  const isCompany = profile.type === 'team';
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Multi-section expanded state for single-page editing (synchronized via context or local fallback)
@@ -699,7 +703,9 @@ export function DesktopProfileContent({
                   </div>
 
                   <div className="flex-1 overflow-y-auto space-y-0.5 pr-0.5">
-                    {DESKTOP_SIDEBAR_SECTIONS.map((sec) => {
+                    {DESKTOP_SIDEBAR_SECTIONS
+                      .filter((sec) => isCompany || (sec.key !== 'teamMembers' && sec.key !== 'companyInfo'))
+                      .map((sec) => {
                       const Icon = sec.icon;
                       const isActive = activeSection === sec.key;
                       return (
@@ -847,18 +853,20 @@ export function DesktopProfileContent({
             <div className="pt-4 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    {isCompany ? 'Company / Organization Name' : 'Full Name'}
+                  </label>
                   <input
                     type="text"
                     value={profile.name || ''}
                     onChange={(e) => updateField('name', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-                    placeholder="e.g. Aleeza Nawab"
+                    placeholder={isCompany ? "e.g. Acme Corporation" : "e.g. Aleeza Nawab"}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Username / Slug</label>
                   <div className="relative">
                     <span className="absolute left-3.5 top-2.5 text-xs text-slate-400 dark:text-slate-500">@</span>
                     <input
@@ -877,7 +885,9 @@ export function DesktopProfileContent({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Professional Title</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  {isCompany ? 'Organization Focus / Mission' : 'Professional Title'}
+                </label>
                 <input
                   type="text"
                   value={profile.professionalTitle || profile.designation || ''}
@@ -886,26 +896,31 @@ export function DesktopProfileContent({
                     updateField('designation', e.target.value);
                   }}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="e.g. Botanist & Research Scientist"
+                  placeholder={isCompany ? "e.g. Cloud Security & Enterprise Identity Systems" : "e.g. Botanist & Research Scientist"}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Short Bio / Headline</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  {isCompany ? 'Company Tagline' : 'Short Bio / Headline'}
+                </label>
                 <input
                   type="text"
-                  value={profile.shortBio || profile.bio || ''}
+                  value={profile.shortBio || profile.bio || profile.tagline || ''}
                   onChange={(e) => {
                     updateField('shortBio', e.target.value);
                     updateField('bio', e.target.value);
+                    updateField('tagline', e.target.value);
                   }}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors"
-                  placeholder="Brief 1-line headline (e.g. Building next-generation digital identities)"
+                  placeholder={isCompany ? "e.g. The Digital Identity Standard for Enterprise Teams" : "Brief 1-line headline"}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">About</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  {isCompany ? 'About Company / Overview' : 'About'}
+                </label>
                 <textarea
                   rows={3}
                   value={profile.about || profile.fullBio || ''}
@@ -914,7 +929,7 @@ export function DesktopProfileContent({
                     updateField('fullBio', e.target.value);
                   }}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500 transition-colors resize-none"
-                  placeholder="Comprehensive background, achievements, and details..."
+                  placeholder={isCompany ? "Overview of products, mission, history, and capabilities..." : "Comprehensive background, achievements, and details..."}
                 />
               </div>
             </div>
@@ -934,6 +949,114 @@ export function DesktopProfileContent({
             </span>
           </div>
         </div>
+
+        {/* ══════════════════════════════════════════════════════════════════════════ */}
+        {/* COMPANY INFORMATION SECTION (Role: Company)                                */}
+        {/* ══════════════════════════════════════════════════════════════════════════ */}
+        {isCompany && renderSectionCard(
+          'companyInfo',
+          'Company Information',
+          Building2,
+          'Industry, organization size, location, and corporate details',
+          profile.company ? 'Configured' : 'Empty · Click to add',
+          true,
+          (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Industry</label>
+                <input
+                  type="text"
+                  value={profile.companyInfo?.industry || ''}
+                  onChange={(e) => {
+                    const currentInfo = profile.companyInfo || {
+                      id: profile.id,
+                      name: profile.name,
+                      tagline: profile.tagline || '',
+                      logo: profile.avatar,
+                      industry: '',
+                      location: profile.location,
+                      website: profile.website || '',
+                      profileId: profile.slug
+                    };
+                    updateField('companyInfo', { ...currentInfo, industry: e.target.value });
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                  placeholder="e.g. Software / Technology, Healthcare, Finance"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Company Size</label>
+                <select
+                  value={profile.companyInfo?.employeeCount || '11-50'}
+                  onChange={(e) => {
+                    const currentInfo = profile.companyInfo || {
+                      id: profile.id,
+                      name: profile.name,
+                      tagline: profile.tagline || '',
+                      logo: profile.avatar,
+                      industry: '',
+                      location: profile.location,
+                      website: profile.website || '',
+                      profileId: profile.slug
+                    };
+                    updateField('companyInfo', { ...currentInfo, employeeCount: e.target.value });
+                  }}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="1-10">1-10 employees</option>
+                  <option value="11-50">11-50 employees</option>
+                  <option value="51-200">51-200 employees</option>
+                  <option value="201-500">201-500 employees</option>
+                  <option value="500+">500+ employees</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Headquarters / Location</label>
+                <input
+                  type="text"
+                  value={profile.location || ''}
+                  onChange={(e) => updateField('location', e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                  placeholder="e.g. San Francisco, CA / London, UK"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Official Website</label>
+                <input
+                  type="url"
+                  value={profile.website || ''}
+                  onChange={(e) => updateField('website', e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                  placeholder="https://company.com"
+                />
+              </div>
+            </div>
+          )
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════════════ */}
+        {/* TEAM MEMBERS SECTION (Role: Company)                                       */}
+        {/* ══════════════════════════════════════════════════════════════════════════ */}
+        {isCompany && renderSectionCard(
+          'teamMembers',
+          'Team Members',
+          Users,
+          'Manage your organization roster, member roles, and employee passes',
+          profile.teamMembers?.length ? `${profile.teamMembers.length} Members` : 'Empty · Click to add',
+          true,
+          (
+            <CompanyTeamManager
+              companyIdentifier={profile.slug || profile.id}
+              profile={profile}
+              onUpdateTeamMembers={(updated) => updateField('teamMembers', updated)}
+              showToast={showToast}
+              instanceId={instanceId}
+            />
+          )
+        )}
 
         {/* ══════════════════════════════════════════════════════════════════════════ */}
         {/* 2. CONTACT INFORMATION SECTION                                             */}

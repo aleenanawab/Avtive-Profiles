@@ -23,7 +23,9 @@ import {
   Save,
   Loader2,
   GripVertical,
-  X
+  X,
+  Users,
+  Building2
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { AvtiveLogoIcon } from '@/components/DesktopWindowPreview';
@@ -40,8 +42,10 @@ export interface SidebarSectionItem {
 export const DESKTOP_SIDEBAR_SECTIONS: SidebarSectionItem[] = [
   // 1-8: Core Profile Sections
   { key: 'profile', label: 'Profile', icon: User, category: 'core' },
+  { key: 'companyInfo', label: 'Company Info', icon: Building2, category: 'core' },
+  { key: 'teamMembers', label: 'Team Members', icon: Users, category: 'core' },
   { key: 'personalDetails', label: 'Personal Details', icon: FileText, category: 'core' },
-  { key: 'skills', label: 'Skills', icon: Code, category: 'core' },
+  { key: 'skills', label: 'Skills & Services', icon: Code, category: 'core' },
   { key: 'projects', label: 'Projects', icon: FolderGit2, category: 'core' },
   { key: 'education', label: 'Education', icon: GraduationCap, category: 'core' },
   { key: 'contactInfo', label: 'Contact Info', icon: Phone, category: 'core' },
@@ -95,12 +99,20 @@ export function DesktopProfileSidebar({
 
   const customFieldsCount = Array.isArray(profile.customFields) ? profile.customFields.length : 0;
 
+  const isCompany = profile.type === 'team';
+
   const getSectionBadge = (key: string) => {
     switch (key) {
       case 'skills':
         return skillsCount > 0 ? skillsCount : undefined;
       case 'projects':
         return projectsCount > 0 ? projectsCount : undefined;
+      case 'teamMembers':
+        return Array.isArray(profile.teamMembers) && profile.teamMembers.length > 0 
+          ? `${profile.teamMembers.length} members` 
+          : undefined;
+      case 'companyInfo':
+        return profile.company ? 'Configured' : undefined;
       case 'archive':
         return hiddenCount > 0 ? `${hiddenCount} hidden` : undefined;
       case 'enhanceProfile':
@@ -110,8 +122,14 @@ export function DesktopProfileSidebar({
     }
   };
 
-  // Build sorted core sections list based on shared sectionOrder
-  const coreSections = DESKTOP_SIDEBAR_SECTIONS.filter(s => s.category === 'core');
+  // Build sorted core sections list based on shared sectionOrder and role
+  const coreSections = React.useMemo(() => {
+    return DESKTOP_SIDEBAR_SECTIONS.filter(s => {
+      if (s.category !== 'core') return false;
+      if (!isCompany && (s.key === 'teamMembers' || s.key === 'companyInfo')) return false;
+      return true;
+    });
+  }, [isCompany]);
   const orderedCoreSections = React.useMemo(() => {
     if (!sectionOrder || sectionOrder.length === 0) return coreSections;
     

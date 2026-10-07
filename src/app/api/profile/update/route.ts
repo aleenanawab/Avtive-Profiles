@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { updateProfile, getProfileByIdOrSlug, getProfileByUserId, setProfileResponseCookies } from '@/lib/db';
+import { 
+  updateProfile, 
+  getProfileByIdOrSlug, 
+  getProfileByUserId, 
+  setProfileResponseCookies,
+  getCompanyByOwnerUserId,
+  getCompanyBySlug,
+  updateCompany
+} from '@/lib/db';
 import { ensureSupabaseAssetUrl } from '@/lib/supabase';
 import { ProfileData } from '@/types/profile';
 
@@ -69,6 +77,35 @@ async function handleProfileUpdate(request: NextRequest) {
         { error: result.error || 'Failed to update profile.' },
         { status: result.status || 500 }
       );
+    }
+
+    // If updating a team profile, keep CompanyRecord in sync
+    if (result.profile.type === 'team') {
+      try {
+        const existingComp = 
+          (await getCompanyByOwnerUserId(session.id)) || 
+          (result.profile.slug ? await getCompanyBySlug(result.profile.slug) : null);
+
+        if (existingComp) {
+          await updateCompany(
+            existingComp.id,
+            {
+              name: result.profile.name || existingComp.name,
+              tagline: result.profile.tagline || result.profile.designation || existingComp.tagline,
+              description: result.profile.about || result.profile.bio || existingComp.description,
+              theme: result.profile.theme || existingComp.theme,
+              logoUrl: result.profile.avatar || existingComp.logoUrl,
+              coverUrl: result.profile.coverImage || existingComp.coverUrl,
+              location: result.profile.location || existingComp.location,
+              website: result.profile.website || existingComp.website,
+              visibility: (result.profile.sectionVisibility as Record<string, boolean>) || existingComp.visibility
+            },
+            session.id
+          );
+        }
+      } catch (syncErr) {
+        console.error('Error synchronizing company record on profile update:', syncErr);
+      }
     }
 
     const response = NextResponse.json({

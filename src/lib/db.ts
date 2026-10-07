@@ -1,8 +1,19 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { supabaseAdmin, SUPABASE_DEFAULT_AVATAR, SUPABASE_DEFAULT_COVER } from '@/lib/supabase';
-import { ProfileData, UserRecord, ProfileTheme, ProfileType, UserConnection, SharingSettings, normalizeProfileType } from '@/types/profile';
+import { ProfileData, UserRecord, ProfileTheme, ProfileType, UserConnection, SharingSettings, normalizeProfileType, TeamMemberItem } from '@/types/profile';
+import { 
+  CompanyRecord, 
+  CompanyMemberRecord, 
+  CompanyRole, 
+  CompanyMemberStatus, 
+  CreateCompanyInput, 
+  UpdateCompanyInput, 
+  AddCompanyMemberInput, 
+  UpdateCompanyMemberInput 
+} from '@/types/company';
 import { founderProfile, teamMemberProfile, companyProfile } from '@/data/mockProfiles';
 
 import {
@@ -21,6 +32,8 @@ interface DatabaseSchema {
   users: UserRecord[];
   profiles: Record<string, ProfileData>;
   connections?: UserConnection[];
+  companies?: CompanyRecord[];
+  companyMembers?: CompanyMemberRecord[];
 }
 
 const globalForDb = globalThis as unknown as { __AVTIVE_DB__?: DatabaseSchema };
@@ -146,6 +159,63 @@ function getInitialSeedData(): DatabaseSchema {
     theme: 'editorial'
   };
 
+  const seededCompany: CompanyRecord = {
+    id: 'comp-avtive',
+    ownerUserId: founderUser.id,
+    name: 'Avtive',
+    slug: 'avtive',
+    tagline: 'The Digital Identity Standard',
+    description: 'B2B SaaS platform for intelligent digital profiles, enterprise team directories, and cloud-managed contactless identity solutions.',
+    industry: 'Software / SaaS',
+    size: '11-50',
+    website: 'https://www.avtive.app',
+    location: 'NSTP, Islamabad, Pakistan',
+    logoUrl: '/images/avtive-symbol.png',
+    coverUrl: '/images/default-cover.png',
+    theme: 'editorial',
+    visibility: { ...DEFAULT_SECTION_VISIBILITY },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  const seededOwnerMember: CompanyMemberRecord = {
+    id: 'cmem-mesum',
+    companyId: seededCompany.id,
+    userId: founderUser.id,
+    email: founderUser.email,
+    name: founderUser.name,
+    title: 'Founder & Creative Director',
+    department: 'Executive Strategy & Design',
+    bio: 'Strategy-based artist with over 10 years of experience creating compelling design solutions.',
+    avatarUrl: '/images/founder-pfp.jpg',
+    role: 'OWNER',
+    status: 'ACTIVE',
+    inviteToken: null,
+    inviteExpiresAt: null,
+    invitedByUserId: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  const seededTeamMember: CompanyMemberRecord = {
+    id: 'cmem-hamza',
+    companyId: seededCompany.id,
+    userId: teamUser.id,
+    email: teamUser.email,
+    name: teamUser.name,
+    title: 'Lead Mobile & NFC Systems',
+    department: 'Hardware Interop & Engineering',
+    bio: 'Specializing in contactless NFC hardware firmware and instant vCard synchronization.',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop',
+    role: 'MEMBER',
+    status: 'ACTIVE',
+    inviteToken: null,
+    inviteExpiresAt: null,
+    invitedByUserId: founderUser.id,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
   return {
     users: [founderUser, teamUser, abcdUser, leapUser, aleenaUser],
     profiles: {
@@ -159,7 +229,9 @@ function getInitialSeedData(): DatabaseSchema {
       [seededAbcdProfile.slug]: seededAbcdProfile,
       [seededAleenaProfile.id]: seededAleenaProfile,
       [seededAleenaProfile.slug]: seededAleenaProfile
-    }
+    },
+    companies: [seededCompany],
+    companyMembers: [seededOwnerMember, seededTeamMember]
   };
 }
 
@@ -235,6 +307,8 @@ function normalizeProfiles(profiles: Record<string, ProfileData>) {
 
 function loadDb(): DatabaseSchema {
   if (globalForDb.__AVTIVE_DB__) {
+    if (!globalForDb.__AVTIVE_DB__.companies) globalForDb.__AVTIVE_DB__.companies = [];
+    if (!globalForDb.__AVTIVE_DB__.companyMembers) globalForDb.__AVTIVE_DB__.companyMembers = [];
     return globalForDb.__AVTIVE_DB__;
   }
 
@@ -246,6 +320,8 @@ function loadDb(): DatabaseSchema {
       const content = fs.readFileSync(writablePath, 'utf8');
       const data: DatabaseSchema = JSON.parse(content);
       if (data && data.profiles && Array.isArray(data.users)) {
+        if (!data.companies) data.companies = [];
+        if (!data.companyMembers) data.companyMembers = [];
         normalizeProfiles(data.profiles);
         globalForDb.__AVTIVE_DB__ = data;
         return data;
@@ -260,6 +336,8 @@ function loadDb(): DatabaseSchema {
       const content = fs.readFileSync(seedPath, 'utf8');
       const data: DatabaseSchema = JSON.parse(content);
       if (data && data.profiles && Array.isArray(data.users)) {
+        if (!data.companies) data.companies = [];
+        if (!data.companyMembers) data.companyMembers = [];
         normalizeProfiles(data.profiles);
         globalForDb.__AVTIVE_DB__ = data;
         saveDb(data);
@@ -1415,3 +1493,861 @@ export async function getUserConnections(userId: string): Promise<UserConnection
     (c) => c.fromUserId === userId || c.toUserId === userId
   );
 }
+
+// ============================================================================
+// COMPANY & TEAM MEMBER DATA LAYER
+// ============================================================================
+
+export function hashInviteToken(token: string): string {
+  return crypto.createHash('sha256').update(token.trim()).digest('hex');
+}
+
+/**
+ * Synchronize a CompanyRecord with its ProfileData counterpart
+ * to preserve full compatibility with DualScreenWorkspace, AvtiveDigitalCard,
+ * and the existing profile routing system.
+ */
+export async function syncCompanyToProfile(companyId: string): Promise<ProfileData | null> {
+  const db = loadDb();
+  const company = db.companies?.find((c) => c.id === companyId);
+  if (!company) return null;
+
+  const activeMembers = (db.companyMembers || [])
+    .filter((m) => m.companyId === companyId && m.status === 'ACTIVE')
+    .map((m): TeamMemberItem => ({
+      id: m.id,
+      name: m.name,
+      role: m.title || m.role,
+      department: m.department || '',
+      avatar: m.avatarUrl || SUPABASE_DEFAULT_AVATAR,
+      bio: m.bio || '',
+      email: m.email,
+      profileId: m.userId || undefined
+    }));
+
+  const existingProfile = db.profiles[company.id] || db.profiles[company.slug];
+  const now = new Date().toISOString();
+
+  const companyProfileData: ProfileData = {
+    ...(existingProfile || {}),
+    id: company.id,
+    userId: company.ownerUserId,
+    type: 'team',
+    profileType: 'team',
+    slug: company.slug,
+    name: company.name,
+    company: company.name,
+    companyName: company.name,
+    tagline: company.tagline,
+    bio: company.description,
+    about: company.description,
+    shortBio: company.tagline || company.description,
+    fullBio: company.description,
+    location: company.location || 'Global',
+    website: company.website || '',
+    avatar: company.logoUrl || SUPABASE_DEFAULT_AVATAR,
+    companyLogo: company.logoUrl || SUPABASE_DEFAULT_AVATAR,
+    coverImage: company.coverUrl || SUPABASE_DEFAULT_COVER,
+    theme: company.theme || 'editorial',
+    teamMembers: activeMembers,
+    companyInfo: {
+      id: company.id,
+      name: company.name,
+      tagline: company.tagline,
+      logo: company.logoUrl || SUPABASE_DEFAULT_AVATAR,
+      industry: company.industry,
+      location: company.location,
+      website: company.website,
+      employeeCount: company.size,
+      profileId: company.slug
+    },
+    sectionOrder: existingProfile?.sectionOrder || [...DEFAULT_SECTION_ORDER],
+    sectionVisibility: existingProfile?.sectionVisibility || {
+      ...DEFAULT_SECTION_VISIBILITY,
+      company: true,
+      about: true,
+      contact: true,
+      services: true,
+      projects: true
+    },
+    socials: existingProfile?.socials || (company.website ? [{ platform: 'website', url: company.website, label: 'Website' }] : []),
+    createdAt: company.createdAt || now,
+    updatedAt: now
+  };
+
+  db.profiles[company.id] = companyProfileData;
+  db.profiles[company.slug] = companyProfileData;
+  saveDb(db);
+
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('profiles').upsert({
+        id: companyProfileData.id,
+        user_id: companyProfileData.userId,
+        slug: companyProfileData.slug,
+        name: companyProfileData.name,
+        email: companyProfileData.email,
+        type: 'team',
+        theme: companyProfileData.theme,
+        data: companyProfileData,
+        updated_at: companyProfileData.updatedAt
+      })
+    );
+  } catch {}
+
+  return companyProfileData;
+}
+
+export async function createCompany(
+  ownerUserId: string,
+  data: CreateCompanyInput
+): Promise<{ company: CompanyRecord; member: CompanyMemberRecord; profile: ProfileData }> {
+  const db = loadDb();
+  if (!db.companies) db.companies = [];
+  if (!db.companyMembers) db.companyMembers = [];
+
+  const ownerUser = await getUserById(ownerUserId);
+  if (!ownerUser) {
+    throw new Error('Owner user does not exist.');
+  }
+
+  // Generate unique URL-safe slug with collision avoidance
+  const rawBase = slugify(data.slug || data.name || 'company');
+  let finalSlug = rawBase || `company-${Date.now().toString(36)}`;
+  
+  let collisionCount = 0;
+  while (
+    db.companies.some((c) => c.slug.toLowerCase() === finalSlug.toLowerCase()) ||
+    Boolean(db.profiles[finalSlug])
+  ) {
+    collisionCount++;
+    finalSlug = `${rawBase}-${Math.random().toString(36).substring(2, 6)}`;
+    if (collisionCount > 10) {
+      finalSlug = `${rawBase}-${Date.now().toString(36)}`;
+      break;
+    }
+  }
+
+  const companyId = `comp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const now = new Date().toISOString();
+
+  const newCompany: CompanyRecord = {
+    id: companyId,
+    ownerUserId: ownerUserId,
+    name: (data.name || 'My Company').trim(),
+    slug: finalSlug,
+    tagline: (data.tagline || '').trim(),
+    description: (data.description || '').trim(),
+    industry: (data.industry || 'Technology').trim(),
+    size: (data.size || '1-10').trim(),
+    website: (data.website || '').trim(),
+    location: (data.location || '').trim(),
+    logoUrl: data.logoUrl || SUPABASE_DEFAULT_AVATAR,
+    coverUrl: data.coverUrl || SUPABASE_DEFAULT_COVER,
+    theme: (data.theme && data.theme !== 'default' ? data.theme : 'editorial') as ProfileTheme,
+    visibility: data.visibility || { ...DEFAULT_SECTION_VISIBILITY },
+    createdAt: now,
+    updatedAt: now
+  };
+
+  db.companies.push(newCompany);
+
+  // Automatically create the initial OWNER member
+  const memberId = `cmem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const ownerMember: CompanyMemberRecord = {
+    id: memberId,
+    companyId: companyId,
+    userId: ownerUserId,
+    email: ownerUser.email.toLowerCase().trim(),
+    name: ownerUser.name,
+    title: 'Founder & Owner',
+    department: 'Leadership',
+    bio: '',
+    avatarUrl: ownerUser.avatar || SUPABASE_DEFAULT_AVATAR,
+    role: 'OWNER',
+    status: 'ACTIVE',
+    inviteToken: null,
+    inviteExpiresAt: null,
+    invitedByUserId: null,
+    createdAt: now,
+    updatedAt: now
+  };
+
+  db.companyMembers.push(ownerMember);
+
+  // Update user role to 'team'
+  ownerUser.role = 'team';
+  ownerUser.onboardingCompleted = true;
+
+  saveDb(db);
+
+  // Sync to Supabase
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('companies').upsert({
+        id: newCompany.id,
+        owner_user_id: newCompany.ownerUserId,
+        name: newCompany.name,
+        slug: newCompany.slug,
+        tagline: newCompany.tagline,
+        description: newCompany.description,
+        industry: newCompany.industry,
+        size: newCompany.size,
+        website: newCompany.website,
+        location: newCompany.location,
+        logo_url: newCompany.logoUrl,
+        cover_url: newCompany.coverUrl,
+        theme: newCompany.theme,
+        visibility: newCompany.visibility,
+        created_at: newCompany.createdAt,
+        updated_at: newCompany.updatedAt
+      })
+    );
+    asyncSyncSupabase(
+      supabaseAdmin.from('company_members').upsert({
+        id: ownerMember.id,
+        company_id: ownerMember.companyId,
+        user_id: ownerMember.userId,
+        email: ownerMember.email,
+        name: ownerMember.name,
+        title: ownerMember.title,
+        department: ownerMember.department,
+        bio: ownerMember.bio,
+        avatar_url: ownerMember.avatarUrl,
+        role: ownerMember.role,
+        status: ownerMember.status,
+        created_at: ownerMember.createdAt,
+        updated_at: ownerMember.updatedAt
+      })
+    );
+  } catch {}
+
+  // Synchronize company profile data
+  const profile = (await syncCompanyToProfile(companyId)) || db.profiles[companyId];
+
+  return { company: newCompany, member: ownerMember, profile };
+}
+
+export async function getCompanyById(id: string): Promise<CompanyRecord | null> {
+  const db = loadDb();
+  if (db.companies) {
+    const found = db.companies.find((c) => c.id === id);
+    if (found) return found;
+  }
+
+  // Supabase fallback
+  try {
+    const { data, error } = await withTimeout(
+      supabaseAdmin.from('companies').select('*').eq('id', id).maybeSingle()
+    );
+    if (data && !error) {
+      const rec: CompanyRecord = {
+        id: data.id,
+        ownerUserId: data.owner_user_id || data.ownerUserId,
+        name: data.name,
+        slug: data.slug,
+        tagline: data.tagline || '',
+        description: data.description || '',
+        industry: data.industry || '',
+        size: data.size || '',
+        website: data.website || '',
+        location: data.location || '',
+        logoUrl: data.logo_url || data.logoUrl || '',
+        coverUrl: data.cover_url || data.coverUrl || '',
+        theme: data.theme || 'editorial',
+        visibility: data.visibility || { ...DEFAULT_SECTION_VISIBILITY },
+        createdAt: data.created_at || data.createdAt || new Date().toISOString(),
+        updatedAt: data.updated_at || data.updatedAt || new Date().toISOString()
+      };
+      if (!db.companies) db.companies = [];
+      db.companies.push(rec);
+      return rec;
+    }
+  } catch {}
+
+  return null;
+}
+
+export async function getCompanyBySlug(slug: string): Promise<CompanyRecord | null> {
+  const db = loadDb();
+  const clean = slug.toLowerCase().trim();
+  if (db.companies) {
+    const found = db.companies.find((c) => c.slug.toLowerCase().trim() === clean || c.id === slug);
+    if (found) return found;
+  }
+
+  // Supabase fallback
+  try {
+    const { data, error } = await withTimeout(
+      supabaseAdmin.from('companies').select('*').or(`slug.eq.${clean},id.eq.${slug}`).maybeSingle()
+    );
+    if (data && !error) {
+      const rec: CompanyRecord = {
+        id: data.id,
+        ownerUserId: data.owner_user_id || data.ownerUserId,
+        name: data.name,
+        slug: data.slug,
+        tagline: data.tagline || '',
+        description: data.description || '',
+        industry: data.industry || '',
+        size: data.size || '',
+        website: data.website || '',
+        location: data.location || '',
+        logoUrl: data.logo_url || data.logoUrl || '',
+        coverUrl: data.cover_url || data.coverUrl || '',
+        theme: data.theme || 'editorial',
+        visibility: data.visibility || { ...DEFAULT_SECTION_VISIBILITY },
+        createdAt: data.created_at || data.createdAt || new Date().toISOString(),
+        updatedAt: data.updated_at || data.updatedAt || new Date().toISOString()
+      };
+      if (!db.companies) db.companies = [];
+      db.companies.push(rec);
+      return rec;
+    }
+  } catch {}
+
+  return null;
+}
+
+export async function getCompanyByOwnerUserId(userId: string): Promise<CompanyRecord | null> {
+  const db = loadDb();
+  if (db.companies) {
+    const owned = db.companies.find((c) => c.ownerUserId === userId);
+    if (owned) return owned;
+  }
+
+  // Also check if user is OWNER in companyMembers
+  if (db.companyMembers) {
+    const ownerMember = db.companyMembers.find(
+      (m) => m.userId === userId && m.role === 'OWNER' && m.status === 'ACTIVE'
+    );
+    if (ownerMember) {
+      const c = await getCompanyById(ownerMember.companyId);
+      if (c) return c;
+    }
+  }
+
+  return null;
+}
+
+export async function getUserCompanyMemberships(
+  userId: string
+): Promise<Array<{ company: CompanyRecord; member: CompanyMemberRecord }>> {
+  const db = loadDb();
+  if (!db.companyMembers || !db.companies) return [];
+
+  const activeMembers = db.companyMembers.filter(
+    (m) => m.userId === userId && m.status === 'ACTIVE'
+  );
+
+  const results: Array<{ company: CompanyRecord; member: CompanyMemberRecord }> = [];
+  for (const m of activeMembers) {
+    const comp = db.companies.find((c) => c.id === m.companyId);
+    if (comp) {
+      results.push({ company: comp, member: m });
+    }
+  }
+  return results;
+}
+
+export async function updateCompany(
+  id: string,
+  data: UpdateCompanyInput,
+  operatorUserId: string
+): Promise<{ success: boolean; company?: CompanyRecord; error?: string; status?: number }> {
+  const db = loadDb();
+  const company = db.companies?.find((c) => c.id === id);
+  if (!company) {
+    return { success: false, error: 'Company not found.', status: 404 };
+  }
+
+  // Authorization check: operator must be active OWNER or ADMIN
+  const member = db.companyMembers?.find(
+    (m) => m.companyId === id && m.userId === operatorUserId && m.status === 'ACTIVE'
+  );
+  if (!member || (member.role !== 'OWNER' && member.role !== 'ADMIN')) {
+    return { success: false, error: 'Forbidden: Only an OWNER or ADMIN may update company details.', status: 403 };
+  }
+
+  // If slug is changing, verify uniqueness
+  if (data.slug && data.slug.toLowerCase().trim() !== company.slug.toLowerCase().trim()) {
+    const cleanNewSlug = slugify(data.slug);
+    const conflict = db.companies?.some(
+      (c) => c.id !== id && c.slug.toLowerCase().trim() === cleanNewSlug
+    );
+    if (conflict) {
+      return { success: false, error: 'A company with this slug already exists. Please choose another.', status: 409 };
+    }
+    company.slug = cleanNewSlug;
+  }
+
+  if (data.name !== undefined) company.name = data.name.trim();
+  if (data.tagline !== undefined) company.tagline = data.tagline.trim();
+  if (data.description !== undefined) company.description = data.description.trim();
+  if (data.industry !== undefined) company.industry = data.industry.trim();
+  if (data.size !== undefined) company.size = data.size.trim();
+  if (data.website !== undefined) company.website = data.website.trim();
+  if (data.location !== undefined) company.location = data.location.trim();
+  if (data.logoUrl !== undefined) company.logoUrl = data.logoUrl;
+  if (data.coverUrl !== undefined) company.coverUrl = data.coverUrl;
+  if (data.theme !== undefined) company.theme = data.theme;
+  if (data.visibility !== undefined) company.visibility = { ...company.visibility, ...data.visibility };
+  company.updatedAt = new Date().toISOString();
+
+  saveDb(db);
+  await syncCompanyToProfile(company.id);
+
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('companies').update({
+        name: company.name,
+        slug: company.slug,
+        tagline: company.tagline,
+        description: company.description,
+        industry: company.industry,
+        size: company.size,
+        website: company.website,
+        location: company.location,
+        logo_url: company.logoUrl,
+        cover_url: company.coverUrl,
+        theme: company.theme,
+        visibility: company.visibility,
+        updated_at: company.updatedAt
+      }).eq('id', company.id)
+    );
+  } catch {}
+
+  return { success: true, company, status: 200 };
+}
+
+export async function deleteCompany(
+  id: string,
+  operatorUserId: string
+): Promise<{ success: boolean; error?: string; status?: number }> {
+  const db = loadDb();
+  const companyIndex = db.companies?.findIndex((c) => c.id === id) ?? -1;
+  if (companyIndex === -1 || !db.companies) {
+    return { success: false, error: 'Company not found.', status: 404 };
+  }
+
+  // Authorization: Only OWNER may delete
+  const member = db.companyMembers?.find(
+    (m) => m.companyId === id && m.userId === operatorUserId && m.status === 'ACTIVE'
+  );
+  if (!member || member.role !== 'OWNER') {
+    return { success: false, error: 'Forbidden: Only an OWNER may delete this company.', status: 403 };
+  }
+
+  const [removedCompany] = db.companies.splice(companyIndex, 1);
+  if (db.companyMembers) {
+    db.companyMembers = db.companyMembers.filter((m) => m.companyId !== id);
+  }
+  if (db.profiles) {
+    delete db.profiles[removedCompany.id];
+    delete db.profiles[removedCompany.slug];
+  }
+
+  saveDb(db);
+
+  try {
+    asyncSyncSupabase(supabaseAdmin.from('companies').delete().eq('id', id));
+    asyncSyncSupabase(supabaseAdmin.from('company_members').delete().eq('company_id', id));
+    asyncSyncSupabase(supabaseAdmin.from('profiles').delete().eq('id', id));
+  } catch {}
+
+  return { success: true, status: 200 };
+}
+
+export async function getCompanyMembers(
+  companyId: string,
+  onlyActive: boolean = false
+): Promise<CompanyMemberRecord[]> {
+  const db = loadDb();
+  if (!db.companyMembers) return [];
+
+  return db.companyMembers.filter((m) => {
+    if (m.companyId !== companyId) return false;
+    if (onlyActive) return m.status === 'ACTIVE';
+    return m.status !== 'REMOVED';
+  });
+}
+
+export async function getCompanyMemberById(
+  companyId: string,
+  memberId: string
+): Promise<CompanyMemberRecord | null> {
+  const db = loadDb();
+  if (!db.companyMembers) return null;
+  return db.companyMembers.find((m) => m.companyId === companyId && m.id === memberId) || null;
+}
+
+export async function getCompanyMemberByUser(
+  companyId: string,
+  userId: string
+): Promise<CompanyMemberRecord | null> {
+  const db = loadDb();
+  if (!db.companyMembers) return null;
+  return (
+    db.companyMembers.find(
+      (m) => m.companyId === companyId && m.userId === userId && m.status === 'ACTIVE'
+    ) || null
+  );
+}
+
+export async function addCompanyMember(
+  companyId: string,
+  input: AddCompanyMemberInput,
+  operatorUserId: string
+): Promise<{
+  success: boolean;
+  member?: CompanyMemberRecord;
+  inviteLink?: string;
+  rawToken?: string;
+  error?: string;
+  status?: number;
+}> {
+  const db = loadDb();
+  const company = await getCompanyById(companyId);
+  if (!company) {
+    return { success: false, error: 'Company not found.', status: 404 };
+  }
+
+  // Authorization check: Operator must be OWNER or ADMIN
+  const operatorMember = await getCompanyMemberByUser(companyId, operatorUserId);
+  if (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN')) {
+    return {
+      success: false,
+      error: 'Forbidden: Only an OWNER or ADMIN can invite team members.',
+      status: 403
+    };
+  }
+
+  // Validate email
+  const cleanEmail = (input.email || '').toLowerCase().trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+    return { success: false, error: 'A valid email address is required.', status: 400 };
+  }
+
+  const cleanName = (input.name || cleanEmail.split('@')[0]).trim();
+  if (!cleanName || cleanName.length < 2) {
+    return { success: false, error: 'Member name must be at least 2 characters.', status: 400 };
+  }
+
+  // Only OWNER can invite as OWNER or ADMIN
+  const targetRole: CompanyRole = input.role || 'MEMBER';
+  if ((targetRole === 'OWNER' || targetRole === 'ADMIN') && operatorMember.role !== 'OWNER') {
+    return {
+      success: false,
+      error: 'Forbidden: Only an OWNER can assign OWNER or ADMIN roles.',
+      status: 403
+    };
+  }
+
+  // Check unique constraint on (companyId, email)
+  const existingMember = db.companyMembers?.find(
+    (m) => m.companyId === companyId && m.email.toLowerCase().trim() === cleanEmail && m.status !== 'REMOVED'
+  );
+  if (existingMember) {
+    return {
+      success: false,
+      error: 'A member or invitation with this email address already exists in this company.',
+      status: 409
+    };
+  }
+
+  // Check if email belongs to an existing user in the platform
+  const existingUser = await getUserByEmail(cleanEmail);
+  const now = new Date().toISOString();
+
+  // Generate secure invite token (single use, expiring in 7 days, sha256 hashed at rest)
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = hashInviteToken(rawToken);
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  const newMemberId = `cmem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const newMember: CompanyMemberRecord = {
+    id: newMemberId,
+    companyId: companyId,
+    userId: existingUser ? existingUser.id : null,
+    email: cleanEmail,
+    name: cleanName,
+    title: (input.title || 'Team Member').trim(),
+    department: (input.department || 'General').trim(),
+    bio: (input.bio || '').trim(),
+    avatarUrl: input.avatarUrl || (existingUser?.avatar) || SUPABASE_DEFAULT_AVATAR,
+    role: targetRole,
+    status: 'PENDING',
+    inviteToken: hashedToken,
+    inviteExpiresAt: expiresAt,
+    invitedByUserId: operatorUserId,
+    createdAt: now,
+    updatedAt: now
+  };
+
+  if (!db.companyMembers) db.companyMembers = [];
+  db.companyMembers.push(newMember);
+  saveDb(db);
+
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('company_members').upsert({
+        id: newMember.id,
+        company_id: newMember.companyId,
+        user_id: newMember.userId,
+        email: newMember.email,
+        name: newMember.name,
+        title: newMember.title,
+        department: newMember.department,
+        bio: newMember.bio,
+        avatar_url: newMember.avatarUrl,
+        role: newMember.role,
+        status: newMember.status,
+        invite_token: newMember.inviteToken,
+        invite_expires_at: newMember.inviteExpiresAt,
+        invited_by_user_id: newMember.invitedByUserId,
+        created_at: newMember.createdAt,
+        updated_at: newMember.updatedAt
+      })
+    );
+  } catch {}
+
+  const inviteLink = `/company/invite?token=${encodeURIComponent(rawToken)}`;
+
+  return {
+    success: true,
+    member: newMember,
+    inviteLink,
+    rawToken,
+    status: 201
+  };
+}
+
+export async function updateCompanyMember(
+  companyId: string,
+  memberId: string,
+  input: UpdateCompanyMemberInput,
+  operatorUserId: string
+): Promise<{ success: boolean; member?: CompanyMemberRecord; error?: string; status?: number }> {
+  const db = loadDb();
+  const member = await getCompanyMemberById(companyId, memberId);
+  if (!member || member.status === 'REMOVED') {
+    return { success: false, error: 'Team member not found.', status: 404 };
+  }
+
+  // Authorization: Operator must be OWNER or ADMIN
+  const operatorMember = await getCompanyMemberByUser(companyId, operatorUserId);
+  if (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN')) {
+    return {
+      success: false,
+      error: 'Forbidden: Only an OWNER or ADMIN can modify team members.',
+      status: 403
+    };
+  }
+
+  // Permission: If operator is ADMIN:
+  // - cannot modify an OWNER
+  // - cannot promote anyone to OWNER or ADMIN
+  // - cannot demote an ADMIN or OWNER
+  if (operatorMember.role === 'ADMIN') {
+    if (member.role === 'OWNER') {
+      return { success: false, error: 'Forbidden: An ADMIN cannot modify an OWNER.', status: 403 };
+    }
+    if (input.role && (input.role === 'OWNER' || input.role === 'ADMIN')) {
+      return { success: false, error: 'Forbidden: Only an OWNER can grant OWNER or ADMIN roles.', status: 403 };
+    }
+    if (input.role && member.role === 'ADMIN') {
+      return { success: false, error: 'Forbidden: Only an OWNER can change another ADMIN role.', status: 403 };
+    }
+  }
+
+  // Permission: Cannot demote the last OWNER
+  if (member.role === 'OWNER' && input.role && input.role !== 'OWNER') {
+    const activeOwners = (db.companyMembers || []).filter(
+      (m) => m.companyId === companyId && m.role === 'OWNER' && m.status === 'ACTIVE'
+    );
+    if (activeOwners.length <= 1) {
+      return {
+        success: false,
+        error: 'Forbidden: A company must have at least one active OWNER.',
+        status: 400
+      };
+    }
+  }
+
+  if (input.name !== undefined) member.name = input.name.trim();
+  if (input.title !== undefined) member.title = input.title.trim();
+  if (input.department !== undefined) member.department = input.department.trim();
+  if (input.bio !== undefined) member.bio = input.bio.trim();
+  if (input.avatarUrl !== undefined) member.avatarUrl = input.avatarUrl;
+  if (input.role !== undefined) member.role = input.role;
+  member.updatedAt = new Date().toISOString();
+
+  saveDb(db);
+  await syncCompanyToProfile(companyId);
+
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('company_members').update({
+        name: member.name,
+        title: member.title,
+        department: member.department,
+        bio: member.bio,
+        avatar_url: member.avatarUrl,
+        role: member.role,
+        updated_at: member.updatedAt
+      }).eq('id', member.id)
+    );
+  } catch {}
+
+  return { success: true, member, status: 200 };
+}
+
+export async function removeCompanyMember(
+  companyId: string,
+  memberId: string,
+  operatorUserId: string
+): Promise<{ success: boolean; error?: string; status?: number }> {
+  const db = loadDb();
+  const member = await getCompanyMemberById(companyId, memberId);
+  if (!member || member.status === 'REMOVED') {
+    return { success: false, error: 'Team member not found.', status: 404 };
+  }
+
+  const isSelf = member.userId && member.userId === operatorUserId;
+  const operatorMember = await getCompanyMemberByUser(companyId, operatorUserId);
+
+  if (!isSelf) {
+    if (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN')) {
+      return {
+        success: false,
+        error: 'Forbidden: You do not have permission to remove this member.',
+        status: 403
+      };
+    }
+    if (operatorMember.role === 'ADMIN' && member.role === 'OWNER') {
+      return {
+        success: false,
+        error: 'Forbidden: An ADMIN cannot remove an OWNER.',
+        status: 403
+      };
+    }
+  }
+
+  // Safety rule: Cannot remove the last OWNER
+  if (member.role === 'OWNER') {
+    const activeOwners = (db.companyMembers || []).filter(
+      (m) => m.companyId === companyId && m.role === 'OWNER' && m.status === 'ACTIVE'
+    );
+    if (activeOwners.length <= 1) {
+      return {
+        success: false,
+        error: 'Forbidden: Cannot remove the last remaining OWNER of the company.',
+        status: 400
+      };
+    }
+  }
+
+  // Mark as REMOVED (or remove record)
+  member.status = 'REMOVED';
+  member.updatedAt = new Date().toISOString();
+  saveDb(db);
+
+  await syncCompanyToProfile(companyId);
+
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('company_members').update({
+        status: 'REMOVED',
+        updated_at: member.updatedAt
+      }).eq('id', member.id)
+    );
+  } catch {}
+
+  return { success: true, status: 200 };
+}
+
+export async function acceptCompanyInvite(
+  rawToken: string,
+  userId: string
+): Promise<{
+  success: boolean;
+  company?: CompanyRecord;
+  member?: CompanyMemberRecord;
+  error?: string;
+  status?: number;
+}> {
+  const db = loadDb();
+  if (!rawToken || !rawToken.trim()) {
+    return { success: false, error: 'Invite token is required.', status: 400 };
+  }
+
+  const user = await getUserById(userId);
+  if (!user) {
+    return { success: false, error: 'Unauthorized: User not found.', status: 401 };
+  }
+
+  const hashed = hashInviteToken(rawToken);
+
+  const member = (db.companyMembers || []).find(
+    (m) => m.inviteToken === hashed && m.status === 'PENDING'
+  );
+
+  if (!member) {
+    return {
+      success: false,
+      error: 'Invalid or already accepted invitation token.',
+      status: 404
+    };
+  }
+
+  // Check token expiration
+  if (member.inviteExpiresAt && new Date(member.inviteExpiresAt).getTime() < Date.now()) {
+    return {
+      success: false,
+      error: 'This invitation has expired. Please ask the company owner for a new invitation.',
+      status: 410
+    };
+  }
+
+  // Email verification: Authenticated user's email must match invite email
+  if (user.email.toLowerCase().trim() !== member.email.toLowerCase().trim()) {
+    return {
+      success: false,
+      error: `This invitation was issued to ${member.email}. You are currently logged in as ${user.email}. Please sign in with the invited email address.`,
+      status: 403
+    };
+  }
+
+  const company = await getCompanyById(member.companyId);
+  if (!company) {
+    return { success: false, error: 'Company associated with invite not found.', status: 404 };
+  }
+
+  // Activate membership
+  member.status = 'ACTIVE';
+  member.userId = user.id;
+  member.name = user.name || member.name;
+  member.avatarUrl = user.avatar || member.avatarUrl;
+  member.inviteToken = null;
+  member.inviteExpiresAt = null;
+  member.updatedAt = new Date().toISOString();
+
+  saveDb(db);
+  await syncCompanyToProfile(company.id);
+
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('company_members').update({
+        status: 'ACTIVE',
+        user_id: user.id,
+        invite_token: null,
+        invite_expires_at: null,
+        updated_at: member.updatedAt
+      }).eq('id', member.id)
+    );
+  } catch {}
+
+  return { success: true, company, member, status: 200 };
+}
+

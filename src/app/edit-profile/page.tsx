@@ -1,7 +1,14 @@
 import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser, updateProfile } from '@/lib/db';
+import { 
+  getProfileByIdOrSlug, 
+  getProfilesByUserId, 
+  createProfileForUser, 
+  updateProfile,
+  getCompanyByOwnerUserId,
+  createCompany 
+} from '@/lib/db';
 import { normalizeProfileType, ProfileTheme } from '@/types/profile';
 import { EditProfileClient } from './EditProfileClient';
 import type { Metadata } from 'next';
@@ -59,6 +66,23 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
         designation: 'Professional',
         type: selectedRole,
         theme: selectedTheme
+      });
+    }
+  }
+
+  // If profile type is 'team', ensure CompanyRecord and Owner membership exist
+  if (targetProfile && targetProfile.type === 'team') {
+    const existingComp = await getCompanyByOwnerUserId(session.id);
+    if (!existingComp) {
+      await createCompany(session.id, {
+        name: targetProfile.name || session.name,
+        slug: targetProfile.slug,
+        theme: targetProfile.theme,
+        tagline: targetProfile.tagline || '',
+        description: targetProfile.bio || targetProfile.about || '',
+        location: targetProfile.location || '',
+        logoUrl: targetProfile.avatar || '',
+        coverUrl: targetProfile.coverImage || ''
       });
     }
   }

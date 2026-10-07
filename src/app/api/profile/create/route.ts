@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { getProfileByUserId, createProfileForUser, setProfileResponseCookies } from '@/lib/db';
+import { 
+  getProfileByUserId, 
+  createProfileForUser, 
+  setProfileResponseCookies,
+  getCompanyByOwnerUserId,
+  createCompany
+} from '@/lib/db';
 import { ensureSupabaseAssetUrl } from '@/lib/supabase';
 import { normalizeProfileType } from '@/types/profile';
 
@@ -91,6 +97,27 @@ export async function POST(request: NextRequest) {
       customFields: body.customFields || [],
       dynamicSections: body.dynamicSections || []
     });
+
+    if (newProfile.type === 'team') {
+      try {
+        const existingComp = await getCompanyByOwnerUserId(session.id);
+        if (!existingComp) {
+          await createCompany(session.id, {
+            name: newProfile.name || body.company || `${session.name}'s Company`,
+            slug: newProfile.slug,
+            theme: newProfile.theme,
+            tagline: newProfile.tagline || newProfile.designation || '',
+            description: newProfile.about || newProfile.bio || '',
+            location: newProfile.location || '',
+            website: body.website || '',
+            logoUrl: newProfile.avatar || '',
+            coverUrl: newProfile.coverImage || ''
+          });
+        }
+      } catch (compErr) {
+        console.error('Error auto-creating company entity for team profile:', compErr);
+      }
+    }
 
     const response = NextResponse.json(
       {

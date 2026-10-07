@@ -17,7 +17,8 @@ const PUBLIC_PATHS = [
   '/api/auth/me',
   '/api/auth/forgot-password',
   '/api/auth/reset-password',
-  '/api/profile/connect'
+  '/api/profile/connect',
+  '/company/invite'
 ];
 
 export function middleware(request: NextRequest) {
@@ -44,6 +45,16 @@ export function middleware(request: NextRequest) {
     if (!isEditOrShare) {
       return NextResponse.next();
     }
+  }
+
+  // 3b. Allow public company profile viewing (/api/company/[slug] via GET, excluding /me or /members)
+  if (
+    pathname.startsWith('/api/company/') && 
+    request.method === 'GET' && 
+    !pathname.endsWith('/me') && 
+    !pathname.includes('/members')
+  ) {
+    return NextResponse.next();
   }
 
   // 4. Check for active session cookie
