@@ -1606,25 +1606,43 @@ export async function createCompany(
   if (!db.companies) db.companies = [];
   if (!db.companyMembers) db.companyMembers = [];
 
-  const ownerUser = await getUserById(ownerUserId);
+  let ownerUser = await getUserById(ownerUserId);
   if (!ownerUser) {
-    throw new Error('Owner user does not exist.');
+    ownerUser = {
+      id: ownerUserId,
+      name: (data.name || 'Company Owner').trim(),
+      email: (data as any).email || `${ownerUserId}@company.local`,
+      passwordHash: '',
+      role: 'team',
+      onboardingCompleted: true,
+      createdAt: new Date().toISOString()
+    };
+    db.users.push(ownerUser);
+  } else {
+    ownerUser.role = 'team';
+    ownerUser.onboardingCompleted = true;
   }
 
   // Generate unique URL-safe slug with collision avoidance
   const rawBase = slugify(data.slug || data.name || 'company');
   let finalSlug = rawBase || `company-${Date.now().toString(36)}`;
   
-  let collisionCount = 0;
-  while (
-    db.companies.some((c) => c.slug.toLowerCase() === finalSlug.toLowerCase()) ||
-    Boolean(db.profiles[finalSlug])
-  ) {
-    collisionCount++;
-    finalSlug = `${rawBase}-${Math.random().toString(36).substring(2, 6)}`;
-    if (collisionCount > 10) {
-      finalSlug = `${rawBase}-${Date.now().toString(36)}`;
-      break;
+  if (data.slug) {
+    const existingComp = db.companies.find((c) => c.slug.toLowerCase() === data.slug!.toLowerCase());
+    if (!existingComp || existingComp.ownerUserId === ownerUserId) {
+      finalSlug = data.slug;
+    }
+  } else {
+    let collisionCount = 0;
+    while (
+      db.companies.some((c) => c.slug.toLowerCase() === finalSlug.toLowerCase())
+    ) {
+      collisionCount++;
+      finalSlug = `${rawBase}-${Math.random().toString(36).substring(2, 6)}`;
+      if (collisionCount > 10) {
+        finalSlug = `${rawBase}-${Date.now().toString(36)}`;
+        break;
+      }
     }
   }
 
@@ -1658,12 +1676,12 @@ export async function createCompany(
     id: memberId,
     companyId: companyId,
     userId: ownerUserId,
-    email: ownerUser.email.toLowerCase().trim(),
-    name: ownerUser.name,
+    email: (ownerUser.email || (data as any).email || '').toLowerCase().trim(),
+    name: ownerUser.name || data.name || 'Company Owner',
     title: 'Founder & Owner',
     department: 'Leadership',
     bio: '',
-    avatarUrl: ownerUser.avatar || SUPABASE_DEFAULT_AVATAR,
+    avatarUrl: ownerUser.avatar || data.logoUrl || SUPABASE_DEFAULT_AVATAR,
     role: 'OWNER',
     status: 'ACTIVE',
     inviteToken: null,
@@ -1674,10 +1692,6 @@ export async function createCompany(
   };
 
   db.companyMembers.push(ownerMember);
-
-  // Update user role to 'team'
-  ownerUser.role = 'team';
-  ownerUser.onboardingCompleted = true;
 
   saveDb(db);
 
@@ -1826,6 +1840,40 @@ export async function getCompanyByOwnerUserId(userId: string): Promise<CompanyRe
       if (c) return c;
     }
   }
+
+  // Supabase fallback
+  try {
+    const { data } = await withTimeout(
+      supabaseAdmin
+        .from('companies')
+        .select('*')
+        .eq('owner_user_id', userId)
+        .maybeSingle()
+    );
+    if (data) {
+      const rec: CompanyRecord = {
+        id: data.id,
+        ownerUserId: data.owner_user_id || data.ownerUserId,
+        name: data.name,
+        slug: data.slug,
+        tagline: data.tagline || '',
+        description: data.description || '',
+        industry: data.industry || 'Technology',
+        size: data.size || '1-10',
+        website: data.website || '',
+        location: data.location || '',
+        logoUrl: data.logo_url || data.logoUrl || SUPABASE_DEFAULT_AVATAR,
+        coverUrl: data.cover_url || data.coverUrl || SUPABASE_DEFAULT_COVER,
+        theme: data.theme || 'editorial',
+        visibility: data.visibility || { ...DEFAULT_SECTION_VISIBILITY },
+        createdAt: data.created_at || new Date().toISOString(),
+        updatedAt: data.updated_at || new Date().toISOString()
+      };
+      if (!db.companies) db.companies = [];
+      db.companies.push(rec);
+      return rec;
+    }
+  } catch {}
 
   return null;
 }

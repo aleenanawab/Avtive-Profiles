@@ -26,67 +26,91 @@ interface EditProfilePageProps {
 }
 
 export default async function EditProfilePage({ searchParams }: EditProfilePageProps) {
-  const session = await getSession();
-  if (!session) {
-    redirect('/login?returnUrl=/edit-profile');
-  }
+  try {
+    const session = await getSession();
+    if (!session) {
+      redirect('/login?returnUrl=/edit-profile');
+    }
 
-  const { id, role, theme } = await searchParams;
+    const { id, role, theme } = await searchParams;
 
-  let targetProfile = null;
-  if (id) {
-    targetProfile = await getProfileByIdOrSlug(id);
-  }
+    let targetProfile = null;
+    if (id) {
+      try {
+        targetProfile = await getProfileByIdOrSlug(id);
+      } catch {}
+    }
 
-  // Fallback to user's first profile if no id specified or not found
-  if (!targetProfile || targetProfile.userId !== session.id) {
-    const userProfiles = await getProfilesByUserId(session.id);
-    if (userProfiles.length > 0) {
-      targetProfile = userProfiles[0];
-      if (role || theme) {
-        const updateRes = await updateProfile(
-          targetProfile.id,
-          {
-            ...(role ? { type: normalizeProfileType(role) } : {}),
-            ...(theme ? { theme: theme as ProfileTheme } : {})
-          },
-          session.id
-        );
-        if (updateRes.profile) {
-          targetProfile = updateRes.profile;
+    // Fallback to user's first profile if no id specified or not found
+    if (!targetProfile || targetProfile.userId !== session.id) {
+      try {
+        const userProfiles = await getProfilesByUserId(session.id);
+        if (userProfiles.length > 0) {
+          targetProfile = userProfiles[0];
+          if (role || theme) {
+            const updateRes = await updateProfile(
+              targetProfile.id,
+              {
+                ...(role ? { type: normalizeProfileType(role) } : {}),
+                ...(theme ? { theme: theme as ProfileTheme } : {})
+              },
+              session.id,
+              session.email
+            );
+            if (updateRes.profile) {
+              targetProfile = updateRes.profile;
+            }
+          }
+        } else {
+          const selectedRole = normalizeProfileType(role || 'individual');
+          const selectedTheme = (theme && theme !== 'default' ? theme : 'editorial') as ProfileTheme;
+          targetProfile = await createProfileForUser(session.id, {
+            name: session.name,
+            email: session.email,
+            profileName: selectedRole === 'team' ? 'Company Profile' : 'Primary Profile',
+            designation: 'Professional',
+            type: selectedRole,
+            theme: selectedTheme
+          });
         }
+      } catch (profErr) {
+        console.error('Error in profile lookup/creation in edit-profile:', profErr);
       }
+    }
+
+    // If profile type is 'team', ensure CompanyRecord and Owner membership exist
+    if (targetProfile && targetProfile.type === 'team') {
+      try {
+        const existingComp = await getCompanyByOwnerUserId(session.id);
+        if (!existingComp) {
+          await createCompany(session.id, {
+            name: targetProfile.name || session.name,
+            slug: targetProfile.slug,
+            theme: targetProfile.theme,
+            tagline: targetProfile.tagline || '',
+            description: targetProfile.bio || targetProfile.about || '',
+            location: targetProfile.location || '',
+            logoUrl: targetProfile.avatar || '',
+            coverUrl: targetProfile.coverImage || ''
+          });
+        }
+      } catch (compErr) {
+        console.error('Error auto-creating company in edit-profile:', compErr);
+      }
+    }
+
+    const targetSlug = targetProfile?.slug || targetProfile?.id;
+    if (targetSlug) {
+      redirect(`/profile/${encodeURIComponent(targetSlug)}?edit=true`);
     } else {
-      const selectedRole = normalizeProfileType(role || 'individual');
-      const selectedTheme = (theme && theme !== 'default' ? theme : 'editorial') as ProfileTheme;
-      targetProfile = await createProfileForUser(session.id, {
-        name: session.name,
-        email: session.email,
-        profileName: selectedRole === 'team' ? 'Company Profile' : 'Primary Profile',
-        designation: 'Professional',
-        type: selectedRole,
-        theme: selectedTheme
-      });
+      redirect('/dashboard');
     }
-  }
-
-  // If profile type is 'team', ensure CompanyRecord and Owner membership exist
-  if (targetProfile && targetProfile.type === 'team') {
-    const existingComp = await getCompanyByOwnerUserId(session.id);
-    if (!existingComp) {
-      await createCompany(session.id, {
-        name: targetProfile.name || session.name,
-        slug: targetProfile.slug,
-        theme: targetProfile.theme,
-        tagline: targetProfile.tagline || '',
-        description: targetProfile.bio || targetProfile.about || '',
-        location: targetProfile.location || '',
-        logoUrl: targetProfile.avatar || '',
-        coverUrl: targetProfile.coverImage || ''
-      });
+  } catch (error: any) {
+    // Next.js redirect() throws an internal NEXT_REDIRECT error which must be rethrown
+    if (error?.digest?.startsWith('NEXT_REDIRECT') || error?.message === 'NEXT_REDIRECT') {
+      throw error;
     }
+    console.error('Unhandled server exception in EditProfilePage:', error);
+    redirect('/dashboard');
   }
-
-  const targetSlug = targetProfile.slug || targetProfile.id;
-  redirect(`/profile/${encodeURIComponent(targetSlug)}?edit=true`);
 }
