@@ -265,6 +265,7 @@ export interface TeamMemberItem {
   phone?: string;
   profileId?: string;
   socials?: SocialLink[];
+  status?: 'ACTIVE' | 'PENDING' | 'REMOVED';
 }
 
 export interface CompanyInfo {

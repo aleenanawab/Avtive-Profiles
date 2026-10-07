@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare } from 'lucide-react';
+import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare, Building2, Users } from 'lucide-react';
 import { ProfileData, normalizeProfileType, SocialLink } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon, WhatsAppIcon } from './BrandIcons';
@@ -44,7 +44,9 @@ export function HeroSection({
   const sharing = profile.sharingSettings || {};
 
   const normalizedType = normalizeProfileType(profile.type);
-  const typeBadgeLabel = normalizedType === 'team' ? 'Team' : 'Individual';
+  const isCompany = normalizedType === 'team';
+  const typeBadgeLabel = isCompany ? 'Company · Organization' : 'Individual';
+  const activeMemberCount = profile.teamMembers?.filter((m) => m.status !== 'REMOVED')?.length || 0;
 
   const defaultStats = normalizedType === 'team'
     ? [
@@ -139,27 +141,51 @@ export function HeroSection({
 
       {/* 2. Identity Header */}
       <div className="px-5 sm:px-8 lg:px-10 pb-6 -mt-12 sm:-mt-16 md:-mt-20 relative z-10 space-y-4">
-        {/* Profile Photo */}
+        {/* Profile Photo / Company Logo */}
         {sharing.photo !== false && (
-          <div 
-            onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'avatar') : onOpenEdit?.())}
-            className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white dark:border-[#18181B] shadow-md bg-slate-100 dark:bg-zinc-800 shrink-0 ${
-              canEdit ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-purple-500/50 transition-all' : ''
-            }`}
-            title={canEdit ? 'Click to edit Profile Photo in Studio' : undefined}
-          >
-            <img
-              src={avatarUrl}
-              alt={profile.name}
-              className="w-full h-full object-cover"
-            />
-            {canEdit && (
-              <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
-                <Camera className="w-5 h-5 drop-shadow-md text-purple-300" />
-                <span className="text-[10px] font-bold mt-0.5">Edit</span>
-              </div>
-            )}
-          </div>
+          isCompany ? (
+            /* Corporate Logo Frame (Distinct from personal circular headshot) */
+            <div 
+              onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'avatar') : onOpenEdit?.())}
+              className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 overflow-hidden border-4 border-white dark:border-[#18181B] shadow-xl bg-white dark:bg-zinc-900 shrink-0 flex items-center justify-center ${
+                canEdit ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-blue-500/50 transition-all' : ''
+              }`}
+              title={canEdit ? 'Click to edit Company Logo in Studio' : undefined}
+            >
+              <img
+                src={avatarUrl}
+                alt={profile.name}
+                className="w-full h-full object-contain rounded-xl sm:rounded-2xl"
+              />
+              {canEdit && (
+                <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white rounded-2xl sm:rounded-3xl">
+                  <Camera className="w-5 h-5 drop-shadow-md text-blue-300" />
+                  <span className="text-[10px] font-bold mt-0.5">Edit Logo</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Individual Circular Headshot */
+            <div 
+              onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'avatar') : onOpenEdit?.())}
+              className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white dark:border-[#18181B] shadow-md bg-slate-100 dark:bg-zinc-800 shrink-0 ${
+                canEdit ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-purple-500/50 transition-all' : ''
+              }`}
+              title={canEdit ? 'Click to edit Profile Photo in Studio' : undefined}
+            >
+              <img
+                src={avatarUrl}
+                alt={profile.name}
+                className="w-full h-full object-cover"
+              />
+              {canEdit && (
+                <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
+                  <Camera className="w-5 h-5 drop-shadow-md text-purple-300" />
+                  <span className="text-[10px] font-bold mt-0.5">Edit</span>
+                </div>
+              )}
+            </div>
+          )
         )}
 
         {/* Profile Role Badge & Name */}
@@ -169,30 +195,69 @@ export function HeroSection({
             className={`space-y-1 pt-1 ${
               canEdit ? 'cursor-pointer group/name rounded-2xl p-2 -ml-2 hover:bg-purple-500/[0.06] dark:hover:bg-purple-500/10 hover:ring-1 hover:ring-purple-500/30 transition-all' : ''
             }`}
-            title={canEdit ? 'Click to edit Identity in Studio' : undefined}
+            title={canEdit ? (isCompany ? 'Click to edit Company in Studio' : 'Click to edit Identity in Studio') : undefined}
           >
             <div className="flex items-center gap-2">
-              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-zinc-300 border border-black/5 dark:border-white/10">
-                {typeBadgeLabel}
-              </div>
+              {isCompany ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>Company · Organization</span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-zinc-300 border border-black/5 dark:border-white/10">
+                  {typeBadgeLabel}
+                </div>
+              )}
               {canEdit && (
                 <span className="opacity-0 group-hover/name:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
                   <Pencil className="w-2.5 h-2.5" />
-                  Edit Identity
+                  {isCompany ? 'Edit Company' : 'Edit Identity'}
                 </span>
               )}
             </div>
+
             <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
               <span>{profile.name}</span>
             </h1>
+
             <p className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words`}>
-              {profile.profession || profile.designation || profile.profileName || 'Professional'}
+              {profile.profession || profile.designation || profile.profileName || (isCompany ? 'Organization' : 'Professional')}
             </p>
+
+            {/* Corporate Metadata Strip */}
+            {isCompany && (
+              <div className="flex items-center gap-2 pt-1 flex-wrap text-xs">
+                {profile.companyInfo?.industry && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
+                    {profile.companyInfo.industry}
+                  </span>
+                )}
+                {profile.companyInfo?.employeeCount && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
+                    {profile.companyInfo.employeeCount}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelectSection ? onSelectSection('teamMembers') : null;
+                  }}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-pointer"
+                  title="View organization team"
+                >
+                  <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>{activeMemberCount} {activeMemberCount === 1 ? 'Team Member' : 'Team Members'}</span>
+                </button>
+              </div>
+            )}
+
             {profile.tagline && (
               <p className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words`}>
                 &ldquo;{profile.tagline}&rdquo;
               </p>
             )}
+
             {profile.location && (
               <p className={`text-xs sm:text-sm ${theme.textMuted} break-words`}>
                 {profile.location}
@@ -225,46 +290,119 @@ export function HeroSection({
         {/* Action Buttons Below Avatar */}
         <div className="flex items-center gap-2 sm:gap-3 pt-2 max-w-md w-full">
           {canEdit ? (
-            <>
-              <button
-                type="button"
-                onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
-                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
-                title="Edit Profile in Studio"
-              >
-                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                <span className="truncate">Edit Profile</span>
-              </button>
+            isCompany ? (
+              /* Company Owner / Editor Actions */
+              <>
+                <button
+                  type="button"
+                  onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
+                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  title="Edit Company Details"
+                >
+                  <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Edit Company</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={onOpenShare}
-                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
-              >
-                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                <span className="truncate">Share Profile</span>
-              </button>
-            </>
+                <button
+                  type="button"
+                  onClick={() => onSelectSection ? onSelectSection('teamMembers') : onOpenEdit?.()}
+                  className="flex-1 min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2"
+                  title="Manage Team Members in Studio"
+                >
+                  <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-white" />
+                  <span className="truncate">Manage Team</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onOpenShare}
+                  className={`min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  title="Share Company Profile"
+                >
+                  <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="hidden sm:inline">Share</span>
+                </button>
+              </>
+            ) : (
+              /* Individual Owner Actions (Unchanged) */
+              <>
+                <button
+                  type="button"
+                  onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
+                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  title="Edit Profile in Studio"
+                >
+                  <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Edit Profile</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onOpenShare}
+                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                >
+                  <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Share Profile</span>
+                </button>
+              </>
+            )
           ) : (
-            <>
-              <button
-                type="button"
-                onClick={onOpenConnect}
-                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
-              >
-                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                <span className="truncate">Connect</span>
-              </button>
+            isCompany ? (
+              /* Public Company Visitor Actions */
+              <>
+                <button
+                  type="button"
+                  onClick={onOpenConnect}
+                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-xl ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                >
+                  <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Contact Company</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={onOpenShare}
-                className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
-              >
-                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                <span className="truncate">Share</span>
-              </button>
-            </>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById('company-team-section') || document.querySelector('[data-section="teamMembers"]') || document.querySelector('#team-members-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    else onSelectSection?.('teamMembers');
+                  }}
+                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                >
+                  <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Our Team ({activeMemberCount})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onOpenShare}
+                  className={`min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  title="Share Company Profile"
+                >
+                  <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                </button>
+              </>
+            ) : (
+              /* Individual Public Visitor Actions (Unchanged) */
+              <>
+                <button
+                  type="button"
+                  onClick={onOpenConnect}
+                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                >
+                  <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Connect</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onOpenShare}
+                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                >
+                  <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                  <span className="truncate">Share</span>
+                </button>
+              </>
+            )
           )}
         </div>
 

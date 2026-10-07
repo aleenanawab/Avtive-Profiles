@@ -3,12 +3,16 @@ import { getSession } from '@/lib/auth';
 import { 
   getCompanyById, 
   getCompanyBySlug, 
+  getCompanyByOwnerUserId,
+  getProfileByIdOrSlug,
+  createCompany,
   getCompanyMembers, 
   getCompanyMemberByUser, 
   addCompanyMember 
 } from '@/lib/db';
 import { ensureSupabaseAssetUrl } from '@/lib/supabase';
 import { AddCompanyMemberInput } from '@/types/company';
+import { normalizeProfileType } from '@/types/profile';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -26,14 +30,35 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     }
 
     const { id: identifier } = await params;
-    const company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    let company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    if (!company) {
+      const profile = await getProfileByIdOrSlug(identifier);
+      if (profile && profile.userId) {
+        company = await getCompanyByOwnerUserId(profile.userId);
+        if (!company && (normalizeProfileType(profile.type) === 'team' || profile.userId === session.id)) {
+          const res = await createCompany(profile.userId, {
+            name: profile.name || 'My Company',
+            slug: profile.slug,
+            theme: profile.theme,
+            tagline: profile.tagline || profile.designation || '',
+            description: profile.about || profile.bio || '',
+            location: profile.location || '',
+            logoUrl: profile.avatar || '',
+            coverUrl: profile.coverImage || ''
+          });
+          company = res.company;
+        }
+      }
+    }
+
     if (!company) {
       return NextResponse.json({ error: 'Company not found.' }, { status: 404 });
     }
 
-    // Verify caller is a member of this company
+    // Verify caller is a member or owner of this company
     const callerMember = await getCompanyMemberByUser(company.id, session.id);
-    if (!callerMember) {
+    const isOwner = company.ownerUserId === session.id;
+    if (!callerMember && !isOwner) {
       return NextResponse.json(
         { error: 'Forbidden: You must be a member of this company to view member list.' },
         { status: 403 }
@@ -86,9 +111,39 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     }
 
     const { id: identifier } = await params;
-    const company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    let company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    if (!company) {
+      const profile = await getProfileByIdOrSlug(identifier);
+      if (profile && profile.userId) {
+        company = await getCompanyByOwnerUserId(profile.userId);
+        if (!company && (normalizeProfileType(profile.type) === 'team' || profile.userId === session.id)) {
+          const res = await createCompany(profile.userId, {
+            name: profile.name || 'My Company',
+            slug: profile.slug,
+            theme: profile.theme,
+            tagline: profile.tagline || profile.designation || '',
+            description: profile.about || profile.bio || '',
+            location: profile.location || '',
+            logoUrl: profile.avatar || '',
+            coverUrl: profile.coverImage || ''
+          });
+          company = res.company;
+        }
+      }
+    }
+
     if (!company) {
       return NextResponse.json({ error: 'Company not found.' }, { status: 404 });
+    }
+
+    // Authorization check
+    const callerMember = await getCompanyMemberByUser(company.id, session.id);
+    const isOwner = company.ownerUserId === session.id;
+    if (!isOwner && (!callerMember || (callerMember.role !== 'OWNER' && callerMember.role !== 'ADMIN'))) {
+      return NextResponse.json(
+        { error: 'Forbidden: Only an OWNER or ADMIN can invite team members.' },
+        { status: 403 }
+      );
     }
 
     const body = await request.json().catch(() => ({}));

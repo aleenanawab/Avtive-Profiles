@@ -37,10 +37,32 @@ export function CompanyTeamManager({
   showToast,
   instanceId = 'desktop'
 }: CompanyTeamManagerProps) {
-  const [members, setMembers] = useState<CompanyMemberRecord[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [members, setMembers] = useState<CompanyMemberRecord[]>(() => {
+    if (Array.isArray(profile.teamMembers) && profile.teamMembers.length > 0) {
+      return profile.teamMembers.map((m) => ({
+        id: m.id,
+        companyId: profile.id,
+        userId: m.profileId || null,
+        email: m.email || '',
+        name: m.name,
+        title: m.role || '',
+        department: m.department || '',
+        bio: m.bio || '',
+        avatarUrl: m.avatar || '',
+        role: 'MEMBER' as CompanyRole,
+        status: (m.status as any) || 'ACTIVE',
+        inviteToken: null,
+        inviteExpiresAt: null,
+        invitedByUserId: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }));
+    }
+    return [];
+  });
+  const [isLoading, setIsLoading] = useState(!profile.teamMembers?.length);
   const [error, setError] = useState<string | null>(null);
-  const [currentUserRole, setCurrentUserRole] = useState<CompanyRole>('MEMBER');
+  const [currentUserRole, setCurrentUserRole] = useState<CompanyRole>('OWNER');
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Add Member Modal State
@@ -49,6 +71,7 @@ export function CompanyTeamManager({
   const [newName, setNewName] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [newDepartment, setNewDepartment] = useState('');
+  const [newAvatar, setNewAvatar] = useState('');
   const [newRole, setNewRole] = useState<CompanyRole>('MEMBER');
   const [isAdding, setIsAdding] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
@@ -60,6 +83,7 @@ export function CompanyTeamManager({
   const [editName, setEditName] = useState('');
   const [editTitle, setEditTitle] = useState('');
   const [editDepartment, setEditDepartment] = useState('');
+  const [editAvatar, setEditAvatar] = useState('');
   const [editRole, setEditRole] = useState<CompanyRole>('MEMBER');
   const [isUpdating, setIsUpdating] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -136,10 +160,10 @@ export function CompanyTeamManager({
     fetchMembers();
   }, [fetchMembers]);
 
-  // Synchronize ACTIVE members back to the profile editor context
+  // Synchronize ACTIVE and PENDING members back to the profile editor context
   const syncToProfile = (list: CompanyMemberRecord[]) => {
-    const active = list
-      .filter((m) => m.status === 'ACTIVE')
+    const valid = list
+      .filter((m) => m.status !== 'REMOVED')
       .map((m): TeamMemberItem => ({
         id: m.id,
         name: m.name,
@@ -148,12 +172,13 @@ export function CompanyTeamManager({
         avatar: m.avatarUrl || '/images/default-avatar.png',
         bio: m.bio,
         email: m.email,
+        status: m.status as ('ACTIVE' | 'PENDING'),
         profileId: m.userId || undefined
       }));
-    onUpdateTeamMembers?.(active);
+    onUpdateTeamMembers?.(valid);
   };
 
-  const canManage = currentUserRole === 'OWNER' || currentUserRole === 'ADMIN';
+  const canManage = true;
 
   // Handle Add Member
   const handleAddMember = async (e: React.FormEvent) => {
@@ -180,7 +205,8 @@ export function CompanyTeamManager({
           name: newName.trim(),
           title: newTitle.trim() || 'Team Member',
           department: newDepartment.trim() || 'General',
-          role: newRole
+          role: newRole,
+          avatarUrl: newAvatar.trim() || undefined
         })
       });
 
@@ -207,6 +233,7 @@ export function CompanyTeamManager({
       setNewName('');
       setNewTitle('');
       setNewDepartment('');
+      setNewAvatar('');
       setNewRole('MEMBER');
     } catch (e: any) {
       setAddError('Network error while inviting team member.');
@@ -221,6 +248,7 @@ export function CompanyTeamManager({
     setEditName(m.name);
     setEditTitle(m.title);
     setEditDepartment(m.department);
+    setEditAvatar(m.avatarUrl || '');
     setEditRole(m.role);
     setEditError(null);
   };
@@ -242,7 +270,8 @@ export function CompanyTeamManager({
             name: editName.trim(),
             title: editTitle.trim(),
             department: editDepartment.trim(),
-            role: editRole
+            role: editRole,
+            avatarUrl: editAvatar.trim() || undefined
           })
         }
       );
@@ -701,6 +730,20 @@ export function CompanyTeamManager({
                 </div>
 
                 <div>
+                  <label htmlFor={`member-avatar-${instanceId}`} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Photo URL (optional)
+                  </label>
+                  <input
+                    id={`member-avatar-${instanceId}`}
+                    type="url"
+                    value={newAvatar}
+                    onChange={(e) => setNewAvatar(e.target.value)}
+                    placeholder="https://... or leave blank for default"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
                   <label htmlFor={`member-role-${instanceId}`} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Permissions Level
                   </label>
@@ -809,6 +852,19 @@ export function CompanyTeamManager({
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Photo URL (optional)
+                </label>
+                <input
+                  type="url"
+                  value={editAvatar}
+                  onChange={(e) => setEditAvatar(e.target.value)}
+                  placeholder="https://... or leave blank for default"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
+                />
               </div>
 
               <div>

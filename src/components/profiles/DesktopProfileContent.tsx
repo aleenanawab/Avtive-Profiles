@@ -806,21 +806,27 @@ export function DesktopProfileContent({
           <div className="p-4 sm:p-6 relative -mt-12 sm:-mt-14">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-slate-100 dark:border-white/5">
               <div className="flex items-end gap-3.5 sm:gap-4">
-                <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-[#0E1526] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-xl shrink-0 group">
+                <div className={`relative w-20 h-20 sm:w-24 sm:h-24 border-4 border-white dark:border-[#0E1526] overflow-hidden shadow-xl shrink-0 group ${
+                  isCompany 
+                    ? 'rounded-2xl p-1.5 bg-white dark:bg-[#080D1A] flex items-center justify-center' 
+                    : 'rounded-full bg-slate-200 dark:bg-slate-800'
+                }`}>
                   <img 
-                    src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'} 
-                    alt="Avatar" 
-                    className="w-full h-full object-cover"
+                    src={profile.avatar || (isCompany ? 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=400&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop')} 
+                    alt={isCompany ? "Company Logo" : "Avatar"} 
+                    className={`w-full h-full ${isCompany ? 'object-contain rounded-xl' : 'object-cover'}`}
                   />
                   <button
                     type="button"
                     onClick={() => avatarInputRef.current?.click()}
                     disabled={isUploadingAvatar}
-                    className="absolute inset-0 bg-black/60 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    title="Upload Avatar"
+                    className={`absolute inset-0 bg-black/60 text-white flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer ${
+                      isCompany ? 'rounded-2xl' : 'rounded-full'
+                    }`}
+                    title={isCompany ? "Upload Logo" : "Upload Avatar"}
                   >
                     {isUploadingAvatar ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-5 h-5 text-cyan-400" />}
-                    <span className="text-[9px] font-bold mt-0.5">Upload</span>
+                    <span className="text-[9px] font-bold mt-0.5">{isCompany ? 'Logo' : 'Upload'}</span>
                   </button>
                   <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -829,22 +835,42 @@ export function DesktopProfileContent({
                 </div>
 
                 <div className="pb-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-tight">
-                    {profile.name || 'Full Name'}
-                  </h2>
+                  <div className="flex items-center gap-1.5">
+                    {isCompany && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                        <Building2 className="w-3 h-3" />
+                        <span>Company</span>
+                      </span>
+                    )}
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-tight">
+                      {profile.name || (isCompany ? 'Company Name' : 'Full Name')}
+                    </h2>
+                  </div>
                   <p className="text-xs text-cyan-600 dark:text-cyan-400 font-medium">
                     @{profile.username || profile.slug}
                   </p>
                 </div>
               </div>
 
-              <div className="pb-1 flex items-center gap-2">
+              <div className="pb-1 flex items-center gap-2 flex-wrap">
+                {isCompany && (
+                  <button
+                    type="button"
+                    onClick={() => handleSelectSectionFromDropdown('teamMembers')}
+                    className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    title="Manage team members"
+                  >
+                    <Users className="w-3.5 h-3.5" />
+                    <span>Manage Team ({profile.teamMembers?.filter(m => m.status !== 'REMOVED')?.length || 0})</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
                   onClick={() => avatarInputRef.current?.click()}
                   className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
                 >
-                  Change Photo
+                  {isCompany ? 'Change Logo' : 'Change Photo'}
                 </button>
               </div>
             </div>

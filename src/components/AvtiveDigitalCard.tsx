@@ -264,6 +264,7 @@ export function AvtiveDigitalCard({
         {(() => {
           const defaultCardSectionOrder = [
             'company',
+            'teamMembers',
             'about',
             'contact',
             'custom-fields',
@@ -289,14 +290,22 @@ export function AvtiveDigitalCard({
           const effectiveOrder: string[] = [];
           
           for (const s of userOrder) {
-            const normalized = (s === 'services' || s === 'skills') ? 'skills' : (s === 'socials' ? 'socialLinks' : s);
+            const normalized = (s === 'services' || s === 'skills') 
+              ? 'skills' 
+              : (s === 'socials' 
+              ? 'socialLinks' 
+              : ((s === 'company' || s === 'team') && isCompany ? 'teamMembers' : s));
             if (!effectiveOrder.includes(normalized) && defaultCardSectionOrder.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
           }
           
           for (const s of allKnownSections) {
-            const normalized = (s === 'services' || s === 'skills') ? 'skills' : (s === 'socials' ? 'socialLinks' : s);
+            const normalized = (s === 'services' || s === 'skills') 
+              ? 'skills' 
+              : (s === 'socials' 
+              ? 'socialLinks' 
+              : ((s === 'company' || s === 'team') && isCompany ? 'teamMembers' : s));
             if (!effectiveOrder.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
@@ -320,7 +329,9 @@ export function AvtiveDigitalCard({
             }
             // 2. Fallback to sharingSettings for legacy profiles
             switch (key) {
-              case 'company': return sharing.companySection !== false;
+              case 'company':
+              case 'teamMembers':
+              case 'team': return sharing.companySection !== false;
               case 'about': return sharing.bio !== false;
               case 'contact': return true;
               case 'custom-fields': return true;
@@ -342,7 +353,9 @@ export function AvtiveDigitalCard({
           const renderSectionContent = (sectionKey: string) => {
             switch (sectionKey) {
               case 'company':
-                if (!isSectionVisible('company')) return null;
+              case 'teamMembers':
+              case 'team':
+                if (!isSectionVisible(sectionKey)) return null;
                 if (isCompany) {
                   return (
                     <TeamSection

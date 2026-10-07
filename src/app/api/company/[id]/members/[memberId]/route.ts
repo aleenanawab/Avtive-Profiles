@@ -3,6 +3,8 @@ import { getSession } from '@/lib/auth';
 import { 
   getCompanyById, 
   getCompanyBySlug, 
+  getCompanyByOwnerUserId,
+  getProfileByIdOrSlug,
   updateCompanyMember, 
   removeCompanyMember 
 } from '@/lib/db';
@@ -25,7 +27,14 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     }
 
     const { id: identifier, memberId } = await params;
-    const company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    let company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    if (!company) {
+      const profile = await getProfileByIdOrSlug(identifier);
+      if (profile && profile.userId) {
+        company = await getCompanyByOwnerUserId(profile.userId);
+      }
+    }
+
     if (!company) {
       return NextResponse.json({ error: 'Company not found.' }, { status: 404 });
     }
@@ -77,7 +86,14 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
     }
 
     const { id: identifier, memberId } = await params;
-    const company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    let company = (await getCompanyById(identifier)) || (await getCompanyBySlug(identifier));
+    if (!company) {
+      const profile = await getProfileByIdOrSlug(identifier);
+      if (profile && profile.userId) {
+        company = await getCompanyByOwnerUserId(profile.userId);
+      }
+    }
+
     if (!company) {
       return NextResponse.json({ error: 'Company not found.' }, { status: 404 });
     }

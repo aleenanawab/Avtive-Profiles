@@ -1513,7 +1513,7 @@ export async function syncCompanyToProfile(companyId: string): Promise<ProfileDa
   if (!company) return null;
 
   const activeMembers = (db.companyMembers || [])
-    .filter((m) => m.companyId === companyId && m.status === 'ACTIVE')
+    .filter((m) => m.companyId === companyId && m.status !== 'REMOVED')
     .map((m): TeamMemberItem => ({
       id: m.id,
       name: m.name,
@@ -1522,7 +1522,8 @@ export async function syncCompanyToProfile(companyId: string): Promise<ProfileDa
       avatar: m.avatarUrl || SUPABASE_DEFAULT_AVATAR,
       bio: m.bio || '',
       email: m.email,
-      profileId: m.userId || undefined
+      profileId: m.userId || undefined,
+      status: m.status
     }));
 
   const existingProfile = db.profiles[company.id] || db.profiles[company.slug];
@@ -1779,6 +1780,13 @@ export async function getCompanyById(id: string): Promise<CompanyRecord | null> 
     }
   } catch {}
 
+  // Profile entity fallback: check if id matches a team profile
+  const matchedProfile = db.profiles[id] || Object.values(db.profiles).find((p) => p.id === id);
+  if (matchedProfile && normalizeProfileType(matchedProfile.type) === 'team' && matchedProfile.userId) {
+    const owned = db.companies?.find((c) => c.ownerUserId === matchedProfile.userId || c.slug === matchedProfile.slug || c.id === matchedProfile.id);
+    if (owned) return owned;
+  }
+
   return null;
 }
 
@@ -1819,6 +1827,13 @@ export async function getCompanyBySlug(slug: string): Promise<CompanyRecord | nu
       return rec;
     }
   } catch {}
+
+  // Profile entity fallback: check if slug matches a team profile
+  const matchedProfBySlug = db.profiles[clean] || Object.values(db.profiles).find((p) => (p.slug && p.slug.toLowerCase().trim() === clean) || p.id === slug);
+  if (matchedProfBySlug && normalizeProfileType(matchedProfBySlug.type) === 'team' && matchedProfBySlug.userId) {
+    const owned = db.companies?.find((c) => c.ownerUserId === matchedProfBySlug.userId || c.slug === matchedProfBySlug.slug || c.id === matchedProfBySlug.id);
+    if (owned) return owned;
+  }
 
   return null;
 }
@@ -2060,14 +2075,39 @@ export async function addCompanyMember(
     return { success: false, error: 'Company not found.', status: 404 };
   }
 
-  // Authorization check: Operator must be OWNER or ADMIN
+  // Authorization check: Operator must be OWNER or ADMIN or the company owner
   const operatorMember = await getCompanyMemberByUser(companyId, operatorUserId);
-  if (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN')) {
+  const isCompanyOwner = company.ownerUserId === operatorUserId;
+  if (!isCompanyOwner && (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN'))) {
     return {
       success: false,
       error: 'Forbidden: Only an OWNER or ADMIN can invite team members.',
       status: 403
     };
+  }
+
+  // Ensure owner record exists in companyMembers if operator is owner
+  if (isCompanyOwner && !operatorMember) {
+    const ownerRec: CompanyMemberRecord = {
+      id: `cmem-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      companyId: companyId,
+      userId: operatorUserId,
+      email: (company as any).email || '',
+      name: company.name || 'Company Owner',
+      title: 'Founder & Owner',
+      department: 'Leadership',
+      bio: '',
+      avatarUrl: company.logoUrl || SUPABASE_DEFAULT_AVATAR,
+      role: 'OWNER',
+      status: 'ACTIVE',
+      inviteToken: null,
+      inviteExpiresAt: null,
+      invitedByUserId: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    if (!db.companyMembers) db.companyMembers = [];
+    db.companyMembers.push(ownerRec);
   }
 
   // Validate email
@@ -2084,7 +2124,7 @@ export async function addCompanyMember(
 
   // Only OWNER can invite as OWNER or ADMIN
   const targetRole: CompanyRole = input.role || 'MEMBER';
-  if ((targetRole === 'OWNER' || targetRole === 'ADMIN') && operatorMember.role !== 'OWNER') {
+  if ((targetRole === 'OWNER' || targetRole === 'ADMIN') && !isCompanyOwner && operatorMember?.role !== 'OWNER') {
     return {
       success: false,
       error: 'Forbidden: Only an OWNER can assign OWNER or ADMIN roles.',
@@ -2107,6 +2147,13 @@ export async function addCompanyMember(
   // Check if email belongs to an existing user in the platform
   const existingUser = await getUserByEmail(cleanEmail);
   const now = new Date().toISOString();
+  const isExisting = Boolean(existingUser);
+  const memberStatus: CompanyMemberStatus = isExisting ? 'ACTIVE' : 'PENDING';
+
+  let linkedProfile: ProfileData | null = null;
+  if (existingUser) {
+    linkedProfile = await getProfileByUserId(existingUser.id);
+  }
 
   // Generate secure invite token (single use, expiring in 7 days, sha256 hashed at rest)
   const rawToken = crypto.randomBytes(32).toString('hex');
@@ -2120,14 +2167,14 @@ export async function addCompanyMember(
     userId: existingUser ? existingUser.id : null,
     email: cleanEmail,
     name: cleanName,
-    title: (input.title || 'Team Member').trim(),
+    title: (input.title || linkedProfile?.designation || linkedProfile?.professionalTitle || 'Team Member').trim(),
     department: (input.department || 'General').trim(),
-    bio: (input.bio || '').trim(),
-    avatarUrl: input.avatarUrl || (existingUser?.avatar) || SUPABASE_DEFAULT_AVATAR,
+    bio: (input.bio || linkedProfile?.bio || '').trim(),
+    avatarUrl: input.avatarUrl || linkedProfile?.avatar || existingUser?.avatar || SUPABASE_DEFAULT_AVATAR,
     role: targetRole,
-    status: 'PENDING',
-    inviteToken: hashedToken,
-    inviteExpiresAt: expiresAt,
+    status: memberStatus,
+    inviteToken: isExisting ? null : hashedToken,
+    inviteExpiresAt: isExisting ? null : expiresAt,
     invitedByUserId: operatorUserId,
     createdAt: now,
     updatedAt: now
@@ -2136,6 +2183,8 @@ export async function addCompanyMember(
   if (!db.companyMembers) db.companyMembers = [];
   db.companyMembers.push(newMember);
   saveDb(db);
+
+  await syncCompanyToProfile(companyId);
 
   try {
     asyncSyncSupabase(
@@ -2184,8 +2233,10 @@ export async function updateCompanyMember(
   }
 
   // Authorization: Operator must be OWNER or ADMIN
+  const company = await getCompanyById(companyId);
+  const isCompanyOwner = Boolean(company && company.ownerUserId === operatorUserId);
   const operatorMember = await getCompanyMemberByUser(companyId, operatorUserId);
-  if (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN')) {
+  if (!isCompanyOwner && (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN'))) {
     return {
       success: false,
       error: 'Forbidden: Only an OWNER or ADMIN can modify team members.',
@@ -2197,7 +2248,7 @@ export async function updateCompanyMember(
   // - cannot modify an OWNER
   // - cannot promote anyone to OWNER or ADMIN
   // - cannot demote an ADMIN or OWNER
-  if (operatorMember.role === 'ADMIN') {
+  if (!isCompanyOwner && operatorMember?.role === 'ADMIN') {
     if (member.role === 'OWNER') {
       return { success: false, error: 'Forbidden: An ADMIN cannot modify an OWNER.', status: 403 };
     }
@@ -2263,9 +2314,11 @@ export async function removeCompanyMember(
   }
 
   const isSelf = member.userId && member.userId === operatorUserId;
+  const company = await getCompanyById(companyId);
+  const isCompanyOwner = Boolean(company && company.ownerUserId === operatorUserId);
   const operatorMember = await getCompanyMemberByUser(companyId, operatorUserId);
 
-  if (!isSelf) {
+  if (!isSelf && !isCompanyOwner) {
     if (!operatorMember || (operatorMember.role !== 'OWNER' && operatorMember.role !== 'ADMIN')) {
       return {
         success: false,
