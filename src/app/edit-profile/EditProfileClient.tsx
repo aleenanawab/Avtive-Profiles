@@ -41,9 +41,19 @@ export function EditProfileClient({
   onCancel,
   onSaveProfile
 }: EditProfileClientProps) {
+  const router = useRouter();
+
   const handleSavedProfileUpdate = (saved?: ProfileData) => {
-    // Notify parent without navigating away from editor
-    onSaveProfile?.(saved);
+    const fresh = saved || initialProfile;
+    onSaveProfile?.(fresh);
+    if (onReturnToView) {
+      onReturnToView(fresh);
+    } else {
+      const slug = fresh.slug || fresh.id || initialProfile.slug || initialProfile.id;
+      if (slug) {
+        router.push(`/profile/${encodeURIComponent(slug)}`);
+      }
+    }
   };
 
   return (

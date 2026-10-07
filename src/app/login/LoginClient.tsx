@@ -84,8 +84,29 @@ export default function LoginClient() {
       if (sp.get('reset') === 'success') {
         setSuccessMessage('Password successfully updated! Please sign in with your new password.');
       }
+
+      // Check temporary registration credentials from new user sign up
+      try {
+        const raw = sessionStorage.getItem('avtive_temp_reg_creds');
+        if (raw) {
+          const creds = JSON.parse(raw);
+          if (creds?.email) setEmail(creds.email);
+          if (creds?.password) setPassword(creds.password);
+        }
+      } catch {}
     }
   }, [setTheme]);
+
+  // Clear temporary registration credentials on unmount if unused
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.removeItem('avtive_temp_reg_creds');
+        } catch {}
+      }
+    };
+  }, []);
 
   const getReturnUrl = () => {
     if (typeof window === 'undefined') return null;
@@ -170,6 +191,7 @@ export default function LoginClient() {
       }
 
       try {
+        sessionStorage.removeItem('avtive_temp_reg_creds');
         sessionStorage.setItem('avtive_active_session', 'true');
         localStorage.setItem('avtive_returning_user', 'true');
       } catch {}
@@ -395,6 +417,7 @@ export default function LoginClient() {
                 <input
                   type="email"
                   required
+                  autoComplete="username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. aleena@example.com"
@@ -417,6 +440,7 @@ export default function LoginClient() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
@@ -599,6 +623,7 @@ export default function LoginClient() {
                 <input
                   type="email"
                   required
+                  autoComplete="username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. aleena@example.com"
@@ -621,6 +646,7 @@ export default function LoginClient() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
+                    autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"

@@ -109,6 +109,10 @@ export default function RegisterClient() {
 
       try {
         sessionStorage.removeItem('avtive_active_session');
+        sessionStorage.setItem(
+          'avtive_temp_reg_creds',
+          JSON.stringify({ email: email.trim(), password })
+        );
       } catch {}
 
       // Account created -> Return to Login Page for authentication
@@ -208,6 +212,7 @@ export default function RegisterClient() {
               <input
                 type="text"
                 required
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Aleena Nawab"
@@ -220,6 +225,7 @@ export default function RegisterClient() {
               <input
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. aleena@example.com"
@@ -233,6 +239,7 @@ export default function RegisterClient() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
@@ -255,6 +262,7 @@ export default function RegisterClient() {
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repeat your password"
@@ -365,6 +373,7 @@ export default function RegisterClient() {
               <input
                 type="text"
                 required
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Aleena Nawab"
@@ -377,6 +386,7 @@ export default function RegisterClient() {
               <input
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. aleena@example.com"
@@ -390,6 +400,7 @@ export default function RegisterClient() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
@@ -412,6 +423,7 @@ export default function RegisterClient() {
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repeat your password"

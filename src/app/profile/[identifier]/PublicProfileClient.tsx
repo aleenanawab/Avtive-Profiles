@@ -329,11 +329,14 @@ function PublicProfileClientInner({
           }
         }}
         onReturnToView={(updatedProfile) => {
-          if (updatedProfile) {
-            setProfile(updatedProfile);
-            if (updatedProfile.theme) setActiveTheme(updatedProfile.theme);
-          }
+          const fresh = updatedProfile || profile;
+          setProfile(fresh);
+          if (fresh.theme) setActiveTheme(fresh.theme);
           setIsEditing(false);
+          const slug = fresh.slug || fresh.id || profile.slug || profile.id;
+          if (slug) {
+            router.replace(`/profile/${encodeURIComponent(slug)}`);
+          }
         }}
         onCancel={() => {
           // Navigation ONLY — Discard any unsaved changes without saving
