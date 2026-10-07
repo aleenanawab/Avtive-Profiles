@@ -51,12 +51,12 @@ export function DualScreenWorkspace({
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col justify-start xl:justify-center bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-x-auto ${className}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-start bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-x-auto ${className}`}>
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex-1 w-full p-2.5 sm:p-5 lg:p-7 flex flex-row items-stretch justify-start xl:justify-center gap-6 max-w-[1920px] mx-auto my-auto box-border min-w-[880px] sm:min-w-[1000px] xl:min-w-0">
+      <div className="flex-1 w-full p-2.5 sm:p-5 lg:p-7 flex flex-row items-start justify-start xl:justify-center gap-6 max-w-[1920px] mx-auto box-border min-w-[880px] sm:min-w-[1000px] xl:min-w-0">
         
         {/* ======================================================================= */}
         {/* SCREEN 1: DESKTOP WORKING SCREEN (Clean Minimalist Window)              */}
@@ -128,7 +128,7 @@ export function DualScreenWorkspace({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center justify-center box-border transition-colors flex"
+          className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center justify-start sticky top-2.5 sm:top-5 lg:top-7 self-start box-border transition-colors flex"
         >
           {/* Smartphone Chassis Frame (Standard 375px × 667px) */}
           <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-xl shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors box-border">
