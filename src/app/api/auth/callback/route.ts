@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { supabaseAdmin, supabase, supabaseUrl, supabaseAnonKey, SUPABASE_AUTH_STORAGE_KEY } from '@/lib/supabase';
+import { supabaseUrl, supabaseAnonKey, SUPABASE_AUTH_STORAGE_KEY } from '@/lib/supabase';
 import { getUserByEmail, getUserById, createUser, getProfileByUserId, getProfilesByUserId } from '@/lib/db';
 import { setSessionCookie, setReturningUserCookie } from '@/lib/auth';
 
@@ -25,67 +25,118 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Exchange the auth code for a Supabase session
-    let authUser: any = null;
+    // 1. Locate the PKCE code verifier cookie set during signInWithOAuth
+    const findCodeVerifier = (): string | null => {
+      // Direct lookup by expected storage key
+      const expectedKey = `${SUPABASE_AUTH_STORAGE_KEY}-code-verifier`;
+      const direct = request.cookies.get(expectedKey)?.value;
+      if (direct) {
+        return direct.includes('%') ? decodeURIComponent(direct) : direct;
+      }
 
-    // Server-side storage adapter reading the incoming PKCE code_verifier cookie
-    const serverStorage = {
-      getItem: (key: string) => {
-        const direct = request.cookies.get(key)?.value;
-        if (direct) return direct.includes('%') ? decodeURIComponent(direct) : direct;
-        if (key.includes('code-verifier')) {
-          const allCookies = request.cookies.getAll();
-          const match = allCookies.find(c => c.name.includes('code-verifier'));
-          if (match?.value) return match.value.includes('%') ? decodeURIComponent(match.value) : match.value;
+      // Search all cookies for code-verifier (excluding 'flows' index list)
+      const allCookies = request.cookies.getAll();
+      for (const cookie of allCookies) {
+        if (
+          cookie.name.includes('code-verifier') &&
+          !cookie.name.includes('flows') &&
+          cookie.value
+        ) {
+          const val = cookie.value.includes('%') ? decodeURIComponent(cookie.value) : cookie.value;
+          if (!val.startsWith('[') && !val.startsWith('%5B')) {
+            return val;
+          }
         }
-        return null;
-      },
-      setItem: () => {},
-      removeItem: () => {},
+      }
+      return null;
     };
 
-    const serverAuthClient = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        storageKey: SUPABASE_AUTH_STORAGE_KEY,
-        storage: serverStorage,
-        persistSession: false,
-        autoRefreshToken: false,
-      }
-    });
-
-    try {
-      const flowId = requestUrl.searchParams.get('sb_flow_id');
-      const { data: sessionData, error: exchangeError } = await serverAuthClient.auth.exchangeCodeForSession(
-        code,
-        flowId ? { flowId } : undefined
-      );
-      if (!exchangeError && sessionData?.user) {
-        authUser = sessionData.user;
-      }
-    } catch (e) {
-      console.error('Server client code exchange error:', e);
-    }
-
-    if (!authUser) {
+    const verifierRaw = findCodeVerifier();
+    let cleanVerifier = verifierRaw ? verifierRaw.trim() : null;
+    if (cleanVerifier && cleanVerifier.startsWith('"') && cleanVerifier.endsWith('"')) {
       try {
-        const { data: sessionData, error: exchangeError } = await supabaseAdmin.auth.exchangeCodeForSession(code);
+        cleanVerifier = JSON.parse(cleanVerifier);
+      } catch {}
+    }
+    const verifierJson = cleanVerifier ? JSON.stringify(cleanVerifier) : null;
+
+    let authUser: any = null;
+
+    if (verifierJson && cleanVerifier) {
+      // Server-side storage adapter reading the incoming PKCE code_verifier
+      const serverStorage = {
+        getItem: (key: string) => {
+          if (key.includes('code-verifier') && !key.includes('flows')) {
+            return verifierJson;
+          }
+          const val = request.cookies.get(key)?.value;
+          if (!val) return null;
+          const decoded = val.includes('%') ? decodeURIComponent(val) : val;
+          try {
+            JSON.parse(decoded);
+            return decoded;
+          } catch {
+            return JSON.stringify(decoded);
+          }
+        },
+        setItem: () => {},
+        removeItem: () => {},
+      };
+
+      const serverAuthClient = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          storageKey: SUPABASE_AUTH_STORAGE_KEY,
+          storage: serverStorage,
+          persistSession: false,
+          autoRefreshToken: false,
+          flowType: 'pkce',
+        }
+      });
+
+      try {
+        const flowId = requestUrl.searchParams.get('sb_flow_id');
+        const { data: sessionData, error: exchangeError } = await serverAuthClient.auth.exchangeCodeForSession(
+          code,
+          flowId ? { flowId } : undefined
+        );
         if (!exchangeError && sessionData?.user) {
           authUser = sessionData.user;
+        } else if (exchangeError) {
+          console.error('OAuth exchangeCodeForSession error:', exchangeError);
         }
       } catch (e) {
-        console.error('Admin client code exchange error:', e);
+        console.error('OAuth exchangeCodeForSession exception:', e);
       }
-    }
 
-    if (!authUser) {
-      try {
-        const { data: publicSessionData, error: publicErr } = await supabase.auth.exchangeCodeForSession(code);
-        if (!publicErr && publicSessionData?.user) {
-          authUser = publicSessionData.user;
+      // Direct token endpoint fallback using cleanVerifier if client method failed
+      if (!authUser) {
+        try {
+          const tokenRes = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=pkce`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supabaseAnonKey,
+            },
+            body: JSON.stringify({
+              auth_code: code,
+              code_verifier: cleanVerifier,
+            }),
+          });
+          if (tokenRes.ok) {
+            const tokenData = await tokenRes.json();
+            if (tokenData?.user) {
+              authUser = tokenData.user;
+            }
+          } else {
+            const errBody = await tokenRes.text();
+            console.error('Direct token endpoint fallback response:', tokenRes.status, errBody);
+          }
+        } catch (fetchErr) {
+          console.error('Direct token fetch error:', fetchErr);
         }
-      } catch (e) {
-        console.error('Public client code exchange error:', e);
       }
+    } else {
+      console.error('No PKCE code verifier cookie found in request');
     }
 
     if (!authUser) {

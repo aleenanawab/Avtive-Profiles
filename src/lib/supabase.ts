@@ -24,8 +24,11 @@ const hybridStorage = isClient ? {
   },
   setItem: (key: string, value: string): void => {
     try {
-      const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-      document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=3600; SameSite=Lax${secure}`;
+      // Mirror PKCE code-verifier to cookies for SSR callback exchange
+      if (key.includes('code-verifier')) {
+        const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=3600; SameSite=Lax${secure}`;
+      }
     } catch {}
     try {
       window.localStorage.setItem(key, value);
@@ -33,7 +36,9 @@ const hybridStorage = isClient ? {
   },
   removeItem: (key: string): void => {
     try {
-      document.cookie = `${encodeURIComponent(key)}=; path=/; max-age=0`;
+      if (key.includes('code-verifier')) {
+        document.cookie = `${encodeURIComponent(key)}=; path=/; max-age=0`;
+      }
     } catch {}
     try {
       window.localStorage.removeItem(key);
@@ -47,17 +52,24 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storageKey: SUPABASE_AUTH_STORAGE_KEY,
     storage: hybridStorage,
     flowType: 'pkce',
+    detectSessionInUrl: false,
+    persistSession: true,
+    autoRefreshToken: false,
   }
 });
 
 // Admin / Server client with elevated privileges for server route handlers
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    storageKey: 'sb-avtive-admin-token',
-    persistSession: false,
-    autoRefreshToken: false,
-  }
-});
+// Instantiated ONLY on the server to prevent duplicate GoTrueClient instances in the browser
+export const supabaseAdmin = typeof window === 'undefined'
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        storageKey: 'sb-avtive-admin-token',
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      }
+    })
+  : (null as any);
 
 export const PROFILES_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'profiles';
 export const LINKS_STORAGE_BUCKET = process.env.SUPABASE_LINKS_BUCKET || 'links';
