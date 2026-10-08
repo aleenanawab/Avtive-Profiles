@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin, supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, supabase, supabaseUrl, supabaseAnonKey, SUPABASE_AUTH_STORAGE_KEY } from '@/lib/supabase';
 import { getUserByEmail, getUserById, createUser, getProfileByUserId, getProfilesByUserId } from '@/lib/db';
 import { setSessionCookie, setReturningUserCookie } from '@/lib/auth';
 
@@ -27,13 +28,53 @@ export async function GET(request: NextRequest) {
     // Exchange the auth code for a Supabase session
     let authUser: any = null;
 
+    // Server-side storage adapter reading the incoming PKCE code_verifier cookie
+    const serverStorage = {
+      getItem: (key: string) => {
+        const direct = request.cookies.get(key)?.value;
+        if (direct) return direct.includes('%') ? decodeURIComponent(direct) : direct;
+        if (key.includes('code-verifier')) {
+          const allCookies = request.cookies.getAll();
+          const match = allCookies.find(c => c.name.includes('code-verifier'));
+          if (match?.value) return match.value.includes('%') ? decodeURIComponent(match.value) : match.value;
+        }
+        return null;
+      },
+      setItem: () => {},
+      removeItem: () => {},
+    };
+
+    const serverAuthClient = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storageKey: SUPABASE_AUTH_STORAGE_KEY,
+        storage: serverStorage,
+        persistSession: false,
+        autoRefreshToken: false,
+      }
+    });
+
     try {
-      const { data: sessionData, error: exchangeError } = await supabaseAdmin.auth.exchangeCodeForSession(code);
+      const flowId = requestUrl.searchParams.get('sb_flow_id');
+      const { data: sessionData, error: exchangeError } = await serverAuthClient.auth.exchangeCodeForSession(
+        code,
+        flowId ? { flowId } : undefined
+      );
       if (!exchangeError && sessionData?.user) {
         authUser = sessionData.user;
       }
     } catch (e) {
-      console.error('Admin client code exchange error:', e);
+      console.error('Server client code exchange error:', e);
+    }
+
+    if (!authUser) {
+      try {
+        const { data: sessionData, error: exchangeError } = await supabaseAdmin.auth.exchangeCodeForSession(code);
+        if (!exchangeError && sessionData?.user) {
+          authUser = sessionData.user;
+        }
+      } catch (e) {
+        console.error('Admin client code exchange error:', e);
+      }
     }
 
     if (!authUser) {
@@ -118,6 +159,13 @@ export async function GET(request: NextRequest) {
     response.headers.set('Cache-Control', 'no-store, max-age=0');
     await setSessionCookie(sessionUser, response);
     setReturningUserCookie(response);
+
+    // Clean up transient code-verifier cookie once exchanged
+    request.cookies.getAll().forEach(c => {
+      if (c.name.includes('code-verifier')) {
+        response.cookies.delete(c.name);
+      }
+    });
 
     return response;
 

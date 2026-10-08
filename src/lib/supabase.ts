@@ -1,16 +1,59 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://hprlnnbnzomgvscmyane.supabase.co';
+export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://hprlnnbnzomgvscmyane.supabase.co';
 const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || fallbackKey;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
+export const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || fallbackKey;
+export const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
+
+export const SUPABASE_AUTH_STORAGE_KEY = 'sb-avtive-auth-token';
+
+const isClient = typeof window !== 'undefined' && typeof document !== 'undefined';
+
+// Hybrid cookie + localStorage storage adapter for browser client:
+// Ensures OAuth PKCE code_verifier is accessible in document.cookie for SSR route handlers
+const hybridStorage = isClient ? {
+  getItem: (key: string): string | null => {
+    try {
+      const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${encodeURIComponent(key)}=([^;]*)`));
+      if (match) return decodeURIComponent(match[1]);
+    } catch {}
+    try {
+      return window.localStorage.getItem(key);
+    } catch {}
+    return null;
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=3600; SameSite=Lax${secure}`;
+    } catch {}
+    try {
+      window.localStorage.setItem(key, value);
+    } catch {}
+  },
+  removeItem: (key: string): void => {
+    try {
+      document.cookie = `${encodeURIComponent(key)}=; path=/; max-age=0`;
+    } catch {}
+    try {
+      window.localStorage.removeItem(key);
+    } catch {}
+  }
+} : undefined;
 
 // Public client for browser / client-side operations
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storageKey: SUPABASE_AUTH_STORAGE_KEY,
+    storage: hybridStorage,
+    flowType: 'pkce',
+  }
+});
 
 // Admin / Server client with elevated privileges for server route handlers
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
+    storageKey: 'sb-avtive-admin-token',
     persistSession: false,
     autoRefreshToken: false,
   }
