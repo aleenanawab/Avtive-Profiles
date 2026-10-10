@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseUrl, supabaseAnonKey, SUPABASE_AUTH_STORAGE_KEY } from '@/lib/supabase';
 import { getUserByEmail, getUserById, createUser, getProfileByUserId, getProfilesByUserId } from '@/lib/db';
-import { setSessionCookie, setReturningUserCookie } from '@/lib/auth';
+import { setSessionCookie, setReturningUserCookie, sanitizeReturnUrl, resolveReturnUrlForExistingUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -189,16 +189,14 @@ export async function GET(request: NextRequest) {
       avatar: avatarUrl || user.avatar
     };
 
+    const safeNext = sanitizeReturnUrl(next, null);
     let destinationPath = '/onboarding/role';
 
     if (hasCompletedOnboarding) {
       // Completed user: redirect directly to their own profile in view mode (or valid returnUrl)
-      if (next && !next.includes('/login') && !next.includes('/register') && !next.includes('/onboarding')) {
-        destinationPath = next;
-      } else {
-        const targetSlug = profile?.slug || profile?.id || profiles?.[0]?.slug || profiles?.[0]?.id || user.id;
-        destinationPath = `/profile/${targetSlug}`;
-      }
+      const targetSlug = profile?.slug || profile?.id || profiles?.[0]?.slug || profiles?.[0]?.id || user.id;
+      const userProfileUrl = `/profile/${targetSlug}`;
+      destinationPath = resolveReturnUrlForExistingUser(safeNext, userProfileUrl);
     } else {
       // New user or incomplete onboarding: redirect to role onboarding step
       destinationPath = '/onboarding/role';

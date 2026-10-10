@@ -875,8 +875,10 @@ export function ProfileEditorProvider({
           ? `✓ Created new profile persona "${savedProfile.profileName || savedProfile.name}"!`
           : '✓ Profile updated and synchronized successfully!',
       });
+
+      onSaveSuccess?.(savedProfile);
     },
-    []
+    [onSaveSuccess]
   );
 
   // ── Switch Profile Persona ────────────────────────────────────────────────

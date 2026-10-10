@@ -18,6 +18,8 @@ import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { supabase } from '@/lib/supabase';
 
+import { sanitizeReturnUrl, resolveReturnUrlForExistingUser } from '@/lib/utils';
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function LoginClient() {
@@ -110,7 +112,8 @@ export default function LoginClient() {
 
   const getReturnUrl = () => {
     if (typeof window === 'undefined') return null;
-    return new URLSearchParams(window.location.search).get('returnUrl');
+    const raw = new URLSearchParams(window.location.search).get('returnUrl');
+    return sanitizeReturnUrl(raw, null);
   };
 
   // Login Flow: Whenever anyone visits/opens the website, always show the Login page first.
@@ -120,7 +123,12 @@ export default function LoginClient() {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const redirectUrl = `${window.location.origin}/auth/callback`;
+      const returnUrl = getReturnUrl();
+      const callbackBase = `${window.location.origin}/auth/callback`;
+      const redirectUrl = returnUrl
+        ? `${callbackBase}?returnUrl=${encodeURIComponent(returnUrl)}`
+        : callbackBase;
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -201,10 +209,8 @@ export default function LoginClient() {
 
       if (data.hasProfile && (data.profileSlug || data.user?.id)) {
         // EXISTING USER DETECTED -> Direct to their own profile in VIEW MODE
-        targetPath = `/profile/${data.profileSlug || data.user.id}`;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/onboarding')) {
-          targetPath = returnUrl;
-        }
+        const userProfileUrl = `/profile/${data.profileSlug || data.user.id}`;
+        targetPath = resolveReturnUrlForExistingUser(returnUrl, userProfileUrl);
       } else {
         // NEW USER DETECTED -> Must complete Role -> Theme/Skip -> Existing Editor
         try {
@@ -258,11 +264,8 @@ export default function LoginClient() {
       }
 
       setForgotSuccessMessage(
-        data.message || 'If an account exists with this email, a password reset link has been sent.'
+        data.message || 'If an account exists with this email address, a password reset link has been sent.'
       );
-      if (data.resetUrl) {
-        setForgotResetUrl(data.resetUrl);
-      }
       setIsSendingReset(false);
     } catch (err) {
       console.error('Forgot password error:', err);

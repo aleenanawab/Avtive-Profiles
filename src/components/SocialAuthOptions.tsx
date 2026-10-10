@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, X, ArrowRight } from 'lucide-react';
+import { sanitizeReturnUrl, resolveReturnUrlForExistingUser } from '@/lib/utils';
 
 export function GoogleIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
@@ -83,16 +84,15 @@ export function SocialAuthOptions({ onSuccess, onError }: SocialAuthOptionsProps
       setIsModalOpen(false);
       if (onSuccess) onSuccess();
 
-      const returnUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('returnUrl') : null;
+      const rawReturnUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('returnUrl') : null;
+      const returnUrl = sanitizeReturnUrl(rawReturnUrl, null);
 
       if (data.hasProfile && (data.profileSlug || data.user?.id)) {
         // EXISTING SOCIAL USER -> Direct to their own profile in VIEW MODE
         const targetSlug = data.profileSlug || data.user?.id;
-        if (returnUrl && !returnUrl.includes('/login') && !returnUrl.includes('/register') && !returnUrl.includes('/create-profile') && !returnUrl.includes('/onboarding')) {
-          router.push(returnUrl);
-        } else {
-          router.push(`/profile/${targetSlug}`);
-        }
+        const userProfileUrl = `/profile/${targetSlug}`;
+        const destination = resolveReturnUrlForExistingUser(returnUrl, userProfileUrl);
+        router.push(destination);
       } else {
         // NEW SOCIAL USER -> Must complete Role -> Theme/Skip -> Existing Editor
         try {

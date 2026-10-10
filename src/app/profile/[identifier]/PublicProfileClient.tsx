@@ -176,23 +176,24 @@ function PublicProfileClientInner({
     }
   }, []);
 
-  // Check sessionStorage for post-creation edit mode or URL param (Owner only)
+  // Synchronize edit mode with browser URL and listen to popstate (back/forward)
   useEffect(() => {
-    if (typeof window !== 'undefined' && isOwner) {
-      try {
-        const storedEditTarget = sessionStorage.getItem('avtive_open_edit_mode');
-        const targetSlug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
-        if (storedEditTarget && (storedEditTarget === targetSlug || storedEditTarget === 'true' || storedEditTarget === (profile.slug || profile.id))) {
-          setIsEditing(true);
-          sessionStorage.removeItem('avtive_open_edit_mode');
-        }
-      } catch {}
+    if (typeof window === 'undefined') return;
 
-      if (window.location.search.includes('edit=')) {
-        window.history.replaceState(null, '', window.location.pathname);
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const isEditParam = params.get('edit') === 'true' || params.get('edit') === '1';
+      if (isEditParam && isOwner) {
+        setIsEditing(true);
+      } else if (!isEditParam) {
+        setIsEditing(false);
       }
-    }
-  }, [profile.id, profile.slug, initialProfile.id, initialProfile.slug, isOwner]);
+    };
+
+    syncFromUrl();
+    window.addEventListener('popstate', syncFromUrl);
+    return () => window.removeEventListener('popstate', syncFromUrl);
+  }, [isOwner]);
 
   // Hydrate updated profile from localStorage on mount & listen to real-time updates
   useEffect(() => {
@@ -316,6 +317,27 @@ function PublicProfileClientInner({
     }
   };
 
+  const handleOpenEditMode = () => {
+    if (!isOwner) return;
+    setIsEditing(true);
+    const slug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
+    if (slug && typeof window !== 'undefined') {
+      window.history.pushState(null, '', `/profile/${encodeURIComponent(slug)}?edit=true`);
+    }
+  };
+
+  const handleReturnToView = (updatedProfile?: ProfileData) => {
+    const fresh = updatedProfile || profile;
+    setProfile(fresh);
+    if (fresh.theme) setActiveTheme(fresh.theme);
+    setIsEditing(false);
+    const slug = fresh.slug || fresh.id || profile.slug || profile.id;
+    if (slug && typeof window !== 'undefined') {
+      window.history.pushState(null, '', `/profile/${encodeURIComponent(slug)}`);
+    }
+    router.refresh();
+  };
+
   // Single shared editor: switches on the same page with no /edit route and no navigation
   if (isEditing && isOwner) {
     return (
@@ -329,25 +351,10 @@ function PublicProfileClientInner({
           }
         }}
         onReturnToView={(updatedProfile) => {
-          const fresh = updatedProfile || profile;
-          setProfile(fresh);
-          if (fresh.theme) setActiveTheme(fresh.theme);
-          setIsEditing(false);
-          const slug = fresh.slug || fresh.id || profile.slug || profile.id;
-          if (slug) {
-            router.replace(`/profile/${encodeURIComponent(slug)}`);
-          }
+          handleReturnToView(updatedProfile);
         }}
         onCancel={() => {
-          // Navigation ONLY — Discard any unsaved changes without saving
-          if (typeof window !== 'undefined' && (document.referrer?.includes('/onboarding') || (initialIsEditing && window.history.length > 1))) {
-            router.back();
-          } else if (initialIsEditing) {
-            router.push('/onboarding/theme');
-          } else {
-            setIsEditing(false);
-            router.replace(`/profile/${encodeURIComponent(profile.slug || profile.id)}`);
-          }
+          handleReturnToView();
         }}
       />
     );
@@ -358,7 +365,7 @@ function PublicProfileClientInner({
       {isOwner && (
         <button
           type="button"
-          onClick={() => setIsEditing(true)}
+          onClick={handleOpenEditMode}
           className="px-2.5 py-1 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95"
           title="Edit Profile"
         >
@@ -378,7 +385,7 @@ function PublicProfileClientInner({
         onSelectProfileType={(type) => setProfileType(type)}
         canEdit={isOwner}
         isEditing={false}
-        onOpenEdit={() => setIsEditing(true)}
+        onOpenEdit={handleOpenEditMode}
         onOpenShare={() => setIsShareModalOpen(true)}
         isDark={isDark}
         onToggleTheme={handleToggleTheme}
@@ -443,8 +450,8 @@ function PublicProfileClientInner({
             canEdit={isOwner}
             isEditing={false}
             isConnected={false}
-            onOpenEdit={() => setIsEditing(true)}
-            onCancelEdit={() => setIsEditing(false)}
+            onOpenEdit={handleOpenEditMode}
+            onCancelEdit={handleReturnToView}
             onSaveEdits={handleSaveEdits}
             onSaveContact={handleSaveContact}
             onOpenShare={() => setIsShareModalOpen(true)}
@@ -476,8 +483,8 @@ function PublicProfileClientInner({
         canEdit={isOwner}
         isEditing={false}
         isConnected={false}
-        onOpenEdit={() => setIsEditing(true)}
-        onCancelEdit={() => setIsEditing(false)}
+        onOpenEdit={handleOpenEditMode}
+        onCancelEdit={handleReturnToView}
         onSaveEdits={handleSaveEdits}
         onSaveContact={handleSaveContact}
         onOpenShare={() => setIsShareModalOpen(true)}
