@@ -127,6 +127,7 @@ export function DesktopProfileSidebar({
     return DESKTOP_SIDEBAR_SECTIONS.filter(s => {
       if (s.category !== 'core') return false;
       if (!isCompany && (s.key === 'teamMembers' || s.key === 'companyInfo')) return false;
+      if (isCompany && (s.key === 'personalDetails' || s.key === 'experience' || s.key === 'education')) return false;
       return true;
     });
   }, [isCompany]);

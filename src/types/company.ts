@@ -34,6 +34,7 @@ export interface CompanyMemberRecord {
   avatarUrl: string;
   role: CompanyRole;
   status: CompanyMemberStatus;
+  profileUrl?: string;
   inviteToken: string | null; // sha256 hash at rest
   inviteExpiresAt: string | null;
   invitedByUserId: string | null;
@@ -78,6 +79,7 @@ export interface AddCompanyMemberInput {
   department?: string;
   bio?: string;
   avatarUrl?: string;
+  profileUrl?: string;
   role?: CompanyRole;
 }
 
@@ -87,6 +89,7 @@ export interface UpdateCompanyMemberInput {
   department?: string;
   bio?: string;
   avatarUrl?: string;
+  profileUrl?: string;
   role?: CompanyRole;
 }
 

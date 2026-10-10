@@ -437,7 +437,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'experience':
-                if (!isSectionVisible('experience')) return null;
+                if (isCompany || !isSectionVisible('experience')) return null;
                 return (
                   <ExperienceSection 
                     key="experience" 
@@ -449,7 +449,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'education':
-                if (!isSectionVisible('education')) return null;
+                if (isCompany || !isSectionVisible('education')) return null;
                 return (
                   <EducationSection 
                     key="education" 
@@ -474,7 +474,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'certifications':
-                if (!isSectionVisible('certifications')) return null;
+                if (isCompany || !isSectionVisible('certifications')) return null;
                 return (
                   <CertificationsSection 
                     key="certifications" 
@@ -486,7 +486,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'languages':
-                if (!isSectionVisible('languages')) return null;
+                if (isCompany || !isSectionVisible('languages')) return null;
                 return (
                   <LanguagesSection 
                     key="languages" 
@@ -498,7 +498,7 @@ export function AvtiveDigitalCard({
                 );
 
               case 'recommendations':
-                if (!isSectionVisible('recommendations')) return null;
+                if (isCompany || !isSectionVisible('recommendations')) return null;
                 return (
                   <RecommendationsSection 
                     key="recommendations" 

@@ -704,7 +704,10 @@ export function DesktopProfileContent({
 
                   <div className="flex-1 overflow-y-auto space-y-0.5 pr-0.5">
                     {DESKTOP_SIDEBAR_SECTIONS
-                      .filter((sec) => isCompany || (sec.key !== 'teamMembers' && sec.key !== 'companyInfo'))
+                      .filter((sec) => isCompany 
+                        ? (sec.key !== 'personalDetails' && sec.key !== 'experience' && sec.key !== 'education')
+                        : (sec.key !== 'teamMembers' && sec.key !== 'companyInfo')
+                      )
                       .map((sec) => {
                       const Icon = sec.icon;
                       const isActive = activeSection === sec.key;
@@ -1172,7 +1175,7 @@ export function DesktopProfileContent({
         {/* ══════════════════════════════════════════════════════════════════════════ */}
         {/* 3. PERSONAL DETAILS SECTION                                                */}
         {/* ══════════════════════════════════════════════════════════════════════════ */}
-        {renderSectionCard(
+        {!isCompany && renderSectionCard(
           'personalDetails',
           'Personal Details',
           FileText,
@@ -1334,7 +1337,7 @@ export function DesktopProfileContent({
         {/* ══════════════════════════════════════════════════════════════════════════ */}
         {/* 5. WORK EXPERIENCE SECTION                                                 */}
         {/* ══════════════════════════════════════════════════════════════════════════ */}
-        {renderSectionCard(
+        {!isCompany && renderSectionCard(
           'experience',
           'Work Experience',
           Briefcase,
@@ -1461,7 +1464,7 @@ export function DesktopProfileContent({
         {/* ══════════════════════════════════════════════════════════════════════════ */}
         {/* 6. EDUCATION & CREDENTIALS SECTION                                         */}
         {/* ══════════════════════════════════════════════════════════════════════════ */}
-        {renderSectionCard(
+        {!isCompany && renderSectionCard(
           'education',
           'Education & Credentials',
           GraduationCap,

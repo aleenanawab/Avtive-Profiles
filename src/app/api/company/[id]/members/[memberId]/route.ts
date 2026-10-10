@@ -42,10 +42,23 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     const body = await request.json().catch(() => ({}));
     const input: UpdateCompanyMemberInput = {};
 
-    if (typeof body.name === 'string') input.name = body.name.trim();
+    if (typeof body.name === 'string') {
+      const trimmedName = body.name.trim();
+      if (trimmedName.length < 2) {
+        return NextResponse.json({ error: 'Validation error: Member name must be at least 2 characters.' }, { status: 400 });
+      }
+      input.name = trimmedName;
+    }
     if (typeof body.title === 'string') input.title = body.title.trim();
     if (typeof body.department === 'string') input.department = body.department.trim();
     if (typeof body.bio === 'string') input.bio = body.bio.trim();
+    if (typeof body.profileUrl === 'string') {
+      const trimmedProfileUrl = body.profileUrl.trim();
+      if (trimmedProfileUrl && !/^(https?:\/\/|\/profile\/|[a-zA-Z0-9_\-\.]+)/i.test(trimmedProfileUrl)) {
+        return NextResponse.json({ error: 'Validation error: Profile URL must be a valid web link or profile slug.' }, { status: 400 });
+      }
+      input.profileUrl = trimmedProfileUrl;
+    }
     if (body.role) input.role = body.role;
 
     if (body.avatarUrl) {

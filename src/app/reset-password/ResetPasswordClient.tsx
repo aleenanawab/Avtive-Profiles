@@ -28,12 +28,18 @@ export default function ResetPasswordClient() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [hasValidTokenParam, setHasValidTokenParam] = useState(true);
+  const [returnUrl, setReturnUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const sp = new URLSearchParams(window.location.search);
       const tokenParam = sp.get('token');
       const emailParam = sp.get('email');
+      const rawReturn = sp.get('returnUrl');
+
+      if (rawReturn) {
+        setReturnUrl(rawReturn);
+      }
 
       // Also check hash for Supabase auth recovery flow: #access_token=...&type=recovery
       const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -142,7 +148,12 @@ export default function ResetPasswordClient() {
           <div className="pt-3">
             <button
               type="button"
-              onClick={() => router.push('/login')}
+              onClick={() => {
+                const target = returnUrl
+                  ? `/login?reset=success&returnUrl=${encodeURIComponent(returnUrl)}`
+                  : '/login?reset=success';
+                router.push(target);
+              }}
               className="w-full py-3 px-5 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-600/20 dark:shadow-black/30 transition-all cursor-pointer"
             >
               Return to Sign In

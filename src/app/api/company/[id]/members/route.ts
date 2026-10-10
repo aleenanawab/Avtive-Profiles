@@ -147,23 +147,56 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const email = typeof body.email === 'string' ? body.email.toLowerCase().trim() : '';
+    const rawName = typeof body.name === 'string' ? body.name.trim() : '';
+    if (!rawName || rawName.length < 2) {
+      return NextResponse.json({ error: 'Validation error: Member name is required and must be at least 2 characters.' }, { status: 400 });
+    }
 
-    if (!email) {
-      return NextResponse.json({ error: 'Validation error: Email is required.' }, { status: 400 });
+    let email = typeof body.email === 'string' ? body.email.toLowerCase().trim() : '';
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return NextResponse.json({ error: 'Validation error: Please enter a valid email address.' }, { status: 400 });
+      }
+    } else {
+      // Auto-generate roster email for internal roster additions
+      const slugBase = company.slug || 'company';
+      email = `member-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}@${slugBase}.local`;
+    }
+
+    // Validate avatar image URL format and size if provided
+    const avatarUrl = typeof body.avatarUrl === 'string' ? body.avatarUrl.trim() : undefined;
+    if (avatarUrl) {
+      if (avatarUrl.startsWith('data:image/')) {
+        // Enforce max 5MB on base64 data URIs
+        if (avatarUrl.length > 5 * 1024 * 1024 * 1.37) {
+          return NextResponse.json({ error: 'Validation error: Member photo image size exceeds the 5MB limit.' }, { status: 400 });
+        }
+      } else if (!/^https?:\/\/.+/i.test(avatarUrl)) {
+        return NextResponse.json({ error: 'Validation error: Photo must be a valid HTTP(S) URL or image data.' }, { status: 400 });
+      }
+    }
+
+    // Validate profile URL format if provided
+    const profileUrl = typeof body.profileUrl === 'string' ? body.profileUrl.trim() : undefined;
+    if (profileUrl) {
+      if (!/^(https?:\/\/|\/profile\/|[a-zA-Z0-9_\-\.]+)/i.test(profileUrl)) {
+        return NextResponse.json({ error: 'Validation error: Profile URL must be a valid web link or profile slug.' }, { status: 400 });
+      }
     }
 
     const input: AddCompanyMemberInput = {
       email,
-      name: typeof body.name === 'string' ? body.name.trim() : email.split('@')[0],
+      name: rawName,
       title: typeof body.title === 'string' ? body.title.trim() : 'Team Member',
       department: typeof body.department === 'string' ? body.department.trim() : 'General',
       bio: typeof body.bio === 'string' ? body.bio.trim() : '',
+      profileUrl,
       role: body.role || 'MEMBER'
     };
 
-    if (body.avatarUrl) {
-      input.avatarUrl = await ensureSupabaseAssetUrl(body.avatarUrl, 'avatars');
+    if (avatarUrl) {
+      input.avatarUrl = await ensureSupabaseAssetUrl(avatarUrl, 'avatars');
     }
 
     const result = await addCompanyMember(company.id, input, session.id);

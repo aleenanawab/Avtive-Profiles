@@ -20,17 +20,23 @@ import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 export default function ForgotPasswordClient() {
   const [email, setEmail] = useState('');
+  const [returnUrl, setReturnUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [generatedResetUrl, setGeneratedResetUrl] = useState<string | null>(null);
-  const [hasCopied, setHasCopied] = useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search);
+      const raw = sp.get('returnUrl');
+      if (raw) setReturnUrl(raw);
+    }
+  }, []);
 
   const handleSendResetLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
-    setGeneratedResetUrl(null);
 
     if (!email.trim() || !email.includes('@')) {
       setErrorMessage('Please enter a valid email address.');
@@ -54,23 +60,13 @@ export default function ForgotPasswordClient() {
         return;
       }
 
-      setSuccessMessage(data.message || `Password reset link sent to ${email}.`);
-      if (data.resetUrl) {
-        setGeneratedResetUrl(data.resetUrl);
-      }
+      setSuccessMessage(data.message || 'If an account exists with this email address, a password reset link has been sent.');
       setIsLoading(false);
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error while requesting password reset.');
       setIsLoading(false);
     }
-  };
-
-  const handleCopyLink = () => {
-    if (!generatedResetUrl) return;
-    navigator.clipboard.writeText(generatedResetUrl);
-    setHasCopied(true);
-    setTimeout(() => setHasCopied(false), 2500);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -112,7 +108,7 @@ export default function ForgotPasswordClient() {
 
         <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-400 flex items-center justify-between">
           <span>Remember your password?</span>
-          <Link href="/login" className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 flex items-center gap-1">
+          <Link href={returnUrl ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : '/login'} className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 flex items-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Sign In</span>
           </Link>
@@ -271,7 +267,7 @@ export default function ForgotPasswordClient() {
       {/* Footer Link */}
       <div className="pt-3 pb-1 text-center text-[11px] text-slate-500 dark:text-slate-400">
         <span>Remembered your password? </span>
-        <Link href="/login" className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 ml-1">
+        <Link href={returnUrl ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : '/login'} className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 ml-1">
           Back to Login
         </Link>
       </div>

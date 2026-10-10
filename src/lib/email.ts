@@ -247,3 +247,18 @@ export async function sendPasswordResetEmail({
     error: lastError ? `Email delivery failed: ${lastError}` : 'Email delivery service is not configured or failed to dispatch. Please configure SMTP settings (SMTP_HOST, SMTP_USER, SMTP_PASS) in .env.local.'
   };
 }
+
+export function isEmailServiceConfigured(): boolean {
+  const hasSmtp = Boolean(
+    process.env.SMTP_USER &&
+    (process.env.SMTP_PASS || process.env.SMTP_PASSWORD) &&
+    (process.env.SMTP_HOST || (process.env.SMTP_USER && process.env.SMTP_USER.endsWith('@gmail.com')))
+  );
+  const hasResend = Boolean(process.env.RESEND_API_KEY);
+  const hasSupabase = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
+  );
+  return hasSmtp || hasResend || hasSupabase;
+}

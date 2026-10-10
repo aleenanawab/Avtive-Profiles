@@ -38,7 +38,7 @@ interface DatabaseSchema {
 
 const globalForDb = globalThis as unknown as { __AVTIVE_DB__?: DatabaseSchema };
 
-async function withTimeout<T>(promise: PromiseLike<T>, ms: number = 2000): Promise<T> {
+async function withTimeout<T = any>(promise: PromiseLike<T> | any, ms: number = 2000): Promise<any> {
   return Promise.race([
     Promise.resolve(promise),
     new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
@@ -578,22 +578,25 @@ export async function createPasswordResetToken(email: string): Promise<{ token: 
 
   const crypto = await import('crypto');
   const token = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
   const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour validity
 
-  user.resetToken = token;
+  // Store hashed token at rest
+  user.resetToken = tokenHash;
   user.resetTokenExpires = expires;
 
-  // Sync token update to Supabase
+  // Sync token hash update to Supabase
   try {
     asyncSyncSupabase(
       supabaseAdmin.from('users').update({
-        reset_token: token,
+        reset_token: tokenHash,
         reset_token_expires: expires
       }).eq('email', normalizedEmail)
     );
   } catch {}
 
   saveDb(db);
+  // Return unhashed token strictly for email dispatch
   return { token, user };
 }
 
@@ -602,11 +605,17 @@ export async function verifyPasswordResetToken(email: string, token: string): Pr
   const user = await getUserByEmail(normalizedEmail);
 
   if (!user) {
-    return { valid: false, error: 'User not found.' };
+    return { valid: false, error: 'Invalid or expired password reset link.' };
   }
 
-  if (!user.resetToken || user.resetToken !== token) {
-    return { valid: false, error: 'Invalid or expired password reset token.' };
+  const crypto = await import('crypto');
+  const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
+
+  // Verify against hashed token, with backward compatibility for any existing plaintext tokens
+  const isMatch = user.resetToken === tokenHash || user.resetToken === token.trim();
+
+  if (!user.resetToken || !isMatch) {
+    return { valid: false, error: 'Invalid or expired password reset link.' };
   }
 
   if (!user.resetTokenExpires || new Date(user.resetTokenExpires).getTime() < Date.now()) {
@@ -623,7 +632,12 @@ export async function resetUserPassword(email: string, token: string, newPasswor
 
   const user = userIndex !== -1 ? db.users[userIndex] : await getUserByEmail(normalizedEmail);
   if (!user) return null;
-  if (!user.resetToken || user.resetToken !== token) return null;
+
+  const crypto = await import('crypto');
+  const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
+  const isMatch = user.resetToken === tokenHash || user.resetToken === token.trim();
+
+  if (!user.resetToken || !isMatch) return null;
   if (!user.resetTokenExpires || new Date(user.resetTokenExpires).getTime() < Date.now()) return null;
 
   user.passwordHash = newPasswordHash;
@@ -792,14 +806,39 @@ export function setProfileResponseCookies(response: any, profile: ProfileData) {
   }
 }
 
+function hydrateProfileData(p: ProfileData | null, db: DatabaseSchema): ProfileData | null {
+  if (!p) return null;
+  if (normalizeProfileType(p.type) === 'team') {
+    const comp = (db.companies || []).find(
+      (c) => c.id === p.id || c.slug === p.slug || (p.userId && c.ownerUserId === p.userId)
+    );
+    const compId = comp ? comp.id : p.id;
+    const members = (db.companyMembers || []).filter((m) => m.companyId === compId && m.status !== 'REMOVED');
+    if (members.length > 0) {
+      p.teamMembers = members.map((m): TeamMemberItem => ({
+        id: m.id,
+        name: m.name,
+        role: m.title || m.role,
+        department: m.department || '',
+        avatar: m.avatarUrl || SUPABASE_DEFAULT_AVATAR,
+        bio: m.bio || '',
+        email: m.email,
+        profileId: m.profileUrl || m.userId || undefined,
+        status: m.status
+      }));
+    }
+  }
+  return p;
+}
+
 export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileData | null> {
   const db = loadDb();
   const clean = idOrSlug.toLowerCase().replace(/^@/, '').trim();
   if (db.profiles[idOrSlug]) {
-    return db.profiles[idOrSlug];
+    return hydrateProfileData(db.profiles[idOrSlug], db);
   }
   if (db.profiles[clean]) {
-    return db.profiles[clean];
+    return hydrateProfileData(db.profiles[clean], db);
   }
 
   // Linear search in case of lowercase/trim difference or username match
@@ -811,11 +850,11 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
       (p.username && p.username.toLowerCase() === clean) ||
       (p.username && p.username.toLowerCase() === idOrSlug.toLowerCase())
   );
-  if (found) return found;
+  if (found) return hydrateProfileData(found, db);
 
   // Fallback: check if idOrSlug matches a userId
   const byUser = Object.values(db.profiles).find((p) => p.userId === idOrSlug);
-  if (byUser) return byUser;
+  if (byUser) return hydrateProfileData(byUser, db);
 
   // Fallback alias for aleena-nawab-professional-profile-agef from live environment
   if (clean === 'aleena-nawab-professional-profile-agef' || clean.includes('aleena-nawab')) {
@@ -823,10 +862,10 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
       (p) => p.slug?.toLowerCase().includes('aleena-nawab') || p.name?.toLowerCase().includes('aleena')
     );
     if (aleenaProf) {
-      return {
+      return hydrateProfileData({
         ...aleenaProf,
         slug: clean === 'aleena-nawab-professional-profile-agef' ? 'aleena-nawab-professional-profile-agef' : aleenaProf.slug
-      };
+      }, db);
     }
   }
 
@@ -856,7 +895,7 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
       normalizeProfiles({ [sp.id]: sp });
       db.profiles[sp.id] = sp;
       db.profiles[sp.slug] = sp;
-      return sp;
+      return hydrateProfileData(sp, db);
     }
   } catch {}
 
@@ -869,8 +908,8 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
     if (lastProfileRaw) {
       const p = JSON.parse(decodeURIComponent(lastProfileRaw));
       if (p && (p.id === idOrSlug || p.slug === idOrSlug || p.userId === idOrSlug)) {
-        if (db.profiles[p.id]) return db.profiles[p.id];
-        if (db.profiles[p.slug]) return db.profiles[p.slug];
+        if (db.profiles[p.id]) return hydrateProfileData(db.profiles[p.id], db);
+        if (db.profiles[p.slug]) return hydrateProfileData(db.profiles[p.slug], db);
       }
     }
   } catch {}
@@ -1168,6 +1207,8 @@ export async function updateProfile(
     sectionVisibility: mergedSectionVisibility,
     sharingSettings: mergedSharingSettings,
     type: updatedData.type ? normalizeProfileType(updatedData.type) : normalizeProfileType(target.type),
+    teamMembers: updatedData.teamMembers !== undefined ? updatedData.teamMembers : target.teamMembers,
+    companyInfo: updatedData.companyInfo !== undefined ? updatedData.companyInfo : target.companyInfo,
     id: target.id, // Prevent tampering with immutable ID
     userId: sessionUserId, // Ensure bound to active session user
     slug: target.slug || (updatedData as any)?.slug || profileId,
@@ -1522,7 +1563,7 @@ export async function syncCompanyToProfile(companyId: string): Promise<ProfileDa
       avatar: m.avatarUrl || SUPABASE_DEFAULT_AVATAR,
       bio: m.bio || '',
       email: m.email,
-      profileId: m.userId || undefined,
+      profileId: m.profileUrl || m.userId || undefined,
       status: m.status
     }));
 
@@ -2171,6 +2212,7 @@ export async function addCompanyMember(
     department: (input.department || 'General').trim(),
     bio: (input.bio || linkedProfile?.bio || '').trim(),
     avatarUrl: input.avatarUrl || linkedProfile?.avatar || existingUser?.avatar || SUPABASE_DEFAULT_AVATAR,
+    profileUrl: input.profileUrl || (linkedProfile ? (linkedProfile.slug || linkedProfile.id) : undefined),
     role: targetRole,
     status: memberStatus,
     inviteToken: isExisting ? null : hashedToken,
@@ -2279,6 +2321,7 @@ export async function updateCompanyMember(
   if (input.department !== undefined) member.department = input.department.trim();
   if (input.bio !== undefined) member.bio = input.bio.trim();
   if (input.avatarUrl !== undefined) member.avatarUrl = input.avatarUrl;
+  if (input.profileUrl !== undefined) member.profileUrl = input.profileUrl;
   if (input.role !== undefined) member.role = input.role;
   member.updatedAt = new Date().toISOString();
 

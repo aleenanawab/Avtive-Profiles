@@ -72,6 +72,7 @@ export function CompanyTeamManager({
   const [newTitle, setNewTitle] = useState('');
   const [newDepartment, setNewDepartment] = useState('');
   const [newAvatar, setNewAvatar] = useState('');
+  const [newProfileUrl, setNewProfileUrl] = useState('');
   const [newRole, setNewRole] = useState<CompanyRole>('MEMBER');
   const [isAdding, setIsAdding] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
@@ -84,6 +85,7 @@ export function CompanyTeamManager({
   const [editTitle, setEditTitle] = useState('');
   const [editDepartment, setEditDepartment] = useState('');
   const [editAvatar, setEditAvatar] = useState('');
+  const [editProfileUrl, setEditProfileUrl] = useState('');
   const [editRole, setEditRole] = useState<CompanyRole>('MEMBER');
   const [isUpdating, setIsUpdating] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -173,7 +175,7 @@ export function CompanyTeamManager({
         bio: m.bio,
         email: m.email,
         status: m.status as ('ACTIVE' | 'PENDING'),
-        profileId: m.userId || undefined
+        profileId: (m as any).profileUrl || m.userId || undefined
       }));
     onUpdateTeamMembers?.(valid);
   };
@@ -183,12 +185,24 @@ export function CompanyTeamManager({
   // Handle Add Member
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEmail || !newEmail.includes('@')) {
+    const trimmedName = newName.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      setAddError('Please enter a member name (at least 2 characters).');
+      return;
+    }
+    const trimmedEmail = newEmail.trim().toLowerCase();
+    if (trimmedEmail && !trimmedEmail.includes('@')) {
       setAddError('Please enter a valid email address.');
       return;
     }
-    if (!newName.trim()) {
-      setAddError('Please enter a member name.');
+    const trimmedAvatar = newAvatar.trim();
+    if (trimmedAvatar && !/^https?:\/\/.+/i.test(trimmedAvatar) && !trimmedAvatar.startsWith('data:image/')) {
+      setAddError('Please enter a valid image URL (e.g. https://...).');
+      return;
+    }
+    const trimmedProfileUrl = newProfileUrl.trim();
+    if (trimmedProfileUrl && !/^(https?:\/\/|\/profile\/|[a-zA-Z0-9_\-\.]+)/i.test(trimmedProfileUrl)) {
+      setAddError('Please enter a valid profile URL or slug.');
       return;
     }
 
@@ -201,18 +215,19 @@ export function CompanyTeamManager({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: newEmail.trim().toLowerCase(),
-          name: newName.trim(),
+          email: trimmedEmail || undefined,
+          name: trimmedName,
           title: newTitle.trim() || 'Team Member',
           department: newDepartment.trim() || 'General',
+          profileUrl: trimmedProfileUrl || undefined,
           role: newRole,
-          avatarUrl: newAvatar.trim() || undefined
+          avatarUrl: trimmedAvatar || undefined
         })
       });
 
       const data = await res.json();
       if (!res.ok) {
-        setAddError(data.error || 'Failed to invite team member.');
+        setAddError(data.error || 'Failed to add team member.');
         return;
       }
 
@@ -227,16 +242,20 @@ export function CompanyTeamManager({
         setNewInviteLink(fullInviteUrl);
       }
 
-      showToast?.(`Invitation created for ${newName}!`);
+      showToast?.(`Team member ${trimmedName} added successfully!`);
       // Reset form
       setNewEmail('');
       setNewName('');
       setNewTitle('');
       setNewDepartment('');
       setNewAvatar('');
+      setNewProfileUrl('');
       setNewRole('MEMBER');
+      if (!data.inviteLink) {
+        setIsAddModalOpen(false);
+      }
     } catch (e: any) {
-      setAddError('Network error while inviting team member.');
+      setAddError('Network error while adding team member.');
     } finally {
       setIsAdding(false);
     }
@@ -249,6 +268,7 @@ export function CompanyTeamManager({
     setEditTitle(m.title);
     setEditDepartment(m.department);
     setEditAvatar(m.avatarUrl || '');
+    setEditProfileUrl((m as any).profileUrl || m.userId || '');
     setEditRole(m.role);
     setEditError(null);
   };
@@ -256,6 +276,22 @@ export function CompanyTeamManager({
   const handleUpdateMember = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingMember) return;
+
+    const trimmedName = editName.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      setEditError('Please enter a member name (at least 2 characters).');
+      return;
+    }
+    const trimmedAvatar = editAvatar.trim();
+    if (trimmedAvatar && !/^https?:\/\/.+/i.test(trimmedAvatar) && !trimmedAvatar.startsWith('data:image/')) {
+      setEditError('Please enter a valid image URL.');
+      return;
+    }
+    const trimmedProfileUrl = editProfileUrl.trim();
+    if (trimmedProfileUrl && !/^(https?:\/\/|\/profile\/|[a-zA-Z0-9_\-\.]+)/i.test(trimmedProfileUrl)) {
+      setEditError('Please enter a valid profile URL or slug.');
+      return;
+    }
 
     setIsUpdating(true);
     setEditError(null);
@@ -267,11 +303,12 @@ export function CompanyTeamManager({
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name: editName.trim(),
+            name: trimmedName,
             title: editTitle.trim(),
             department: editDepartment.trim(),
+            profileUrl: trimmedProfileUrl || undefined,
             role: editRole,
-            avatarUrl: editAvatar.trim() || undefined
+            avatarUrl: trimmedAvatar || undefined
           })
         }
       );
@@ -285,7 +322,7 @@ export function CompanyTeamManager({
       const updated = members.map((m) => (m.id === editingMember.id ? data.member : m));
       setMembers(updated);
       syncToProfile(updated);
-      showToast?.(`Updated ${editName}!`);
+      showToast?.(`Updated ${trimmedName}!`);
       setEditingMember(null);
     } catch (e) {
       setEditError('Network error while updating member.');
@@ -669,12 +706,11 @@ export function CompanyTeamManager({
               <form onSubmit={handleAddMember} className="space-y-3">
                 <div>
                   <label htmlFor={`member-email-${instanceId}`} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Email Address *
+                    Email Address (optional)
                   </label>
                   <input
                     id={`member-email-${instanceId}`}
                     type="email"
-                    required
                     autoComplete="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
@@ -702,7 +738,7 @@ export function CompanyTeamManager({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label htmlFor={`member-title-${instanceId}`} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Title / Role
+                      Title / Designation
                     </label>
                     <input
                       id={`member-title-${instanceId}`}
@@ -739,6 +775,20 @@ export function CompanyTeamManager({
                     value={newAvatar}
                     onChange={(e) => setNewAvatar(e.target.value)}
                     placeholder="https://... or leave blank for default"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor={`member-profile-url-${instanceId}`} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Profile URL or Slug (optional)
+                  </label>
+                  <input
+                    id={`member-profile-url-${instanceId}`}
+                    type="text"
+                    value={newProfileUrl}
+                    onChange={(e) => setNewProfileUrl(e.target.value)}
+                    placeholder="e.g. /profile/jane-doe or jane-doe"
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
                   />
                 </div>
@@ -863,6 +913,19 @@ export function CompanyTeamManager({
                   value={editAvatar}
                   onChange={(e) => setEditAvatar(e.target.value)}
                   placeholder="https://... or leave blank for default"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Profile URL or Slug (optional)
+                </label>
+                <input
+                  type="text"
+                  value={editProfileUrl}
+                  onChange={(e) => setEditProfileUrl(e.target.value)}
+                  placeholder="e.g. /profile/jane-doe or jane-doe"
                   className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
