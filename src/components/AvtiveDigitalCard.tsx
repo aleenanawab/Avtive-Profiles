@@ -76,6 +76,7 @@ interface AvtiveDigitalCardProps {
   isDark: boolean;
   viewMode?: 'standard' | 'web';
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
+  onDraftChange?: (draft: ProfileData) => void;
 }
 
 export function AvtiveDigitalCard({
@@ -84,6 +85,7 @@ export function AvtiveDigitalCard({
   canEdit = false,
   isEditing = false,
   isConnected = false,
+  onDraftChange,
   onSelectSection,
   onOpenEdit,
   onSaveEdits,
@@ -124,10 +126,16 @@ export function AvtiveDigitalCard({
   const companyName = activeProfile.company || activeProfile.companyInfo?.name || 'Avtive';
 
   const handleFieldUpdate = (field: keyof ProfileData, value: any) => {
-    setDraftProfile((prev) => ({
-      ...prev,
-      [field]: value
-    }));
+    setDraftProfile((prev) => {
+      const next = {
+        ...prev,
+        [field]: value
+      };
+      if (onDraftChange) {
+        onDraftChange(next);
+      }
+      return next;
+    });
     if (errorMessage) setErrorMessage(null);
   };
 
@@ -444,6 +452,8 @@ export function AvtiveDigitalCard({
                     profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -456,6 +466,8 @@ export function AvtiveDigitalCard({
                     profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -469,6 +481,8 @@ export function AvtiveDigitalCard({
                     onSelectProject={onSelectProject}
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -517,6 +531,8 @@ export function AvtiveDigitalCard({
                     key="socials" 
                     profile={activeProfile} 
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );

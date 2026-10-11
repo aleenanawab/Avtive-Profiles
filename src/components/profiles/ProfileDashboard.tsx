@@ -323,7 +323,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
               {/* Action Buttons */}
               <div className="pt-4 mt-2 flex items-center justify-between gap-2">
                 <Link
-                  href={`/profile/${p.slug || p.id}/edit`}
+                  href={`/profile/${encodeURIComponent(p.slug || p.id)}?edit=true`}
                   className="flex-1 py-1.5 px-3 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 dark:text-cyan-300 text-xs font-bold text-center border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-center gap-1.5"
                 >
                   <Edit3 className="w-3 h-3" />
@@ -415,7 +415,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
 
                 <div className="flex items-center gap-2 pt-1 border-t border-slate-200 dark:border-white/5">
                   <Link
-                    href={`/profile/${p.slug || p.id}/edit`}
+                    href={`/profile/${encodeURIComponent(p.slug || p.id)}?edit=true`}
                     className="flex-1 py-1 text-[11px] font-bold text-center rounded-lg bg-cyan-50 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300"
                   >
                     Edit

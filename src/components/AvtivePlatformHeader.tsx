@@ -91,9 +91,9 @@ export function AvtivePlatformHeader() {
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   {primarySlug && (
                     <Link
-                      href={`/profile/${primarySlug}/edit`}
+                      href={`/profile/${encodeURIComponent(primarySlug)}?edit=true`}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer shadow-2xs ${
-                        pathname?.includes('/edit')
+                        pathname?.includes('/edit') || (typeof window !== 'undefined' && window.location.search.includes('edit=true'))
                           ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-slate-900 dark:border-white'
                           : 'bg-white hover:bg-slate-100 text-slate-900 border-slate-300 dark:bg-[#161821] dark:hover:bg-[#1f222e] dark:text-white dark:border-white/15'
                       }`}

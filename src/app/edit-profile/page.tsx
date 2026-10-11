@@ -10,7 +10,6 @@ import {
   createCompany 
 } from '@/lib/db';
 import { normalizeProfileType, ProfileTheme } from '@/types/profile';
-import { EditProfileClient } from './EditProfileClient';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';

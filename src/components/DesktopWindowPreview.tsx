@@ -346,7 +346,7 @@ export function DesktopWindowPreview({
   };
 
   const identifier = profile.slug || profile.id || 'aleenanawab';
-  const displayUrl = url || `https://avtive-profiles-d297.vercel.app/profile/${identifier}/edit`;
+  const displayUrl = url || `https://avtive-profiles-d297.vercel.app/profile/${identifier}`;
 
   // Hidden sections count
   const allSectionKeys = ['profile', 'personalDetails', 'skills', 'projects', 'education', 'contactInfo', 'socialLinks', 'experience'];

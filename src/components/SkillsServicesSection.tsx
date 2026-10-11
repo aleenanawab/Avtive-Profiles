@@ -15,13 +15,14 @@ interface SkillsServicesSectionProps {
 
 export function SkillsServicesSection({ 
   profile, 
-  canEdit = false,
-  isEditing = false,
+  canEdit = false, 
+  isEditing = false, 
   onUpdateField,
   onInquireService,
   onSelectSection,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: SkillsServicesSectionProps) {
+  const [newSkillInput, setNewSkillInput] = React.useState('');
   const hasServices = profile.services && profile.services.length > 0;
   const hasSkills = profile.skills && profile.skills.length > 0;
 
@@ -47,6 +48,21 @@ export function SkillsServicesSection({
   const handleUpdateServiceTitle = (id: string, title: string) => {
     const updated = (profile.services || []).map((s) => (s.id === id ? { ...s, title } : s));
     onUpdateField?.('services', updated);
+  };
+
+  const handleAddSkill = () => {
+    const trimmed = newSkillInput.trim();
+    if (!trimmed) return;
+    const currentSkills = profile.skills || [];
+    const updatedSkills = [...currentSkills, trimmed];
+    onUpdateField?.('skills', updatedSkills);
+    setNewSkillInput('');
+  };
+
+  const handleRemoveSkill = (index: number) => {
+    const currentSkills = profile.skills || [];
+    const updatedSkills = currentSkills.filter((_, idx) => idx !== index);
+    onUpdateField?.('skills', updatedSkills);
   };
 
   const showServices = hasServices || canEdit || isEditing;
@@ -79,7 +95,7 @@ export function SkillsServicesSection({
               <button
                 type="button"
                 onClick={handleAddService}
-                className={`flex items-center gap-1 text-[11px] font-bold ${theme.accentText} hover:underline`}
+                className={`flex items-center gap-1 text-[11px] font-bold ${theme.accentText} hover:underline cursor-pointer`}
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Service</span>
@@ -104,7 +120,7 @@ export function SkillsServicesSection({
                     <button
                       type="button"
                       onClick={() => handleRemoveService(service.id)}
-                      className="text-rose-500 hover:text-rose-700 p-0.5"
+                      className="text-rose-500 hover:text-rose-700 p-0.5 cursor-pointer"
                       title="Remove Service"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -135,7 +151,7 @@ export function SkillsServicesSection({
               <button
                 type="button"
                 onClick={handleAddService}
-                className={`col-span-2 sm:col-span-3 p-3 rounded-xl border border-dashed ${theme.cardBorder} text-xs font-bold ${theme.textMuted} hover:${theme.accentText} flex items-center justify-center gap-1.5`}
+                className={`col-span-2 sm:col-span-3 p-3 rounded-xl border border-dashed ${theme.cardBorder} text-xs font-bold ${theme.textMuted} hover:${theme.accentText} flex items-center justify-center gap-1.5 cursor-pointer`}
               >
                 <Plus className="w-4 h-4" />
                 <span>Add your first service</span>
@@ -148,9 +164,39 @@ export function SkillsServicesSection({
       {/* Skills Pills */}
       {showSkills && (
         <div className="space-y-2.5 pt-1 text-left">
-          <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
-            Skills
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
+              Skills
+            </h2>
+          </div>
+
+          {/* Inline Skill Add Input */}
+          {isEditing && (
+            <div className="flex items-center gap-2 max-w-sm">
+              <input
+                type="text"
+                value={newSkillInput}
+                onChange={(e) => setNewSkillInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddSkill();
+                  }
+                }}
+                placeholder="Type a skill (e.g. Next.js, Design)..."
+                className={`flex-1 text-xs p-2 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} focus:outline-none focus:ring-1 focus:ring-cyan-500`}
+              />
+              <button
+                type="button"
+                onClick={handleAddSkill}
+                className="px-3 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add</span>
+              </button>
+            </div>
+          )}
+
           {hasSkills ? (
             <div className="flex flex-wrap gap-1.5">
               {profile.skills?.map((skill, idx) => {
@@ -158,9 +204,19 @@ export function SkillsServicesSection({
                 return (
                   <span
                     key={idx}
-                    className="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700/80 text-xs font-medium text-slate-800 dark:text-zinc-200 shadow-xs"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700/80 text-xs font-medium text-slate-800 dark:text-zinc-200 shadow-xs"
                   >
-                    {skillLabel}
+                    <span>{skillLabel}</span>
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSkill(idx)}
+                        className="text-slate-400 hover:text-rose-500 ml-0.5 p-0.5 cursor-pointer transition-colors"
+                        title="Remove skill"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
                   </span>
                 );
               })}

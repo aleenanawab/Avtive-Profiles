@@ -31,17 +31,45 @@ interface HeroSectionProps {
 export function HeroSection({
   profile,
   canEdit = false,
+  isEditing = false,
   theme = getThemeConfig(profile.theme || 'editorial'),
+  onUpdateField,
   onOpenEdit,
   onOpenShare,
   onOpenConnect,
   onSelectSection
 }: HeroSectionProps) {
   const router = useRouter();
+  const coverInputRef = React.useRef<HTMLInputElement>(null);
+  const avatarInputRef = React.useRef<HTMLInputElement>(null);
 
   const coverUrl = profile.coverImage || SUPABASE_DEFAULT_COVER;
   const avatarUrl = profile.avatar || SUPABASE_DEFAULT_AVATAR;
   const sharing = profile.sharingSettings || {};
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        onUpdateField?.('coverImage', reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        onUpdateField?.('avatar', reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const normalizedType = normalizeProfileType(profile.type);
   const isCompany = normalizedType === 'team';
@@ -95,13 +123,37 @@ export function HeroSection({
 
   return (
     <div className="relative w-full text-left font-sans">
+      {/* Hidden File Inputs for Cover and Avatar */}
+      <input
+        ref={coverInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleCoverUpload}
+        className="hidden"
+        aria-hidden="true"
+      />
+      <input
+        ref={avatarInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleAvatarUpload}
+        className="hidden"
+        aria-hidden="true"
+      />
+
       {/* 1. Cover Image Banner */}
       <div 
-        onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'cover') : onOpenEdit?.())}
+        onClick={() => {
+          if (isEditing) {
+            coverInputRef.current?.click();
+          } else if (canEdit) {
+            onOpenEdit?.();
+          }
+        }}
         className={`relative h-44 sm:h-56 md:h-64 lg:h-72 w-full overflow-hidden bg-slate-900 ${
-          canEdit ? 'cursor-pointer group/cover hover:brightness-105 transition-all' : ''
+          canEdit || isEditing ? 'cursor-pointer group/cover hover:brightness-105 transition-all' : ''
         }`}
-        title={canEdit ? 'Click to edit Cover Banner in Studio' : undefined}
+        title={isEditing ? 'Click to change cover image' : canEdit ? 'Click to edit profile' : undefined}
       >
         <img
           src={coverUrl}
@@ -110,13 +162,26 @@ export function HeroSection({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
 
-        {/* Cover Edit Overlay Badge on Hover */}
-        {canEdit && (
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/cover:opacity-100 transition-opacity flex items-center justify-center">
-            <div className="px-3.5 py-1.5 rounded-full bg-black/75 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 shadow-xl border border-white/20 scale-95 group-hover/cover:scale-100 transition-transform">
-              <Camera className="w-3.5 h-3.5 text-purple-400" />
-              <span>Click to Edit Cover Banner</span>
-            </div>
+        {/* Cover Edit Overlay Badge */}
+        {(isEditing || canEdit) && (
+          <div className={`absolute inset-0 bg-black/25 flex items-center justify-center transition-opacity ${
+            isEditing ? 'opacity-90 hover:opacity-100' : 'opacity-0 group-hover/cover:opacity-100'
+          }`}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isEditing) {
+                  coverInputRef.current?.click();
+                } else {
+                  onOpenEdit?.();
+                }
+              }}
+              className="px-3.5 py-1.5 rounded-full bg-black/80 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 shadow-xl border border-white/20 transition-transform hover:scale-105 cursor-pointer"
+            >
+              <Camera className="w-3.5 h-3.5 text-cyan-400" />
+              <span>{isEditing ? 'Change Cover Photo' : 'Edit Cover Banner'}</span>
+            </button>
           </div>
         )}
 
@@ -124,17 +189,19 @@ export function HeroSection({
         {canEdit && (
           <div className="absolute top-3 right-3 sm:top-4 sm:right-5 flex items-center gap-2 z-20">
             <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} />
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelectSection ? onSelectSection('basicInfo', 'cover') : onOpenEdit?.();
-              }}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
-              title="Edit Cover in Studio"
-            >
-              <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-            </button>
+            {!isEditing && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenEdit?.();
+                }}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                title="Edit Profile"
+              >
+                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -144,44 +211,60 @@ export function HeroSection({
         {/* Profile Photo / Company Logo */}
         {sharing.photo !== false && (
           isCompany ? (
-            /* Corporate Logo Frame (Distinct from personal circular headshot) */
+            /* Corporate Logo Frame */
             <div 
-              onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'avatar') : onOpenEdit?.())}
+              onClick={() => {
+                if (isEditing) {
+                  avatarInputRef.current?.click();
+                } else if (canEdit) {
+                  onOpenEdit?.();
+                }
+              }}
               className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 overflow-hidden border-4 border-white dark:border-[#18181B] shadow-xl bg-white dark:bg-zinc-900 shrink-0 flex items-center justify-center ${
-                canEdit ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-blue-500/50 transition-all' : ''
+                canEdit || isEditing ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-blue-500/50 transition-all' : ''
               }`}
-              title={canEdit ? 'Click to edit Company Logo in Studio' : undefined}
+              title={isEditing ? 'Click to change logo' : canEdit ? 'Click to edit profile' : undefined}
             >
               <img
                 src={avatarUrl}
                 alt={profile.name}
                 className="w-full h-full object-contain rounded-xl sm:rounded-2xl"
               />
-              {canEdit && (
-                <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white rounded-2xl sm:rounded-3xl">
-                  <Camera className="w-5 h-5 drop-shadow-md text-blue-300" />
-                  <span className="text-[10px] font-bold mt-0.5">Edit Logo</span>
+              {(canEdit || isEditing) && (
+                <div className={`absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white rounded-2xl sm:rounded-3xl transition-opacity ${
+                  isEditing ? 'opacity-85 hover:opacity-100' : 'opacity-0 group-hover/avatar:opacity-100'
+                }`}>
+                  <Camera className="w-5 h-5 drop-shadow-md text-cyan-300" />
+                  <span className="text-[10px] font-bold mt-0.5">{isEditing ? 'Change Logo' : 'Edit Logo'}</span>
                 </div>
               )}
             </div>
           ) : (
             /* Individual Circular Headshot */
             <div 
-              onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'avatar') : onOpenEdit?.())}
+              onClick={() => {
+                if (isEditing) {
+                  avatarInputRef.current?.click();
+                } else if (canEdit) {
+                  onOpenEdit?.();
+                }
+              }}
               className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white dark:border-[#18181B] shadow-md bg-slate-100 dark:bg-zinc-800 shrink-0 ${
-                canEdit ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-purple-500/50 transition-all' : ''
+                canEdit || isEditing ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-cyan-500/50 transition-all' : ''
               }`}
-              title={canEdit ? 'Click to edit Profile Photo in Studio' : undefined}
+              title={isEditing ? 'Click to change photo' : canEdit ? 'Click to edit profile' : undefined}
             >
               <img
                 src={avatarUrl}
                 alt={profile.name}
                 className="w-full h-full object-cover"
               />
-              {canEdit && (
-                <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
-                  <Camera className="w-5 h-5 drop-shadow-md text-purple-300" />
-                  <span className="text-[10px] font-bold mt-0.5">Edit</span>
+              {(canEdit || isEditing) && (
+                <div className={`absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white transition-opacity ${
+                  isEditing ? 'opacity-85 hover:opacity-100' : 'opacity-0 group-hover/avatar:opacity-100'
+                }`}>
+                  <Camera className="w-5 h-5 drop-shadow-md text-cyan-300" />
+                  <span className="text-[10px] font-bold mt-0.5">{isEditing ? 'Change Photo' : 'Edit Photo'}</span>
                 </div>
               )}
             </div>
@@ -190,13 +273,7 @@ export function HeroSection({
 
         {/* Profile Role Badge & Name */}
         {sharing.nameAndTitle !== false && (
-          <div 
-            onClick={() => canEdit && (onSelectSection ? onSelectSection('basicInfo', 'name') : onOpenEdit?.())}
-            className={`space-y-1 pt-1 ${
-              canEdit ? 'cursor-pointer group/name rounded-2xl p-2 -ml-2 hover:bg-purple-500/[0.06] dark:hover:bg-purple-500/10 hover:ring-1 hover:ring-purple-500/30 transition-all' : ''
-            }`}
-            title={canEdit ? (isCompany ? 'Click to edit Company in Studio' : 'Click to edit Identity in Studio') : undefined}
-          >
+          <div className="space-y-2 pt-1">
             <div className="flex items-center gap-2">
               {isCompany ? (
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
@@ -208,83 +285,181 @@ export function HeroSection({
                   {typeBadgeLabel}
                 </div>
               )}
-              {canEdit && (
-                <span className="opacity-0 group-hover/name:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+              {isEditing && (
+                <span className="text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
                   <Pencil className="w-2.5 h-2.5" />
-                  {isCompany ? 'Edit Company' : 'Edit Identity'}
+                  Editing In-Place
                 </span>
               )}
             </div>
 
-            <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
-              <span>{profile.name}</span>
-            </h1>
+            {/* In-Place Name Input or Heading */}
+            {isEditing ? (
+              <div className="space-y-1">
+                <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
+                  Full Name / Display Name
+                </label>
+                <input
+                  type="text"
+                  value={profile.name || ''}
+                  onChange={(e) => onUpdateField?.('name', e.target.value)}
+                  placeholder="Your Full Name"
+                  className={`w-full text-xl sm:text-2xl md:text-3xl font-bold tracking-tight bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textPrimary}`}
+                />
+              </div>
+            ) : (
+              <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
+                <span>{profile.name}</span>
+              </h1>
+            )}
 
-            <p className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words`}>
-              {profile.profession || profile.designation || profile.profileName || (isCompany ? 'Organization' : 'Professional')}
-            </p>
+            {/* In-Place Designation / Profession Input */}
+            {isEditing ? (
+              <div className="space-y-1">
+                <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
+                  Professional Title / Role
+                </label>
+                <input
+                  type="text"
+                  value={profile.profession || profile.designation || ''}
+                  onChange={(e) => {
+                    onUpdateField?.('designation', e.target.value);
+                    onUpdateField?.('profession', e.target.value);
+                  }}
+                  placeholder="Profession / Designation (e.g. Senior Software Engineer)"
+                  className={`w-full text-sm sm:text-base font-medium bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textSecondary}`}
+                />
+              </div>
+            ) : (
+              <p className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words`}>
+                {profile.profession || profile.designation || profile.profileName || (isCompany ? 'Organization' : 'Professional')}
+              </p>
+            )}
 
             {/* Corporate Metadata Strip */}
             {isCompany && (
               <div className="flex items-center gap-2 pt-1 flex-wrap text-xs">
-                {profile.companyInfo?.industry && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
-                    {profile.companyInfo.industry}
-                  </span>
+                {isEditing ? (
+                  <div className="flex items-center gap-2 flex-wrap w-full">
+                    <input
+                      type="text"
+                      value={profile.companyInfo?.industry || ''}
+                      onChange={(e) => {
+                        const nextInfo = { ...(profile.companyInfo || {}), industry: e.target.value };
+                        onUpdateField?.('companyInfo', nextInfo);
+                      }}
+                      placeholder="Industry (e.g. Software, Fintech)"
+                      className={`text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                    />
+                    <input
+                      type="text"
+                      value={profile.companyInfo?.employeeCount || ''}
+                      onChange={(e) => {
+                        const nextInfo = { ...(profile.companyInfo || {}), employeeCount: e.target.value };
+                        onUpdateField?.('companyInfo', nextInfo);
+                      }}
+                      placeholder="Team Size (e.g. 20-50 Employees)"
+                      className={`text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    {profile.companyInfo?.industry && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
+                        {profile.companyInfo.industry}
+                      </span>
+                    )}
+                    {profile.companyInfo?.employeeCount && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
+                        {profile.companyInfo.employeeCount}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectSection ? onSelectSection('teamMembers') : null;
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-pointer"
+                      title="View organization team"
+                    >
+                      <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                      <span>{activeMemberCount} {activeMemberCount === 1 ? 'Team Member' : 'Team Members'}</span>
+                    </button>
+                  </>
                 )}
-                {profile.companyInfo?.employeeCount && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
-                    {profile.companyInfo.employeeCount}
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectSection ? onSelectSection('teamMembers') : null;
-                  }}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-pointer"
-                  title="View organization team"
-                >
-                  <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                  <span>{activeMemberCount} {activeMemberCount === 1 ? 'Team Member' : 'Team Members'}</span>
-                </button>
               </div>
             )}
 
-            {profile.tagline && (
-              <p className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words`}>
-                &ldquo;{profile.tagline}&rdquo;
-              </p>
+            {/* Tagline */}
+            {isEditing ? (
+              <div className="space-y-1 pt-0.5">
+                <input
+                  type="text"
+                  value={profile.tagline || ''}
+                  onChange={(e) => onUpdateField?.('tagline', e.target.value)}
+                  placeholder="Tagline or motto (e.g. Building next-generation digital identities)"
+                  className={`w-full text-xs sm:text-sm italic bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textSecondary}`}
+                />
+              </div>
+            ) : (
+              profile.tagline && (
+                <p className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words`}>
+                  &ldquo;{profile.tagline}&rdquo;
+                </p>
+              )
             )}
 
-            {profile.location && (
-              <p className={`text-xs sm:text-sm ${theme.textMuted} break-words`}>
-                {profile.location}
-              </p>
+            {/* Location */}
+            {isEditing ? (
+              <div className="space-y-1 pt-0.5">
+                <input
+                  type="text"
+                  value={profile.location || ''}
+                  onChange={(e) => onUpdateField?.('location', e.target.value)}
+                  placeholder="Location (e.g. San Francisco, CA · Remote)"
+                  className={`w-full text-xs sm:text-sm bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textMuted}`}
+                />
+              </div>
+            ) : (
+              profile.location && (
+                <p className={`text-xs sm:text-sm ${theme.textMuted} break-words`}>
+                  {profile.location}
+                </p>
+              )
             )}
           </div>
         )}
 
         {/* Short Bio */}
-        {sharing.bio !== false && profile.shortBio && (
-          <div
-            onClick={() => canEdit && (onSelectSection ? onSelectSection('about', 'about') : onOpenEdit?.())}
-            className={`${
-              canEdit ? 'cursor-pointer group/bio rounded-2xl p-2 -ml-2 hover:bg-purple-500/[0.06] dark:hover:bg-purple-500/10 hover:ring-1 hover:ring-purple-500/30 transition-all' : ''
-            }`}
-            title={canEdit ? 'Click to edit Bio in Studio' : undefined}
-          >
-            <p className={`text-xs sm:text-sm md:text-base ${theme.textSecondary} leading-relaxed max-w-2xl break-words`}>
-              {profile.shortBio}
-            </p>
-            {canEdit && (
-              <span className="opacity-0 group-hover/bio:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1 mt-1">
-                <Pencil className="w-2.5 h-2.5" />
-                Edit Bio
-              </span>
-            )}
-          </div>
+        {sharing.bio !== false && (
+          isEditing ? (
+            <div className="space-y-1 pt-1">
+              <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
+                Quick Bio
+              </label>
+              <textarea
+                rows={2}
+                value={profile.shortBio || ''}
+                onChange={(e) => onUpdateField?.('shortBio', e.target.value)}
+                placeholder="A concise overview of your background or focus..."
+                className={`w-full p-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+              />
+            </div>
+          ) : (
+            profile.shortBio && (
+              <div
+                onClick={() => canEdit && onOpenEdit?.()}
+                className={`${
+                  canEdit ? 'cursor-pointer group/bio rounded-2xl p-2 -ml-2 hover:bg-cyan-500/[0.04] dark:hover:bg-cyan-500/10 transition-all' : ''
+                }`}
+              >
+                <p className={`text-xs sm:text-sm md:text-base ${theme.textSecondary} leading-relaxed max-w-2xl break-words`}>
+                  {profile.shortBio}
+                </p>
+              </div>
+            )
+          )
         )}
 
         {/* Action Buttons Below Avatar */}
@@ -295,19 +470,19 @@ export function HeroSection({
               <>
                 <button
                   type="button"
-                  onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
+                  onClick={() => onOpenEdit?.()}
                   className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                   title="Edit Company Details"
                 >
                   <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">Edit Company</span>
+                  <span className="truncate">{isEditing ? 'Editing Profile' : 'Edit Company'}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onSelectSection ? onSelectSection('teamMembers') : onOpenEdit?.()}
                   className="flex-1 min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2"
-                  title="Manage Team Members in Studio"
+                  title="Manage Team Members"
                 >
                   <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-white" />
                   <span className="truncate">Manage Team</span>
@@ -324,16 +499,16 @@ export function HeroSection({
                 </button>
               </>
             ) : (
-              /* Individual Owner Actions (Unchanged) */
+              /* Individual Owner Actions */
               <>
                 <button
                   type="button"
-                  onClick={() => onSelectSection ? onSelectSection('basicInfo') : onOpenEdit?.()}
+                  onClick={() => onOpenEdit?.()}
                   className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
-                  title="Edit Profile in Studio"
+                  title={isEditing ? 'Editing In-Place' : 'Edit Profile'}
                 >
                   <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">Edit Profile</span>
+                  <span className="truncate">{isEditing ? 'Editing In-Place' : 'Edit Profile'}</span>
                 </button>
 
                 <button

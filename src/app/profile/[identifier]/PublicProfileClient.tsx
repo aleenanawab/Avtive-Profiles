@@ -18,12 +18,11 @@ import { ExchangeContactModal } from '@/components/ExchangeContactModal';
 import { QRFullscreenModal } from '@/components/QRFullscreenModal';
 import { ResumeViewerModal } from '@/components/ResumeViewerModal';
 import { ProjectDetailModal } from '@/components/ProjectDetailModal';
-import { EditProfileClient } from '@/app/edit-profile/EditProfileClient';
-import { ProfileEditorProvider } from '@/context/ProfileEditorContext';
+import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditorContext';
 import { downloadVCard } from '@/lib/vcard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
-import { Edit3 } from 'lucide-react';
+import { Edit3, Save, X, Loader2 } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 export interface PublicProfileClientProps {
@@ -138,6 +137,11 @@ function PublicProfileClientInner({
   };
 
   const handleSectionSelect = (sectionKey: string) => {
+    // If owner selects a section from the Sections sidebar, ensure edit mode is enabled
+    if (isOwner && !isEditing) {
+      handleOpenEditMode();
+    }
+
     const targetId = 
       sectionKey === 'profile' || sectionKey === 'hero'
         ? 'section-hero'
@@ -147,6 +151,20 @@ function PublicProfileClientInner({
         ? 'section-contact'
         : sectionKey === 'skills' || sectionKey === 'services'
         ? 'section-skills'
+        : sectionKey === 'projects' || sectionKey === 'portfolio'
+        ? 'section-projects'
+        : sectionKey === 'education'
+        ? 'section-education'
+        : sectionKey === 'experience'
+        ? 'section-experience'
+        : sectionKey === 'socialLinks' || sectionKey === 'socials'
+        ? 'section-socialLinks'
+        : sectionKey === 'teamMembers' || sectionKey === 'team'
+        ? 'section-teamMembers'
+        : sectionKey === 'companyInfo' || sectionKey === 'company'
+        ? 'section-company'
+        : sectionKey === 'virtualCard' || sectionKey === 'virtual-card'
+        ? 'virtual-card-section'
         : `section-${sectionKey}`;
 
     const el = document.getElementById(targetId) || document.getElementById(`section-${sectionKey}`);
@@ -317,12 +335,49 @@ function PublicProfileClientInner({
     }
   };
 
+  const {
+    liveProfile,
+    activeSection,
+    setActiveSection,
+    isSaving,
+    saveProfile,
+    handleSwitchToProfile
+  } = useProfileEditor();
+
+  const currentDraftRef = React.useRef<ProfileData>(profile);
+
+  useEffect(() => {
+    currentDraftRef.current = profile;
+  }, [profile]);
+
+  const handleDraftChange = (draft: ProfileData) => {
+    currentDraftRef.current = draft;
+  };
+
   const handleOpenEditMode = () => {
     if (!isOwner) return;
     setIsEditing(true);
     const slug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
     if (slug && typeof window !== 'undefined') {
       window.history.pushState(null, '', `/profile/${encodeURIComponent(slug)}?edit=true`);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    currentDraftRef.current = profile;
+    handleSwitchToProfile(profile);
+    setIsEditing(false);
+    const slug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
+    if (slug && typeof window !== 'undefined') {
+      window.history.pushState(null, '', `/profile/${encodeURIComponent(slug)}`);
+    }
+  };
+
+  const handleSaveAndExit = async () => {
+    try {
+      await handleSaveEdits(currentDraftRef.current);
+    } catch (err: any) {
+      console.error('Update profile error:', err);
     }
   };
 
@@ -338,40 +393,47 @@ function PublicProfileClientInner({
     router.refresh();
   };
 
-  // Single shared editor: switches on the same page with no /edit route and no navigation
-  if (isEditing && isOwner) {
-    return (
-      <EditProfileClient
-        initialProfile={profile}
-        userProfiles={userProfiles && userProfiles.length > 0 ? userProfiles : [profile]}
-        onSaveProfile={(savedProfile) => {
-          if (savedProfile) {
-            setProfile(savedProfile);
-            if (savedProfile.theme) setActiveTheme(savedProfile.theme);
-          }
-        }}
-        onReturnToView={(updatedProfile) => {
-          handleReturnToView(updatedProfile);
-        }}
-        onCancel={() => {
-          handleReturnToView();
-        }}
-      />
-    );
-  }
-
   const desktopToolbarRight = (
     <div className="flex items-center gap-1.5 sm:gap-2">
-      {isOwner && (
-        <button
-          type="button"
-          onClick={handleOpenEditMode}
-          className="px-2.5 py-1 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95"
-          title="Edit Profile"
-        >
-          <Edit3 className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Edit Profile</span>
-        </button>
+      {isEditing && isOwner ? (
+        <>
+          <button
+            type="button"
+            onClick={handleCancelEdit}
+            disabled={isSaving}
+            className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95 disabled:opacity-50"
+            title="Cancel and discard unsaved changes"
+          >
+            <X className="w-3.5 h-3.5 text-rose-500" />
+            <span className="hidden sm:inline">Cancel</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleSaveAndExit}
+            disabled={isSaving}
+            className="px-3 py-1 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95 disabled:opacity-50"
+            title="Save changes and view profile"
+          >
+            {isSaving ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
+            )}
+            <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
+          </button>
+        </>
+      ) : (
+        isOwner && (
+          <button
+            type="button"
+            onClick={handleOpenEditMode}
+            className="px-2.5 py-1 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95"
+            title="Edit Profile"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Edit Profile</span>
+          </button>
+        )
       )}
     </div>
   );
@@ -384,7 +446,7 @@ function PublicProfileClientInner({
         profileType={profileType}
         onSelectProfileType={(type) => setProfileType(type)}
         canEdit={isOwner}
-        isEditing={false}
+        isEditing={isEditing}
         onOpenEdit={handleOpenEditMode}
         onOpenShare={() => setIsShareModalOpen(true)}
         isDark={isDark}
@@ -403,9 +465,12 @@ function PublicProfileClientInner({
           onTouchStart={() => { isTouchRef.current = true; }}
           title="Hover or tap to open Sections"
           aria-label="Open Sections Navigation"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center justify-center py-6 w-3 sm:w-2.5 hover:w-6 bg-slate-400/20 dark:bg-white/10 hover:bg-cyan-500/20 border-r border-y border-slate-300 dark:border-white/20 hover:border-cyan-500/40 rounded-r-xl transition-all duration-200 cursor-pointer group shadow-sm select-none"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-30 flex items-center gap-1.5 py-4 pl-1.5 pr-2.5 bg-slate-900/85 hover:bg-slate-900 text-white dark:bg-white/10 dark:hover:bg-white/20 border-r border-y border-white/20 rounded-r-2xl transition-all duration-200 cursor-pointer group shadow-lg backdrop-blur-md select-none"
         >
-          <div className="w-1 h-8 rounded-full bg-slate-400 dark:bg-white/40 group-hover:bg-cyan-500 transition-colors" />
+          <div className="w-1 h-6 rounded-full bg-cyan-400 group-hover:bg-cyan-300 transition-colors" />
+          <span className="text-[11px] font-bold tracking-wider uppercase font-mono text-cyan-400 group-hover:text-cyan-300 transition-colors hidden sm:inline [writing-mode:vertical-rl] rotate-180">
+            Sections
+          </span>
         </div>
       )}
 
@@ -442,16 +507,17 @@ function PublicProfileClientInner({
         )}
       </AnimatePresence>
 
-      {/* Main Responsive Profile Container */}
+      {/* Main Responsive Profile Container - Identical in both View and Edit Mode */}
       <div className="flex-1 w-full max-w-3xl mx-auto p-3 sm:p-6 lg:p-8 min-w-0">
         <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden relative`}>
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
             canEdit={isOwner}
-            isEditing={false}
+            isEditing={isEditing}
             isConnected={false}
+            onDraftChange={handleDraftChange}
             onOpenEdit={handleOpenEditMode}
-            onCancelEdit={handleReturnToView}
+            onCancelEdit={handleCancelEdit}
             onSaveEdits={handleSaveEdits}
             onSaveContact={handleSaveContact}
             onOpenShare={() => setIsShareModalOpen(true)}
@@ -470,6 +536,7 @@ function PublicProfileClientInner({
             }}
             isDark={isDark}
             viewMode="standard"
+            onSelectSection={handleSectionSelect}
           />
         </div>
       </div>
@@ -481,10 +548,11 @@ function PublicProfileClientInner({
       <AvtiveDigitalCard
         profile={{ ...profile, type: profileType, theme: activeTheme }}
         canEdit={isOwner}
-        isEditing={false}
+        isEditing={isEditing}
         isConnected={false}
+        onDraftChange={handleDraftChange}
         onOpenEdit={handleOpenEditMode}
-        onCancelEdit={handleReturnToView}
+        onCancelEdit={handleCancelEdit}
         onSaveEdits={handleSaveEdits}
         onSaveContact={handleSaveContact}
         onOpenShare={() => setIsShareModalOpen(true)}
@@ -503,6 +571,7 @@ function PublicProfileClientInner({
         }}
         isDark={isDark}
         viewMode="standard"
+        onSelectSection={handleSectionSelect}
       />
     </div>
   );

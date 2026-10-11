@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { getProfileByIdOrSlug, getProfilesByUserId, createProfileForUser } from '@/lib/db';
-import { EditProfileClient } from '@/app/edit-profile/EditProfileClient';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';

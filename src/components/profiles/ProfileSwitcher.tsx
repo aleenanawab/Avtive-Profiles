@@ -199,7 +199,7 @@ export function ProfileSwitcher({
       if (onSelectProfile) {
         onSelectProfile(created);
       } else {
-        router.push(`/profile/${created.slug || created.id}/edit`);
+        router.push(`/profile/${encodeURIComponent(created.slug || created.id)}?edit=true`);
       }
     } catch (err: any) {
       console.error('Error creating profile inline:', err);
