@@ -139,7 +139,7 @@ function ThemeStepContent() {
             onClick={handleNext}
             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
           >
-            <span>Next: Profile Details</span>
+            <span>Finish & View Profile</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

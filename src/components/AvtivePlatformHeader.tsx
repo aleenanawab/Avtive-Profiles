@@ -45,6 +45,9 @@ export function AvtivePlatformHeader() {
 
   const handleLogout = async () => {
     try {
+      if (user?.email) {
+        localStorage.setItem('avtive_remembered_identifier', user.email);
+      }
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (err) {
       console.error('Logout error:', err);

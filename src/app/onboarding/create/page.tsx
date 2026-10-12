@@ -227,10 +227,9 @@ function CreateProfileContent() {
               localStorage.setItem(`avtive_profile_${data.profile.id}`, JSON.stringify(data.profile));
             }
           }
-          sessionStorage.setItem('avtive_open_edit_mode', targetSlug);
           localStorage.setItem('avtive_returning_user', 'true');
         } catch {}
-        window.location.href = `/profile/${encodeURIComponent(targetSlug)}?edit=true`;
+        window.location.href = `/profile/${encodeURIComponent(targetSlug)}`;
       } else {
         window.location.href = '/dashboard';
       }

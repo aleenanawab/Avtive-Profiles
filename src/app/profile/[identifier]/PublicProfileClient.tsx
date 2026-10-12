@@ -290,6 +290,10 @@ function PublicProfileClientInner({
 
   const handleLogout = async () => {
     try {
+      const emailToRemember = currentUser?.email || profile?.email;
+      if (emailToRemember) {
+        localStorage.setItem('avtive_remembered_identifier', emailToRemember);
+      }
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (err) {
       console.error('Logout error:', err);
@@ -454,25 +458,10 @@ function PublicProfileClientInner({
         session={currentUser}
         onLogout={handleLogout}
         theme={activeThemeConfig}
+        onToggleSections={handleTriggerClick}
+        onSectionsMouseEnter={handleTriggerMouseEnter}
+        onSectionsMouseLeave={handleTriggerMouseLeave}
       />
-
-      {/* Left Edge Hover / Touch Trigger Strip for Section Navigation */}
-      {!isSidebarOpen && (
-        <div
-          onMouseEnter={handleTriggerMouseEnter}
-          onMouseLeave={handleTriggerMouseLeave}
-          onClick={handleTriggerClick}
-          onTouchStart={() => { isTouchRef.current = true; }}
-          title="Hover or tap to open Sections"
-          aria-label="Open Sections Navigation"
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-30 flex items-center gap-1.5 py-4 pl-1.5 pr-2.5 bg-slate-900/85 hover:bg-slate-900 text-white dark:bg-white/10 dark:hover:bg-white/20 border-r border-y border-white/20 rounded-r-2xl transition-all duration-200 cursor-pointer group shadow-lg backdrop-blur-md select-none"
-        >
-          <div className="w-1 h-6 rounded-full bg-cyan-400 group-hover:bg-cyan-300 transition-colors" />
-          <span className="text-[11px] font-bold tracking-wider uppercase font-mono text-cyan-400 group-hover:text-cyan-300 transition-colors hidden sm:inline [writing-mode:vertical-rl] rotate-180">
-            Sections
-          </span>
-        </div>
-      )}
 
       {/* Slide-In Section Drawer on Hover (Desktop) or Tap (Mobile) */}
       <AnimatePresence>
@@ -544,35 +533,87 @@ function PublicProfileClientInner({
   );
 
   const mobileView = (
-    <div className="w-full flex-1 flex flex-col min-h-0">
-      <AvtiveDigitalCard
-        profile={{ ...profile, type: profileType, theme: activeTheme }}
+    <div className="w-full flex-1 flex flex-col min-h-0 relative">
+      {/* Mobile Profile Header with Sections button */}
+      <HeaderNav
+        currentProfile={{ ...profile, theme: activeTheme }}
+        profileType={profileType}
+        onSelectProfileType={(type) => setProfileType(type)}
         canEdit={isOwner}
         isEditing={isEditing}
-        isConnected={false}
-        onDraftChange={handleDraftChange}
         onOpenEdit={handleOpenEditMode}
-        onCancelEdit={handleCancelEdit}
-        onSaveEdits={handleSaveEdits}
-        onSaveContact={handleSaveContact}
         onOpenShare={() => setIsShareModalOpen(true)}
-        onOpenConnect={() => setIsConnectModalOpen(true)}
-        onOpenQRModal={() => setIsQRModalOpen(true)}
-        onOpenResumeModal={() => setIsResumeModalOpen(true)}
-        onSelectProject={(project) => setSelectedProject(project)}
-        onSelectTeamMember={(member) => {
-          const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
-          router.push(`/profile/${slug}`);
-        }}
-        onViewCompany={() => {
-          if (profile.companyId) {
-            router.push(`/profile/${profile.companyId}`);
-          }
-        }}
         isDark={isDark}
-        viewMode="standard"
-        onSelectSection={handleSectionSelect}
+        onToggleTheme={handleToggleTheme}
+        session={currentUser}
+        onLogout={handleLogout}
+        theme={activeThemeConfig}
+        onToggleSections={handleTriggerClick}
+        onSectionsMouseEnter={handleTriggerMouseEnter}
+        onSectionsMouseLeave={handleTriggerMouseLeave}
       />
+
+      {/* Slide-In Section Drawer on Mobile */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <>
+            <motion.div
+              key="mobile-sidebar-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={handleCloseSidebar}
+              className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-40 cursor-pointer"
+            />
+            <motion.div
+              key="mobile-sidebar-drawer"
+              initial={{ x: -340, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -340, opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              className="absolute top-0 bottom-0 left-0 z-50 h-full shadow-2xl max-w-full"
+            >
+              <DesktopProfileSidebar
+                onClose={handleCloseSidebar}
+                onSelectSection={handleSectionSelect}
+                isPublicView={!isOwner}
+              />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <div className="flex-1 w-full overflow-y-auto min-h-0">
+        <AvtiveDigitalCard
+          profile={{ ...profile, type: profileType, theme: activeTheme }}
+          canEdit={isOwner}
+          isEditing={isEditing}
+          isConnected={false}
+          onDraftChange={handleDraftChange}
+          onOpenEdit={handleOpenEditMode}
+          onCancelEdit={handleCancelEdit}
+          onSaveEdits={handleSaveEdits}
+          onSaveContact={handleSaveContact}
+          onOpenShare={() => setIsShareModalOpen(true)}
+          onOpenConnect={() => setIsConnectModalOpen(true)}
+          onOpenQRModal={() => setIsQRModalOpen(true)}
+          onOpenResumeModal={() => setIsResumeModalOpen(true)}
+          onSelectProject={(project) => setSelectedProject(project)}
+          onSelectTeamMember={(member) => {
+            const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+            router.push(`/profile/${slug}`);
+          }}
+          onViewCompany={() => {
+            if (profile.companyId) {
+              router.push(`/profile/${profile.companyId}`);
+            }
+          }}
+          isDark={isDark}
+          viewMode="standard"
+          onSelectSection={handleSectionSelect}
+        />
+      </div>
     </div>
   );
 

@@ -51,19 +51,19 @@ export function DualScreenWorkspace({
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col justify-start bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-x-auto ${className}`}>
+    <div className={`w-full min-h-screen flex flex-col justify-start bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-x-hidden ${className}`}>
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex-1 w-full p-2.5 sm:p-5 lg:p-7 flex flex-row items-start justify-start xl:justify-center gap-6 max-w-[1920px] mx-auto box-border min-w-[880px] sm:min-w-[1000px] xl:min-w-0">
+      <div className="flex-1 w-full p-2.5 sm:p-5 lg:p-7 flex flex-col xl:flex-row items-center xl:items-start justify-center gap-6 max-w-[1920px] mx-auto box-border min-w-0">
         
         {/* ======================================================================= */}
         {/* SCREEN 1: DESKTOP WORKING SCREEN (Clean Minimalist Window)              */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 min-w-[480px] sm:min-w-[600px] max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
+          className="flex-1 w-full min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
         >
           {/* Desktop Browser Window Header Frame */}
           <div className="w-full bg-slate-50/90 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
@@ -128,7 +128,7 @@ export function DualScreenWorkspace({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-[375px] min-w-[375px] max-w-[375px] shrink-0 flex flex-col items-center justify-start sticky top-2.5 sm:top-5 lg:top-7 self-start box-border transition-colors flex"
+          className="w-full max-w-[375px] min-w-0 shrink-0 flex flex-col items-center justify-start sticky top-2.5 sm:top-5 lg:top-7 self-center xl:self-start box-border transition-colors flex"
         >
           {/* Smartphone Chassis Frame (Standard 375px × 667px) */}
           <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-xl shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors box-border">

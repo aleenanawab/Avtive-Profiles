@@ -94,6 +94,12 @@ export default function LoginClient() {
           const creds = JSON.parse(raw);
           if (creds?.email) setEmail(creds.email);
           if (creds?.password) setPassword(creds.password);
+        } else {
+          // Check remembered identifier after logout
+          const savedEmail = localStorage.getItem('avtive_remembered_identifier');
+          if (savedEmail) {
+            setEmail(savedEmail);
+          }
         }
       } catch {}
     }
@@ -202,6 +208,7 @@ export default function LoginClient() {
         sessionStorage.removeItem('avtive_temp_reg_creds');
         sessionStorage.setItem('avtive_active_session', 'true');
         localStorage.setItem('avtive_returning_user', 'true');
+        localStorage.setItem('avtive_remembered_identifier', trimmedEmail);
       } catch {}
 
       const returnUrl = getReturnUrl();
@@ -502,7 +509,7 @@ export default function LoginClient() {
             <div className="pt-2 text-center text-xs text-slate-500 dark:text-slate-400">
               Don&apos;t have an account?{' '}
               <Link href="/register" className={`font-bold ${themeStyles.textLink} hover:underline ml-1`}>
-                Create an account
+                Sign Up
               </Link>
             </div>
           </>
@@ -710,7 +717,7 @@ export default function LoginClient() {
       <div className="pt-4 pb-1 text-center text-[11px] text-slate-500 dark:text-slate-400 w-full box-border">
         <span>Don&apos;t have an account? </span>
         <Link href="/register" className={`font-bold ${themeStyles.textLink} hover:underline ml-1`}>
-          Sign up
+          Sign Up
         </Link>
       </div>
 

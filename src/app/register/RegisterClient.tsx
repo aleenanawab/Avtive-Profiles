@@ -113,6 +113,7 @@ export default function RegisterClient() {
           'avtive_temp_reg_creds',
           JSON.stringify({ email: email.trim(), password })
         );
+        localStorage.setItem('avtive_remembered_identifier', email.trim());
       } catch {}
 
       // Account created -> Return to Login Page for authentication

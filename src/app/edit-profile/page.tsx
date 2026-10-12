@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 interface EditProfilePageProps {
-  searchParams: Promise<{ id?: string; role?: string; theme?: string }>;
+  searchParams: Promise<{ id?: string; role?: string; theme?: string; edit?: string }>;
 }
 
 export default async function EditProfilePage({ searchParams }: EditProfilePageProps) {
@@ -31,7 +31,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
       redirect('/login?returnUrl=/edit-profile');
     }
 
-    const { id, role, theme } = await searchParams;
+    const { id, role, theme, edit } = await searchParams;
 
     let targetProfile = null;
     if (id) {
@@ -100,7 +100,8 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
 
     const targetSlug = targetProfile?.slug || targetProfile?.id;
     if (targetSlug) {
-      redirect(`/profile/${encodeURIComponent(targetSlug)}?edit=true`);
+      const editSuffix = edit === 'true' ? '?edit=true' : '';
+      redirect(`/profile/${encodeURIComponent(targetSlug)}${editSuffix}`);
     } else {
       redirect('/dashboard');
     }

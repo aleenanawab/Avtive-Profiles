@@ -120,15 +120,15 @@ async function runCustomFieldTests() {
     const publicView = sanitizeProfileForPublic(reloaded!, false);
     assert(publicView.customFields?.length === 2, 'Public visitor only sees 2 visible custom fields');
     assert(
-      !publicView.customFields?.some((f) => f.id === 'cf-internal-notes'),
+      !publicView.customFields?.some((f: any) => f.id === 'cf-internal-notes'),
       'Hidden field cf-internal-notes is filtered out from public view'
     );
     assert(
-      publicView.customFields?.some((f) => f.id === 'cf-publications'),
+      publicView.customFields?.some((f: any) => f.id === 'cf-publications'),
       'Visible field cf-publications is included for public visitor'
     );
     assert(
-      publicView.customFields?.some((f) => f.id === 'cf-officehours'),
+      publicView.customFields?.some((f: any) => f.id === 'cf-officehours'),
       'Visible field cf-officehours is included for public visitor'
     );
 
@@ -167,7 +167,7 @@ async function runCustomFieldTests() {
     }, testUserId);
     const profileAfterEdit = updateRes3.profile;
 
-    const updatedField = profileAfterEdit?.customFields?.find((f) => f.id === 'cf-officehours');
+    const updatedField = profileAfterEdit?.customFields?.find((f:any) => f.id === 'cf-officehours');
     assert(updatedField?.label === 'Book Consultation (Updated)', 'Edited title saved properly');
     assert(updatedField?.value === 'https://cal.com/dr-jane/updated', 'Edited content saved properly');
 

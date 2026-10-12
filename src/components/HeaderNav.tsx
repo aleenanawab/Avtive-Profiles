@@ -13,7 +13,8 @@ import {
   Users, 
   ChevronDown,
   LogIn, 
-  LogOut 
+  LogOut,
+  LayoutGrid
 } from 'lucide-react';
 import Link from 'next/link';
 import { ProfileData, ProfileType, UserRole, UserSession } from '../types/profile';
@@ -37,6 +38,9 @@ interface HeaderNavProps {
   session?: UserSession | null;
   onLogout?: () => void;
   theme?: ThemeConfig;
+  onToggleSections?: () => void;
+  onSectionsMouseEnter?: () => void;
+  onSectionsMouseLeave?: () => void;
 }
 
 export function HeaderNav({
@@ -52,7 +56,10 @@ export function HeaderNav({
   onOpenMyCard,
   session,
   onLogout,
-  theme = getThemeConfig(currentProfile.theme || 'editorial')
+  theme = getThemeConfig(currentProfile.theme || 'editorial'),
+  onToggleSections,
+  onSectionsMouseEnter,
+  onSectionsMouseLeave
 }: HeaderNavProps) {
   const hasTeamOrCompany = Boolean(
     currentProfile.companyId || 
@@ -140,6 +147,22 @@ export function HeaderNav({
             </button>
           )}
 
+          {/* Sections Button (Visible in edit mode) */}
+          {isEditing && (onToggleSections || onSectionsMouseEnter) && (
+            <button
+              type="button"
+              onClick={onToggleSections}
+              onMouseEnter={onSectionsMouseEnter}
+              onMouseLeave={onSectionsMouseLeave}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8 active:scale-95`}
+              title="Profile Sections Menu"
+              aria-label="Sections Menu"
+            >
+              <LayoutGrid className={`w-3.5 h-3.5 ${theme.accentText}`} />
+              <span>Sections</span>
+            </button>
+          )}
+
           {/* Theme Toggle (Light / Dark) */}
           {onToggleTheme && (
             <button
@@ -185,6 +208,9 @@ export function HeaderNav({
                   onLogout();
                 } else {
                   try {
+                    if (session?.email) {
+                      localStorage.setItem('avtive_remembered_identifier', session.email);
+                    }
                     await fetch('/api/auth/logout', { method: 'POST' });
                   } catch {}
                   try {
