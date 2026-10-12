@@ -109,7 +109,7 @@ export function ExperienceSection({
                           value={exp.role || ''}
                           onChange={(e) => handleUpdateItem(exp.id, { role: e.target.value })}
                           placeholder="e.g. Lead Designer"
-                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                       <div>
@@ -121,7 +121,7 @@ export function ExperienceSection({
                           value={exp.company || ''}
                           onChange={(e) => handleUpdateItem(exp.id, { company: e.target.value })}
                           placeholder="e.g. Acme Corp"
-                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                     </div>
@@ -145,7 +145,7 @@ export function ExperienceSection({
                         value={exp.period || ''}
                         onChange={(e) => handleUpdateItem(exp.id, { period: e.target.value })}
                         placeholder="e.g. Jan 2021 - Present"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
@@ -157,7 +157,7 @@ export function ExperienceSection({
                         value={exp.location || ''}
                         onChange={(e) => handleUpdateItem(exp.id, { location: e.target.value })}
                         placeholder="e.g. San Francisco, CA / Remote"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                   </div>
@@ -171,7 +171,7 @@ export function ExperienceSection({
                       value={exp.description || ''}
                       onChange={(e) => handleUpdateItem(exp.id, { description: e.target.value })}
                       placeholder="Highlights, achievements, or tech stack used..."
-                      className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                      className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                     />
                   </div>
                 </div>

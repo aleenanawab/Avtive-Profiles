@@ -186,7 +186,7 @@ export function SkillsServicesSection({
                   }
                 }}
                 placeholder="Type a skill (e.g. Next.js, Design)..."
-                className={`flex-1 text-xs p-2 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} focus:outline-none focus:ring-1 focus:ring-cyan-500`}
+                className={`flex-1 text-xs p-2 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500`}
               />
               <button
                 type="button"

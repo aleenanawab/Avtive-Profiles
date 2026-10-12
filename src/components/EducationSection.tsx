@@ -101,7 +101,7 @@ export function EducationSection({
                           value={edu.degree || ''}
                           onChange={(e) => handleUpdateItem(edu.id, { degree: e.target.value })}
                           placeholder="e.g. B.S. in Computer Science"
-                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                       <div>
@@ -113,7 +113,7 @@ export function EducationSection({
                           value={edu.institution || (edu as any).school || ''}
                           onChange={(e) => handleUpdateItem(edu.id, { institution: e.target.value })}
                           placeholder="e.g. Stanford University"
-                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                     </div>
@@ -136,7 +136,7 @@ export function EducationSection({
                       value={edu.period || edu.year || ''}
                       onChange={(e) => handleUpdateItem(edu.id, { period: e.target.value, year: e.target.value })}
                       placeholder="e.g. 2019 - 2023"
-                      className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                      className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                     />
                   </div>
 
@@ -149,7 +149,7 @@ export function EducationSection({
                       value={edu.description || ''}
                       onChange={(e) => handleUpdateItem(edu.id, { description: e.target.value })}
                       placeholder="Honors, thesis, activities, or coursework..."
-                      className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                      className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                     />
                   </div>
                 </div>

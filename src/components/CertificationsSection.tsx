@@ -103,7 +103,7 @@ export function CertificationsSection({
                           value={cert.name || (cert as any).title || ''}
                           onChange={(e) => handleUpdateItem(cert.id, { name: e.target.value })}
                           placeholder="e.g. AWS Certified Solutions Architect"
-                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                       <div>
@@ -115,7 +115,7 @@ export function CertificationsSection({
                           value={cert.issuer || ''}
                           onChange={(e) => handleUpdateItem(cert.id, { issuer: e.target.value })}
                           placeholder="e.g. Amazon Web Services"
-                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                     </div>
@@ -139,7 +139,7 @@ export function CertificationsSection({
                         value={cert.issued || ''}
                         onChange={(e) => handleUpdateItem(cert.id, { issued: e.target.value })}
                         placeholder="e.g. 2023"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
@@ -151,7 +151,7 @@ export function CertificationsSection({
                         value={cert.expires || ''}
                         onChange={(e) => handleUpdateItem(cert.id, { expires: e.target.value })}
                         placeholder="e.g. 2026 / Never"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
@@ -163,7 +163,7 @@ export function CertificationsSection({
                         value={cert.credentialId || ''}
                         onChange={(e) => handleUpdateItem(cert.id, { credentialId: e.target.value })}
                         placeholder="e.g. AWS-12345"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
@@ -175,7 +175,7 @@ export function CertificationsSection({
                         value={cert.url || ''}
                         onChange={(e) => handleUpdateItem(cert.id, { url: e.target.value })}
                         placeholder="https://..."
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                   </div>

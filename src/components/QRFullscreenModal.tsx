@@ -59,6 +59,9 @@ export function QRFullscreenModal({ isOpen, onClose, profile }: QRFullscreenModa
           <img
             src={profile.avatar}
             alt={profile.name}
+            onError={(e) => {
+              e.currentTarget.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop';
+            }}
             className="w-16 h-16 rounded-full object-cover border-2 border-white/20 shadow-md"
           />
           <div>

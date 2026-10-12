@@ -216,7 +216,7 @@ export function CustomFieldsSection({
                     onUpdateField?.('customFields', next);
                   }}
                   placeholder="Field Label (e.g. Portfolio, Discord, Office Hours)"
-                  className={`flex-1 text-xs font-bold p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary}`}
+                  className={`flex-1 text-xs font-bold p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-purple-400`}
                 />
                 <select
                   value={field.type || 'text'}
@@ -226,7 +226,7 @@ export function CustomFieldsSection({
                     );
                     onUpdateField?.('customFields', next);
                   }}
-                  className={`text-xs p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary}`}
+                  className={`text-xs p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} bg-white dark:bg-zinc-900 focus:outline-hidden focus:ring-1 focus:ring-purple-400 cursor-pointer`}
                 >
                   <option value="text">Text</option>
                   <option value="link">Link</option>
@@ -259,7 +259,7 @@ export function CustomFieldsSection({
                   onUpdateField?.('customFields', next);
                 }}
                 placeholder="Field Value (e.g. https://... or text)"
-                className={`w-full text-xs p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary}`}
+                className={`w-full text-xs p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-purple-400`}
               />
             </div>
           ))}

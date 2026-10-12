@@ -428,7 +428,12 @@ export function DesktopWindowPreview({
               <Puzzle className="w-3.5 h-3.5" />
             </button>
             <div className="w-5 h-5 rounded-full overflow-hidden border border-slate-300 dark:border-slate-600 shrink-0 ml-1">
-              <img src={profile.avatar || SUPABASE_DEFAULT_AVATAR} alt="avatar" className="w-full h-full object-cover" />
+              <img 
+                src={profile.avatar || SUPABASE_DEFAULT_AVATAR} 
+                alt="avatar" 
+                onError={(e) => { e.currentTarget.src = SUPABASE_DEFAULT_AVATAR; }}
+                className="w-full h-full object-cover" 
+              />
             </div>
             <button type="button" className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-white cursor-pointer">
               <MoreVertical className="w-3.5 h-3.5" />
@@ -461,6 +466,7 @@ export function DesktopWindowPreview({
                   <img 
                     src={profile.avatar || SUPABASE_DEFAULT_AVATAR} 
                     alt={profile.name || 'User'} 
+                    onError={(e) => { e.currentTarget.src = SUPABASE_DEFAULT_AVATAR; }}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -660,9 +666,14 @@ export function DesktopWindowPreview({
                     
                     {/* Images: Cover & Avatar */}
                     <div className="flex items-center gap-4 pt-2">
-                      <div className="relative group/av">
+                       <div className="relative group/av">
                         <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-500/40 bg-slate-100 dark:bg-slate-800 shrink-0">
-                          <img src={profile.avatar || SUPABASE_DEFAULT_AVATAR} alt="avatar" className="w-full h-full object-cover" />
+                          <img 
+                            src={profile.avatar || SUPABASE_DEFAULT_AVATAR} 
+                            alt="avatar" 
+                            onError={(e) => { e.currentTarget.src = SUPABASE_DEFAULT_AVATAR; }}
+                            className="w-full h-full object-cover" 
+                          />
                         </div>
                         <button
                           type="button"
@@ -1080,7 +1091,12 @@ export function DesktopWindowPreview({
                       {(profile.projects || []).map((p) => (
                         <div key={p.id} className="flex items-center justify-between p-2.5 rounded-xl bg-white dark:bg-[#111A2D] border border-slate-200 dark:border-slate-800">
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <img src={p.image || p.coverImage || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=200&auto=format&fit=crop'} alt={p.title} className="w-8 h-8 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 shrink-0" />
+                            <img 
+                              src={p.image || p.coverImage || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=200&auto=format&fit=crop'} 
+                              alt={p.title} 
+                              onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=200&auto=format&fit=crop'; }}
+                              className="w-8 h-8 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 shrink-0" 
+                            />
                             <div className="min-w-0">
                               <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.title}</h4>
                               <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{p.description}</p>

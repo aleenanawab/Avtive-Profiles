@@ -276,6 +276,7 @@ export function ProfileSwitcher({
                           <img
                             src={p.avatar}
                             alt={p.name}
+                            onError={(e) => { e.currentTarget.src = '/images/default-avatar.png'; }}
                             className="w-full h-full object-cover"
                           />
                         ) : (

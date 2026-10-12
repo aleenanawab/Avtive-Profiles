@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
 import { Edit3, Save, X, Loader2, LayoutGrid, Sun, Moon, LogOut } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
+import { usePortfolioTheme } from '@/context/ThemeContext';
 
 export interface PublicProfileClientProps {
   initialProfile: ProfileData;
@@ -66,7 +67,7 @@ function PublicProfileClientInner({
   const [activeTheme, setActiveTheme] = useState<ProfileTheme>(
     initialProfile.theme && initialProfile.theme !== 'default' ? initialProfile.theme : 'editorial'
   );
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = usePortfolioTheme();
   const [isEditing, setIsEditing] = useState(Boolean(initialIsEditing && isOwner));
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarPinned, setIsSidebarPinned] = useState(false);
@@ -187,21 +188,6 @@ function PublicProfileClientInner({
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  useEffect(() => {
-    try {
-      const savedPref = localStorage.getItem('avtive_theme_pref');
-      const hasDark = savedPref === 'dark' || (!savedPref && document.documentElement.classList.contains('dark'));
-      setIsDark(hasDark);
-      if (hasDark) {
-        document.documentElement.classList.add('dark');
-      } else if (savedPref === 'light') {
-        document.documentElement.classList.remove('dark');
-      }
-    } catch {
-      setIsDark(document.documentElement.classList.contains('dark'));
-    }
-  }, []);
-
   // Synchronize edit mode with browser URL and listen to popstate (back/forward)
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -284,16 +270,7 @@ function PublicProfileClientInner({
   }, [currentUser]);
 
   const handleToggleTheme = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    try {
-      localStorage.setItem('avtive_theme_pref', newDark ? 'dark' : 'light');
-    } catch {}
-    if (newDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    toggleDarkMode();
   };
 
   const handleLogout = async () => {
@@ -501,7 +478,7 @@ function PublicProfileClientInner({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={handleCloseSidebar}
-              className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-40 cursor-pointer"
+              className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 cursor-pointer"
             />
             <motion.div
               key="public-sidebar-drawer"
@@ -511,7 +488,7 @@ function PublicProfileClientInner({
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
               onMouseEnter={handlePanelMouseEnter}
               onMouseLeave={handlePanelMouseLeave}
-              className="absolute top-0 bottom-0 left-0 z-50 h-full shadow-2xl max-w-full"
+              className="fixed top-0 bottom-0 left-0 z-50 h-full shadow-2xl max-w-full"
             >
               <DesktopProfileSidebar
                 onClose={handleCloseSidebar}

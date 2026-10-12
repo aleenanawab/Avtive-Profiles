@@ -57,7 +57,7 @@ export function AboutSection({
               value={profile.tagline || ''}
               onChange={(e) => onUpdateField?.('tagline', e.target.value)}
               placeholder="A punchy phrase, personal tagline, or motto that describes you best..."
-              className={`w-full p-2.5 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-transparent text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:border-current`}
+              className={`w-full p-2.5 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-slate-50/50 dark:bg-white/[0.03] text-xs sm:text-sm ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
             />
           </div>
           <div className="space-y-1">
@@ -69,7 +69,7 @@ export function AboutSection({
               value={profile.about || profile.fullBio || profile.shortBio || ''}
               onChange={(e) => onUpdateField?.('about', e.target.value)}
               placeholder="Write your background, experience, accomplishments, or philosophy..."
-              className={`w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-transparent text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:border-current`}
+              className={`w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-slate-50/50 dark:bg-white/[0.03] text-xs sm:text-sm ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
             />
           </div>
         </div>

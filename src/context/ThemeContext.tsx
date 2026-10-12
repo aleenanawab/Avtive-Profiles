@@ -23,26 +23,32 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setIsMounted(true);
-    try {
-      const saved = localStorage.getItem('portfolio_theme') as PortfolioTheme;
-      if (saved && (saved === 'editorial' || saved === 'cyber' || saved === 'luxe')) {
-        setThemeState(saved);
-        document.documentElement.setAttribute('data-theme', saved);
-      } else {
+    const syncTheme = () => {
+      try {
+        const saved = localStorage.getItem('portfolio_theme') as PortfolioTheme;
+        if (saved && (saved === 'editorial' || saved === 'cyber' || saved === 'luxe')) {
+          setThemeState(saved);
+          document.documentElement.setAttribute('data-theme', saved);
+        } else {
+          document.documentElement.setAttribute('data-theme', 'editorial');
+        }
+
+        const savedPref = localStorage.getItem('avtive_theme_pref');
+        const hasDark = savedPref === 'dark' || (!savedPref && (document.documentElement.classList.contains('dark') || window.matchMedia('(prefers-color-scheme: dark)').matches));
+        setIsDarkState(hasDark);
+        if (hasDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch {
         document.documentElement.setAttribute('data-theme', 'editorial');
       }
+    };
 
-      const savedPref = localStorage.getItem('avtive_theme_pref');
-      const hasDark = savedPref === 'dark' || (!savedPref && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      setIsDarkState(hasDark);
-      if (hasDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    } catch {
-      document.documentElement.setAttribute('data-theme', 'editorial');
-    }
+    syncTheme();
+    window.addEventListener('storage', syncTheme);
+    return () => window.removeEventListener('storage', syncTheme);
   }, []);
 
   const setTheme = (newTheme: PortfolioTheme) => {

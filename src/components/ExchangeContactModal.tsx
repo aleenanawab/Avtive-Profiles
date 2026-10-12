@@ -90,7 +90,14 @@ export function ExchangeContactModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-full overflow-hidden border ${theme.cardBorder} shrink-0`}>
-              <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+              <img 
+                src={profile.avatar} 
+                alt={profile.name} 
+                onError={(e) => {
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop';
+                }}
+                className="w-full h-full object-cover" 
+              />
             </div>
             <div>
               <h3 className={`text-xs font-bold ${theme.textPrimary}`}>
@@ -134,7 +141,7 @@ export function ExchangeContactModal({
                   placeholder="Your Full Name *"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} focus:outline-none focus:border-current`}
+                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
                 />
               </div>
 
@@ -146,7 +153,7 @@ export function ExchangeContactModal({
                   placeholder="Your Email Address *"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} focus:outline-none focus:border-current`}
+                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
                 />
               </div>
 
@@ -157,7 +164,7 @@ export function ExchangeContactModal({
                   placeholder="Phone Number (Optional)"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} focus:outline-none focus:border-current`}
+                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
                 />
               </div>
 
@@ -168,7 +175,7 @@ export function ExchangeContactModal({
                   placeholder="Company / Organization"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} focus:outline-none focus:border-current`}
+                  className={`w-full pl-9 pr-3.5 py-2 rounded-xl ${theme.subCardBg} border ${theme.subCardBorder} text-xs ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
                 />
               </div>
             </div>

@@ -124,7 +124,7 @@ export function TeamSection({
                               value={member.name || ''}
                               onChange={(e) => handleUpdateMember(member.id, { name: e.target.value })}
                               placeholder="e.g. Alex Morgan"
-                              className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                              className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                           <div>
@@ -136,7 +136,7 @@ export function TeamSection({
                               value={member.role || ''}
                               onChange={(e) => handleUpdateMember(member.id, { role: e.target.value })}
                               placeholder="e.g. Chief Technology Officer"
-                              className={`w-full text-xs font-medium p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.accentText}`}
+                              className={`w-full text-xs font-medium p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.accentText} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                         </div>
@@ -151,7 +151,7 @@ export function TeamSection({
                               value={member.department || ''}
                               onChange={(e) => handleUpdateMember(member.id, { department: e.target.value })}
                               placeholder="e.g. Product Engineering"
-                              className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                              className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                           <div>
@@ -163,7 +163,7 @@ export function TeamSection({
                               value={member.email || ''}
                               onChange={(e) => handleUpdateMember(member.id, { email: e.target.value })}
                               placeholder="e.g. alex@company.com"
-                              className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                              className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                         </div>
@@ -197,6 +197,7 @@ export function TeamSection({
                         <img
                           src={member.avatar || '/images/default-avatar.png'}
                           alt={member.name}
+                          onError={(e) => { e.currentTarget.src = '/images/default-avatar.png'; }}
                           className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 ${theme.cardBorder} shadow-xs bg-slate-100 dark:bg-zinc-800`}
                         />
                         {isPending && (

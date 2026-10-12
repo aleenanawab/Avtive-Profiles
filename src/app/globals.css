@@ -2,6 +2,21 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-background: var(--bg-main);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--bg-card);
+  --color-card-foreground: var(--text-primary);
+  --color-muted: var(--bg-card-elevated);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--brand-earth-clay);
+  --color-accent-foreground: var(--text-primary);
+  --color-border: var(--border-subtle);
+  --color-input: var(--border-medium);
+}
+
 @layer base {
   :root {
     /* BRAND PALETTE: Clean Neutral Obsidian + Pure White + Soft Earth Tone Accents */
@@ -13,6 +28,8 @@
     --brand-avtive: #18181B;
 
     /* LIGHT THEME TOKENS */
+    --primary: #0F172A;
+    --primary-foreground: #FFFFFF;
     --bg-main: #F8FAFC;
     --bg-surface: #FFFFFF;
     --bg-card: #FFFFFF;
@@ -27,6 +44,8 @@
 
   .dark {
     /* DARK THEME TOKENS: Clean Neutral Obsidian - Adapts to theme without forcing navy blue */
+    --primary: #FFFFFF;
+    --primary-foreground: #09090B;
     --bg-main: #090A0F;
     --bg-surface: #111319;
     --bg-card: #141720;

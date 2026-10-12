@@ -821,6 +821,7 @@ export function DesktopProfileContent({
             <img 
               src={profile.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'} 
               alt="Cover" 
+              onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop'; }}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
@@ -852,6 +853,7 @@ export function DesktopProfileContent({
                   <img 
                     src={profile.avatar || (isCompany ? 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=400&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop')} 
                     alt={isCompany ? "Company Logo" : "Avatar"} 
+                    onError={(e) => { e.currentTarget.src = isCompany ? 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=400&auto=format&fit=crop' : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'; }}
                     className={`w-full h-full ${isCompany ? 'object-contain rounded-xl' : 'object-cover'}`}
                   />
                   <button

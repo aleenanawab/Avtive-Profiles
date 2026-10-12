@@ -286,6 +286,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                         <img
                           src={p.avatar}
                           alt={p.name}
+                          onError={(e) => { e.currentTarget.src = '/images/default-avatar.png'; }}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -396,7 +397,12 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                   <div className="flex items-center gap-2.5">
                     <div className="relative w-9 h-9 rounded-full overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-200 dark:bg-slate-800 shrink-0">
                       {p.avatar ? (
-                        <img src={p.avatar} alt={p.name} className="w-full h-full object-cover" />
+                        <img 
+                          src={p.avatar} 
+                          alt={p.name} 
+                          onError={(e) => { e.currentTarget.src = '/images/default-avatar.png'; }}
+                          className="w-full h-full object-cover" 
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-xs bg-gradient-to-tr from-cyan-500/20 to-blue-500/20">
                           {(p.profileName || p.name || 'U').charAt(0).toUpperCase()}

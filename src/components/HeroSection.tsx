@@ -158,6 +158,9 @@ export function HeroSection({
         <img
           src={coverUrl}
           alt={`${profile.name} Cover`}
+          onError={(e) => {
+            e.currentTarget.src = SUPABASE_DEFAULT_COVER;
+          }}
           className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
@@ -228,6 +231,9 @@ export function HeroSection({
               <img
                 src={avatarUrl}
                 alt={profile.name}
+                onError={(e) => {
+                  e.currentTarget.src = SUPABASE_DEFAULT_AVATAR;
+                }}
                 className="w-full h-full object-contain rounded-xl sm:rounded-2xl"
               />
               {(canEdit || isEditing) && (
@@ -257,6 +263,9 @@ export function HeroSection({
               <img
                 src={avatarUrl}
                 alt={profile.name}
+                onError={(e) => {
+                  e.currentTarget.src = SUPABASE_DEFAULT_AVATAR;
+                }}
                 className="w-full h-full object-cover"
               />
               {(canEdit || isEditing) && (
@@ -305,7 +314,7 @@ export function HeroSection({
                     value={profile.name || ''}
                     onChange={(e) => onUpdateField?.('name', e.target.value)}
                     placeholder="Your Full Name"
-                    className={`w-full text-base sm:text-xl font-bold tracking-tight bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textPrimary}`}
+                    className={`w-full text-base sm:text-xl font-bold tracking-tight bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
                   />
                 </div>
                 <div className="space-y-1">
@@ -323,7 +332,7 @@ export function HeroSection({
                         onUpdateField?.('slug', cleanSlug);
                       }}
                       placeholder="username"
-                      className={`w-full pl-7 pr-3 py-1.5 text-xs sm:text-sm font-mono bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textPrimary}`}
+                      className={`w-full pl-7 pr-3 py-1.5 text-xs sm:text-sm font-mono bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
                     />
                   </div>
                 </div>
@@ -359,7 +368,7 @@ export function HeroSection({
                     onUpdateField?.('profession', e.target.value);
                   }}
                   placeholder="Profession / Designation (e.g. Senior Software Engineer)"
-                  className={`w-full text-sm sm:text-base font-medium bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textSecondary}`}
+                  className={`w-full text-sm sm:text-base font-medium bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
                 />
               </div>
             ) : (
@@ -443,7 +452,7 @@ export function HeroSection({
                   value={profile.tagline || ''}
                   onChange={(e) => onUpdateField?.('tagline', e.target.value)}
                   placeholder="Tagline or motto (e.g. Building next-generation digital identities)"
-                  className={`w-full text-xs sm:text-sm italic bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textSecondary}`}
+                  className={`w-full text-xs sm:text-sm italic bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
                 />
               </div>
             ) : (
@@ -466,7 +475,7 @@ export function HeroSection({
                   value={profile.location || ''}
                   onChange={(e) => onUpdateField?.('location', e.target.value)}
                   placeholder="Location (e.g. San Francisco, CA · Remote)"
-                  className={`w-full text-xs sm:text-sm bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textMuted}`}
+                  className={`w-full text-xs sm:text-sm bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
                 />
               </div>
             ) : (
@@ -495,7 +504,7 @@ export function HeroSection({
                 value={profile.shortBio || ''}
                 onChange={(e) => onUpdateField?.('shortBio', e.target.value)}
                 placeholder="A concise overview of your background or focus..."
-                className={`w-full p-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 text-xs sm:text-sm ${theme.textSecondary} focus:outline-none focus:ring-2 focus:ring-cyan-500`}
+                className={`w-full p-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 text-xs sm:text-sm ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
               />
             </div>
           ) : (

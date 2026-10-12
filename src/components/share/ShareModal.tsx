@@ -298,6 +298,9 @@ export function ShareModal({
                           <img
                             src={r.avatar || ''}
                             alt={r.name}
+                            onError={(e) => {
+                              e.currentTarget.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop';
+                            }}
                             className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-white/15 shrink-0 bg-slate-200 dark:bg-white/10"
                           />
                           <div className="min-w-0">

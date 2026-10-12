@@ -87,7 +87,7 @@ export function ProfileContactSection({
               value={profile.email || ''}
               onChange={(e) => onUpdateField?.('email', e.target.value)}
               placeholder="email@example.com"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
 
@@ -100,7 +100,7 @@ export function ProfileContactSection({
               value={profile.phone || ''}
               onChange={(e) => onUpdateField?.('phone', e.target.value)}
               placeholder="+92 300 1234567"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
 
@@ -113,7 +113,7 @@ export function ProfileContactSection({
               value={profile.whatsapp || ''}
               onChange={(e) => onUpdateField?.('whatsapp', e.target.value)}
               placeholder="+92 312 5175041"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
 
@@ -126,7 +126,7 @@ export function ProfileContactSection({
               value={profile.location || ''}
               onChange={(e) => onUpdateField?.('location', e.target.value)}
               placeholder="Islamabad, Pakistan"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
 
@@ -139,7 +139,7 @@ export function ProfileContactSection({
               value={profile.officeAddress || ''}
               onChange={(e) => onUpdateField?.('officeAddress', e.target.value)}
               placeholder="Suite 400, Tech Park, City"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
 
@@ -152,7 +152,7 @@ export function ProfileContactSection({
               value={profile.website || ''}
               onChange={(e) => onUpdateField?.('website', e.target.value)}
               placeholder="https://www.avtive.app"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
 
@@ -165,7 +165,7 @@ export function ProfileContactSection({
               value={profile.bookingUrl || ''}
               onChange={(e) => onUpdateField?.('bookingUrl', e.target.value)}
               placeholder="https://calendly.com/your-calendar"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
         </div>

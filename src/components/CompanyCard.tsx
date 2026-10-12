@@ -107,7 +107,7 @@ export function CompanyCard({
                 value={currentInfo.name || ''}
                 onChange={(e) => handleUpdate({ name: e.target.value })}
                 placeholder="e.g. Avtive Technologies Inc."
-                className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div>
@@ -119,7 +119,7 @@ export function CompanyCard({
                 value={currentInfo.tagline || ''}
                 onChange={(e) => handleUpdate({ tagline: e.target.value })}
                 placeholder="e.g. Next-Generation Identity Cloud"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div>
@@ -131,7 +131,7 @@ export function CompanyCard({
                 value={currentInfo.industry || ''}
                 onChange={(e) => handleUpdate({ industry: e.target.value })}
                 placeholder="e.g. Software · Enterprise SaaS"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div>
@@ -143,7 +143,7 @@ export function CompanyCard({
                 value={currentInfo.website || ''}
                 onChange={(e) => handleUpdate({ website: e.target.value })}
                 placeholder="e.g. https://company.com"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div className="sm:col-span-2">
@@ -155,7 +155,7 @@ export function CompanyCard({
                 value={currentInfo.location || ''}
                 onChange={(e) => handleUpdate({ location: e.target.value })}
                 placeholder="e.g. San Francisco, California / Global Remote"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
+                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
           </div>
@@ -175,6 +175,7 @@ export function CompanyCard({
               <img
                 src={companyInfo?.logo || '/images/avtive-symbol.png'}
                 alt={companyInfo?.name || 'Company'}
+                onError={(e) => { e.currentTarget.src = '/images/avtive-symbol.png'; }}
                 className="w-full h-full object-contain"
               />
             </div>
