@@ -25,7 +25,11 @@ import {
   GripVertical,
   X,
   Users,
-  Building2
+  Building2,
+  Award,
+  Globe,
+  Tag,
+  MessageSquare
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { AvtiveLogoIcon } from '@/components/DesktopWindowPreview';
@@ -40,7 +44,7 @@ export interface SidebarSectionItem {
 }
 
 export const DESKTOP_SIDEBAR_SECTIONS: SidebarSectionItem[] = [
-  // 1-8: Core Profile Sections
+  // 1-12: Core Profile Sections
   { key: 'profile', label: 'Profile', icon: User, category: 'core' },
   { key: 'companyInfo', label: 'Company Info', icon: Building2, category: 'core' },
   { key: 'teamMembers', label: 'Team Members', icon: Users, category: 'core' },
@@ -51,14 +55,18 @@ export const DESKTOP_SIDEBAR_SECTIONS: SidebarSectionItem[] = [
   { key: 'contactInfo', label: 'Contact Info', icon: Phone, category: 'core' },
   { key: 'socialLinks', label: 'Social Links', icon: Link2, category: 'core' },
   { key: 'experience', label: 'Experience', icon: Briefcase, category: 'core' },
+  { key: 'certifications', label: 'Certificates', icon: Award, category: 'core' },
+  { key: 'languages', label: 'Languages', icon: Globe, category: 'core' },
+  { key: 'recommendations', label: 'Recommendations', icon: MessageSquare, category: 'core' },
+  { key: 'customFields', label: 'Custom Fields', icon: Tag, category: 'core' },
   
-  // 9-12: Advanced Management
+  // 13-16: Advanced Management
   { key: 'enhanceProfile', label: 'Enhance Profile', icon: Sparkles, category: 'advanced' },
   { key: 'limitations', label: 'Limitations', icon: EyeOff, category: 'advanced' },
   { key: 'accountInfo', label: 'Account Info', icon: UserCheck, category: 'advanced' },
   { key: 'archive', label: 'Archive', icon: Archive, category: 'advanced' },
   
-  // 13-14: Security & Settings
+  // 17-18: Security & Settings
   { key: 'security', label: 'Security', icon: ShieldCheck, category: 'system' },
   { key: 'settings', label: 'Settings', icon: Settings, category: 'system' }
 ];
@@ -117,6 +125,20 @@ export function DesktopProfileSidebar({
         return hiddenCount > 0 ? `${hiddenCount} hidden` : undefined;
       case 'enhanceProfile':
         return customFieldsCount > 0 ? `${customFieldsCount} fields` : undefined;
+      case 'certifications':
+        return Array.isArray(profile.certifications) && profile.certifications.length > 0 
+          ? profile.certifications.length 
+          : undefined;
+      case 'languages':
+        return Array.isArray(profile.languages) && profile.languages.length > 0 
+          ? profile.languages.length 
+          : undefined;
+      case 'recommendations':
+        return Array.isArray(profile.recommendations) && profile.recommendations.length > 0 
+          ? profile.recommendations.length 
+          : undefined;
+      case 'customFields':
+        return customFieldsCount > 0 ? customFieldsCount : undefined;
       default:
         return undefined;
     }
@@ -127,7 +149,7 @@ export function DesktopProfileSidebar({
     return DESKTOP_SIDEBAR_SECTIONS.filter(s => {
       if (s.category !== 'core') return false;
       if (!isCompany && (s.key === 'teamMembers' || s.key === 'companyInfo')) return false;
-      if (isCompany && (s.key === 'personalDetails' || s.key === 'experience' || s.key === 'education')) return false;
+      if (isCompany && (s.key === 'personalDetails' || s.key === 'experience' || s.key === 'education' || s.key === 'certifications' || s.key === 'languages' || s.key === 'recommendations')) return false;
       return true;
     });
   }, [isCompany]);
@@ -139,6 +161,7 @@ export function DesktopProfileSidebar({
       if (k === 'about') return 'personalDetails';
       if (k === 'contact') return 'contactInfo';
       if (k === 'services') return 'skills';
+      if (k === 'custom-fields') return 'customFields';
       return k;
     };
 

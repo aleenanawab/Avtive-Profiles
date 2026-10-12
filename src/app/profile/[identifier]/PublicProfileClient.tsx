@@ -22,7 +22,7 @@ import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditor
 import { downloadVCard } from '@/lib/vcard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
-import { Edit3, Save, X, Loader2 } from 'lucide-react';
+import { Edit3, Save, X, Loader2, LayoutGrid } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 export interface PublicProfileClientProps {
@@ -163,6 +163,14 @@ function PublicProfileClientInner({
         ? 'section-teamMembers'
         : sectionKey === 'companyInfo' || sectionKey === 'company'
         ? 'section-company'
+        : sectionKey === 'certifications' || sectionKey === 'certificates'
+        ? 'section-certifications'
+        : sectionKey === 'languages'
+        ? 'section-languages'
+        : sectionKey === 'recommendations'
+        ? 'section-recommendations'
+        : sectionKey === 'customFields' || sectionKey === 'custom-fields' || sectionKey === 'enhanceProfile'
+        ? 'section-custom-fields'
         : sectionKey === 'virtualCard' || sectionKey === 'virtual-card'
         ? 'virtual-card-section'
         : `section-${sectionKey}`;
@@ -308,19 +316,35 @@ function PublicProfileClientInner({
 
   const handleSaveEdits = async (updatedData: ProfileData) => {
     try {
+      // Sanitize custom fields: filter out entries that have neither a label nor a value
+      const sanitizedCustomFields = Array.isArray(updatedData.customFields)
+        ? updatedData.customFields.filter(f => (f.label && f.label.trim()) || (f.value && f.value.trim()))
+        : updatedData.customFields;
+
+      // Sanitize certifications: filter out entries that have neither a name nor an issuer
+      const sanitizedCertifications = Array.isArray(updatedData.certifications)
+        ? updatedData.certifications.filter(c => (c.name && c.name.trim()) || (c.issuer && c.issuer.trim()))
+        : updatedData.certifications;
+
+      const payload = {
+        ...updatedData,
+        customFields: sanitizedCustomFields,
+        certifications: sanitizedCertifications
+      };
+
       const res = await fetch('/api/profile/update', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           profileId: profile.id,
-          updatedData
+          updatedData: payload
         })
       });
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || 'Failed to save changes.');
       }
-      setProfile(data.profile || updatedData);
+      setProfile(data.profile || payload);
       setIsEditing(false);
       showToast('Profile saved successfully!');
     } catch (err: any) {

@@ -843,6 +843,24 @@
       "role": "individual",
       "onboardingCompleted": true,
       "createdAt": "2026-10-07T10:27:11.395Z"
+    },
+    {
+      "id": "user-1791780817628-7e9co",
+      "name": "Verification Test User",
+      "email": "verify_user_1791780811605@example.com",
+      "passwordHash": "$2b$10$97/hx69FdND8rIQn6kMLJ.UhNvqXpmYLCcurDb92IAfEpXx1LV71e",
+      "role": "individual",
+      "onboardingCompleted": true,
+      "createdAt": "2026-10-12T04:53:37.628Z"
+    },
+    {
+      "id": "user-1791780874406-weqs9",
+      "name": "Verification Test User",
+      "email": "verify_user_1791780873693@example.com",
+      "passwordHash": "$2b$10$fiPHWOvtSESFTPomzijxiO8qTfeqp/lPne1.QkOlbE2F0MofIbIMm",
+      "role": "individual",
+      "onboardingCompleted": true,
+      "createdAt": "2026-10-12T04:54:34.406Z"
     }
   ],
   "profiles": {
@@ -874,15 +892,9 @@
       ],
       "customContacts": [],
       "companyInfo": {
-        "id": "avtive-company",
-        "name": "Avtive",
-        "tagline": "SaaS Platform for Digital Profiles & Cloud Identity",
-        "logo": "/images/avtive-symbol.png",
-        "industry": "B2B SaaS • Digital Profile Platform • Cloud Identity",
-        "location": "NSTP, Islamabad, Pakistan",
-        "website": "https://www.avtive.app",
-        "employeeCount": "11-50",
-        "profileId": "company"
+        "industry": "Enterprise SaaS & Identity",
+        "employeeCount": "50-100 Employees",
+        "location": "Islamabad, PK"
       },
       "nfcCard": {
         "cardNumber": "AVTIVE • SYED MESUM RAZA SHAH",
@@ -1048,7 +1060,7 @@
       "profileName": "Strategy-based Artist & Creative Director",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-15T12:12:07.707Z",
+      "updatedAt": "2026-10-12T05:52:08.950Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1141,7 +1153,20 @@
         "recommendations": true,
         "virtual-card": true,
         "company": true
-      }
+      },
+      "error": "Profile not found.",
+      "teamMembers": [
+        {
+          "id": "test-member-1",
+          "name": "Sarah Connor",
+          "role": "Lead Security Architect",
+          "department": "Cybersecurity",
+          "avatar": "/images/default-avatar.png",
+          "bio": "Cybersecurity specialist.",
+          "email": "sarah@avtive.app",
+          "status": "ACTIVE"
+        }
+      ]
     },
     "syedmesumraza": {
       "id": "mesum-raza",
@@ -1171,15 +1196,9 @@
       ],
       "customContacts": [],
       "companyInfo": {
-        "id": "avtive-company",
-        "name": "Avtive",
-        "tagline": "SaaS Platform for Digital Profiles & Cloud Identity",
-        "logo": "/images/avtive-symbol.png",
-        "industry": "B2B SaaS • Digital Profile Platform • Cloud Identity",
-        "location": "NSTP, Islamabad, Pakistan",
-        "website": "https://www.avtive.app",
-        "employeeCount": "11-50",
-        "profileId": "company"
+        "industry": "Enterprise SaaS & Identity",
+        "employeeCount": "50-100 Employees",
+        "location": "Islamabad, PK"
       },
       "nfcCard": {
         "cardNumber": "AVTIVE • SYED MESUM RAZA SHAH",
@@ -1345,7 +1364,7 @@
       "profileName": "Strategy-based Artist & Creative Director",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-15T12:12:07.707Z",
+      "updatedAt": "2026-10-12T05:52:08.950Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1438,7 +1457,20 @@
         "recommendations": true,
         "virtual-card": true,
         "company": true
-      }
+      },
+      "error": "Profile not found.",
+      "teamMembers": [
+        {
+          "id": "test-member-1",
+          "name": "Sarah Connor",
+          "role": "Lead Security Architect",
+          "department": "Cybersecurity",
+          "avatar": "/images/default-avatar.png",
+          "bio": "Cybersecurity specialist.",
+          "email": "sarah@avtive.app",
+          "status": "ACTIVE"
+        }
+      ]
     },
     "hamza-malik": {
       "id": "hamza-malik",
@@ -1635,6 +1667,16 @@
       ],
       "teamMembers": [
         {
+          "id": "mem-1791788860986",
+          "name": "Tariq Mehmood",
+          "role": "Principal Systems Architect",
+          "department": "Engineering",
+          "avatar": "/images/default-avatar.png",
+          "bio": "Oversees distributed systems infrastructure and security compliance.",
+          "email": "tariq@avtive.app",
+          "status": "ACTIVE"
+        },
+        {
           "id": "tm-1",
           "name": "Syed Mesum Raza Shah",
           "role": "Founder & Creative Director",
@@ -1672,7 +1714,7 @@
       "profileName": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "profession": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-10-12T07:07:41.026Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1688,7 +1730,10 @@
         "projects": true,
         "services": true,
         "recommendations": true,
-        "nfcCard": true
+        "nfcCard": true,
+        "volunteer": true,
+        "languages": true,
+        "companySection": true
       },
       "sectionOrder": [
         "hero",
@@ -1734,6 +1779,12 @@
         "recommendations": true,
         "virtual-card": true,
         "company": true
+      },
+      "companyInfo": {
+        "industry": "Enterprise Cloud Solutions",
+        "employeeCount": "50-100 Employees",
+        "location": "Islamabad & London",
+        "name": "The Leap Technologies Global"
       }
     },
     "avtive": {
@@ -1778,6 +1829,16 @@
       ],
       "teamMembers": [
         {
+          "id": "mem-1791788860986",
+          "name": "Tariq Mehmood",
+          "role": "Principal Systems Architect",
+          "department": "Engineering",
+          "avatar": "/images/default-avatar.png",
+          "bio": "Oversees distributed systems infrastructure and security compliance.",
+          "email": "tariq@avtive.app",
+          "status": "ACTIVE"
+        },
+        {
           "id": "tm-1",
           "name": "Syed Mesum Raza Shah",
           "role": "Founder & Creative Director",
@@ -1815,7 +1876,7 @@
       "profileName": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "profession": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-09-14T06:53:00.152Z",
+      "updatedAt": "2026-10-12T07:07:41.026Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1831,7 +1892,10 @@
         "projects": true,
         "services": true,
         "recommendations": true,
-        "nfcCard": true
+        "nfcCard": true,
+        "volunteer": true,
+        "languages": true,
+        "companySection": true
       },
       "sectionOrder": [
         "hero",
@@ -1877,6 +1941,12 @@
         "recommendations": true,
         "virtual-card": true,
         "company": true
+      },
+      "companyInfo": {
+        "industry": "Enterprise Cloud Solutions",
+        "employeeCount": "50-100 Employees",
+        "location": "Islamabad & London",
+        "name": "The Leap Technologies Global"
       }
     },
     "prof-1788782031980": {
@@ -13272,12 +13342,12 @@
       "companyId": "avtive-company",
       "companyName": "Avtive",
       "name": "ABCD User",
-      "designation": "Strategy-based Artist & Creative Director",
+      "designation": "Senior Lead Full-Stack Architect",
       "company": "Avtive",
-      "location": "NSTP, Islamabad, Pakistan",
-      "officeAddress": "NSTP, Islamabad, Pakistan",
+      "location": "San Francisco, CA",
+      "officeAddress": "100 Montgomery St, Suite 1500, San Francisco, CA",
       "avatar": "/images/founder-pfp.jpg",
-      "shortBio": "Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.",
+      "shortBio": "Specialist in Next.js, TypeScript, Distributed Cloud Systems.",
       "fullBio": "Strategy-based artist with over 10 years of experience focusing on creating compelling design solutions that help brands stand out. Specialized in brand identity, visual communication design, animation, photography, video production, and design strategy.",
       "whatsapp": "+92 312 5175041",
       "phone": "+92 312 5175041",
@@ -13405,12 +13475,13 @@
       ],
       "certifications": [
         {
-          "id": "cert-1",
-          "name": "LinkedIn Content and Creative Design Certification",
-          "issuer": "LinkedIn",
-          "issued": "August 2025",
-          "expires": "August 2027",
-          "credentialId": "5naai9rhydco"
+          "id": "cert-1791788860235-1",
+          "name": "AWS Certified Solutions Architect - PROFESSIONAL",
+          "issuer": "Amazon Web Services",
+          "issued": "2024",
+          "expires": "2027",
+          "credentialId": "AWS-SAP-FINAL-123",
+          "url": "https://www.credly.com/badges/aws-solutions-architect"
         }
       ],
       "volunteerExperiences": [
@@ -13425,19 +13496,20 @@
       "languages": [
         {
           "language": "English",
-          "proficiency": "Full professional proficiency"
+          "proficiency": "Native / Bilingual"
         },
         {
-          "language": "Urdu",
-          "proficiency": "Native or bilingual proficiency"
+          "language": "German",
+          "proficiency": "Professional Working"
         }
       ],
       "recommendations": [
         {
-          "id": "rec-1",
-          "author": "Sehrish Kanwal",
-          "summary": "Hard working, cooperative, innovative, strong in creativity and strategic thinking, capable of conceptualizing and executing campaigns, effective in leading brainstorming, and a visionary creative professional.",
-          "fullText": "Syed Mesum Raza Shah is exceptionally hardworking, cooperative, and innovative with profound strength in strategic thinking and creative execution. Capable of conceptualizing high-impact campaigns and leading productive brainstorming sessions."
+          "id": "rec-1791788860235",
+          "author": "Elena Rostova",
+          "designation": "VP of Product",
+          "company": "Vanguard Tech",
+          "summary": "Outstanding technical leadership and rapid execution on our digital card product."
         }
       ],
       "socials": [
@@ -13465,11 +13537,23 @@
       "profileName": "Primary Profile",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "updatedAt": "2026-10-12T07:07:40.612Z",
       "sharingSettings": {
         "email": true,
         "phone": true,
-        "contactInfo": true
+        "contactInfo": true,
+        "bio": true,
+        "skills": true,
+        "services": true,
+        "projects": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "nfcCard": true,
+        "companySection": true
       },
       "sectionOrder": [
         "hero",
@@ -13502,7 +13586,15 @@
         }
       ],
       "username": "abcd-user-profile",
-      "customFields": [],
+      "customFields": [
+        {
+          "id": "cf-1791788860235-1",
+          "label": "Office Hours (Winter)",
+          "value": "Mon-Wed 1:00 PM - 4:00 PM EST",
+          "type": "text",
+          "visible": true
+        }
+      ],
       "dynamicSections": [],
       "sectionVisibility": {
         "hero": true,
@@ -13520,7 +13612,10 @@
         "recommendations": true,
         "virtual-card": true,
         "company": true
-      }
+      },
+      "bookingUrl": "https://calendly.com/avtive-architect/intro",
+      "tagline": "Building High-Performance Resilient Web Platforms",
+      "about": "Over a decade of enterprise software architecture experience across cloud and modern web."
     },
     "abcd-user-profile": {
       "id": "prof-abcd",
@@ -13529,12 +13624,12 @@
       "companyId": "avtive-company",
       "companyName": "Avtive",
       "name": "ABCD User",
-      "designation": "Strategy-based Artist & Creative Director",
+      "designation": "Senior Lead Full-Stack Architect",
       "company": "Avtive",
-      "location": "NSTP, Islamabad, Pakistan",
-      "officeAddress": "NSTP, Islamabad, Pakistan",
+      "location": "San Francisco, CA",
+      "officeAddress": "100 Montgomery St, Suite 1500, San Francisco, CA",
       "avatar": "/images/founder-pfp.jpg",
-      "shortBio": "Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.",
+      "shortBio": "Specialist in Next.js, TypeScript, Distributed Cloud Systems.",
       "fullBio": "Strategy-based artist with over 10 years of experience focusing on creating compelling design solutions that help brands stand out. Specialized in brand identity, visual communication design, animation, photography, video production, and design strategy.",
       "whatsapp": "+92 312 5175041",
       "phone": "+92 312 5175041",
@@ -13662,12 +13757,13 @@
       ],
       "certifications": [
         {
-          "id": "cert-1",
-          "name": "LinkedIn Content and Creative Design Certification",
-          "issuer": "LinkedIn",
-          "issued": "August 2025",
-          "expires": "August 2027",
-          "credentialId": "5naai9rhydco"
+          "id": "cert-1791788860235-1",
+          "name": "AWS Certified Solutions Architect - PROFESSIONAL",
+          "issuer": "Amazon Web Services",
+          "issued": "2024",
+          "expires": "2027",
+          "credentialId": "AWS-SAP-FINAL-123",
+          "url": "https://www.credly.com/badges/aws-solutions-architect"
         }
       ],
       "volunteerExperiences": [
@@ -13682,19 +13778,20 @@
       "languages": [
         {
           "language": "English",
-          "proficiency": "Full professional proficiency"
+          "proficiency": "Native / Bilingual"
         },
         {
-          "language": "Urdu",
-          "proficiency": "Native or bilingual proficiency"
+          "language": "German",
+          "proficiency": "Professional Working"
         }
       ],
       "recommendations": [
         {
-          "id": "rec-1",
-          "author": "Sehrish Kanwal",
-          "summary": "Hard working, cooperative, innovative, strong in creativity and strategic thinking, capable of conceptualizing and executing campaigns, effective in leading brainstorming, and a visionary creative professional.",
-          "fullText": "Syed Mesum Raza Shah is exceptionally hardworking, cooperative, and innovative with profound strength in strategic thinking and creative execution. Capable of conceptualizing high-impact campaigns and leading productive brainstorming sessions."
+          "id": "rec-1791788860235",
+          "author": "Elena Rostova",
+          "designation": "VP of Product",
+          "company": "Vanguard Tech",
+          "summary": "Outstanding technical leadership and rapid execution on our digital card product."
         }
       ],
       "socials": [
@@ -13722,11 +13819,23 @@
       "profileName": "Primary Profile",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-09-14T10:19:38.678Z",
+      "updatedAt": "2026-10-12T07:07:40.612Z",
       "sharingSettings": {
         "email": true,
         "phone": true,
-        "contactInfo": true
+        "contactInfo": true,
+        "bio": true,
+        "skills": true,
+        "services": true,
+        "projects": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "nfcCard": true,
+        "companySection": true
       },
       "sectionOrder": [
         "hero",
@@ -13759,7 +13868,15 @@
         }
       ],
       "username": "abcd-user-profile",
-      "customFields": [],
+      "customFields": [
+        {
+          "id": "cf-1791788860235-1",
+          "label": "Office Hours (Winter)",
+          "value": "Mon-Wed 1:00 PM - 4:00 PM EST",
+          "type": "text",
+          "visible": true
+        }
+      ],
       "dynamicSections": [],
       "sectionVisibility": {
         "hero": true,
@@ -13777,7 +13894,10 @@
         "recommendations": true,
         "virtual-card": true,
         "company": true
-      }
+      },
+      "bookingUrl": "https://calendly.com/avtive-architect/intro",
+      "tagline": "Building High-Performance Resilient Web Platforms",
+      "about": "Over a decade of enterprise software architecture experience across cloud and modern web."
     },
     "prof-1789474327781-jw7on": {
       "id": "prof-1789474327781-jw7on",
@@ -20540,7 +20660,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:19:23.989Z",
-      "updatedAt": "2026-10-07T06:19:27.374Z"
+      "updatedAt": "2026-10-07T06:19:27.374Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpwc4x",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "acme-robotics-muxpwc4x": {
       "id": "comp-1791353963989-rmf41",
@@ -20638,7 +20791,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:19:23.989Z",
-      "updatedAt": "2026-10-07T06:19:27.374Z"
+      "updatedAt": "2026-10-07T06:19:27.374Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpwc4x",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "comp-1791354026837-xj11k": {
       "id": "comp-1791354026837-xj11k",
@@ -20736,7 +20922,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:20:26.837Z",
-      "updatedAt": "2026-10-07T06:20:27.794Z"
+      "updatedAt": "2026-10-07T06:20:27.794Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpxola",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "acme-robotics-muxpxola": {
       "id": "comp-1791354026837-xj11k",
@@ -20834,7 +21053,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:20:26.837Z",
-      "updatedAt": "2026-10-07T06:20:27.794Z"
+      "updatedAt": "2026-10-07T06:20:27.794Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpxola",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "comp-1791354068378-drxrr": {
       "id": "comp-1791354068378-drxrr",
@@ -20932,7 +21184,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:21:08.378Z",
-      "updatedAt": "2026-10-07T06:21:09.274Z"
+      "updatedAt": "2026-10-07T06:21:09.274Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpykzq",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "acme-robotics-muxpykzq": {
       "id": "comp-1791354068378-drxrr",
@@ -21030,7 +21315,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:21:08.378Z",
-      "updatedAt": "2026-10-07T06:21:09.274Z"
+      "updatedAt": "2026-10-07T06:21:09.274Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpykzq",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "comp-1791354085668-9ps16": {
       "id": "comp-1791354085668-9ps16",
@@ -21128,7 +21446,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:21:25.668Z",
-      "updatedAt": "2026-10-07T06:21:28.907Z"
+      "updatedAt": "2026-10-07T06:21:28.907Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpyxzu",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "acme-robotics-muxpyxzu": {
       "id": "comp-1791354085668-9ps16",
@@ -21226,7 +21577,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:21:25.668Z",
-      "updatedAt": "2026-10-07T06:21:28.907Z"
+      "updatedAt": "2026-10-07T06:21:28.907Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxpyxzu",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1791354098181-9p49m": {
       "id": "prof-1791354098181-9p49m",
@@ -22001,7 +22385,34 @@
       },
       "socials": [],
       "createdAt": "2026-10-07T06:33:42.618Z",
-      "updatedAt": "2026-10-07T06:33:42.631Z"
+      "updatedAt": "2026-10-07T06:33:42.631Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "test-founder-company-profile-dysm-zrzk",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": []
     },
     "test-founder-company-profile-dysm-zrzk": {
       "id": "comp-1791354822618-5n39q",
@@ -22083,7 +22494,34 @@
       },
       "socials": [],
       "createdAt": "2026-10-07T06:33:42.618Z",
-      "updatedAt": "2026-10-07T06:33:42.631Z"
+      "updatedAt": "2026-10-07T06:33:42.631Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "test-founder-company-profile-dysm-zrzk",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": []
     },
     "comp-1791355135446-284gh": {
       "id": "comp-1791355135446-284gh",
@@ -22181,7 +22619,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:38:55.446Z",
-      "updatedAt": "2026-10-07T06:38:56.702Z"
+      "updatedAt": "2026-10-07T06:38:56.702Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxqlfy5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "acme-robotics-muxqlfy5": {
       "id": "comp-1791355135446-284gh",
@@ -22279,7 +22750,40 @@
         }
       ],
       "createdAt": "2026-10-07T06:38:55.446Z",
-      "updatedAt": "2026-10-07T06:38:56.702Z"
+      "updatedAt": "2026-10-07T06:38:56.702Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxqlfy5",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1791355137617-b6v0a": {
       "id": "prof-1791355137617-b6v0a",
@@ -22603,7 +23107,40 @@
         }
       ],
       "createdAt": "2026-10-07T10:18:15.836Z",
-      "updatedAt": "2026-10-07T10:18:17.087Z"
+      "updatedAt": "2026-10-07T10:18:17.087Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxyfipe",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "acme-robotics-muxyfipe": {
       "id": "comp-1791368295836-3xwek",
@@ -22703,7 +23240,40 @@
         }
       ],
       "createdAt": "2026-10-07T10:18:15.836Z",
-      "updatedAt": "2026-10-07T10:18:17.087Z"
+      "updatedAt": "2026-10-07T10:18:17.087Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxyfipe",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1791368297969-8oa0o": {
       "id": "prof-1791368297969-8oa0o",
@@ -23027,7 +23597,40 @@
         }
       ],
       "createdAt": "2026-10-07T10:27:09.413Z",
-      "updatedAt": "2026-10-07T10:27:10.646Z"
+      "updatedAt": "2026-10-07T10:27:10.646Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxyqyia",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "acme-robotics-muxyqyia": {
       "id": "comp-1791368829413-s8uxv",
@@ -23127,7 +23730,40 @@
         }
       ],
       "createdAt": "2026-10-07T10:27:09.413Z",
-      "updatedAt": "2026-10-07T10:27:10.646Z"
+      "updatedAt": "2026-10-07T10:27:10.646Z",
+      "profileName": "Team Profile",
+      "profession": "Professional",
+      "username": "acme-robotics-muxyqyia",
+      "customFields": [],
+      "dynamicSections": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "socialLinks": [
+        {
+          "platform": "website",
+          "url": "https://acme-cybernetics.test",
+          "label": "Website"
+        }
+      ]
     },
     "prof-1791368831580-n4kag": {
       "id": "prof-1791368831580-n4kag",
@@ -23352,6 +23988,882 @@
       "dynamicSections": [],
       "createdAt": "2026-10-07T10:27:11.580Z",
       "updatedAt": "2026-10-07T10:27:11.580Z"
+    },
+    "prof-1791780820733-guo1y": {
+      "id": "prof-1791780820733-guo1y",
+      "userId": "user-1791780817628-7e9co",
+      "profileName": "Primary Profile",
+      "profession": "Professional",
+      "slug": "verification-test-user-primary-profile-s1hu",
+      "type": "individual",
+      "name": "Verification Test User",
+      "email": "verify_user_1791780811605@example.com",
+      "firstName": "Verification",
+      "secondName": "Test User",
+      "lastName": "Test User",
+      "professionalTitle": "Professional",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-avatar.png",
+      "coverImage": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-cover.png",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "languages",
+        "recommendations",
+        "socialLinks",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "languages": true,
+        "recommendations": true,
+        "socialLinks": true,
+        "socials": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "verification-test-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-10-12T04:53:40.733Z",
+      "updatedAt": "2026-10-12T04:53:40.733Z"
+    },
+    "verification-test-user-primary-profile-s1hu": {
+      "id": "prof-1791780820733-guo1y",
+      "userId": "user-1791780817628-7e9co",
+      "profileName": "Primary Profile",
+      "profession": "Professional",
+      "slug": "verification-test-user-primary-profile-s1hu",
+      "type": "individual",
+      "name": "Verification Test User",
+      "email": "verify_user_1791780811605@example.com",
+      "firstName": "Verification",
+      "secondName": "Test User",
+      "lastName": "Test User",
+      "professionalTitle": "Professional",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-avatar.png",
+      "coverImage": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-cover.png",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "languages",
+        "recommendations",
+        "socialLinks",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "languages": true,
+        "recommendations": true,
+        "socialLinks": true,
+        "socials": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "verification-test-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-10-12T04:53:40.733Z",
+      "updatedAt": "2026-10-12T04:53:40.733Z"
+    },
+    "verification-test-user-primary-profile": {
+      "id": "prof-1791780875574-4qlpq",
+      "userId": "user-1791780874406-weqs9",
+      "profileName": "Primary Profile",
+      "profession": "Professional",
+      "slug": "verification-test-user-primary-profile-h4ah",
+      "type": "individual",
+      "name": "Verification Test User",
+      "email": "verify_user_1791780873693@example.com",
+      "firstName": "Verification",
+      "secondName": "Test User",
+      "lastName": "Test User",
+      "professionalTitle": "Professional",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-avatar.png",
+      "coverImage": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-cover.png",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "languages",
+        "recommendations",
+        "socialLinks",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "languages": true,
+        "recommendations": true,
+        "socialLinks": true,
+        "socials": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "verification-test-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-10-12T04:54:35.574Z",
+      "updatedAt": "2026-10-12T04:54:35.574Z"
+    },
+    "prof-1791780875574-4qlpq": {
+      "id": "prof-1791780875574-4qlpq",
+      "userId": "user-1791780874406-weqs9",
+      "profileName": "Primary Profile",
+      "profession": "Professional",
+      "slug": "verification-test-user-primary-profile-h4ah",
+      "type": "individual",
+      "name": "Verification Test User",
+      "email": "verify_user_1791780873693@example.com",
+      "firstName": "Verification",
+      "secondName": "Test User",
+      "lastName": "Test User",
+      "professionalTitle": "Professional",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-avatar.png",
+      "coverImage": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-cover.png",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "languages",
+        "recommendations",
+        "socialLinks",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "languages": true,
+        "recommendations": true,
+        "socialLinks": true,
+        "socials": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "verification-test-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-10-12T04:54:35.574Z",
+      "updatedAt": "2026-10-12T04:54:35.574Z"
+    },
+    "verification-test-user-primary-profile-h4ah": {
+      "id": "prof-1791780875574-4qlpq",
+      "userId": "user-1791780874406-weqs9",
+      "profileName": "Primary Profile",
+      "profession": "Professional",
+      "slug": "verification-test-user-primary-profile-h4ah",
+      "type": "individual",
+      "name": "Verification Test User",
+      "email": "verify_user_1791780873693@example.com",
+      "firstName": "Verification",
+      "secondName": "Test User",
+      "lastName": "Test User",
+      "professionalTitle": "Professional",
+      "designation": "Professional",
+      "company": "Avtive Network",
+      "location": "Global",
+      "avatar": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-avatar.png",
+      "coverImage": "https://hprlnnbnzomgvscmyane.supabase.co/storage/v1/object/public/profiles/default-cover.png",
+      "bio": "Welcome to my digital profile on Avtive.",
+      "about": "Passionate professional delivering intuitive digital experiences with modern technology and clean architecture.",
+      "shortBio": "Welcome to my digital profile on Avtive.",
+      "fullBio": "Connect with me directly via phone, WhatsApp, or email.",
+      "tagline": "",
+      "phone": "",
+      "whatsapp": "",
+      "theme": "editorial",
+      "contactOrder": [
+        "whatsapp",
+        "phone",
+        "email",
+        "website",
+        "location"
+      ],
+      "socials": [
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Website",
+          "handle": "avtive.app"
+        }
+      ],
+      "socialLinks": [],
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS"
+      ],
+      "experience": [],
+      "experiences": [],
+      "education": [],
+      "projects": [],
+      "services": [],
+      "certifications": [],
+      "languages": [],
+      "recommendations": [],
+      "testimonials": [],
+      "sharingSettings": {
+        "photo": true,
+        "nameAndTitle": true,
+        "bio": true,
+        "contactInfo": true,
+        "email": true,
+        "phone": true,
+        "links": true,
+        "socialLinks": true,
+        "skills": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "projects": true,
+        "services": true,
+        "languages": true,
+        "recommendations": true,
+        "companySection": true,
+        "nfcCard": true,
+        "customFields": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "contact",
+        "services",
+        "skills",
+        "projects",
+        "custom-fields",
+        "experience",
+        "education",
+        "certifications",
+        "languages",
+        "recommendations",
+        "socialLinks",
+        "virtual-card",
+        "company"
+      ],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "languages": true,
+        "recommendations": true,
+        "socialLinks": true,
+        "socials": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "username": "verification-test-user-primary-profile",
+      "customFields": [],
+      "dynamicSections": [],
+      "createdAt": "2026-10-12T04:54:35.574Z",
+      "updatedAt": "2026-10-12T04:54:35.574Z"
+    },
+    "abcd-user-test": {
+      "id": "prof-abcd",
+      "slug": "abcd-user-profile",
+      "type": "individual",
+      "companyId": "avtive-company",
+      "companyName": "Avtive",
+      "name": "ABCD User (Verified Test)",
+      "designation": "Strategy-based Artist & Creative Director",
+      "company": "Avtive",
+      "location": "NSTP, Islamabad, Pakistan",
+      "officeAddress": "Floor 5, Innovation Hub",
+      "avatar": "/images/founder-pfp.jpg",
+      "shortBio": "Strategy-based artist with over 10 years of experience creating compelling design solutions that help brands stand out.",
+      "fullBio": "Strategy-based artist with over 10 years of experience focusing on creating compelling design solutions that help brands stand out. Specialized in brand identity, visual communication design, animation, photography, video production, and design strategy.",
+      "whatsapp": "+92 312 5175041",
+      "phone": "+92 312 5175041",
+      "email": "abcd@gmail.com",
+      "website": "https://www.avtive.app",
+      "googleMapsUrl": "https://maps.google.com/?q=NSTP+Islamabad+Pakistan",
+      "contactOrder": [
+        "phone",
+        "whatsapp",
+        "email",
+        "website",
+        "location"
+      ],
+      "customContacts": [],
+      "companyInfo": {
+        "id": "avtive-company",
+        "name": "Avtive",
+        "tagline": "SaaS Platform for Digital Profiles & Cloud Identity",
+        "logo": "/images/avtive-symbol.png",
+        "industry": "B2B SaaS • Digital Profile Platform • Cloud Identity",
+        "location": "NSTP, Islamabad, Pakistan",
+        "website": "https://www.avtive.app",
+        "employeeCount": "11-50",
+        "profileId": "company"
+      },
+      "nfcCard": {
+        "cardNumber": "AVTIVE • SYED MESUM RAZA SHAH",
+        "chipId": "NTAG216-7EC384",
+        "finish": "obsidian"
+      },
+      "services": [
+        {
+          "id": "srv-1",
+          "title": "Brand Design"
+        },
+        {
+          "id": "srv-2",
+          "title": "Graphic Design"
+        },
+        {
+          "id": "srv-3",
+          "title": "Ad Design"
+        },
+        {
+          "id": "srv-4",
+          "title": "Visual Design"
+        },
+        {
+          "id": "srv-5",
+          "title": "Video Editing"
+        },
+        {
+          "id": "srv-6",
+          "title": "Print Design"
+        },
+        {
+          "id": "srv-7",
+          "title": "Brand Marketing"
+        },
+        {
+          "id": "srv-8",
+          "title": "3D Design"
+        },
+        {
+          "id": "srv-9",
+          "title": "Animation"
+        },
+        {
+          "id": "srv-10",
+          "title": "Presentation Design"
+        }
+      ],
+      "experiences": [
+        {
+          "id": "exp-1",
+          "company": "Avtive",
+          "role": "Creative Direction & Strategy",
+          "location": "NSTP, Islamabad, Pakistan"
+        },
+        {
+          "id": "exp-2",
+          "company": "Financial Monitoring Unit (FMU)",
+          "role": "Multimedia Designer",
+          "period": "Nov 2021 – Jun 2022"
+        },
+        {
+          "id": "exp-3",
+          "company": "USAID – Pakistan",
+          "role": "Multimedia Designer",
+          "period": "Feb 2021 – Aug 2021"
+        }
+      ],
+      "projects": [
+        {
+          "id": "proj-1",
+          "title": "DIFC | Gate Avenue | Dubai Big Bus Tours Campaign",
+          "category": "Campaign & Advertising Design",
+          "client": "DIFC Gate Avenue",
+          "description": "Offline marketing and advertising campaign design for the Dubai double big bus tours campaign for the client, DIFC Gate Avenue.",
+          "coverImage": "/images/project-difc-bus.jpg",
+          "technology": "Offline Marketing • Out-of-Home (OOH) Advertising",
+          "tags": [
+            "Offline Marketing",
+            "Advertising",
+            "Campaign Design",
+            "DIFC Gate Avenue"
+          ]
+        },
+        {
+          "id": "proj-2",
+          "title": "The Apprentice – The Trump Story",
+          "category": "Creative Design & Key Art",
+          "client": "Film Marketing & Advertising",
+          "description": "Official Middle East theatrical marketing, poster localization, and creative advertising design supporting the release.",
+          "coverImage": "/images/project-the-apprentice.jpg",
+          "imagePosition": "object-[center_30%]",
+          "technology": "Creative Design • Key Art • Film Marketing",
+          "tags": [
+            "Creative Design",
+            "Key Art",
+            "Film Marketing",
+            "Advertising"
+          ]
+        }
+      ],
+      "certifications": [
+        {
+          "id": "cert-1",
+          "name": "AWS Solutions Architect Associate",
+          "issuer": "Amazon Web Services",
+          "issued": "2026",
+          "expires": "2029",
+          "credentialId": "AWS-123456",
+          "url": "https://aws.amazon.com"
+        }
+      ],
+      "volunteerExperiences": [
+        {
+          "id": "vol-1",
+          "role": "Medical Assistant",
+          "organization": "Anjuman Janisaran-E-Ahlebait (A.S), Pakistan",
+          "period": "Feb 2018 – Present",
+          "category": "Social Services"
+        }
+      ],
+      "languages": [
+        {
+          "language": "German",
+          "proficiency": "Conversational"
+        },
+        {
+          "language": "English",
+          "proficiency": "Native"
+        }
+      ],
+      "recommendations": [
+        {
+          "id": "rec-1",
+          "author": "Jane Doe",
+          "designation": "Senior Director",
+          "company": "Tech Corp",
+          "summary": "Outstanding developer and architect.",
+          "fullText": "Outstanding developer and architect with strong problem solving skills."
+        }
+      ],
+      "socials": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn",
+          "handle": "in/syedmesumraza"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance",
+          "handle": "thisissyedbadshah"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app",
+          "handle": "avtive.app"
+        }
+      ],
+      "userId": "user-abcd",
+      "theme": "elegant",
+      "profileName": "Primary Profile",
+      "profession": "Strategy-based Artist & Creative Director",
+      "createdAt": "2026-09-14T06:53:00.150Z",
+      "updatedAt": "2026-10-12T05:51:41.199Z",
+      "sharingSettings": {
+        "email": true,
+        "phone": true,
+        "contactInfo": true,
+        "bio": true,
+        "skills": true,
+        "services": true,
+        "projects": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "nfcCard": true,
+        "companySection": true
+      },
+      "sectionOrder": [
+        "hero",
+        "about",
+        "services",
+        "skills",
+        "experience",
+        "projects",
+        "certifications",
+        "volunteer",
+        "languages",
+        "recommendations",
+        "virtual-card"
+      ],
+      "socialLinks": [
+        {
+          "platform": "linkedin",
+          "url": "https://www.linkedin.com/in/syedmesumraza/",
+          "label": "LinkedIn"
+        },
+        {
+          "platform": "behance",
+          "url": "https://www.behance.net/thisissyedbadshah",
+          "label": "Behance"
+        },
+        {
+          "platform": "website",
+          "url": "https://www.avtive.app",
+          "label": "Avtive.app"
+        }
+      ],
+      "username": "abcd-user-test",
+      "customFields": [
+        {
+          "id": "cf-1",
+          "label": "Discord Community",
+          "value": "https://discord.gg/test-community",
+          "type": "link",
+          "visible": true
+        }
+      ],
+      "dynamicSections": [],
+      "sectionVisibility": {
+        "hero": true,
+        "about": true,
+        "contact": true,
+        "services": true,
+        "skills": true,
+        "projects": true,
+        "custom-fields": true,
+        "experience": true,
+        "education": true,
+        "certifications": true,
+        "volunteer": true,
+        "languages": true,
+        "recommendations": true,
+        "virtual-card": true,
+        "company": true
+      },
+      "bookingUrl": "https://cal.com/abcd-test"
     }
   },
   "connections": [

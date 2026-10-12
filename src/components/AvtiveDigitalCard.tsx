@@ -290,9 +290,8 @@ export function AvtiveDigitalCard({
 
           // Dynamic sections registered by the user
           const dynamicSectionKeys = (activeProfile.dynamicSections || []).map(s => s.key || s.id);
-          const customFieldKeys = (activeProfile.customFields || []).map(f => `custom-field-${f.id}`);
 
-          const allKnownSections = [...defaultCardSectionOrder, ...dynamicSectionKeys, ...customFieldKeys];
+          const allKnownSections = [...defaultCardSectionOrder, ...dynamicSectionKeys];
 
           const userOrder = (activeProfile.sectionOrder || []).filter((s) => s !== 'hero' && s !== 'volunteer');
           const effectiveOrder: string[] = [];
@@ -372,6 +371,8 @@ export function AvtiveDigitalCard({
                       onSelectTeamMember={onSelectTeamMember}
                       theme={theme}
                       canEdit={canEdit}
+                      isEditing={isEditing}
+                      onUpdateField={handleFieldUpdate}
                       onSelectSection={onSelectSection}
                     />
                   );
@@ -380,9 +381,12 @@ export function AvtiveDigitalCard({
                   <CompanyCard
                     key="company"
                     companyInfo={activeProfile.companyInfo}
+                    profile={activeProfile}
                     onViewCompany={onViewCompany ? () => onViewCompany(activeProfile.companyId || 'avtive-company') : undefined}
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -424,6 +428,7 @@ export function AvtiveDigitalCard({
                     isEditing={isEditing}
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
+                    onUpdateField={handleFieldUpdate}
                     theme={theme}
                   />
                 );
@@ -495,6 +500,8 @@ export function AvtiveDigitalCard({
                     profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -507,6 +514,8 @@ export function AvtiveDigitalCard({
                     profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -519,6 +528,8 @@ export function AvtiveDigitalCard({
                     profile={activeProfile} 
                     theme={theme}
                     canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -694,7 +705,11 @@ export function AvtiveDigitalCard({
               projects: 'portfolio',
               portfolio: 'projects',
               socialLinks: 'socials',
-              socials: 'socialLinks'
+              socials: 'socialLinks',
+              certifications: 'certificates',
+              certificates: 'certifications',
+              'custom-fields': 'customFields',
+              customFields: 'custom-fields'
             };
             const alias = extraAliases[sectionKey];
 

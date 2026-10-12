@@ -44,7 +44,8 @@ import {
   Menu,
   X,
   Building2,
-  Users
+  Users,
+  Award
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
@@ -57,6 +58,7 @@ import {
   ProjectItem, 
   ExperienceItem, 
   EducationItem, 
+  CertificationItem,
   CustomFieldItem,
   SocialLink
 } from '@/types/profile';
@@ -216,7 +218,7 @@ export function DesktopProfileContent({
     } else {
       const allKeys = [
         'contactInfo', 'personalDetails', 'skills', 'experience',
-        'education', 'projects', 'socialLinks', 'enhanceProfile', 'limitations',
+        'education', 'projects', 'certifications', 'socialLinks', 'enhanceProfile', 'limitations',
         'accountInfo', 'archive', 'security', 'settings'
       ];
       const anyClosed = allKeys.some(k => !expandedSections[k]);
@@ -249,6 +251,10 @@ export function DesktopProfileContent({
   const [isAddingExperience, setIsAddingExperience] = useState(false);
   const [newExperience, setNewExperience] = useState({ role: '', company: '', period: '', location: '', description: '' });
 
+  // Certifications input state
+  const [isAddingCertification, setIsAddingCertification] = useState(false);
+  const [newCertification, setNewCertification] = useState({ name: '', issuer: '', issued: '', expires: '', credentialId: '', url: '' });
+
   // Custom Field input state
   const [newCustomFieldLabel, setNewCustomFieldLabel] = useState('');
   const [newCustomFieldValue, setNewCustomFieldValue] = useState('');
@@ -259,6 +265,7 @@ export function DesktopProfileContent({
   const projectsCount = Array.isArray(profile.projects) ? profile.projects.length : 0;
   const experienceCount = Array.isArray(profile.experiences) ? profile.experiences.length : 0;
   const educationCount = Array.isArray(profile.education) ? profile.education.length : 0;
+  const certificationsCount = Array.isArray(profile.certifications) ? profile.certifications.length : 0;
   const socialLinksCount = Array.isArray(profile.socialLinks) ? profile.socialLinks.filter(l => Boolean(l.url)).length : 0;
   const customFieldsCount = Array.isArray(profile.customFields) ? profile.customFields.length : 0;
   const hiddenCount = profile.sectionVisibility 
@@ -447,6 +454,34 @@ export function DesktopProfileContent({
     const current = Array.isArray(profile.experiences) ? profile.experiences : [];
     updateField('experiences', current.filter(e => e.id !== id));
     showToast('Experience record removed.');
+  };
+
+  // Certification Handlers
+  const handleSaveNewCertification = () => {
+    if (!newCertification.name.trim() || !newCertification.issuer.trim()) {
+      showToast('Certificate name and issuing organization are required.');
+      return;
+    }
+    const certItem: CertificationItem = {
+      id: `cert-${Date.now()}`,
+      name: newCertification.name.trim(),
+      issuer: newCertification.issuer.trim(),
+      issued: newCertification.issued.trim() || new Date().getFullYear().toString(),
+      expires: newCertification.expires.trim() || undefined,
+      credentialId: newCertification.credentialId.trim() || undefined,
+      url: newCertification.url.trim() || undefined
+    };
+    const current = Array.isArray(profile.certifications) ? profile.certifications : [];
+    updateField('certifications', [certItem, ...current]);
+    setNewCertification({ name: '', issuer: '', issued: '', expires: '', credentialId: '', url: '' });
+    setIsAddingCertification(false);
+    showToast('✓ Certificate added!');
+  };
+
+  const handleDeleteCertification = (id: string) => {
+    const current = Array.isArray(profile.certifications) ? profile.certifications : [];
+    updateField('certifications', current.filter(c => c.id !== id));
+    showToast('Certificate removed.');
   };
 
   // Custom Field Handlers
@@ -1670,6 +1705,140 @@ export function DesktopProfileContent({
                         onClick={() => handleDeleteProject(proj.id)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                         title="Remove project"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════════════ */}
+        {/* CERTIFICATES & LICENSES SECTION                                            */}
+        {/* ══════════════════════════════════════════════════════════════════════════ */}
+        {!isCompany && renderSectionCard(
+          'certifications',
+          'Certificates & Licenses',
+          Award,
+          'Professional certifications, licenses, and verified credentials',
+          certificationsCount > 0 ? `${certificationsCount} certificates` : 'Empty · Click to add',
+          true,
+          (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500 dark:text-slate-400">Showcase accredited credentials and licenses</span>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCertification(!isAddingCertification)}
+                  className="px-3 py-1.5 rounded-xl bg-cyan-500 text-slate-950 hover:bg-cyan-400 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{isAddingCertification ? 'Cancel' : 'New Certificate'}</span>
+                </button>
+              </div>
+
+              {isAddingCertification && (
+                <div className="p-4 rounded-2xl bg-white dark:bg-[#0E1526] border border-cyan-500/30 space-y-3">
+                  <h4 className="text-xs font-bold text-cyan-600 dark:text-cyan-400">Add Certificate</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Certification Name *</label>
+                      <input
+                        type="text"
+                        value={newCertification.name}
+                        onChange={(e) => setNewCertification({ ...newCertification, name: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                        placeholder="e.g. AWS Certified Solutions Architect"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Issuing Organization *</label>
+                      <input
+                        type="text"
+                        value={newCertification.issuer}
+                        onChange={(e) => setNewCertification({ ...newCertification, issuer: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                        placeholder="e.g. Amazon Web Services"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Issue Date</label>
+                      <input
+                        type="text"
+                        value={newCertification.issued}
+                        onChange={(e) => setNewCertification({ ...newCertification, issued: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                        placeholder="e.g. 2023"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Expiration (optional)</label>
+                      <input
+                        type="text"
+                        value={newCertification.expires}
+                        onChange={(e) => setNewCertification({ ...newCertification, expires: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                        placeholder="e.g. 2026 or Never"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Credential ID (optional)</label>
+                      <input
+                        type="text"
+                        value={newCertification.credentialId}
+                        onChange={(e) => setNewCertification({ ...newCertification, credentialId: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                        placeholder="e.g. AWS-12345"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Credential URL (optional)</label>
+                      <input
+                        type="url"
+                        value={newCertification.url}
+                        onChange={(e) => setNewCertification({ ...newCertification, url: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#080D1A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-cyan-500"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingCertification(false)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveNewCertification}
+                      className="px-4 py-1.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs hover:bg-cyan-400 cursor-pointer"
+                    >
+                      Save Certificate
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                {certificationsCount === 0 ? (
+                  <p className="text-xs text-slate-400 italic">No certificates listed yet. Click &quot;New Certificate&quot; to add your credentials.</p>
+                ) : (
+                  (Array.isArray(profile.certifications) ? profile.certifications : []).map((cert) => (
+                    <div key={cert.id} className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#0E1526] border border-slate-200 dark:border-white/10 flex items-center justify-between gap-4">
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">{cert.name}</h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{cert.issuer} • Issued {cert.issued}{cert.expires ? ` • Expires ${cert.expires}` : ''}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCertification(cert.id)}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        title="Remove certificate"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

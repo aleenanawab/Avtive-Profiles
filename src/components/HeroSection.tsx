@@ -293,24 +293,52 @@ export function HeroSection({
               )}
             </div>
 
-            {/* In-Place Name Input or Heading */}
+            {/* In-Place Name and Username/Slug Input or Heading */}
             {isEditing ? (
-              <div className="space-y-1">
-                <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                  Full Name / Display Name
-                </label>
-                <input
-                  type="text"
-                  value={profile.name || ''}
-                  onChange={(e) => onUpdateField?.('name', e.target.value)}
-                  placeholder="Your Full Name"
-                  className={`w-full text-xl sm:text-2xl md:text-3xl font-bold tracking-tight bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textPrimary}`}
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
+                    Full Name / Display Name
+                  </label>
+                  <input
+                    type="text"
+                    value={profile.name || ''}
+                    onChange={(e) => onUpdateField?.('name', e.target.value)}
+                    placeholder="Your Full Name"
+                    className={`w-full text-base sm:text-xl font-bold tracking-tight bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textPrimary}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
+                    Username / Slug
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-2 text-xs text-slate-400 font-mono">@</span>
+                    <input
+                      type="text"
+                      value={profile.username || profile.slug || ''}
+                      onChange={(e) => {
+                        const cleanSlug = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+                        onUpdateField?.('username', cleanSlug);
+                        onUpdateField?.('slug', cleanSlug);
+                      }}
+                      placeholder="username"
+                      className={`w-full pl-7 pr-3 py-1.5 text-xs sm:text-sm font-mono bg-white/70 dark:bg-zinc-800/70 border border-slate-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 ${theme.textPrimary}`}
+                    />
+                  </div>
+                </div>
               </div>
             ) : (
-              <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
-                <span>{profile.name}</span>
-              </h1>
+              <div className="space-y-0.5">
+                <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
+                  <span>{profile.name}</span>
+                </h1>
+                {(profile.username || profile.slug) && (
+                  <p className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
+                    @{profile.username || profile.slug}
+                  </p>
+                )}
+              </div>
             )}
 
             {/* In-Place Designation / Profession Input */}

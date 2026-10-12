@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Mail, Phone, MessageSquare, MapPin, Globe, Pencil } from 'lucide-react';
+import { Mail, Phone, MessageSquare, MapPin, Globe, Pencil, Building2, Calendar } from 'lucide-react';
 import { ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 
@@ -33,7 +33,9 @@ export function ProfileContactSection({
     (profile.phone && sharing.phone !== false) ||
     (profile.whatsapp && sharing.phone !== false) ||
     profile.location ||
-    profile.website
+    profile.officeAddress ||
+    profile.website ||
+    profile.bookingUrl
   );
 
   if (!isEditing && !hasContactInfo && !canEdit) {
@@ -128,7 +130,20 @@ export function ProfileContactSection({
             />
           </div>
 
-          <div className="space-y-1 sm:col-span-2">
+          <div className="space-y-1">
+            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
+              Office Address
+            </label>
+            <input
+              type="text"
+              value={profile.officeAddress || ''}
+              onChange={(e) => onUpdateField?.('officeAddress', e.target.value)}
+              placeholder="Suite 400, Tech Park, City"
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+            />
+          </div>
+
+          <div className="space-y-1">
             <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
               Website URL
             </label>
@@ -137,6 +152,19 @@ export function ProfileContactSection({
               value={profile.website || ''}
               onChange={(e) => onUpdateField?.('website', e.target.value)}
               placeholder="https://www.avtive.app"
+              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
+              Booking URL
+            </label>
+            <input
+              type="url"
+              value={profile.bookingUrl || ''}
+              onChange={(e) => onUpdateField?.('bookingUrl', e.target.value)}
+              placeholder="https://calendly.com/your-calendar"
               className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
             />
           </div>
@@ -218,6 +246,22 @@ export function ProfileContactSection({
             </div>
           )}
 
+          {profile.officeAddress && (
+            <div className={`flex items-center gap-2.5 p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg}`}>
+              <div className="w-7 h-7 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
+                <Building2 className="w-3.5 h-3.5 text-orange-500" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
+                  Office Address
+                </span>
+                <span className={`block text-xs font-semibold ${theme.textPrimary} truncate`}>
+                  {profile.officeAddress}
+                </span>
+              </div>
+            </div>
+          )}
+
           {profile.website && (
             <a
               href={profile.website}
@@ -234,6 +278,27 @@ export function ProfileContactSection({
                 </span>
                 <span className={`block text-xs font-semibold ${theme.textPrimary} truncate`}>
                   {profile.website.replace(/^https?:\/\//, '')}
+                </span>
+              </div>
+            </a>
+          )}
+
+          {profile.bookingUrl && (
+            <a
+              href={profile.bookingUrl.startsWith('http') ? profile.bookingUrl : `https://${profile.bookingUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex items-center gap-2.5 p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} hover:opacity-80 transition-opacity`}
+            >
+              <div className="w-7 h-7 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                <Calendar className="w-3.5 h-3.5 text-violet-500" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
+                  Book Appointment
+                </span>
+                <span className={`block text-xs font-semibold ${theme.textPrimary} truncate`}>
+                  {profile.bookingUrl.replace(/^https?:\/\//, '')}
                 </span>
               </div>
             </a>
