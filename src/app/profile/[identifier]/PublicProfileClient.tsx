@@ -22,7 +22,7 @@ import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditor
 import { downloadVCard } from '@/lib/vcard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
-import { Edit3, Save, X, Loader2, LayoutGrid } from 'lucide-react';
+import { Edit3, Save, X, Loader2, LayoutGrid, Sun, Moon, LogOut } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 export interface PublicProfileClientProps {
@@ -525,6 +525,44 @@ function PublicProfileClientInner({
 
       {/* Main Responsive Profile Container - Identical in both View and Edit Mode */}
       <div className="flex-1 w-full max-w-3xl mx-auto p-3 sm:p-6 lg:p-8 min-w-0">
+        {/* Actions Strip Directly Below Header Toolbar (Dark Mode & Logout) */}
+        <div className="w-full flex items-center justify-end gap-2 mb-2 sm:mb-3 px-1">
+          {/* Dark Mode Button (Yellow Ellipse) */}
+          <button
+            type="button"
+            onClick={handleToggleTheme}
+            aria-label="Toggle Theme"
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="px-3 py-1.5 rounded-full text-xs font-bold border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+          >
+            {isDark ? (
+              <>
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+                <span>Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
+                <span>Dark</span>
+              </>
+            )}
+          </button>
+
+          {/* Logout Button (Yellow Circle to the right of Dark target) */}
+          {currentUser && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              aria-label="Logout"
+              title="Sign Out"
+              className="px-3 py-1.5 rounded-full text-xs font-bold border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
+            </button>
+          )}
+        </div>
+
         <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden relative`}>
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
@@ -553,6 +591,9 @@ function PublicProfileClientInner({
             isDark={isDark}
             viewMode="standard"
             onSelectSection={handleSectionSelect}
+            onToggleSections={handleTriggerClick}
+            onSectionsMouseEnter={handleTriggerMouseEnter}
+            onSectionsMouseLeave={handleTriggerMouseLeave}
           />
         </div>
       </div>
@@ -615,6 +656,44 @@ function PublicProfileClientInner({
       </AnimatePresence>
 
       <div className="flex-1 w-full overflow-y-auto min-h-0">
+        {/* Actions Strip Directly Below Header Toolbar (Dark Mode & Logout) */}
+        <div className="w-full flex items-center justify-end gap-2 p-2 sm:p-3 pb-1">
+          {/* Dark Mode Button (Yellow Ellipse) */}
+          <button
+            type="button"
+            onClick={handleToggleTheme}
+            aria-label="Toggle Theme"
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="px-2.5 py-1 rounded-full text-xs font-bold border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+          >
+            {isDark ? (
+              <>
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+                <span>Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
+                <span>Dark</span>
+              </>
+            )}
+          </button>
+
+          {/* Logout Button (Yellow Circle to the right of Dark target) */}
+          {currentUser && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              aria-label="Logout"
+              title="Sign Out"
+              className="px-2.5 py-1 rounded-full text-xs font-bold border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
+            </button>
+          )}
+        </div>
+
         <AvtiveDigitalCard
           profile={{ ...profile, type: profileType, theme: activeTheme }}
           canEdit={isOwner}
@@ -642,6 +721,9 @@ function PublicProfileClientInner({
           isDark={isDark}
           viewMode="standard"
           onSelectSection={handleSectionSelect}
+          onToggleSections={handleTriggerClick}
+          onSectionsMouseEnter={handleTriggerMouseEnter}
+          onSectionsMouseLeave={handleTriggerMouseLeave}
         />
       </div>
     </div>

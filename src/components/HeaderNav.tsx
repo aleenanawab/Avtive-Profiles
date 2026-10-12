@@ -193,8 +193,8 @@ export function HeaderNav({
             </div>
           )}
 
-          {/* Sections Icon Button (Desktop: Hover opens menu; Mobile: Tap toggles menu) */}
-          {(onToggleSections || onSectionsMouseEnter) && (
+          {/* Sections Icon Button (In view mode: Desktop: Hover opens menu; Mobile: Tap toggles menu) */}
+          {!isEditing && (onToggleSections || onSectionsMouseEnter) && (
             <button
               type="button"
               onClick={onToggleSections}
@@ -205,29 +205,6 @@ export function HeaderNav({
               aria-label="Sections Menu"
             >
               <LayoutGrid className={`w-4 h-4 ${theme.accentText}`} />
-            </button>
-          )}
-
-          {/* Theme Toggle (Light / Dark) */}
-          {onToggleTheme && (
-            <button
-              type="button"
-              onClick={onToggleTheme}
-              aria-label="Toggle Theme"
-              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className={`w-8 h-8 sm:w-auto px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center justify-center gap-1 shrink-0 cursor-pointer`}
-            >
-              {isDark ? (
-                <>
-                  <Sun className="w-4 h-4 text-amber-400" />
-                  <span className="hidden md:inline">Light</span>
-                </>
-              ) : (
-                <>
-                  <Moon className={`w-4 h-4 ${theme.textSecondary}`} />
-                  <span className="hidden md:inline">Dark</span>
-                </>
-              )}
             </button>
           )}
 
@@ -243,45 +220,6 @@ export function HeaderNav({
               <Share2 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Share</span>
             </button>
-          )}
-
-          {/* Auth State Button */}
-          {session ? (
-            <button
-              type="button"
-              onClick={async () => {
-                if (onLogout) {
-                  onLogout();
-                } else {
-                  try {
-                    if (session?.email) {
-                      localStorage.setItem('avtive_remembered_identifier', session.email);
-                    }
-                    await fetch('/api/auth/logout', { method: 'POST' });
-                  } catch {}
-                  try {
-                    sessionStorage.removeItem('avtive_active_session');
-                  } catch {}
-                  window.location.replace('/login');
-                }
-              }}
-              className={`w-8 h-8 sm:w-auto px-2 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0 flex items-center justify-center gap-1.5`}
-              title="Sign Out"
-              aria-label="Sign Out"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          ) : (
-            <Link
-              href="/login"
-              className={`w-8 h-8 sm:w-auto px-2 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0 flex items-center justify-center gap-1.5`}
-              title="Sign In to Avtive"
-              aria-label="Sign In"
-            >
-              <LogIn className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign In</span>
-            </Link>
           )}
         </div>
       </div>

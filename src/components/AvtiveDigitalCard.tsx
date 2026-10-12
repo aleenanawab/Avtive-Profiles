@@ -12,7 +12,8 @@ import {
   Loader2, 
   Check, 
   AlertCircle,
-  Tag 
+  Tag,
+  LayoutGrid
 } from 'lucide-react';
 import { 
   ProfileData, 
@@ -77,6 +78,9 @@ interface AvtiveDigitalCardProps {
   viewMode?: 'standard' | 'web';
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   onDraftChange?: (draft: ProfileData) => void;
+  onToggleSections?: () => void;
+  onSectionsMouseEnter?: () => void;
+  onSectionsMouseLeave?: () => void;
 }
 
 export function AvtiveDigitalCard({
@@ -87,6 +91,9 @@ export function AvtiveDigitalCard({
   isConnected = false,
   onDraftChange,
   onSelectSection,
+  onToggleSections,
+  onSectionsMouseEnter,
+  onSectionsMouseLeave,
   onOpenEdit,
   onSaveEdits,
   onCancelEdit,
@@ -190,6 +197,19 @@ export function AvtiveDigitalCard({
             {/* Action Bar */}
             <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
+                {(onToggleSections || onSectionsMouseEnter) && (
+                  <button
+                    type="button"
+                    onClick={onToggleSections}
+                    onMouseEnter={onSectionsMouseEnter}
+                    onMouseLeave={onSectionsMouseLeave}
+                    className={`w-7 h-7 rounded-lg ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center active:scale-95`}
+                    title="Profile Sections Menu"
+                    aria-label="Sections Menu"
+                  >
+                    <LayoutGrid className={`w-3.5 h-3.5 ${theme.accentText}`} />
+                  </button>
+                )}
                 <span className="relative flex h-2 w-2">
                   <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${theme.accentText} opacity-75`}></span>
                   <span className={`relative inline-flex rounded-full h-2 w-2 bg-current ${theme.accentText}`}></span>
