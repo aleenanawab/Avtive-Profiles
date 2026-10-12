@@ -28,11 +28,11 @@ export function AboutSection({
 
   return (
     <section 
-      onClick={() => canEdit && onSelectSection?.('about', 'about')}
+      onClick={() => canEdit && !isEditing && onSelectSection?.('about', 'about')}
       className={`px-4 sm:px-6 md:px-8 py-5 space-y-3 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
-        canEdit ? 'cursor-pointer group/about hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
+        canEdit && !isEditing ? 'cursor-pointer group/about hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
       }`}
-      title={canEdit ? 'Click to edit Story & Bio in Studio' : undefined}
+      title={canEdit && !isEditing ? 'Click to edit Story & Bio in Studio' : undefined}
     >
       <div className="flex items-center justify-between">
         <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
@@ -47,7 +47,7 @@ export function AboutSection({
       </div>
 
       {isEditing ? (
-        <div className="space-y-3">
+        <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
           <div className="space-y-1">
             <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
               Describe yourself best

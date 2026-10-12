@@ -329,7 +329,11 @@ export function HeroSection({
                 </div>
               </div>
             ) : (
-              <div className="space-y-0.5">
+              <div 
+                onClick={() => canEdit && onOpenEdit?.()}
+                className={`space-y-0.5 ${canEdit ? 'cursor-pointer group/name hover:opacity-85 transition-opacity' : ''}`}
+                title={canEdit ? 'Click to edit name' : undefined}
+              >
                 <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
                   <span>{profile.name}</span>
                 </h1>
@@ -359,7 +363,11 @@ export function HeroSection({
                 />
               </div>
             ) : (
-              <p className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words`}>
+              <p 
+                onClick={() => canEdit && onOpenEdit?.()}
+                className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                title={canEdit ? 'Click to edit title' : undefined}
+              >
                 {profile.profession || profile.designation || profile.profileName || (isCompany ? 'Organization' : 'Professional')}
               </p>
             )}
@@ -393,12 +401,20 @@ export function HeroSection({
                 ) : (
                   <>
                     {profile.companyInfo?.industry && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
+                      <span 
+                        onClick={() => canEdit && onOpenEdit?.()}
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                        title={canEdit ? 'Click to edit company details' : undefined}
+                      >
                         {profile.companyInfo.industry}
                       </span>
                     )}
                     {profile.companyInfo?.employeeCount && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium">
+                      <span 
+                        onClick={() => canEdit && onOpenEdit?.()}
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 font-medium ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                        title={canEdit ? 'Click to edit company details' : undefined}
+                      >
                         {profile.companyInfo.employeeCount}
                       </span>
                     )}
@@ -432,7 +448,11 @@ export function HeroSection({
               </div>
             ) : (
               profile.tagline && (
-                <p className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words`}>
+                <p 
+                  onClick={() => canEdit && onOpenEdit?.()}
+                  className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                  title={canEdit ? 'Click to edit tagline' : undefined}
+                >
                   &ldquo;{profile.tagline}&rdquo;
                 </p>
               )
@@ -451,7 +471,11 @@ export function HeroSection({
               </div>
             ) : (
               profile.location && (
-                <p className={`text-xs sm:text-sm ${theme.textMuted} break-words`}>
+                <p 
+                  onClick={() => canEdit && onOpenEdit?.()}
+                  className={`text-xs sm:text-sm ${theme.textMuted} break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                  title={canEdit ? 'Click to edit location' : undefined}
+                >
                   {profile.location}
                 </p>
               )

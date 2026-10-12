@@ -14,7 +14,10 @@ import {
   ChevronDown,
   LogIn, 
   LogOut,
-  LayoutGrid
+  LayoutGrid,
+  Save,
+  X,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import { ProfileData, ProfileType, UserRole, UserSession } from '../types/profile';
@@ -28,6 +31,9 @@ interface HeaderNavProps {
   onOpenShare?: () => void;
   canEdit?: boolean;
   isEditing?: boolean;
+  onCancelEdit?: () => void;
+  onSaveEdits?: () => void;
+  isSaving?: boolean;
   userRole?: UserRole;
   onChangeUserRole?: (role: UserRole) => void;
   isDark?: boolean;
@@ -51,6 +57,9 @@ export function HeaderNav({
   onOpenShare,
   canEdit = false,
   isEditing = false,
+  onCancelEdit,
+  onSaveEdits,
+  isSaving = false,
   isDark = false,
   onToggleTheme,
   onOpenMyCard,
@@ -70,7 +79,7 @@ export function HeaderNav({
 
   return (
     <header className={`sticky top-0 z-40 w-full backdrop-blur-md ${theme.headerBg} border-b ${theme.divider} transition-colors shadow-2xs`}>
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2 sm:gap-3">
+      <div className="max-w-6xl mx-auto px-2 sm:px-6 py-2.5 flex items-center justify-between gap-1.5 sm:gap-3 min-w-0">
         {/* Left: Avtive Brand */}
         <Link 
           href="/"
@@ -132,22 +141,59 @@ export function HeaderNav({
           </div>
         )}
 
-        {/* Right Controls: Edit Button (Owner Only), Theme Toggle, Share, and Auth Action */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Edit Profile Button (Visible only to authenticated profile owner) */}
+        {/* Right Controls: Edit/Save/Cancel, Sections Icon, Theme Toggle, Share, and Auth Action */}
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0 min-w-0">
+          {/* Edit Profile Button (Visible only to authenticated profile owner when not editing) */}
           {canEdit && !isEditing && onOpenEdit && (
             <button
               type="button"
               onClick={onOpenEdit}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8`}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8 active:scale-95`}
               title="Edit Profile"
+              aria-label="Edit Profile"
             >
               <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
               <span className="hidden sm:inline">Edit</span>
             </button>
           )}
 
-          {/* Sections Icon Button */}
+          {/* Edit Mode Actions: Cancel and Save (Visible when isEditing) */}
+          {isEditing && (
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              {onCancelEdit && (
+                <button
+                  type="button"
+                  onClick={onCancelEdit}
+                  disabled={isSaving}
+                  className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} text-xs font-semibold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8 active:scale-95 disabled:opacity-50`}
+                  title="Cancel and discard unsaved changes"
+                  aria-label="Cancel Changes"
+                >
+                  <X className="w-3.5 h-3.5 text-rose-500" />
+                  <span className="hidden sm:inline">Cancel</span>
+                </button>
+              )}
+              {onSaveEdits && (
+                <button
+                  type="button"
+                  onClick={onSaveEdits}
+                  disabled={isSaving}
+                  className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.btnPrimary} text-xs font-bold shadow-xs transition-all shrink-0 cursor-pointer h-8 active:scale-95 disabled:opacity-50`}
+                  title="Save profile changes"
+                  aria-label="Save Changes"
+                >
+                  {isSaving ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Save className="w-3.5 h-3.5" />
+                  )}
+                  <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Sections Icon Button (Desktop: Hover opens menu; Mobile: Tap toggles menu) */}
           {(onToggleSections || onSectionsMouseEnter) && (
             <button
               type="button"
@@ -169,7 +215,7 @@ export function HeaderNav({
               onClick={onToggleTheme}
               aria-label="Toggle Theme"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className={`px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center gap-1 shrink-0 cursor-pointer h-8`}
+              className={`w-8 h-8 sm:w-auto px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.textPrimary} ${theme.cardBg} border ${theme.cardBorder} hover:opacity-90 transition-colors shadow-2xs font-bold text-xs flex items-center justify-center gap-1 shrink-0 cursor-pointer`}
             >
               {isDark ? (
                 <>
@@ -190,8 +236,9 @@ export function HeaderNav({
             <button
               type="button"
               onClick={onOpenShare}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer h-8`}
+              className={`w-8 h-8 sm:w-auto px-2 sm:px-3 py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer flex items-center justify-center gap-1.5`}
               title="Share Profile"
+              aria-label="Share Profile"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Share</span>
@@ -218,8 +265,9 @@ export function HeaderNav({
                   window.location.replace('/login');
                 }
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0 h-8`}
+              className={`w-8 h-8 sm:w-auto px-2 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} text-xs font-bold transition-colors cursor-pointer shrink-0 flex items-center justify-center gap-1.5`}
               title="Sign Out"
+              aria-label="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Logout</span>
@@ -227,11 +275,12 @@ export function HeaderNav({
           ) : (
             <Link
               href="/login"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0 h-8`}
+              className={`w-8 h-8 sm:w-auto px-2 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} text-xs font-bold transition-colors shadow-2xs shrink-0 flex items-center justify-center gap-1.5`}
               title="Sign In to Avtive"
+              aria-label="Sign In"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>Sign In</span>
+              <span className="hidden sm:inline">Sign In</span>
             </Link>
           )}
         </div>

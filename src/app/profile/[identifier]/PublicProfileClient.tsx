@@ -147,7 +147,7 @@ function PublicProfileClientInner({
         ? 'section-hero'
         : sectionKey === 'personalDetails' || sectionKey === 'about'
         ? 'section-about'
-        : sectionKey === 'contactInfo' || sectionKey === 'contact'
+        : sectionKey === 'contactInfo' || sectionKey === 'contact' || sectionKey === 'basicInfo'
         ? 'section-contact'
         : sectionKey === 'skills' || sectionKey === 'services'
         ? 'section-skills'
@@ -475,6 +475,9 @@ function PublicProfileClientInner({
         onSelectProfileType={(type) => setProfileType(type)}
         canEdit={isOwner}
         isEditing={isEditing}
+        onCancelEdit={handleCancelEdit}
+        onSaveEdits={handleSaveAndExit}
+        isSaving={isSaving}
         onOpenEdit={handleOpenEditMode}
         onOpenShare={() => setIsShareModalOpen(true)}
         isDark={isDark}
@@ -565,6 +568,9 @@ function PublicProfileClientInner({
         onSelectProfileType={(type) => setProfileType(type)}
         canEdit={isOwner}
         isEditing={isEditing}
+        onCancelEdit={handleCancelEdit}
+        onSaveEdits={handleSaveAndExit}
+        isSaving={isSaving}
         onOpenEdit={handleOpenEditMode}
         onOpenShare={() => setIsShareModalOpen(true)}
         isDark={isDark}

@@ -44,15 +44,15 @@ export function ProfileContactSection({
 
   return (
     <section className={`relative group/contact px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left border-b ${theme.divider} ${theme.cardBg} transition-colors ${
-      canEdit && onSelectSection ? 'hover:bg-accent/5' : ''
+      canEdit && !isEditing && onSelectSection ? 'hover:bg-accent/5' : ''
     }`}>
       {/* Interactive edit badge */}
-      {canEdit && onSelectSection && (
+      {canEdit && !isEditing && onSelectSection && (
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onSelectSection('basicInfo', 'email');
+            onSelectSection('contact', 'email');
           }}
           className="absolute top-4 right-6 opacity-0 group-hover/contact:opacity-100 transition-opacity bg-primary text-primary-foreground text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 hover:scale-105 z-10 cursor-pointer"
           title="Edit Contact in Sliding Editor"
@@ -63,13 +63,13 @@ export function ProfileContactSection({
       )}
 
       <div 
-        className={`flex items-center justify-between ${canEdit && onSelectSection ? 'cursor-pointer' : ''}`}
-        onClick={() => canEdit && onSelectSection?.('basicInfo', 'email')}
+        className={`flex items-center justify-between ${canEdit && !isEditing && onSelectSection ? 'cursor-pointer' : ''}`}
+        onClick={() => canEdit && !isEditing && onSelectSection?.('contact', 'email')}
       >
         <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
           Contact
         </h2>
-        {canEdit && onSelectSection && (
+        {canEdit && !isEditing && onSelectSection && (
           <span className="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded font-medium">
             Click to edit
           </span>
@@ -77,7 +77,7 @@ export function ProfileContactSection({
       </div>
 
       {isEditing ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1" onClick={(e) => e.stopPropagation()}>
           <div className="space-y-1">
             <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
               Email Address

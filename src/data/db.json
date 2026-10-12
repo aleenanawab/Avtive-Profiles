@@ -1667,6 +1667,16 @@
       ],
       "teamMembers": [
         {
+          "id": "mem-1791792477829",
+          "name": "Tariq Mehmood",
+          "role": "Principal Systems Architect",
+          "department": "Engineering",
+          "avatar": "/images/default-avatar.png",
+          "bio": "Oversees distributed systems infrastructure and security compliance.",
+          "email": "tariq@avtive.app",
+          "status": "ACTIVE"
+        },
+        {
           "id": "mem-1791788860986",
           "name": "Tariq Mehmood",
           "role": "Principal Systems Architect",
@@ -1714,7 +1724,7 @@
       "profileName": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "profession": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-10-12T07:07:41.026Z",
+      "updatedAt": "2026-10-12T08:07:57.879Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -1829,6 +1839,16 @@
       ],
       "teamMembers": [
         {
+          "id": "mem-1791792477829",
+          "name": "Tariq Mehmood",
+          "role": "Principal Systems Architect",
+          "department": "Engineering",
+          "avatar": "/images/default-avatar.png",
+          "bio": "Oversees distributed systems infrastructure and security compliance.",
+          "email": "tariq@avtive.app",
+          "status": "ACTIVE"
+        },
+        {
           "id": "mem-1791788860986",
           "name": "Tariq Mehmood",
           "role": "Principal Systems Architect",
@@ -1876,7 +1896,7 @@
       "profileName": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "profession": "B2B SaaS Digital Profile & Cloud Identity Platform",
       "createdAt": "2026-09-14T06:53:00.152Z",
-      "updatedAt": "2026-10-12T07:07:41.026Z",
+      "updatedAt": "2026-10-12T08:07:57.879Z",
       "sharingSettings": {
         "photo": true,
         "nameAndTitle": true,
@@ -13475,7 +13495,7 @@
       ],
       "certifications": [
         {
-          "id": "cert-1791788860235-1",
+          "id": "cert-1791792477095-1",
           "name": "AWS Certified Solutions Architect - PROFESSIONAL",
           "issuer": "Amazon Web Services",
           "issued": "2024",
@@ -13505,7 +13525,7 @@
       ],
       "recommendations": [
         {
-          "id": "rec-1791788860235",
+          "id": "rec-1791792477095",
           "author": "Elena Rostova",
           "designation": "VP of Product",
           "company": "Vanguard Tech",
@@ -13537,7 +13557,7 @@
       "profileName": "Primary Profile",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-10-12T07:07:40.612Z",
+      "updatedAt": "2026-10-12T08:07:57.357Z",
       "sharingSettings": {
         "email": true,
         "phone": true,
@@ -13588,7 +13608,7 @@
       "username": "abcd-user-profile",
       "customFields": [
         {
-          "id": "cf-1791788860235-1",
+          "id": "cf-1791792477095-1",
           "label": "Office Hours (Winter)",
           "value": "Mon-Wed 1:00 PM - 4:00 PM EST",
           "type": "text",
@@ -13757,7 +13777,7 @@
       ],
       "certifications": [
         {
-          "id": "cert-1791788860235-1",
+          "id": "cert-1791792477095-1",
           "name": "AWS Certified Solutions Architect - PROFESSIONAL",
           "issuer": "Amazon Web Services",
           "issued": "2024",
@@ -13787,7 +13807,7 @@
       ],
       "recommendations": [
         {
-          "id": "rec-1791788860235",
+          "id": "rec-1791792477095",
           "author": "Elena Rostova",
           "designation": "VP of Product",
           "company": "Vanguard Tech",
@@ -13819,7 +13839,7 @@
       "profileName": "Primary Profile",
       "profession": "Strategy-based Artist & Creative Director",
       "createdAt": "2026-09-14T06:53:00.150Z",
-      "updatedAt": "2026-10-12T07:07:40.612Z",
+      "updatedAt": "2026-10-12T08:07:57.357Z",
       "sharingSettings": {
         "email": true,
         "phone": true,
@@ -13870,7 +13890,7 @@
       "username": "abcd-user-profile",
       "customFields": [
         {
-          "id": "cf-1791788860235-1",
+          "id": "cf-1791792477095-1",
           "label": "Office Hours (Winter)",
           "value": "Mon-Wed 1:00 PM - 4:00 PM EST",
           "type": "text",

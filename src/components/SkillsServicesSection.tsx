@@ -30,7 +30,8 @@ export function SkillsServicesSection({
     return null;
   }
 
-  const handleAddService = () => {
+  const handleAddService = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const newService: ServiceItem = {
       id: `svc-${Date.now()}`,
       title: 'New Service',
@@ -50,7 +51,8 @@ export function SkillsServicesSection({
     onUpdateField?.('services', updated);
   };
 
-  const handleAddSkill = () => {
+  const handleAddSkill = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const trimmed = newSkillInput.trim();
     if (!trimmed) return;
     const currentSkills = profile.skills || [];
@@ -70,11 +72,11 @@ export function SkillsServicesSection({
 
   return (
     <section 
-      onClick={() => canEdit && onSelectSection?.('skills', 'skills')}
+      onClick={() => canEdit && !isEditing && onSelectSection?.('skills', 'skills')}
       className={`px-4 sm:px-6 md:px-8 py-5 space-y-4 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
-        canEdit ? 'cursor-pointer group/skills hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
+        canEdit && !isEditing ? 'cursor-pointer group/skills hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
       }`}
-      title={canEdit ? 'Click to edit Skills & Services in Studio' : undefined}
+      title={canEdit && !isEditing ? 'Click to edit Skills & Services in Studio' : undefined}
     >
       {/* Services Section */}
       {showServices && (
@@ -172,7 +174,7 @@ export function SkillsServicesSection({
 
           {/* Inline Skill Add Input */}
           {isEditing && (
-            <div className="flex items-center gap-2 max-w-sm">
+            <div className="flex items-center gap-2 max-w-sm" onClick={(e) => e.stopPropagation()}>
               <input
                 type="text"
                 value={newSkillInput}
