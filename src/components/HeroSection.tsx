@@ -4,12 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare, Building2, Users } from 'lucide-react';
-import { ProfileData, normalizeProfileType, SocialLink } from '../types/profile';
+import { ProfileData, normalizeProfileType, SocialLink, CompanyInfo } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon, WhatsAppIcon } from './BrandIcons';
 import { StatsRow } from './profiles/StatsRow';
 import { ProfileSwitcher } from './profiles/ProfileSwitcher';
 import { SUPABASE_DEFAULT_AVATAR, SUPABASE_DEFAULT_COVER } from '@/lib/supabase';
+import { FormLabel, FormInput, FormTextarea, SectionSaveBar } from './ui/formControls';
+import { SearchableCombobox } from './forms/SearchableCombobox';
+import { COUNTRIES } from '@/data/countriesDataset';
 
 interface HeroSectionProps {
   profile: ProfileData;
@@ -19,6 +22,7 @@ interface HeroSectionProps {
   isEditing?: boolean;
   isConnected?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onOpenEdit?: () => void;
   onOpenShare?: () => void;
   onOpenConnect?: () => void;
@@ -34,6 +38,7 @@ export function HeroSection({
   isEditing = false,
   theme = getThemeConfig(profile.theme || 'editorial'),
   onUpdateField,
+  onSavePartial,
   onOpenEdit,
   onOpenShare,
   onOpenConnect,
@@ -75,6 +80,97 @@ export function HeroSection({
   const isCompany = normalizedType === 'team';
   const typeBadgeLabel = isCompany ? 'Company · Organization' : 'Individual';
   const activeMemberCount = profile.teamMembers?.filter((m) => m.status !== 'REMOVED')?.length || 0;
+
+  const [heroDraft, setHeroDraft] = React.useState({
+    name: profile.name || '',
+    username: profile.username || profile.slug || '',
+    slug: profile.slug || profile.username || '',
+    designation: profile.profession || profile.designation || '',
+    profession: profile.profession || profile.designation || '',
+    tagline: profile.tagline || '',
+    location: profile.location || '',
+    country: profile.country || '',
+    shortBio: profile.shortBio || '',
+    companyInfo: (profile.companyInfo || {}) as Partial<CompanyInfo>,
+  });
+  const [snapshot, setSnapshot] = React.useState(heroDraft);
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const nextDraft = {
+      name: profile.name || '',
+      username: profile.username || profile.slug || '',
+      slug: profile.slug || profile.username || '',
+      designation: profile.profession || profile.designation || '',
+      profession: profile.profession || profile.designation || '',
+      tagline: profile.tagline || '',
+      location: profile.location || '',
+      country: profile.country || '',
+      shortBio: profile.shortBio || '',
+      companyInfo: (profile.companyInfo || {}) as Partial<CompanyInfo>,
+    };
+    setHeroDraft(nextDraft);
+    setSnapshot(nextDraft);
+  }, [
+    profile.id,
+    profile.name,
+    profile.username,
+    profile.slug,
+    profile.designation,
+    profile.profession,
+    profile.tagline,
+    profile.location,
+    profile.country,
+    profile.shortBio,
+    profile.companyInfo,
+  ]);
+
+  const isDirty = (
+    heroDraft.name !== snapshot.name ||
+    heroDraft.username !== snapshot.username ||
+    heroDraft.designation !== snapshot.designation ||
+    heroDraft.tagline !== snapshot.tagline ||
+    heroDraft.location !== snapshot.location ||
+    heroDraft.country !== snapshot.country ||
+    heroDraft.shortBio !== snapshot.shortBio ||
+    JSON.stringify(heroDraft.companyInfo) !== JSON.stringify(snapshot.companyInfo)
+  );
+
+  const handleSaveHero = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        name: heroDraft.name,
+        username: heroDraft.username,
+        slug: heroDraft.slug,
+        designation: heroDraft.designation,
+        profession: heroDraft.profession,
+        tagline: heroDraft.tagline,
+        location: heroDraft.location,
+        country: heroDraft.country,
+        shortBio: heroDraft.shortBio,
+        ...(isCompany && heroDraft.companyInfo ? { companyInfo: heroDraft.companyInfo as CompanyInfo } : {}),
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      Object.entries(payload).forEach(([k, v]) => onUpdateField?.(k as any, v));
+      setSnapshot(heroDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save profile header');
+    }
+  };
+
+  const handleCancelHero = () => {
+    setHeroDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
 
   const defaultStats = normalizedType === 'team'
     ? [
@@ -304,111 +400,152 @@ export function HeroSection({
 
             {/* In-Place Name and Username/Slug Input or Heading */}
             {isEditing ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                    Full Name / Display Name
-                  </label>
-                  <input
-                    type="text"
-                    value={profile.name || ''}
-                    onChange={(e) => onUpdateField?.('name', e.target.value)}
-                    placeholder="Your Full Name"
-                    className={`w-full text-base sm:text-xl font-bold tracking-tight bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
+              <div className="space-y-3 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <FormLabel required>Full Name / Display Name</FormLabel>
+                    <FormInput
+                      value={heroDraft.name}
+                      onChange={(val) => setHeroDraft((prev) => ({ ...prev, name: val }))}
+                      placeholder="Your Full Name"
+                    />
+                  </div>
+                  <div>
+                    <FormLabel>Username / Slug</FormLabel>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-mono">@</span>
+                      <FormInput
+                        value={heroDraft.username}
+                        onChange={(val) => {
+                          const cleanSlug = val.toLowerCase().replace(/[^a-z0-9_-]/g, '');
+                          setHeroDraft((prev) => ({ ...prev, username: cleanSlug, slug: cleanSlug }));
+                        }}
+                        placeholder="username"
+                        className="pl-7 font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <FormLabel>Professional Title / Role</FormLabel>
+                  <FormInput
+                    value={heroDraft.designation}
+                    onChange={(val) => setHeroDraft((prev) => ({ ...prev, designation: val, profession: val }))}
+                    placeholder="e.g. Senior Software Engineer"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                    Username / Slug
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-xs text-slate-400 font-mono">@</span>
-                    <input
-                      type="text"
-                      value={profile.username || profile.slug || ''}
-                      onChange={(e) => {
-                        const cleanSlug = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-                        onUpdateField?.('username', cleanSlug);
-                        onUpdateField?.('slug', cleanSlug);
-                      }}
-                      placeholder="username"
-                      className={`w-full pl-7 pr-3 py-1.5 text-xs sm:text-sm font-mono bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
+
+                {isCompany && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                      <FormLabel>Industry</FormLabel>
+                      <FormInput
+                        value={heroDraft.companyInfo?.industry || ''}
+                        onChange={(val) =>
+                          setHeroDraft((prev) => ({
+                            ...prev,
+                            companyInfo: { ...(prev.companyInfo || {}), industry: val },
+                          }))
+                        }
+                        placeholder="e.g. Software, Fintech"
+                      />
+                    </div>
+                    <div>
+                      <FormLabel>Team Size</FormLabel>
+                      <FormInput
+                        value={heroDraft.companyInfo?.employeeCount || ''}
+                        onChange={(val) =>
+                          setHeroDraft((prev) => ({
+                            ...prev,
+                            companyInfo: { ...(prev.companyInfo || {}), employeeCount: val },
+                          }))
+                        }
+                        placeholder="e.g. 20-50 Employees"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <FormLabel>Tagline / Motto</FormLabel>
+                  <FormInput
+                    value={heroDraft.tagline}
+                    onChange={(val) => setHeroDraft((prev) => ({ ...prev, tagline: val }))}
+                    placeholder="Tagline or motto (e.g. Building next-generation digital identities)"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <FormLabel>City / State</FormLabel>
+                    <FormInput
+                      value={heroDraft.location}
+                      onChange={(val) => setHeroDraft((prev) => ({ ...prev, location: val }))}
+                      placeholder="e.g. San Francisco, CA"
+                    />
+                  </div>
+                  <div>
+                    <FormLabel>Country</FormLabel>
+                    <SearchableCombobox
+                      options={COUNTRIES}
+                      value={heroDraft.country}
+                      onChange={(val) => setHeroDraft((prev) => ({ ...prev, country: val as string }))}
+                      placeholder="Select Country..."
                     />
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div 
-                onClick={() => canEdit && onOpenEdit?.()}
-                className={`space-y-0.5 ${canEdit ? 'cursor-pointer group/name hover:opacity-85 transition-opacity' : ''}`}
-                title={canEdit ? 'Click to edit name' : undefined}
-              >
-                <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
-                  <span>{profile.name}</span>
-                </h1>
-                {(profile.username || profile.slug) && (
-                  <p className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
-                    @{profile.username || profile.slug}
-                  </p>
-                )}
-              </div>
-            )}
 
-            {/* In-Place Designation / Profession Input */}
-            {isEditing ? (
-              <div className="space-y-1">
-                <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                  Professional Title / Role
-                </label>
-                <input
-                  type="text"
-                  value={profile.profession || profile.designation || ''}
-                  onChange={(e) => {
-                    onUpdateField?.('designation', e.target.value);
-                    onUpdateField?.('profession', e.target.value);
-                  }}
-                  placeholder="Profession / Designation (e.g. Senior Software Engineer)"
-                  className={`w-full text-sm sm:text-base font-medium bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
+                <div>
+                  <FormLabel>Quick Bio</FormLabel>
+                  <FormTextarea
+                    rows={2}
+                    value={heroDraft.shortBio}
+                    onChange={(val) => setHeroDraft((prev) => ({ ...prev, shortBio: val }))}
+                    placeholder="A concise overview of your background or focus..."
+                  />
+                </div>
+
+                <SectionSaveBar
+                  onSave={handleSaveHero}
+                  onCancel={handleCancelHero}
+                  isSaving={saveStatus === 'saving'}
+                  isSaved={saveStatus === 'saved'}
+                  isDirty={isDirty}
+                  errorMessage={errorMessage}
+                  saveLabel="Save Profile Info"
+                  cancelLabel="Cancel"
+                  className="pt-1"
                 />
               </div>
             ) : (
-              <p 
-                onClick={() => canEdit && onOpenEdit?.()}
-                className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
-                title={canEdit ? 'Click to edit title' : undefined}
-              >
-                {profile.profession || profile.designation || profile.profileName || (isCompany ? 'Organization' : 'Professional')}
-              </p>
-            )}
+              <>
+                <div 
+                  onClick={() => canEdit && onOpenEdit?.()}
+                  className={`space-y-0.5 ${canEdit ? 'cursor-pointer group/name hover:opacity-85 transition-opacity' : ''}`}
+                  title={canEdit ? 'Click to edit name' : undefined}
+                >
+                  <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${theme.textPrimary} flex items-center gap-2 break-words`}>
+                    <span>{profile.name}</span>
+                  </h1>
+                  {(profile.username || profile.slug) && (
+                    <p className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
+                      @{profile.username || profile.slug}
+                    </p>
+                  )}
+                </div>
 
-            {/* Corporate Metadata Strip */}
-            {isCompany && (
-              <div className="flex items-center gap-2 pt-1 flex-wrap text-xs">
-                {isEditing ? (
-                  <div className="flex items-center gap-2 flex-wrap w-full">
-                    <input
-                      type="text"
-                      value={profile.companyInfo?.industry || ''}
-                      onChange={(e) => {
-                        const nextInfo = { ...(profile.companyInfo || {}), industry: e.target.value };
-                        onUpdateField?.('companyInfo', nextInfo);
-                      }}
-                      placeholder="Industry (e.g. Software, Fintech)"
-                      className={`text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
-                    />
-                    <input
-                      type="text"
-                      value={profile.companyInfo?.employeeCount || ''}
-                      onChange={(e) => {
-                        const nextInfo = { ...(profile.companyInfo || {}), employeeCount: e.target.value };
-                        onUpdateField?.('companyInfo', nextInfo);
-                      }}
-                      placeholder="Team Size (e.g. 20-50 Employees)"
-                      className={`text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
-                    />
-                  </div>
-                ) : (
-                  <>
+                <p 
+                  onClick={() => canEdit && onOpenEdit?.()}
+                  className={`text-sm sm:text-base md:text-lg font-medium ${theme.textSecondary} break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                  title={canEdit ? 'Click to edit title' : undefined}
+                >
+                  {profile.profession || profile.designation || profile.profileName || (isCompany ? 'Organization' : 'Professional')}
+                </p>
+
+                {/* Corporate Metadata Strip */}
+                {isCompany && (
+                  <div className="flex items-center gap-2 pt-1 flex-wrap text-xs">
                     {profile.companyInfo?.industry && (
                       <span 
                         onClick={() => canEdit && onOpenEdit?.()}
@@ -439,88 +576,47 @@ export function HeroSection({
                       <Users className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                       <span>{activeMemberCount} {activeMemberCount === 1 ? 'Team Member' : 'Team Members'}</span>
                     </button>
-                  </>
+                  </div>
                 )}
-              </div>
-            )}
 
-            {/* Tagline */}
-            {isEditing ? (
-              <div className="space-y-1 pt-0.5">
-                <input
-                  type="text"
-                  value={profile.tagline || ''}
-                  onChange={(e) => onUpdateField?.('tagline', e.target.value)}
-                  placeholder="Tagline or motto (e.g. Building next-generation digital identities)"
-                  className={`w-full text-xs sm:text-sm italic bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
-                />
-              </div>
-            ) : (
-              profile.tagline && (
-                <p 
-                  onClick={() => canEdit && onOpenEdit?.()}
-                  className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
-                  title={canEdit ? 'Click to edit tagline' : undefined}
-                >
-                  &ldquo;{profile.tagline}&rdquo;
-                </p>
-              )
-            )}
+                {/* Tagline */}
+                {profile.tagline && (
+                  <p 
+                    onClick={() => canEdit && onOpenEdit?.()}
+                    className={`text-xs sm:text-sm font-medium ${theme.textSecondary} italic pt-0.5 break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                    title={canEdit ? 'Click to edit tagline' : undefined}
+                  >
+                    &ldquo;{profile.tagline}&rdquo;
+                  </p>
+                )}
 
-            {/* Location */}
-            {isEditing ? (
-              <div className="space-y-1 pt-0.5">
-                <input
-                  type="text"
-                  value={profile.location || ''}
-                  onChange={(e) => onUpdateField?.('location', e.target.value)}
-                  placeholder="Location (e.g. San Francisco, CA · Remote)"
-                  className={`w-full text-xs sm:text-sm bg-white/80 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder:text-slate-400 dark:placeholder:text-slate-500 ${theme.textPrimary}`}
-                />
-              </div>
-            ) : (
-              profile.location && (
-                <p 
-                  onClick={() => canEdit && onOpenEdit?.()}
-                  className={`text-xs sm:text-sm ${theme.textMuted} break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
-                  title={canEdit ? 'Click to edit location' : undefined}
-                >
-                  {profile.location}
-                </p>
-              )
+                {/* Location & Country */}
+                {(profile.location || profile.country) && (
+                  <p 
+                    onClick={() => canEdit && onOpenEdit?.()}
+                    className={`text-xs sm:text-sm ${theme.textMuted} break-words ${canEdit ? 'cursor-pointer hover:opacity-85 transition-opacity' : ''}`}
+                    title={canEdit ? 'Click to edit location' : undefined}
+                  >
+                    {[profile.location, profile.country].filter(Boolean).join(', ')}
+                  </p>
+                )}
+
+                {/* Short Bio */}
+                {sharing.bio !== false && profile.shortBio && (
+                  <div
+                    onClick={() => canEdit && onOpenEdit?.()}
+                    className={`${
+                      canEdit ? 'cursor-pointer group/bio rounded-2xl p-2 -ml-2 hover:bg-cyan-500/[0.04] dark:hover:bg-cyan-500/10 transition-all' : ''
+                    }`}
+                  >
+                    <p className={`text-xs sm:text-sm md:text-base ${theme.textSecondary} leading-relaxed max-w-2xl break-words`}>
+                      {profile.shortBio}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
-        )}
-
-        {/* Short Bio */}
-        {sharing.bio !== false && (
-          isEditing ? (
-            <div className="space-y-1 pt-1">
-              <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                Quick Bio
-              </label>
-              <textarea
-                rows={2}
-                value={profile.shortBio || ''}
-                onChange={(e) => onUpdateField?.('shortBio', e.target.value)}
-                placeholder="A concise overview of your background or focus..."
-                className={`w-full p-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 text-xs sm:text-sm ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-              />
-            </div>
-          ) : (
-            profile.shortBio && (
-              <div
-                onClick={() => canEdit && onOpenEdit?.()}
-                className={`${
-                  canEdit ? 'cursor-pointer group/bio rounded-2xl p-2 -ml-2 hover:bg-cyan-500/[0.04] dark:hover:bg-cyan-500/10 transition-all' : ''
-                }`}
-              >
-                <p className={`text-xs sm:text-sm md:text-base ${theme.textSecondary} leading-relaxed max-w-2xl break-words`}>
-                  {profile.shortBio}
-                </p>
-              </div>
-            )
-          )
         )}
 
         {/* Action Buttons Below Avatar */}

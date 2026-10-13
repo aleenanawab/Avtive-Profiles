@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const normalizedProvider = provider.toLowerCase();
     let userEmail = email?.trim()?.toLowerCase();
     let userName = name?.trim();
-    let userAvatar = avatar?.trim() || '';
+    const userAvatar = avatar?.trim() || '';
 
     // If no email passed, assign default social test account
     if (!userEmail) {

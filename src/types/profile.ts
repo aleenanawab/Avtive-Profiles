@@ -359,6 +359,7 @@ export interface ProfileData {
   pronouns?: string;
   birthday?: string;
   location: string;
+  country?: string;
   bio?: string;
   about?: string;
   shortBio?: string;

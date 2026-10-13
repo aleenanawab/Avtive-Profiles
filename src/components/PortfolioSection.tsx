@@ -4,6 +4,7 @@ import React from 'react';
 import { ArrowRight, Pencil, Plus, X, FolderGit2, ExternalLink } from 'lucide-react';
 import { ProfileData, ProjectItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, FormTextarea, SectionSaveBar } from './ui/formControls';
 
 interface PortfolioSectionProps {
   profile: ProfileData;
@@ -12,6 +13,7 @@ interface PortfolioSectionProps {
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
@@ -22,10 +24,49 @@ export function PortfolioSection({
   canEdit = false,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection
 }: PortfolioSectionProps) {
-  const projects = profile.projects || [];
-  const hasProjects = projects.length > 0;
+  const [projectsDraft, setProjectsDraft] = React.useState<ProjectItem[]>(profile.projects || []);
+  const [snapshot, setSnapshot] = React.useState<ProjectItem[]>(profile.projects || []);
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = profile.projects || [];
+    setProjectsDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.projects]);
+
+  const isDirty = JSON.stringify(projectsDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        projects: projectsDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('projects', projectsDraft);
+      setSnapshot(projectsDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save projects');
+    }
+  };
+
+  const handleCancel = () => {
+    setProjectsDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const hasProjects = projectsDraft.length > 0;
 
   if (!hasProjects && !canEdit && !isEditing) {
     return null;
@@ -40,18 +81,15 @@ export function PortfolioSection({
       tags: ['React', 'TypeScript'],
       link: ''
     };
-    const updated = [newProject, ...projects];
-    onUpdateField?.('projects', updated);
+    setProjectsDraft((prev) => [newProject, ...prev]);
   };
 
   const handleUpdateProject = (id: string, updates: Partial<ProjectItem>) => {
-    const updated = projects.map((p) => (p.id === id ? { ...p, ...updates } : p));
-    onUpdateField?.('projects', updated);
+    setProjectsDraft((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
   };
 
   const handleRemoveProject = (id: string) => {
-    const updated = projects.filter((p) => p.id !== id);
-    onUpdateField?.('projects', updated);
+    setProjectsDraft((prev) => prev.filter((p) => p.id !== id));
   };
 
   return (
@@ -100,7 +138,7 @@ export function PortfolioSection({
       {/* Visual Project Cards */}
       {hasProjects ? (
         <div className="space-y-4">
-          {projects.map((project) => (
+          {projectsDraft.map((project) => (
             <div
               key={project.id}
               onClick={() => {
@@ -114,38 +152,30 @@ export function PortfolioSection({
             >
               {isEditing ? (
                 /* Editable Project Item */
-                <div className="p-4 sm:p-5 space-y-3">
+                <div className="p-4 sm:p-5 space-y-3" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          Project Title
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel required>Project Title</FormLabel>
+                        <FormInput
                           value={project.title || ''}
-                          onChange={(e) => handleUpdateProject(project.id, { title: e.target.value })}
+                          onChange={(val) => handleUpdateProject(project.id, { title: val })}
                           placeholder="e.g. AI Workflow Platform"
-                          className={`w-full text-sm font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
                         />
                       </div>
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          Category / Tag
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel>Category / Domain</FormLabel>
+                        <FormInput
                           value={project.category || ''}
-                          onChange={(e) => handleUpdateProject(project.id, { category: e.target.value })}
+                          onChange={(val) => handleUpdateProject(project.id, { category: val })}
                           placeholder="e.g. Full Stack · Open Source"
-                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
                         />
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveProject(project.id)}
-                      className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0"
+                      className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0 mt-6"
                       title="Remove project"
                     >
                       <X className="w-4 h-4" />
@@ -153,44 +183,34 @@ export function PortfolioSection({
                   </div>
 
                   <div>
-                    <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                      Project Description
-                    </label>
-                    <textarea
+                    <FormLabel>Project Description</FormLabel>
+                    <FormTextarea
                       rows={2}
                       value={project.description || ''}
-                      onChange={(e) => handleUpdateProject(project.id, { description: e.target.value })}
+                      onChange={(val) => handleUpdateProject(project.id, { description: val })}
                       placeholder="Brief description of project features and outcome..."
-                      className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Live URL / Repository
-                      </label>
-                      <input
+                      <FormLabel>Live URL / Repository</FormLabel>
+                      <FormInput
                         type="url"
                         value={project.link || ''}
-                        onChange={(e) => handleUpdateProject(project.id, { link: e.target.value })}
+                        onChange={(val) => handleUpdateProject(project.id, { link: val })}
                         placeholder="https://github.com/... or https://..."
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
                       />
                     </div>
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Tech Stack Tags (comma separated)
-                      </label>
-                      <input
-                        type="text"
+                      <FormLabel>Tech Stack Tags (comma separated)</FormLabel>
+                      <FormInput
                         value={Array.isArray(project.tags) ? project.tags.join(', ') : ''}
-                        onChange={(e) => {
-                          const tagList = e.target.value.split(',').map((t) => t.trim()).filter(Boolean);
+                        onChange={(val) => {
+                          const tagList = val.split(',').map((t) => t.trim()).filter(Boolean);
                           handleUpdateProject(project.id, { tags: tagList });
                         }}
                         placeholder="React, Next.js, Node.js, Tailwind"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
                       />
                     </div>
                   </div>
@@ -270,6 +290,20 @@ export function PortfolioSection({
             </button>
           )}
         </div>
+      )}
+
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Projects"
+          cancelLabel="Cancel"
+          className="pt-1"
+        />
       )}
     </section>
   );

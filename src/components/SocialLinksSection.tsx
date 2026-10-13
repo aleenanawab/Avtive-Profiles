@@ -5,12 +5,14 @@ import { Globe, Mail, ArrowUpRight, Plus, X } from 'lucide-react';
 import { ProfileData, SocialLink } from '../types/profile';
 import { LinkedInIcon, TwitterXIcon, GithubIcon, InstagramIcon, FacebookIcon, BehanceIcon } from './BrandIcons';
 import { getThemeConfig, ThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, SectionSaveBar } from './ui/formControls';
 
 interface SocialLinksSectionProps {
   profile: ProfileData;
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionId: string) => void;
 }
 
@@ -26,20 +28,62 @@ const AVAILABLE_PLATFORMS: SocialLink['platform'][] = [
   'website'
 ];
 
+const getInitialSocials = (profile: ProfileData): SocialLink[] => {
+  if (profile.socials && profile.socials.length > 0) return profile.socials;
+  if (profile.socialLinks && profile.socialLinks.length > 0) return profile.socialLinks as unknown as SocialLink[];
+  return [];
+};
+
 export function SocialLinksSection({ 
   profile, 
   canEdit = false, 
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection 
 }: SocialLinksSectionProps) {
   const theme = getThemeConfig(profile.theme || 'elegant');
 
-  const rawSocials: SocialLink[] = (profile.socials && profile.socials.length > 0)
-    ? profile.socials
-    : (profile.socialLinks && profile.socialLinks.length > 0)
-      ? (profile.socialLinks as unknown as SocialLink[])
-      : [];
+  const [socialsDraft, setSocialsDraft] = React.useState<SocialLink[]>(getInitialSocials(profile));
+  const [snapshot, setSnapshot] = React.useState<SocialLink[]>(getInitialSocials(profile));
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = getInitialSocials(profile);
+    setSocialsDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.socials, profile.socialLinks]);
+
+  const isDirty = JSON.stringify(socialsDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        socials: socialsDraft,
+        socialLinks: socialsDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('socials', socialsDraft);
+      onUpdateField?.('socialLinks', socialsDraft);
+      setSnapshot(socialsDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save social links');
+    }
+  };
+
+  const handleCancel = () => {
+    setSocialsDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
 
   const getPlatformIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
@@ -69,24 +113,18 @@ export function SocialLinksSection({
       url: 'https://',
       label: 'Portfolio'
     };
-    const updated = [...rawSocials, newLink];
-    onUpdateField?.('socials', updated);
-    onUpdateField?.('socialLinks', updated);
+    setSocialsDraft((prev) => [...prev, newLink]);
   };
 
   const handleUpdateLink = (index: number, updates: Partial<SocialLink>) => {
-    const updated = rawSocials.map((link, idx) => (idx === index ? { ...link, ...updates } : link));
-    onUpdateField?.('socials', updated);
-    onUpdateField?.('socialLinks', updated);
+    setSocialsDraft((prev) => prev.map((link, idx) => (idx === index ? { ...link, ...updates } : link)));
   };
 
   const handleRemoveLink = (index: number) => {
-    const updated = rawSocials.filter((_, idx) => idx !== index);
-    onUpdateField?.('socials', updated);
-    onUpdateField?.('socialLinks', updated);
+    setSocialsDraft((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  if (rawSocials.length === 0 && !canEdit && !isEditing) {
+  if (socialsDraft.length === 0 && !canEdit && !isEditing) {
     return null;
   }
 
@@ -119,24 +157,25 @@ export function SocialLinksSection({
         )}
       </div>
 
-      {rawSocials.length > 0 ? (
+      {socialsDraft.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {rawSocials.map((item, idx) => {
+          {socialsDraft.map((item, idx) => {
             if (isEditing) {
               return (
                 <div
                   key={idx}
-                  className={`p-3 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-2 shadow-2xs relative`}
+                  className={`p-3.5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-2.5 shadow-2xs relative`}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <div className={`w-7 h-7 rounded-lg ${theme.badgeBg} flex items-center justify-center shrink-0 border ${theme.cardBorder}`}>
+                      <div className={`w-8 h-8 rounded-lg ${theme.badgeBg} flex items-center justify-center shrink-0 border ${theme.cardBorder}`}>
                         {getPlatformIcon(item.platform)}
                       </div>
                       <select
                         value={item.platform}
                         onChange={(e) => handleUpdateLink(idx, { platform: e.target.value as any })}
-                        className={`text-xs font-semibold p-1 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
+                        className={`text-xs font-semibold h-8 px-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
                       >
                         {AVAILABLE_PLATFORMS.map((p) => (
                           <option key={p} value={p}>
@@ -152,25 +191,28 @@ export function SocialLinksSection({
                       className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
                       title="Remove link"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <input
-                      type="text"
-                      value={item.label || ''}
-                      onChange={(e) => handleUpdateLink(idx, { label: e.target.value })}
-                      placeholder="Display Label (e.g. LinkedIn, Portfolio)"
-                      className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
-                    />
-                    <input
-                      type="url"
-                      value={item.url || ''}
-                      onChange={(e) => handleUpdateLink(idx, { url: e.target.value })}
-                      placeholder="https://..."
-                      className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
-                    />
+                  <div className="space-y-2">
+                    <div>
+                      <FormLabel>Label</FormLabel>
+                      <FormInput
+                        value={item.label || ''}
+                        onChange={(val) => handleUpdateLink(idx, { label: val })}
+                        placeholder="e.g. LinkedIn, Portfolio"
+                      />
+                    </div>
+                    <div>
+                      <FormLabel required>Link URL</FormLabel>
+                      <FormInput
+                        type="url"
+                        value={item.url || ''}
+                        onChange={(val) => handleUpdateLink(idx, { url: val })}
+                        placeholder="https://..."
+                      />
+                    </div>
                   </div>
                 </div>
               );
@@ -222,6 +264,20 @@ export function SocialLinksSection({
             </button>
           )}
         </div>
+      )}
+
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Social Links"
+          cancelLabel="Cancel"
+          className="pt-1"
+        />
       )}
     </section>
   );

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const coverImage = await ensureSupabaseAssetUrl(body.coverImage, 'profiles');
 
     // Process projects images
-    let projects = Array.isArray(body.projects) ? [...body.projects] : [];
+    const projects = Array.isArray(body.projects) ? [...body.projects] : [];
     for (let i = 0; i < projects.length; i++) {
       if (projects[i] && projects[i].image) {
         projects[i].image = await ensureSupabaseAssetUrl(projects[i].image, 'profiles');

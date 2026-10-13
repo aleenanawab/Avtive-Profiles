@@ -4,6 +4,7 @@ import React from 'react';
 import { Plus, X, Pencil, Briefcase } from 'lucide-react';
 import { ProfileData, ExperienceItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, FormTextarea, SectionSaveBar } from './ui/formControls';
 
 interface ExperienceSectionProps {
   profile: ProfileData;
@@ -11,8 +12,15 @@ interface ExperienceSectionProps {
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
+
+const getInitialExperiences = (profile: ProfileData): ExperienceItem[] => {
+  if (profile.experiences && profile.experiences.length > 0) return profile.experiences;
+  if (profile.experience && profile.experience.length > 0) return profile.experience;
+  return [];
+};
 
 export function ExperienceSection({ 
   profile, 
@@ -20,14 +28,51 @@ export function ExperienceSection({
   canEdit = false,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection
 }: ExperienceSectionProps) {
-  const experiences: ExperienceItem[] = (profile.experiences && profile.experiences.length > 0)
-    ? profile.experiences
-    : (profile.experience && profile.experience.length > 0)
-    ? profile.experience
-    : [];
-  const hasExperience = experiences.length > 0;
+  const [experiencesDraft, setExperiencesDraft] = React.useState<ExperienceItem[]>(getInitialExperiences(profile));
+  const [snapshot, setSnapshot] = React.useState<ExperienceItem[]>(getInitialExperiences(profile));
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = getInitialExperiences(profile);
+    setExperiencesDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.experiences, profile.experience]);
+
+  const isDirty = JSON.stringify(experiencesDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        experiences: experiencesDraft,
+        experience: experiencesDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('experiences', experiencesDraft);
+      onUpdateField?.('experience', experiencesDraft);
+      setSnapshot(experiencesDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save experience');
+    }
+  };
+
+  const handleCancel = () => {
+    setExperiencesDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const hasExperience = experiencesDraft.length > 0;
 
   if (!hasExperience && !canEdit && !isEditing) {
     return null;
@@ -42,21 +87,15 @@ export function ExperienceSection({
       location: '',
       description: ''
     };
-    const updated = [newExp, ...experiences];
-    onUpdateField?.('experiences', updated);
-    onUpdateField?.('experience', updated);
+    setExperiencesDraft((prev) => [newExp, ...prev]);
   };
 
   const handleUpdateItem = (id: string, updates: Partial<ExperienceItem>) => {
-    const updated = experiences.map((exp) => (exp.id === id ? { ...exp, ...updates } : exp));
-    onUpdateField?.('experiences', updated);
-    onUpdateField?.('experience', updated);
+    setExperiencesDraft((prev) => prev.map((exp) => (exp.id === id ? { ...exp, ...updates } : exp)));
   };
 
   const handleRemoveItem = (id: string) => {
-    const updated = experiences.filter((exp) => exp.id !== id);
-    onUpdateField?.('experiences', updated);
-    onUpdateField?.('experience', updated);
+    setExperiencesDraft((prev) => prev.filter((exp) => exp.id !== id));
   };
 
   return (
@@ -90,88 +129,70 @@ export function ExperienceSection({
 
       {hasExperience ? (
         <div className="space-y-3">
-          {experiences.map((exp) => (
+          {experiencesDraft.map((exp) => (
             <div
               key={exp.id}
-              className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-2 shadow-2xs relative`}
+              className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-2.5 shadow-2xs relative`}
+              onClick={(e) => e.stopPropagation()}
             >
               {isEditing ? (
                 /* Editable Experience Card */
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          Role / Title
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel required>Role / Title</FormLabel>
+                        <FormInput
                           value={exp.role || ''}
-                          onChange={(e) => handleUpdateItem(exp.id, { role: e.target.value })}
+                          onChange={(val) => handleUpdateItem(exp.id, { role: val })}
                           placeholder="e.g. Lead Designer"
-                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          Company Name
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel required>Company Name</FormLabel>
+                        <FormInput
                           value={exp.company || ''}
-                          onChange={(e) => handleUpdateItem(exp.id, { company: e.target.value })}
+                          onChange={(val) => handleUpdateItem(exp.id, { company: val })}
                           placeholder="e.g. Acme Corp"
-                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(exp.id)}
-                      className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0"
+                      className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0 mt-6"
                       title="Remove experience"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Duration / Period
-                      </label>
-                      <input
-                        type="text"
+                      <FormLabel>Duration / Period</FormLabel>
+                      <FormInput
                         value={exp.period || ''}
-                        onChange={(e) => handleUpdateItem(exp.id, { period: e.target.value })}
+                        onChange={(val) => handleUpdateItem(exp.id, { period: val })}
                         placeholder="e.g. Jan 2021 - Present"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Location
-                      </label>
-                      <input
-                        type="text"
+                      <FormLabel>Location</FormLabel>
+                      <FormInput
                         value={exp.location || ''}
-                        onChange={(e) => handleUpdateItem(exp.id, { location: e.target.value })}
+                        onChange={(val) => handleUpdateItem(exp.id, { location: val })}
                         placeholder="e.g. San Francisco, CA / Remote"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                      Description & Accomplishments
-                    </label>
-                    <textarea
+                    <FormLabel>Description & Accomplishments</FormLabel>
+                    <FormTextarea
                       rows={2}
                       value={exp.description || ''}
-                      onChange={(e) => handleUpdateItem(exp.id, { description: e.target.value })}
+                      onChange={(val) => handleUpdateItem(exp.id, { description: val })}
                       placeholder="Highlights, achievements, or tech stack used..."
-                      className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                     />
                   </div>
                 </div>
@@ -229,6 +250,20 @@ export function ExperienceSection({
             </button>
           )}
         </div>
+      )}
+
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Experience"
+          cancelLabel="Cancel"
+          className="pt-1"
+        />
       )}
     </section>
   );

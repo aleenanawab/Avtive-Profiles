@@ -4,6 +4,7 @@ import React from 'react';
 import { ArrowRight, Users, Plus, X } from 'lucide-react';
 import { ProfileData, TeamMemberItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, SectionSaveBar } from './ui/formControls';
 
 interface TeamSectionProps {
   profile: ProfileData;
@@ -12,6 +13,7 @@ interface TeamSectionProps {
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionId: string) => void;
 }
 
@@ -22,10 +24,49 @@ export function TeamSection({
   canEdit,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection
 }: TeamSectionProps) {
-  const teamMembers: TeamMemberItem[] = profile.teamMembers || [];
-  const hasMembers = teamMembers.length > 0;
+  const [teamDraft, setTeamDraft] = React.useState<TeamMemberItem[]>(profile.teamMembers || []);
+  const [snapshot, setSnapshot] = React.useState<TeamMemberItem[]>(profile.teamMembers || []);
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = profile.teamMembers || [];
+    setTeamDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.teamMembers]);
+
+  const isDirty = JSON.stringify(teamDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        teamMembers: teamDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('teamMembers', teamDraft);
+      setSnapshot(teamDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save team members');
+    }
+  };
+
+  const handleCancel = () => {
+    setTeamDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const hasMembers = teamDraft.length > 0;
 
   if (!hasMembers && !canEdit && !isEditing) {
     return null;
@@ -42,18 +83,15 @@ export function TeamSection({
       email: '',
       status: 'ACTIVE'
     };
-    const updated = [newMember, ...teamMembers];
-    onUpdateField?.('teamMembers', updated);
+    setTeamDraft((prev) => [newMember, ...prev]);
   };
 
   const handleUpdateMember = (id: string, updates: Partial<TeamMemberItem>) => {
-    const updated = teamMembers.map((m) => (m.id === id ? { ...m, ...updates } : m));
-    onUpdateField?.('teamMembers', updated);
+    setTeamDraft((prev) => prev.map((m) => (m.id === id ? { ...m, ...updates } : m)));
   };
 
   const handleRemoveMember = (id: string) => {
-    const updated = teamMembers.filter((m) => m.id !== id);
-    onUpdateField?.('teamMembers', updated);
+    setTeamDraft((prev) => prev.filter((m) => m.id !== id));
   };
 
   return (
@@ -73,7 +111,7 @@ export function TeamSection({
         </div>
         <div className="flex items-center gap-2">
           <span className={`text-[11px] ${theme.textMuted} font-semibold font-mono`}>
-            {teamMembers.length} {teamMembers.length === 1 ? 'Member' : 'Members'}
+            {teamDraft.length} {teamDraft.length === 1 ? 'Member' : 'Members'}
           </span>
           {isEditing ? (
             <button
@@ -100,7 +138,7 @@ export function TeamSection({
 
       {hasMembers ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {teamMembers.map((member) => {
+          {teamDraft.map((member) => {
             const isLinked = Boolean(member.profileId);
             const isPending = member.status === 'PENDING';
 
@@ -108,62 +146,48 @@ export function TeamSection({
               <div
                 key={member.id}
                 className={`p-3.5 sm:p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} shadow-2xs`}
+                onClick={(e) => e.stopPropagation()}
               >
                 {isEditing ? (
                   /* Editable Team Member Card */
                   <div className="space-y-2.5">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 space-y-1.5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="flex-1 space-y-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                           <div>
-                            <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                              Full Name
-                            </label>
-                            <input
-                              type="text"
+                            <FormLabel required>Full Name</FormLabel>
+                            <FormInput
                               value={member.name || ''}
-                              onChange={(e) => handleUpdateMember(member.id, { name: e.target.value })}
+                              onChange={(val) => handleUpdateMember(member.id, { name: val })}
                               placeholder="e.g. Alex Morgan"
-                              className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                           <div>
-                            <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                              Role / Job Title
-                            </label>
-                            <input
-                              type="text"
+                            <FormLabel>Role / Job Title</FormLabel>
+                            <FormInput
                               value={member.role || ''}
-                              onChange={(e) => handleUpdateMember(member.id, { role: e.target.value })}
+                              onChange={(val) => handleUpdateMember(member.id, { role: val })}
                               placeholder="e.g. Chief Technology Officer"
-                              className={`w-full text-xs font-medium p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.accentText} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                           <div>
-                            <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                              Department
-                            </label>
-                            <input
-                              type="text"
+                            <FormLabel>Department</FormLabel>
+                            <FormInput
                               value={member.department || ''}
-                              onChange={(e) => handleUpdateMember(member.id, { department: e.target.value })}
+                              onChange={(val) => handleUpdateMember(member.id, { department: val })}
                               placeholder="e.g. Product Engineering"
-                              className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                           <div>
-                            <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                              Email
-                            </label>
-                            <input
+                            <FormLabel>Email</FormLabel>
+                            <FormInput
                               type="email"
                               value={member.email || ''}
-                              onChange={(e) => handleUpdateMember(member.id, { email: e.target.value })}
+                              onChange={(val) => handleUpdateMember(member.id, { email: val })}
                               placeholder="e.g. alex@company.com"
-                              className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                             />
                           </div>
                         </div>
@@ -171,7 +195,7 @@ export function TeamSection({
                       <button
                         type="button"
                         onClick={() => handleRemoveMember(member.id)}
-                        className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0"
+                        className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0 mt-6"
                         title="Remove member"
                       >
                         <X className="w-4 h-4" />
@@ -244,6 +268,20 @@ export function TeamSection({
             No team members added yet. Showcase your staff and colleagues on your company profile.
           </p>
         </div>
+      )}
+
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Team Members"
+          cancelLabel="Cancel"
+          className="pt-1"
+        />
       )}
     </section>
   );

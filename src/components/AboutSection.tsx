@@ -1,13 +1,17 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Pencil } from 'lucide-react';
 import { ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, FormTextarea, SectionSaveBar } from './ui/formControls';
 
 interface AboutSectionProps {
   profile: ProfileData;
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   theme?: ThemeConfig;
 }
@@ -17,22 +21,77 @@ export function AboutSection({
   canEdit = false, 
   isEditing = false, 
   onUpdateField,
+  onSavePartial,
   onSelectSection,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: AboutSectionProps) {
+  // Local state for editing fields
+  const [taglineDraft, setTaglineDraft] = useState(profile.tagline || '');
+  const [aboutDraft, setAboutDraft] = useState(profile.about || profile.fullBio || profile.shortBio || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Sync draft when external profile changes or edit mode toggles
+  useEffect(() => {
+    setTaglineDraft(profile.tagline || '');
+    setAboutDraft(profile.about || profile.fullBio || profile.shortBio || '');
+    setSaveStatus('idle');
+    setErrorMessage(null);
+  }, [profile.tagline, profile.about, profile.fullBio, profile.shortBio, isEditing]);
+
   const hasBio = Boolean(profile.about || profile.fullBio || profile.shortBio || profile.tagline);
+  const isDirty =
+    taglineDraft !== (profile.tagline || '') ||
+    aboutDraft !== (profile.about || profile.fullBio || profile.shortBio || '');
 
   if (!hasBio && !canEdit && !isEditing) {
     return null;
   }
 
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSaveStatus('saving');
+    setErrorMessage(null);
+    try {
+      const payload: Partial<ProfileData> = {
+        tagline: taglineDraft.trim(),
+        about: aboutDraft.trim(),
+        fullBio: aboutDraft.trim()
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      } else {
+        onUpdateField?.('tagline', payload.tagline);
+        onUpdateField?.('about', payload.about);
+      }
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus('idle'), 2200);
+    } catch (err: any) {
+      console.error('Failed to save About section:', err);
+      setSaveStatus('error');
+      setErrorMessage(err.message || 'Failed to save About story. Please retry.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setTaglineDraft(profile.tagline || '');
+    setAboutDraft(profile.about || profile.fullBio || profile.shortBio || '');
+    onUpdateField?.('tagline', profile.tagline || '');
+    onUpdateField?.('about', profile.about || profile.fullBio || profile.shortBio || '');
+    setSaveStatus('idle');
+    setErrorMessage(null);
+  };
+
   return (
     <section 
       onClick={() => canEdit && !isEditing && onSelectSection?.('about', 'about')}
-      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
+      className={`px-4 sm:px-6 md:px-8 py-5 space-y-3.5 text-left border-b ${theme.divider} ${theme.cardBg} transition-all relative ${
         canEdit && !isEditing ? 'cursor-pointer group/about hover:bg-purple-500/[0.04] dark:hover:bg-purple-500/10' : ''
       }`}
-      title={canEdit && !isEditing ? 'Click to edit Story & Bio in Studio' : undefined}
+      title={canEdit && !isEditing ? 'Click to edit Story & Bio' : undefined}
     >
       <div className="flex items-center justify-between">
         <h2 className={`text-sm font-bold tracking-tight ${theme.textPrimary}`}>
@@ -47,31 +106,42 @@ export function AboutSection({
       </div>
 
       {isEditing ? (
-        <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
+        <div className="space-y-3.5 pt-1" onClick={(e) => e.stopPropagation()}>
           <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Describe yourself best
-            </label>
-            <input
+            <FormLabel>Personal Tagline / Motto</FormLabel>
+            <FormInput
               type="text"
-              value={profile.tagline || ''}
-              onChange={(e) => onUpdateField?.('tagline', e.target.value)}
-              placeholder="A punchy phrase, personal tagline, or motto that describes you best..."
-              className={`w-full p-2.5 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-slate-50/50 dark:bg-white/[0.03] text-xs sm:text-sm ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
+              value={taglineDraft}
+              onChange={(val) => {
+                setTaglineDraft(val);
+                onUpdateField?.('tagline', val);
+              }}
+              placeholder="A punchy phrase or personal motto that describes you best..."
             />
           </div>
+
           <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Professional Story / Bio
-            </label>
-            <textarea
+            <FormLabel>Professional Story / Bio</FormLabel>
+            <FormTextarea
               rows={4}
-              value={profile.about || profile.fullBio || profile.shortBio || ''}
-              onChange={(e) => onUpdateField?.('about', e.target.value)}
+              value={aboutDraft}
+              onChange={(val) => {
+                setAboutDraft(val);
+                onUpdateField?.('about', val);
+              }}
               placeholder="Write your background, experience, accomplishments, or philosophy..."
-              className={`w-full p-3 rounded-xl border border-dashed border-slate-300 dark:border-white/20 bg-slate-50/50 dark:bg-white/[0.03] text-xs sm:text-sm ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-current`}
             />
           </div>
+
+          <SectionSaveBar
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isSaving={isSaving}
+            isDirty={isDirty}
+            saveStatus={saveStatus}
+            errorMessage={errorMessage}
+            saveLabel="Save Story"
+          />
         </div>
       ) : hasBio ? (
         <div className="space-y-2">
@@ -96,4 +166,3 @@ export function AboutSection({
     </section>
   );
 }
-

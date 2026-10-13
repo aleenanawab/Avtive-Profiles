@@ -331,6 +331,38 @@ function PublicProfileClientInner({
     }
   };
 
+  const handleSavePartial = async (partialData: Partial<ProfileData>): Promise<ProfileData> => {
+    try {
+      const res = await fetch('/api/profile/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profileId: profile.id,
+          updatedData: partialData
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to save changes.');
+      }
+      const updated = data.profile || { ...profile, ...partialData };
+      setProfile(updated);
+      setCurrentDraft(updated);
+      try {
+        localStorage.setItem(`avtive_profile_${updated.slug || updated.id}`, JSON.stringify(updated));
+        localStorage.setItem(`avtive_profile_${updated.id}`, JSON.stringify(updated));
+        localStorage.setItem('avtive_last_saved_profile', JSON.stringify(updated));
+        window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: updated }));
+      } catch {}
+      showToast('Changes saved successfully!');
+      return updated;
+    } catch (err: any) {
+      console.error('Update section error:', err);
+      showToast(err.message || 'Failed to save changes.');
+      throw err;
+    }
+  };
+
   const handleSaveContact = () => {
     try {
       downloadVCard(profile);
@@ -349,14 +381,14 @@ function PublicProfileClientInner({
     handleSwitchToProfile
   } = useProfileEditor();
 
-  const currentDraftRef = React.useRef<ProfileData>(profile);
+  const [currentDraft, setCurrentDraft] = useState<ProfileData>(profile);
 
   useEffect(() => {
-    currentDraftRef.current = profile;
+    setCurrentDraft(profile);
   }, [profile]);
 
   const handleDraftChange = (draft: ProfileData) => {
-    currentDraftRef.current = draft;
+    setCurrentDraft(draft);
   };
 
   const handleOpenEditMode = () => {
@@ -369,7 +401,7 @@ function PublicProfileClientInner({
   };
 
   const handleCancelEdit = () => {
-    currentDraftRef.current = profile;
+    setCurrentDraft(profile);
     handleSwitchToProfile(profile);
     setIsEditing(false);
     const slug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
@@ -378,9 +410,20 @@ function PublicProfileClientInner({
     }
   };
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isEditing) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isEditing]);
+
   const handleSaveAndExit = async () => {
     try {
-      await handleSaveEdits(currentDraftRef.current);
+      await handleSaveEdits(currentDraft);
     } catch (err: any) {
       console.error('Update profile error:', err);
     }
@@ -467,6 +510,7 @@ function PublicProfileClientInner({
             onOpenEdit={handleOpenEditMode}
             onCancelEdit={handleCancelEdit}
             onSaveEdits={handleSaveEdits}
+            onSavePartial={handleSavePartial}
             onSaveContact={handleSaveContact}
             onOpenShare={() => setIsShareModalOpen(true)}
             onOpenConnect={() => setIsConnectModalOpen(true)}
@@ -506,6 +550,7 @@ function PublicProfileClientInner({
           onOpenEdit={handleOpenEditMode}
           onCancelEdit={handleCancelEdit}
           onSaveEdits={handleSaveEdits}
+          onSavePartial={handleSavePartial}
           onSaveContact={handleSaveContact}
           onOpenShare={() => setIsShareModalOpen(true)}
           onOpenConnect={() => setIsConnectModalOpen(true)}

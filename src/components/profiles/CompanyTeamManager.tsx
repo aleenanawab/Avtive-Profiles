@@ -98,6 +98,24 @@ export function CompanyTeamManager({
   // Copy Link State for individual members
   const [copiedMemberId, setCopiedMemberId] = useState<string | null>(null);
 
+  // Synchronize ACTIVE and PENDING members back to the profile editor context
+  const syncToProfile = useCallback((list: CompanyMemberRecord[]) => {
+    const valid = list
+      .filter((m) => m.status !== 'REMOVED')
+      .map((m): TeamMemberItem => ({
+        id: m.id,
+        name: m.name,
+        role: m.title || m.role,
+        department: m.department,
+        avatar: m.avatarUrl || '/images/default-avatar.png',
+        bio: m.bio,
+        email: m.email,
+        status: m.status as ('ACTIVE' | 'PENDING'),
+        profileId: (m as any).profileUrl || m.userId || undefined
+      }));
+    onUpdateTeamMembers?.(valid);
+  }, [onUpdateTeamMembers]);
+
   // Fetch current user and company members
   const fetchMembers = useCallback(async () => {
     if (!companyIdentifier) return;
@@ -156,29 +174,11 @@ export function CompanyTeamManager({
     } finally {
       setIsLoading(false);
     }
-  }, [companyIdentifier, profile]);
+  }, [companyIdentifier, profile, syncToProfile]);
 
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
-
-  // Synchronize ACTIVE and PENDING members back to the profile editor context
-  const syncToProfile = (list: CompanyMemberRecord[]) => {
-    const valid = list
-      .filter((m) => m.status !== 'REMOVED')
-      .map((m): TeamMemberItem => ({
-        id: m.id,
-        name: m.name,
-        role: m.title || m.role,
-        department: m.department,
-        avatar: m.avatarUrl || '/images/default-avatar.png',
-        bio: m.bio,
-        email: m.email,
-        status: m.status as ('ACTIVE' | 'PENDING'),
-        profileId: (m as any).profileUrl || m.userId || undefined
-      }));
-    onUpdateTeamMembers?.(valid);
-  };
 
   const canManage = true;
 

@@ -4,6 +4,7 @@ import React from 'react';
 import { ArrowRight, Building2, Pencil } from 'lucide-react';
 import { CompanyInfo, ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, SectionSaveBar } from './ui/formControls';
 
 interface CompanyCardProps {
   companyInfo?: CompanyInfo | null;
@@ -13,6 +14,7 @@ interface CompanyCardProps {
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionId: string) => void;
 }
 
@@ -24,10 +26,11 @@ export function CompanyCard({
   canEdit,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection
 }: CompanyCardProps) {
-  const currentInfo: CompanyInfo = companyInfo || {
-    id: `comp-${Date.now()}`,
+  const getInitialInfo = (): CompanyInfo => companyInfo || {
+    id: profile?.id ? `comp-${profile.id}` : 'comp-info',
     name: profile?.company || '',
     tagline: '',
     logo: profile?.companyLogo || '/images/avtive-symbol.png',
@@ -38,12 +41,45 @@ export function CompanyCard({
     profileId: ''
   };
 
-  const handleUpdate = (updates: Partial<CompanyInfo>) => {
-    const nextInfo = { ...currentInfo, ...updates };
-    onUpdateField?.('companyInfo', nextInfo);
-    if (updates.name !== undefined) {
-      onUpdateField?.('company', updates.name);
+  const [companyDraft, setCompanyDraft] = React.useState<CompanyInfo>(getInitialInfo());
+  const [snapshot, setSnapshot] = React.useState<CompanyInfo>(getInitialInfo());
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = getInitialInfo();
+    setCompanyDraft(next);
+    setSnapshot(next);
+  }, [profile?.id, companyInfo, profile?.company]);
+
+  const isDirty = JSON.stringify(companyDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        companyInfo: companyDraft,
+        company: companyDraft.name,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('companyInfo', companyDraft);
+      onUpdateField?.('company', companyDraft.name);
+      setSnapshot(companyDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save company information');
     }
+  };
+
+  const handleCancel = () => {
+    setCompanyDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
   };
 
   if (!isEditing && (!companyInfo || !companyInfo.name)) {
@@ -84,7 +120,7 @@ export function CompanyCard({
     >
       {isEditing ? (
         /* Editable Company Details Card */
-        <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-3 text-left`}>
+        <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-3.5 text-left`} onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-between pb-1 border-b border-black/5 dark:border-white/5">
             <div className="flex items-center gap-2">
               <Building2 className={`w-4 h-4 ${theme.accentText}`} />
@@ -99,66 +135,59 @@ export function CompanyCard({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div>
-              <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                Company Name
-              </label>
-              <input
-                type="text"
-                value={currentInfo.name || ''}
-                onChange={(e) => handleUpdate({ name: e.target.value })}
+              <FormLabel required>Company Name</FormLabel>
+              <FormInput
+                value={companyDraft.name || ''}
+                onChange={(val) => setCompanyDraft((prev) => ({ ...prev, name: val }))}
                 placeholder="e.g. Avtive Technologies Inc."
-                className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div>
-              <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                Tagline / Industry Subtitle
-              </label>
-              <input
-                type="text"
-                value={currentInfo.tagline || ''}
-                onChange={(e) => handleUpdate({ tagline: e.target.value })}
+              <FormLabel>Tagline / Motto</FormLabel>
+              <FormInput
+                value={companyDraft.tagline || ''}
+                onChange={(val) => setCompanyDraft((prev) => ({ ...prev, tagline: val }))}
                 placeholder="e.g. Next-Generation Identity Cloud"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div>
-              <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                Industry
-              </label>
-              <input
-                type="text"
-                value={currentInfo.industry || ''}
-                onChange={(e) => handleUpdate({ industry: e.target.value })}
+              <FormLabel>Industry</FormLabel>
+              <FormInput
+                value={companyDraft.industry || ''}
+                onChange={(val) => setCompanyDraft((prev) => ({ ...prev, industry: val }))}
                 placeholder="e.g. Software · Enterprise SaaS"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div>
-              <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                Website URL
-              </label>
-              <input
-                type="text"
-                value={currentInfo.website || ''}
-                onChange={(e) => handleUpdate({ website: e.target.value })}
+              <FormLabel>Website URL</FormLabel>
+              <FormInput
+                type="url"
+                value={companyDraft.website || ''}
+                onChange={(val) => setCompanyDraft((prev) => ({ ...prev, website: val }))}
                 placeholder="e.g. https://company.com"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
             <div className="sm:col-span-2">
-              <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                Headquarters / Location
-              </label>
-              <input
-                type="text"
-                value={currentInfo.location || ''}
-                onChange={(e) => handleUpdate({ location: e.target.value })}
+              <FormLabel>Headquarters / Location</FormLabel>
+              <FormInput
+                value={companyDraft.location || ''}
+                onChange={(val) => setCompanyDraft((prev) => ({ ...prev, location: val }))}
                 placeholder="e.g. San Francisco, California / Global Remote"
-                className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
               />
             </div>
           </div>
+
+          <SectionSaveBar
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isSaving={saveStatus === 'saving'}
+            isSaved={saveStatus === 'saved'}
+            isDirty={isDirty}
+            errorMessage={errorMessage}
+            saveLabel="Save Company Details"
+            cancelLabel="Cancel"
+            className="pt-1"
+          />
         </div>
       ) : (
         /* View Company Details Card */

@@ -4,6 +4,7 @@ import React from 'react';
 import { Plus, X, GraduationCap } from 'lucide-react';
 import { ProfileData, EducationItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, FormTextarea, SectionSaveBar } from './ui/formControls';
 
 interface EducationSectionProps {
   profile: ProfileData;
@@ -11,6 +12,7 @@ interface EducationSectionProps {
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
@@ -20,10 +22,49 @@ export function EducationSection({
   canEdit = false,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection
 }: EducationSectionProps) {
-  const educationList: EducationItem[] = profile.education || [];
-  const hasEducation = educationList.length > 0;
+  const [educationDraft, setEducationDraft] = React.useState<EducationItem[]>(profile.education || []);
+  const [snapshot, setSnapshot] = React.useState<EducationItem[]>(profile.education || []);
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = profile.education || [];
+    setEducationDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.education]);
+
+  const isDirty = JSON.stringify(educationDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        education: educationDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('education', educationDraft);
+      setSnapshot(educationDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save education');
+    }
+  };
+
+  const handleCancel = () => {
+    setEducationDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const hasEducation = educationDraft.length > 0;
 
   if (!hasEducation && !canEdit && !isEditing) {
     return null;
@@ -37,18 +78,15 @@ export function EducationSection({
       period: '2019 - 2023',
       description: ''
     };
-    const updated = [newEdu, ...educationList];
-    onUpdateField?.('education', updated);
+    setEducationDraft((prev) => [newEdu, ...prev]);
   };
 
   const handleUpdateItem = (id: string, updates: Partial<EducationItem>) => {
-    const updated = educationList.map((edu) => (edu.id === id ? { ...edu, ...updates } : edu));
-    onUpdateField?.('education', updated);
+    setEducationDraft((prev) => prev.map((edu) => (edu.id === id ? { ...edu, ...updates } : edu)));
   };
 
   const handleRemoveItem = (id: string) => {
-    const updated = educationList.filter((edu) => edu.id !== id);
-    onUpdateField?.('education', updated);
+    setEducationDraft((prev) => prev.filter((edu) => edu.id !== id));
   };
 
   return (
@@ -82,45 +120,38 @@ export function EducationSection({
 
       {hasEducation ? (
         <div className="space-y-3">
-          {educationList.map((edu) => (
+          {educationDraft.map((edu) => (
             <div
               key={edu.id}
-              className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-2 shadow-2xs relative`}
+              className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-2.5 shadow-2xs relative`}
+              onClick={(e) => e.stopPropagation()}
             >
               {isEditing ? (
                 /* Editable Education Card */
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          Degree / Certification
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel required>Degree / Program</FormLabel>
+                        <FormInput
                           value={edu.degree || ''}
-                          onChange={(e) => handleUpdateItem(edu.id, { degree: e.target.value })}
+                          onChange={(val) => handleUpdateItem(edu.id, { degree: val })}
                           placeholder="e.g. B.S. in Computer Science"
-                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          School / Institution
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel required>School / Institution</FormLabel>
+                        <FormInput
                           value={edu.institution || (edu as any).school || ''}
-                          onChange={(e) => handleUpdateItem(edu.id, { institution: e.target.value })}
+                          onChange={(val) => handleUpdateItem(edu.id, { institution: val })}
                           placeholder="e.g. Stanford University"
-                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(edu.id)}
-                      className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0"
+                      className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0 mt-6"
                       title="Remove education"
                     >
                       <X className="w-4 h-4" />
@@ -128,28 +159,21 @@ export function EducationSection({
                   </div>
 
                   <div>
-                    <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                      Graduation Year / Period
-                    </label>
-                    <input
-                      type="text"
+                    <FormLabel>Graduation Year / Period</FormLabel>
+                    <FormInput
                       value={edu.period || edu.year || ''}
-                      onChange={(e) => handleUpdateItem(edu.id, { period: e.target.value, year: e.target.value })}
+                      onChange={(val) => handleUpdateItem(edu.id, { period: val, year: val })}
                       placeholder="e.g. 2019 - 2023"
-                      className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                     />
                   </div>
 
                   <div>
-                    <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                      Notes / Honors / Activities
-                    </label>
-                    <textarea
+                    <FormLabel>Notes / Honors / Activities</FormLabel>
+                    <FormTextarea
                       rows={2}
                       value={edu.description || ''}
-                      onChange={(e) => handleUpdateItem(edu.id, { description: e.target.value })}
+                      onChange={(val) => handleUpdateItem(edu.id, { description: val })}
                       placeholder="Honors, thesis, activities, or coursework..."
-                      className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                     />
                   </div>
                 </div>
@@ -199,6 +223,20 @@ export function EducationSection({
             </button>
           )}
         </div>
+      )}
+
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Education"
+          cancelLabel="Cancel"
+          className="pt-1"
+        />
       )}
     </section>
   );

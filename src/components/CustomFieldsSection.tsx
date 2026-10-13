@@ -16,12 +16,14 @@ import {
 } from 'lucide-react';
 import { ProfileData, CustomFieldItem } from '@/types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, SectionSaveBar } from './ui/formControls';
 
 interface CustomFieldsSectionProps {
   profile: ProfileData;
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   theme?: ThemeConfig;
 }
@@ -31,60 +33,53 @@ export function CustomFieldsSection({
   canEdit = false,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection,
   theme = getThemeConfig(profile.theme || 'editorial')
 }: CustomFieldsSectionProps) {
-  const fields = (profile.customFields || []).filter(
-    (f) => isEditing || f.visible !== false
-  );
+  const [fieldsDraft, setFieldsDraft] = React.useState<CustomFieldItem[]>(profile.customFields || []);
+  const [snapshot, setSnapshot] = React.useState<CustomFieldItem[]>(profile.customFields || []);
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
 
-  if (fields.length === 0) {
-    if (!canEdit && !isEditing) return null;
+  React.useEffect(() => {
+    const next = profile.customFields || [];
+    setFieldsDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.customFields]);
 
-    return (
-      <div className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} transition-colors space-y-3 shadow-xs`}>
-        <div 
-          onClick={() => !isEditing && canEdit && onSelectSection?.('customFields')}
-          className={`flex items-center justify-between pb-1 border-b border-black/5 dark:border-white/5 ${
-            canEdit && !isEditing ? 'cursor-pointer group/cfheader' : ''
-          }`}
-          title={canEdit && !isEditing ? 'Click to edit Custom Fields in Studio' : undefined}
-        >
-          <div className="flex items-center gap-2">
-            <h3 className={`text-sm font-bold tracking-tight ${theme.textPrimary} flex items-center gap-1.5`}>
-              <Sparkles className="w-3.5 h-3.5 text-purple-500" />
-              <span>Custom Fields</span>
-            </h3>
-          </div>
-          {isEditing ? (
-            <button
-              type="button"
-              onClick={() => {
-                const newField: CustomFieldItem = {
-                  id: `cf-${Date.now()}`,
-                  label: '',
-                  value: '',
-                  type: 'text',
-                  visible: true,
-                };
-                onUpdateField?.('customFields', [...(profile.customFields || []), newField]);
-              }}
-              className="text-[11px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <Plus className="w-3 h-3" />
-              <span>Add Custom Field</span>
-            </button>
-          ) : (
-            <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-semibold`}>
-              0 Fields
-            </span>
-          )}
-        </div>
-        <p className={`text-xs ${theme.textSecondary} italic py-1`}>
-          {isEditing ? 'No custom fields yet. Click "Add Custom Field" to create one.' : 'No custom fields added yet.'}
-        </p>
-      </div>
-    );
+  const isDirty = JSON.stringify(fieldsDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        customFields: fieldsDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('customFields', fieldsDraft);
+      setSnapshot(fieldsDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save custom fields');
+    }
+  };
+
+  const handleCancel = () => {
+    setFieldsDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const visibleFields = fieldsDraft.filter((f) => isEditing || f.visible !== false);
+
+  if (visibleFields.length === 0 && !canEdit && !isEditing) {
+    return null;
   }
 
   const renderFieldIcon = (field: CustomFieldItem) => {
@@ -100,16 +95,20 @@ export function CustomFieldsSection({
       case 'number':
         return <Hash className="w-4 h-4" />;
       case 'markdown':
-        return <FileText className="w-4 h-4" />;
+      case 'text':
       default:
-        return <Sparkles className="w-4 h-4" />;
+        return <FileText className="w-4 h-4" />;
     }
   };
 
   const renderFieldValue = (field: CustomFieldItem) => {
     const val = field.value || (field as any).content || '';
-    if (field.type === 'link' || val.startsWith('http://') || val.startsWith('https://')) {
-      const href = val.startsWith('http://') || val.startsWith('https://') ? val : `https://${val}`;
+    if (!val) {
+      return <span className={`text-xs ${theme.textMuted} italic`}>Not specified</span>;
+    }
+
+    if (field.type === 'link' || (val.startsWith('http://') || val.startsWith('https://'))) {
+      const href = val.startsWith('http') ? val : `https://${val}`;
       return (
         <a
           href={href}
@@ -153,7 +152,7 @@ export function CustomFieldsSection({
   };
 
   return (
-    <div className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} transition-colors space-y-3 shadow-2xs`}>
+    <div className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} transition-colors space-y-3.5 shadow-2xs`}>
       <div 
         onClick={() => !isEditing && canEdit && onSelectSection?.('customFields')}
         className={`flex items-center justify-between pb-1 border-b border-black/5 dark:border-white/5 ${
@@ -184,7 +183,7 @@ export function CustomFieldsSection({
                 type: 'text',
                 visible: true,
               };
-              onUpdateField?.('customFields', [...(profile.customFields || []), newField]);
+              setFieldsDraft((prev) => [...prev, newField]);
             }}
             className="text-[11px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 px-2.5 py-1 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
           >
@@ -193,40 +192,39 @@ export function CustomFieldsSection({
           </button>
         ) : (
           <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} font-semibold`}>
-            {fields.length} {fields.length === 1 ? 'Field' : 'Fields'}
+            {visibleFields.length} {visibleFields.length === 1 ? 'Field' : 'Fields'}
           </span>
         )}
       </div>
 
       {isEditing ? (
-        <div className="space-y-3 pt-1">
-          {fields.map((field) => (
+        <div className="space-y-3 pt-1" onClick={(e) => e.stopPropagation()}>
+          {fieldsDraft.map((field) => (
             <div
               key={field.id}
-              className={`p-3 rounded-xl border border-black/10 dark:border-white/10 ${theme.subCardBg} space-y-2`}
+              className={`p-3.5 rounded-xl border border-black/10 dark:border-white/10 ${theme.subCardBg} space-y-2.5`}
             >
               <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={field.label || (field as any).title || ''}
-                  onChange={(e) => {
-                    const next = (profile.customFields || []).map((f) =>
-                      f.id === field.id ? { ...f, label: e.target.value } : f
-                    );
-                    onUpdateField?.('customFields', next);
-                  }}
-                  placeholder="Field Label (e.g. Portfolio, Discord, Office Hours)"
-                  className={`flex-1 text-xs font-bold p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-purple-400`}
-                />
+                <div className="flex-1">
+                  <FormInput
+                    value={field.label || (field as any).title || ''}
+                    onChange={(val) => {
+                      setFieldsDraft((prev) =>
+                        prev.map((f) => (f.id === field.id ? { ...f, label: val } : f))
+                      );
+                    }}
+                    placeholder="Field Label (e.g. Portfolio, Discord, Office Hours)"
+                  />
+                </div>
                 <select
                   value={field.type || 'text'}
                   onChange={(e) => {
-                    const next = (profile.customFields || []).map((f) =>
-                      f.id === field.id ? { ...f, type: e.target.value as any } : f
+                    const nextType = e.target.value as any;
+                    setFieldsDraft((prev) =>
+                      prev.map((f) => (f.id === field.id ? { ...f, type: nextType } : f))
                     );
-                    onUpdateField?.('customFields', next);
                   }}
-                  className={`text-xs p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} bg-white dark:bg-zinc-900 focus:outline-hidden focus:ring-1 focus:ring-purple-400 cursor-pointer`}
+                  className={`h-10 text-xs px-2.5 rounded-xl border border-slate-300 dark:border-zinc-700 ${theme.textPrimary} bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-purple-400 cursor-pointer`}
                 >
                   <option value="text">Text</option>
                   <option value="link">Link</option>
@@ -239,28 +237,26 @@ export function CustomFieldsSection({
                 <button
                   type="button"
                   onClick={() => {
-                    const next = (profile.customFields || []).filter((f) => f.id !== field.id);
-                    onUpdateField?.('customFields', next);
+                    setFieldsDraft((prev) => prev.filter((f) => f.id !== field.id));
                   }}
-                  className="p-1.5 text-rose-500 hover:text-rose-600 rounded-lg hover:bg-rose-500/10 transition-colors"
+                  className="p-2 text-rose-500 hover:text-rose-600 rounded-lg hover:bg-rose-500/10 transition-colors"
                   title="Remove field"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
 
-              <input
-                type="text"
-                value={field.value || (field as any).content || ''}
-                onChange={(e) => {
-                  const next = (profile.customFields || []).map((f) =>
-                    f.id === field.id ? { ...f, value: e.target.value } : f
-                  );
-                  onUpdateField?.('customFields', next);
-                }}
-                placeholder="Field Value (e.g. https://... or text)"
-                className={`w-full text-xs p-2 rounded-lg border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-purple-400`}
-              />
+              <div>
+                <FormInput
+                  value={field.value || (field as any).content || ''}
+                  onChange={(val) => {
+                    setFieldsDraft((prev) =>
+                      prev.map((f) => (f.id === field.id ? { ...f, value: val } : f))
+                    );
+                  }}
+                  placeholder="Field Value (e.g. https://... or custom details)"
+                />
+              </div>
             </div>
           ))}
 
@@ -274,17 +270,29 @@ export function CustomFieldsSection({
                 type: 'text',
                 visible: true,
               };
-              onUpdateField?.('customFields', [...(profile.customFields || []), newField]);
+              setFieldsDraft((prev) => [...prev, newField]);
             }}
             className="w-full py-2 border border-dashed border-purple-500/30 rounded-xl text-xs font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-500/5 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Another Custom Field</span>
           </button>
+
+          <SectionSaveBar
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isSaving={saveStatus === 'saving'}
+            isSaved={saveStatus === 'saved'}
+            isDirty={isDirty}
+            errorMessage={errorMessage}
+            saveLabel="Save Custom Fields"
+            cancelLabel="Cancel"
+            className="pt-1"
+          />
         </div>
-      ) : (
+      ) : visibleFields.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-          {fields.map((field) => {
+          {visibleFields.map((field) => {
             const val = field.value || (field as any).content || '';
             const isMultiLine = field.type === 'markdown' || val.includes('\n') || val.length > 55;
             const title = field.label || (field as any).title || 'Custom Field';
@@ -312,7 +320,7 @@ export function CustomFieldsSection({
                       {title}
                     </span>
                     {canEdit && (
-                      <span className="opacity-0 group-hover/cfitem:opacity-100 transition-opacity text-[9px] font-mono text-purple-600 dark:text-purple-400 font-bold flex items-center gap-0.5">
+                      <span className="opacity-0 group/cfitem:opacity-100 transition-opacity text-[9px] font-mono text-purple-600 dark:text-purple-400 font-bold flex items-center gap-0.5">
                         <Pencil className="w-2.5 h-2.5" />
                         Edit
                       </span>
@@ -326,6 +334,10 @@ export function CustomFieldsSection({
             );
           })}
         </div>
+      ) : (
+        <p className={`text-xs ${theme.textSecondary} italic py-1`}>
+          No custom fields added yet.
+        </p>
       )}
     </div>
   );

@@ -4,6 +4,9 @@ import React from 'react';
 import { Mail, Phone, MessageSquare, MapPin, Globe, Pencil, Building2, Calendar } from 'lucide-react';
 import { ProfileData } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, SectionSaveBar } from './ui/formControls';
+import { SearchableCombobox } from './forms/SearchableCombobox';
+import { COUNTRIES } from '@/data/countriesDataset';
 
 interface ProfileContactSectionProps {
   profile: ProfileData;
@@ -11,6 +14,7 @@ interface ProfileContactSectionProps {
   canEdit?: boolean;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   theme?: ThemeConfig;
 }
 
@@ -20,9 +24,93 @@ export function ProfileContactSection({
   canEdit = false,
   onSelectSection,
   onUpdateField,
+  onSavePartial,
   theme = getThemeConfig(profile.theme || 'editorial')
 }: ProfileContactSectionProps) {
   const sharing = profile.sharingSettings || {};
+
+  const [contactDraft, setContactDraft] = React.useState({
+    email: profile.email || '',
+    phone: profile.phone || '',
+    whatsapp: profile.whatsapp || '',
+    location: profile.location || '',
+    country: profile.country || '',
+    officeAddress: profile.officeAddress || '',
+    website: profile.website || '',
+    bookingUrl: profile.bookingUrl || '',
+  });
+  const [snapshot, setSnapshot] = React.useState(contactDraft);
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const nextDraft = {
+      email: profile.email || '',
+      phone: profile.phone || '',
+      whatsapp: profile.whatsapp || '',
+      location: profile.location || '',
+      country: profile.country || '',
+      officeAddress: profile.officeAddress || '',
+      website: profile.website || '',
+      bookingUrl: profile.bookingUrl || '',
+    };
+    setContactDraft(nextDraft);
+    setSnapshot(nextDraft);
+  }, [
+    profile.id,
+    profile.email,
+    profile.phone,
+    profile.whatsapp,
+    profile.location,
+    profile.country,
+    profile.officeAddress,
+    profile.website,
+    profile.bookingUrl,
+  ]);
+
+  const isDirty = (
+    contactDraft.email !== snapshot.email ||
+    contactDraft.phone !== snapshot.phone ||
+    contactDraft.whatsapp !== snapshot.whatsapp ||
+    contactDraft.location !== snapshot.location ||
+    contactDraft.country !== snapshot.country ||
+    contactDraft.officeAddress !== snapshot.officeAddress ||
+    contactDraft.website !== snapshot.website ||
+    contactDraft.bookingUrl !== snapshot.bookingUrl
+  );
+
+  const handleSaveContact = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        email: contactDraft.email,
+        phone: contactDraft.phone,
+        whatsapp: contactDraft.whatsapp,
+        location: contactDraft.location,
+        country: contactDraft.country,
+        officeAddress: contactDraft.officeAddress,
+        website: contactDraft.website,
+        bookingUrl: contactDraft.bookingUrl,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      Object.entries(payload).forEach(([k, v]) => onUpdateField?.(k as any, v));
+      setSnapshot(contactDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save contact information');
+    }
+  };
+
+  const handleCancelContact = () => {
+    setContactDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
 
   if (!isEditing && sharing.contactInfo === false) {
     return null;
@@ -33,6 +121,7 @@ export function ProfileContactSection({
     (profile.phone && sharing.phone !== false) ||
     (profile.whatsapp && sharing.phone !== false) ||
     profile.location ||
+    profile.country ||
     profile.officeAddress ||
     profile.website ||
     profile.bookingUrl
@@ -77,97 +166,98 @@ export function ProfileContactSection({
       </div>
 
       {isEditing ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1" onClick={(e) => e.stopPropagation()}>
-          <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={profile.email || ''}
-              onChange={(e) => onUpdateField?.('email', e.target.value)}
-              placeholder="email@example.com"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
-            />
+        <div className="space-y-3 pt-1" onClick={(e) => e.stopPropagation()}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <FormLabel>Email Address</FormLabel>
+              <FormInput
+                type="email"
+                value={contactDraft.email}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, email: val }))}
+                placeholder="email@example.com"
+              />
+            </div>
+
+            <div>
+              <FormLabel>Phone Number</FormLabel>
+              <FormInput
+                type="tel"
+                value={contactDraft.phone}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, phone: val }))}
+                placeholder="+92 300 1234567"
+              />
+            </div>
+
+            <div>
+              <FormLabel>WhatsApp Number</FormLabel>
+              <FormInput
+                type="tel"
+                value={contactDraft.whatsapp}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, whatsapp: val }))}
+                placeholder="+92 312 5175041"
+              />
+            </div>
+
+            <div>
+              <FormLabel>Location / City</FormLabel>
+              <FormInput
+                value={contactDraft.location}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, location: val }))}
+                placeholder="e.g. Islamabad, Pakistan"
+              />
+            </div>
+
+            <div>
+              <FormLabel>Country</FormLabel>
+              <SearchableCombobox
+                options={COUNTRIES}
+                value={contactDraft.country}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, country: val as string }))}
+                placeholder="Select Country..."
+              />
+            </div>
+
+            <div>
+              <FormLabel>Office Address</FormLabel>
+              <FormInput
+                value={contactDraft.officeAddress}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, officeAddress: val }))}
+                placeholder="Suite 400, Tech Park, City"
+              />
+            </div>
+
+            <div>
+              <FormLabel>Website URL</FormLabel>
+              <FormInput
+                type="url"
+                value={contactDraft.website}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, website: val }))}
+                placeholder="https://www.avtive.app"
+              />
+            </div>
+
+            <div>
+              <FormLabel>Booking URL</FormLabel>
+              <FormInput
+                type="url"
+                value={contactDraft.bookingUrl}
+                onChange={(val) => setContactDraft((prev) => ({ ...prev, bookingUrl: val }))}
+                placeholder="https://calendly.com/your-calendar"
+              />
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              value={profile.phone || ''}
-              onChange={(e) => onUpdateField?.('phone', e.target.value)}
-              placeholder="+92 300 1234567"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              WhatsApp Number
-            </label>
-            <input
-              type="tel"
-              value={profile.whatsapp || ''}
-              onChange={(e) => onUpdateField?.('whatsapp', e.target.value)}
-              placeholder="+92 312 5175041"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Location / City
-            </label>
-            <input
-              type="text"
-              value={profile.location || ''}
-              onChange={(e) => onUpdateField?.('location', e.target.value)}
-              placeholder="Islamabad, Pakistan"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Office Address
-            </label>
-            <input
-              type="text"
-              value={profile.officeAddress || ''}
-              onChange={(e) => onUpdateField?.('officeAddress', e.target.value)}
-              placeholder="Suite 400, Tech Park, City"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Website URL
-            </label>
-            <input
-              type="url"
-              value={profile.website || ''}
-              onChange={(e) => onUpdateField?.('website', e.target.value)}
-              placeholder="https://www.avtive.app"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className={`block text-[10px] font-bold ${theme.textMuted} uppercase font-mono`}>
-              Booking URL
-            </label>
-            <input
-              type="url"
-              value={profile.bookingUrl || ''}
-              onChange={(e) => onUpdateField?.('bookingUrl', e.target.value)}
-              placeholder="https://calendly.com/your-calendar"
-              className={`w-full text-xs p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg} ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
-            />
-          </div>
+          <SectionSaveBar
+            onSave={handleSaveContact}
+            onCancel={handleCancelContact}
+            isSaving={saveStatus === 'saving'}
+            isSaved={saveStatus === 'saved'}
+            isDirty={isDirty}
+            errorMessage={errorMessage}
+            saveLabel="Save Contact Info"
+            cancelLabel="Cancel"
+            className="pt-1"
+          />
         </div>
       ) : hasContactInfo ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
@@ -230,7 +320,7 @@ export function ProfileContactSection({
             </a>
           )}
 
-          {profile.location && (
+          {(profile.location || profile.country) && (
             <div className={`flex items-center gap-2.5 p-2.5 rounded-xl border ${theme.cardBorder} ${theme.subCardBg}`}>
               <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
                 <MapPin className="w-3.5 h-3.5 text-amber-500" />
@@ -240,7 +330,7 @@ export function ProfileContactSection({
                   Location
                 </span>
                 <span className={`block text-xs font-semibold ${theme.textPrimary} truncate`}>
-                  {profile.location}
+                  {[profile.location, profile.country].filter(Boolean).join(', ')}
                 </span>
               </div>
             </div>

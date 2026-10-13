@@ -60,6 +60,7 @@ interface AvtiveDigitalCardProps {
   isConnected?: boolean;
   onOpenEdit?: () => void;
   onSaveEdits?: (updatedProfile: ProfileData) => Promise<void>;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onCancelEdit?: () => void;
   onThemePreview?: (theme: ProfileTheme) => void;
   onSaveContact: () => void;
@@ -96,6 +97,7 @@ export function AvtiveDigitalCard({
   onSectionsMouseLeave,
   onOpenEdit,
   onSaveEdits,
+  onSavePartial,
   onCancelEdit,
   onThemePreview,
   onSaveContact,
@@ -144,6 +146,22 @@ export function AvtiveDigitalCard({
       return next;
     });
     if (errorMessage) setErrorMessage(null);
+  };
+
+  const handleSavePartial = async (partialData: Partial<ProfileData>): Promise<ProfileData> => {
+    setDraftProfile((prev) => {
+      const next = { ...prev, ...partialData };
+      if (onDraftChange) onDraftChange(next);
+      return next;
+    });
+    if (onSavePartial) {
+      return await onSavePartial(partialData);
+    }
+    const next = { ...draftProfile, ...partialData };
+    if (onSaveEdits) {
+      await onSaveEdits(next);
+    }
+    return next;
   };
 
   const handleThemeChange = (selectedTheme: ProfileTheme) => {
@@ -211,6 +229,7 @@ export function AvtiveDigitalCard({
               isEditing={isEditing}
               isConnected={isConnected}
               onUpdateField={handleFieldUpdate}
+              onSavePartial={handleSavePartial}
               onOpenEdit={onOpenEdit}
               onOpenShare={onOpenShare}
               onOpenConnect={onOpenConnect}
@@ -335,6 +354,7 @@ export function AvtiveDigitalCard({
                       canEdit={canEdit}
                       isEditing={isEditing}
                       onUpdateField={handleFieldUpdate}
+                      onSavePartial={handleSavePartial}
                       onSelectSection={onSelectSection}
                     />
                   );
@@ -349,6 +369,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -363,6 +384,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     theme={theme}
                   />
                 );
@@ -377,6 +399,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     theme={theme}
                   />
                 );
@@ -391,6 +414,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     theme={theme}
                   />
                 );
@@ -406,6 +430,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     onSelectSection={onSelectSection}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onInquireService={onInquireService}
                     theme={theme}
                   />
@@ -421,6 +446,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -435,6 +461,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -450,6 +477,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -464,6 +492,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -478,6 +507,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -492,6 +522,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );
@@ -506,6 +537,7 @@ export function AvtiveDigitalCard({
                     canEdit={canEdit}
                     isEditing={isEditing}
                     onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
                     onSelectSection={onSelectSection}
                   />
                 );

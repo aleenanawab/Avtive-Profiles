@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react-hooks/refs */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -69,6 +70,143 @@ export interface DesktopProfileContentProps {
   instanceId?: string;
 }
 
+interface SectionCardProps {
+  secKey: string;
+  title: string;
+  icon: React.ElementType;
+  description: string;
+  badgeText?: string | null;
+  hasVisibilityToggle?: boolean;
+  isOpen: boolean;
+  isVisible: boolean;
+  instanceId: string;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onToggle: () => void;
+  onToggleVisibility?: () => void;
+  children?: React.ReactNode;
+}
+
+function SectionCard({
+  secKey,
+  title,
+  icon: IconComponent,
+  description,
+  badgeText,
+  hasVisibilityToggle = true,
+  isOpen,
+  isVisible,
+  instanceId,
+  onMouseEnter,
+  onMouseLeave,
+  onToggle,
+  onToggleVisibility,
+  children
+}: SectionCardProps) {
+  return (
+    <div
+      id={`section-card-${instanceId}-${secKey}`}
+      data-section={secKey}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className={`w-full min-w-0 rounded-2xl border transition-all duration-200 overflow-hidden box-border ${
+        isOpen
+          ? 'border-cyan-500/40 dark:border-cyan-500/30 bg-white dark:bg-[#0C1222] shadow-sm'
+          : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] hover:border-slate-300 dark:hover:border-white/20'
+      }`}
+    >
+      {/* Section Row Header */}
+      <div
+        onClick={onToggle}
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${title}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+        className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer select-none group"
+      >
+        {/* Left: Icon + Title + Description/Badge */}
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+            isOpen
+              ? 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400'
+              : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 group-hover:bg-cyan-500/10 group-hover:text-cyan-600 dark:group-hover:text-cyan-400'
+          }`}>
+            <IconComponent className="w-4 h-4" />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                {title}
+              </h2>
+              {badgeText && (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 truncate">
+                  {badgeText}
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+              {description}
+            </p>
+          </div>
+        </div>
+
+        {/* Right: Visibility Toggle + THE YELLOW ARROW DROPDOWN TRIGGER */}
+        <div className="flex items-center gap-2 shrink-0">
+          {hasVisibilityToggle && onToggleVisibility && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleVisibility();
+              }}
+              title={isVisible ? "Visible on profile card (Click to hide)" : "Hidden from profile card (Click to show)"}
+              className={`p-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                isVisible
+                  ? 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white'
+                  : 'text-amber-500 hover:text-amber-400 bg-amber-500/10'
+              }`}
+            >
+              {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4 text-amber-500" />}
+            </button>
+          )}
+
+          {/* YELLOW ARROW EXPAND/OPEN CONTROL */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+            aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
+            title={isOpen ? "Collapse section" : "Expand section details (Click or hover)"}
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-bold transition-all shadow-xs cursor-pointer select-none active:scale-95 ${
+              isOpen
+                ? 'bg-amber-400 text-slate-950 dark:bg-amber-400 dark:text-slate-950 ring-2 ring-amber-400/40'
+                : 'bg-amber-400 hover:bg-amber-300 text-slate-950 dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-slate-950'
+            }`}
+          >
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Dropdown Section Details */}
+      {isOpen && (
+        <div className="p-4 sm:p-5 pt-1 border-t border-slate-100 dark:border-white/5 space-y-4">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function DesktopProfileContent({ 
   hideRightPreview = false,
   instanceId = 'desktop'
@@ -126,6 +264,14 @@ export function DesktopProfileContent({
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [isSectionsDropdownOpen]);
+
+  useEffect(() => {
+    const handleTouch = () => {
+      isTouchRef.current = true;
+    };
+    window.addEventListener('touchstart', handleTouch, { passive: true });
+    return () => window.removeEventListener('touchstart', handleTouch);
+  }, []);
 
   const scrollSectionIntoView = (secKey: string) => {
     if (!containerRef.current) return;
@@ -578,113 +724,25 @@ export function DesktopProfileContent({
     hasVisibilityToggle = true,
     children?: React.ReactNode
   ) => {
-    const IconComponent = icon;
-    const isOpen = isSectionExpanded(secKey);
-    const isVisible = profile.sectionVisibility?.[secKey] !== false;
-
     return (
-      <div
+      <SectionCard
         key={secKey}
-        id={`section-card-${instanceId}-${secKey}`}
-        data-section={secKey}
+        secKey={secKey}
+        title={title}
+        icon={icon}
+        description={description}
+        badgeText={badgeText}
+        hasVisibilityToggle={hasVisibilityToggle}
+        isOpen={isSectionExpanded(secKey)}
+        isVisible={profile.sectionVisibility?.[secKey] !== false}
+        instanceId={instanceId}
         onMouseEnter={() => handleSectionMouseEnter(secKey)}
         onMouseLeave={() => handleSectionMouseLeave(secKey)}
-        onTouchStart={() => { isTouchRef.current = true; }}
-        className={`w-full min-w-0 rounded-2xl border transition-all duration-200 overflow-hidden box-border ${
-          isOpen
-            ? 'border-cyan-500/40 dark:border-cyan-500/30 bg-white dark:bg-[#0C1222] shadow-sm'
-            : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] hover:border-slate-300 dark:hover:border-white/20'
-        }`}
+        onToggle={() => handleSectionToggle(secKey)}
+        onToggleVisibility={() => toggleSectionVisibility(secKey)}
       >
-        {/* Section Row Header */}
-        <div
-          onClick={() => handleSectionToggle(secKey)}
-          role="button"
-          tabIndex={0}
-          aria-expanded={isOpen}
-          aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${title}`}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleSectionToggle(secKey);
-            }
-          }}
-          className="p-3.5 sm:p-4 flex items-center justify-between gap-3 cursor-pointer select-none group"
-        >
-          {/* Left: Icon + Title + Description/Badge */}
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-              isOpen
-                ? 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-400'
-                : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 group-hover:bg-cyan-500/10 group-hover:text-cyan-600 dark:group-hover:text-cyan-400'
-            }`}>
-              <IconComponent className="w-4 h-4" />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                  {title}
-                </h2>
-                {badgeText && (
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 truncate">
-                    {badgeText}
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                {description}
-              </p>
-            </div>
-          </div>
-
-          {/* Right: Visibility Toggle + THE YELLOW ARROW DROPDOWN TRIGGER */}
-          <div className="flex items-center gap-2 shrink-0">
-            {hasVisibilityToggle && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSectionVisibility(secKey);
-                }}
-                title={isVisible ? "Visible on profile card (Click to hide)" : "Hidden from profile card (Click to show)"}
-                className={`p-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  isVisible
-                    ? 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white'
-                    : 'text-amber-500 hover:text-amber-400 bg-amber-500/10'
-                }`}
-              >
-                {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4 text-amber-500" />}
-              </button>
-            )}
-
-            {/* YELLOW ARROW EXPAND/OPEN CONTROL (As requested in Requirement 9) */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSectionToggle(secKey);
-              }}
-              aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
-              title={isOpen ? "Collapse section" : "Expand section details (Click or hover)"}
-              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-bold transition-all shadow-xs cursor-pointer select-none active:scale-95 ${
-                isOpen
-                  ? 'bg-amber-400 text-slate-950 dark:bg-amber-400 dark:text-slate-950 ring-2 ring-amber-400/40'
-                  : 'bg-amber-400 hover:bg-amber-300 text-slate-950 dark:bg-amber-400 dark:hover:bg-amber-300 dark:text-slate-950'
-              }`}
-            >
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-        </div>
-
-        {/* Dropdown Section Details */}
-        {isOpen && (
-          <div className="p-4 sm:p-5 pt-1 border-t border-slate-100 dark:border-white/5 space-y-4">
-            {children}
-          </div>
-        )}
-      </div>
+        {children}
+      </SectionCard>
     );
   };
 

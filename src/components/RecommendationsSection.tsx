@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Quote, ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
 import { ProfileData, RecommendationItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, FormTextarea, SectionSaveBar } from './ui/formControls';
 
 interface RecommendationsSectionProps {
   profile: ProfileData;
@@ -11,6 +12,7 @@ interface RecommendationsSectionProps {
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
@@ -20,11 +22,50 @@ export function RecommendationsSection({
   canEdit = false,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection
 }: RecommendationsSectionProps) {
   const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
-  const recommendations: RecommendationItem[] = profile.recommendations || [];
-  const hasRecommendations = recommendations.length > 0;
+  const [recommendationsDraft, setRecommendationsDraft] = useState<RecommendationItem[]>(profile.recommendations || []);
+  const [snapshot, setSnapshot] = useState<RecommendationItem[]>(profile.recommendations || []);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = profile.recommendations || [];
+    setRecommendationsDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.recommendations]);
+
+  const isDirty = JSON.stringify(recommendationsDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        recommendations: recommendationsDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('recommendations', recommendationsDraft);
+      setSnapshot(recommendationsDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save recommendations');
+    }
+  };
+
+  const handleCancel = () => {
+    setRecommendationsDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const hasRecommendations = recommendationsDraft.length > 0;
 
   if (!hasRecommendations && !canEdit && !isEditing) {
     return null;
@@ -42,18 +83,15 @@ export function RecommendationsSection({
       company: 'Organization',
       summary: 'Recommendation endorsement or testimonial statement...'
     };
-    const updated = [newRec, ...recommendations];
-    onUpdateField?.('recommendations', updated);
+    setRecommendationsDraft((prev) => [newRec, ...prev]);
   };
 
   const handleUpdateItem = (id: string, updates: Partial<RecommendationItem>) => {
-    const updated = recommendations.map((r) => (r.id === id ? { ...r, ...updates } : r));
-    onUpdateField?.('recommendations', updated);
+    setRecommendationsDraft((prev) => prev.map((r) => (r.id === id ? { ...r, ...updates } : r)));
   };
 
   const handleRemoveItem = (id: string) => {
-    const updated = recommendations.filter((r) => r.id !== id);
-    onUpdateField?.('recommendations', updated);
+    setRecommendationsDraft((prev) => prev.filter((r) => r.id !== id));
   };
 
   return (
@@ -87,60 +125,49 @@ export function RecommendationsSection({
 
       {hasRecommendations ? (
         <div className="space-y-3">
-          {recommendations.map((rec) => {
+          {recommendationsDraft.map((rec) => {
             const isExpanded = !!expandedIds[rec.id];
 
             return (
               <div
                 key={rec.id}
                 className={`p-4 sm:p-5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} space-y-3 shadow-2xs transition-all`}
+                onClick={(e) => e.stopPropagation()}
               >
                 {isEditing ? (
                   /* Editable Recommendation Card */
                   <div className="space-y-2.5">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                         <div>
-                          <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                            Author / Recommender
-                          </label>
-                          <input
-                            type="text"
+                          <FormLabel required>Author / Recommender</FormLabel>
+                          <FormInput
                             value={rec.author || (rec as any).authorName || ''}
-                            onChange={(e) => handleUpdateItem(rec.id, { author: e.target.value })}
+                            onChange={(val) => handleUpdateItem(rec.id, { author: val })}
                             placeholder="e.g. Sarah Jenkins"
-                            className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary}`}
                           />
                         </div>
                         <div>
-                          <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                            Designation / Role
-                          </label>
-                          <input
-                            type="text"
+                          <FormLabel>Designation / Role</FormLabel>
+                          <FormInput
                             value={rec.designation || ''}
-                            onChange={(e) => handleUpdateItem(rec.id, { designation: e.target.value })}
+                            onChange={(val) => handleUpdateItem(rec.id, { designation: val })}
                             placeholder="e.g. VP of Product"
-                            className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
                           />
                         </div>
                         <div>
-                          <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                            Company
-                          </label>
-                          <input
-                            type="text"
+                          <FormLabel>Company</FormLabel>
+                          <FormInput
                             value={rec.company || ''}
-                            onChange={(e) => handleUpdateItem(rec.id, { company: e.target.value })}
+                            onChange={(val) => handleUpdateItem(rec.id, { company: val })}
                             placeholder="e.g. Acme Tech"
-                            className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
                           />
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveItem(rec.id)}
-                        className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0"
+                        className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0 mt-6"
                         title="Remove recommendation"
                       >
                         <X className="w-4 h-4" />
@@ -148,15 +175,12 @@ export function RecommendationsSection({
                     </div>
 
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Recommendation Statement / Endorsement
-                      </label>
-                      <textarea
+                      <FormLabel required>Endorsement Statement</FormLabel>
+                      <FormTextarea
                         rows={3}
                         value={rec.fullText || rec.summary || ''}
-                        onChange={(e) => handleUpdateItem(rec.id, { summary: e.target.value, fullText: e.target.value })}
+                        onChange={(val) => handleUpdateItem(rec.id, { summary: val, fullText: val })}
                         placeholder="Write the recommendation or endorsement statement..."
-                        className={`w-full text-xs p-2 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary}`}
                       />
                     </div>
                   </div>
@@ -213,6 +237,20 @@ export function RecommendationsSection({
             No recommendations added yet.
           </p>
         </div>
+      )}
+
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Recommendations"
+          cancelLabel="Cancel"
+          className="pt-1"
+        />
       )}
     </section>
   );

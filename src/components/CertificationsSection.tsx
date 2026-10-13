@@ -4,6 +4,7 @@ import React from 'react';
 import { Award, Plus, X, ExternalLink } from 'lucide-react';
 import { ProfileData, CertificationItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, SectionSaveBar } from './ui/formControls';
 
 interface CertificationsSectionProps {
   profile: ProfileData;
@@ -11,6 +12,7 @@ interface CertificationsSectionProps {
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
 }
 
@@ -20,10 +22,49 @@ export function CertificationsSection({
   canEdit = false,
   isEditing = false,
   onUpdateField,
+  onSavePartial,
   onSelectSection
 }: CertificationsSectionProps) {
-  const certs: CertificationItem[] = profile.certifications || [];
-  const hasCerts = certs.length > 0;
+  const [certsDraft, setCertsDraft] = React.useState<CertificationItem[]>(profile.certifications || []);
+  const [snapshot, setSnapshot] = React.useState<CertificationItem[]>(profile.certifications || []);
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const next = profile.certifications || [];
+    setCertsDraft(next);
+    setSnapshot(next);
+  }, [profile.id, profile.certifications]);
+
+  const isDirty = JSON.stringify(certsDraft) !== JSON.stringify(snapshot);
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        certifications: certsDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('certifications', certsDraft);
+      setSnapshot(certsDraft);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save certifications');
+    }
+  };
+
+  const handleCancel = () => {
+    setCertsDraft(snapshot);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const hasCerts = certsDraft.length > 0;
 
   if (!hasCerts && !canEdit && !isEditing) {
     return null;
@@ -39,18 +80,15 @@ export function CertificationsSection({
       credentialId: '',
       url: ''
     };
-    const updated = [newCert, ...certs];
-    onUpdateField?.('certifications', updated);
+    setCertsDraft((prev) => [newCert, ...prev]);
   };
 
   const handleUpdateItem = (id: string, updates: Partial<CertificationItem>) => {
-    const updated = certs.map((c) => (c.id === id ? { ...c, ...updates } : c));
-    onUpdateField?.('certifications', updated);
+    setCertsDraft((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
   };
 
   const handleRemoveItem = (id: string) => {
-    const updated = certs.filter((c) => c.id !== id);
-    onUpdateField?.('certifications', updated);
+    setCertsDraft((prev) => prev.filter((c) => c.id !== id));
   };
 
   return (
@@ -84,98 +122,76 @@ export function CertificationsSection({
 
       {hasCerts ? (
         <div className="space-y-3">
-          {certs.map((cert) => (
+          {certsDraft.map((cert) => (
             <div
               key={cert.id}
               className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} shadow-2xs relative`}
+              onClick={(e) => e.stopPropagation()}
             >
               {isEditing ? (
                 /* Editable Certification Card */
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          Certification Title / Name
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel required>Certification Title / Name</FormLabel>
+                        <FormInput
                           value={cert.name || (cert as any).title || ''}
-                          onChange={(e) => handleUpdateItem(cert.id, { name: e.target.value })}
+                          onChange={(val) => handleUpdateItem(cert.id, { name: val })}
                           placeholder="e.g. AWS Certified Solutions Architect"
-                          className={`w-full text-xs font-semibold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                       <div>
-                        <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                          Issuer / Organization
-                        </label>
-                        <input
-                          type="text"
+                        <FormLabel required>Issuer / Organization</FormLabel>
+                        <FormInput
                           value={cert.issuer || ''}
-                          onChange={(e) => handleUpdateItem(cert.id, { issuer: e.target.value })}
+                          onChange={(val) => handleUpdateItem(cert.id, { issuer: val })}
                           placeholder="e.g. Amazon Web Services"
-                          className={`w-full text-xs font-bold p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                         />
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(cert.id)}
-                      className="text-rose-500 hover:text-rose-700 p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0"
+                      className="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer shrink-0 mt-6"
                       title="Remove certification"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Issued Date
-                      </label>
-                      <input
-                        type="text"
+                      <FormLabel>Issued Date</FormLabel>
+                      <FormInput
                         value={cert.issued || ''}
-                        onChange={(e) => handleUpdateItem(cert.id, { issued: e.target.value })}
+                        onChange={(val) => handleUpdateItem(cert.id, { issued: val })}
                         placeholder="e.g. 2023"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Expiration (Optional)
-                      </label>
-                      <input
-                        type="text"
+                      <FormLabel>Expiration (Optional)</FormLabel>
+                      <FormInput
                         value={cert.expires || ''}
-                        onChange={(e) => handleUpdateItem(cert.id, { expires: e.target.value })}
+                        onChange={(val) => handleUpdateItem(cert.id, { expires: val })}
                         placeholder="e.g. 2026 / Never"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Credential ID (Optional)
-                      </label>
-                      <input
-                        type="text"
+                      <FormLabel>Credential ID</FormLabel>
+                      <FormInput
                         value={cert.credentialId || ''}
-                        onChange={(e) => handleUpdateItem(cert.id, { credentialId: e.target.value })}
+                        onChange={(val) => handleUpdateItem(cert.id, { credentialId: val })}
                         placeholder="e.g. AWS-12345"
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                     <div>
-                      <label className={`block text-[10px] font-bold uppercase font-mono ${theme.textMuted}`}>
-                        Credential URL (Optional)
-                      </label>
-                      <input
+                      <FormLabel>Credential URL</FormLabel>
+                      <FormInput
                         type="url"
                         value={cert.url || ''}
-                        onChange={(e) => handleUpdateItem(cert.id, { url: e.target.value })}
+                        onChange={(val) => handleUpdateItem(cert.id, { url: val })}
                         placeholder="https://..."
-                        className={`w-full text-xs p-1.5 rounded-lg border border-slate-300 dark:border-zinc-700 bg-white/70 dark:bg-zinc-800/70 ${theme.textSecondary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-1 focus:ring-slate-400`}
                       />
                     </div>
                   </div>
@@ -256,6 +272,20 @@ export function CertificationsSection({
             </p>
           </div>
         )
+      )}
+
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Certifications"
+          cancelLabel="Cancel"
+          className="pt-1"
+        />
       )}
     </section>
   );

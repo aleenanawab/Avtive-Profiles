@@ -1,30 +1,94 @@
+'use client';
+
 import React from 'react';
 import { Plus, X, Pencil } from 'lucide-react';
 import { ProfileData, ServiceItem } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
+import { FormLabel, FormInput, SectionSaveBar } from './ui/formControls';
+import { SearchableCombobox } from './forms/SearchableCombobox';
+import { POPULAR_SKILLS } from '@/data/skillsDataset';
 
 interface SkillsServicesSectionProps {
   profile: ProfileData;
   canEdit?: boolean;
   isEditing?: boolean;
   onUpdateField?: (field: keyof ProfileData, value: any) => void;
+  onSavePartial?: (partialData: Partial<ProfileData>) => Promise<ProfileData>;
   onInquireService?: (service: ServiceItem) => void;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
   theme?: ThemeConfig;
 }
+
+const normalizeSkills = (rawSkills?: any[]): string[] => {
+  if (!Array.isArray(rawSkills)) return [];
+  return rawSkills
+    .map((s) => (typeof s === 'string' ? s : s?.name))
+    .filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+};
 
 export function SkillsServicesSection({ 
   profile, 
   canEdit = false, 
   isEditing = false, 
   onUpdateField,
+  onSavePartial,
   onInquireService,
   onSelectSection,
   theme = getThemeConfig(profile.theme || 'elegant')
 }: SkillsServicesSectionProps) {
-  const [newSkillInput, setNewSkillInput] = React.useState('');
-  const hasServices = profile.services && profile.services.length > 0;
-  const hasSkills = profile.skills && profile.skills.length > 0;
+  const [servicesDraft, setServicesDraft] = React.useState<ServiceItem[]>(profile.services || []);
+  const [skillsDraft, setSkillsDraft] = React.useState<string[]>(normalizeSkills(profile.skills));
+  const [snapshot, setSnapshot] = React.useState({
+    services: profile.services || [],
+    skills: normalizeSkills(profile.skills)
+  });
+  const [saveStatus, setSaveStatus] = React.useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const nextServices = profile.services || [];
+    const nextSkills = normalizeSkills(profile.skills);
+    setServicesDraft(nextServices);
+    setSkillsDraft(nextSkills);
+    setSnapshot({ services: nextServices, skills: nextSkills });
+  }, [profile.id, profile.services, profile.skills]);
+
+  const isDirty = (
+    JSON.stringify(servicesDraft) !== JSON.stringify(snapshot.services) ||
+    JSON.stringify(skillsDraft) !== JSON.stringify(snapshot.skills)
+  );
+
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    setErrorMessage(undefined);
+    try {
+      const payload: Partial<ProfileData> = {
+        services: servicesDraft,
+        skills: skillsDraft,
+      };
+      if (onSavePartial) {
+        await onSavePartial(payload);
+      }
+      onUpdateField?.('services', servicesDraft);
+      onUpdateField?.('skills', skillsDraft);
+      setSnapshot({ services: servicesDraft, skills: skillsDraft });
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
+    } catch (err: any) {
+      setSaveStatus('error');
+      setErrorMessage(err?.message || 'Failed to save skills and services');
+    }
+  };
+
+  const handleCancel = () => {
+    setServicesDraft(snapshot.services);
+    setSkillsDraft(snapshot.skills);
+    setSaveStatus('idle');
+    setErrorMessage(undefined);
+  };
+
+  const hasServices = servicesDraft.length > 0;
+  const hasSkills = skillsDraft.length > 0;
 
   if (!hasServices && !hasSkills && !canEdit && !isEditing) {
     return null;
@@ -37,34 +101,27 @@ export function SkillsServicesSection({
       title: 'New Service',
       badge: 'Available'
     };
-    const updated = [...(profile.services || []), newService];
-    onUpdateField?.('services', updated);
+    setServicesDraft((prev) => [...prev, newService]);
   };
 
   const handleRemoveService = (id: string) => {
-    const updated = (profile.services || []).filter((s) => s.id !== id);
-    onUpdateField?.('services', updated);
+    setServicesDraft((prev) => prev.filter((s) => s.id !== id));
   };
 
   const handleUpdateServiceTitle = (id: string, title: string) => {
-    const updated = (profile.services || []).map((s) => (s.id === id ? { ...s, title } : s));
-    onUpdateField?.('services', updated);
+    setServicesDraft((prev) => prev.map((s) => (s.id === id ? { ...s, title } : s)));
   };
 
-  const handleAddSkill = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    const trimmed = newSkillInput.trim();
+  const handleAddSkillFromCombobox = (selectedSkill: string | string[]) => {
+    if (!selectedSkill || typeof selectedSkill !== 'string') return;
+    const trimmed = selectedSkill.trim();
     if (!trimmed) return;
-    const currentSkills = profile.skills || [];
-    const updatedSkills = [...currentSkills, trimmed];
-    onUpdateField?.('skills', updatedSkills);
-    setNewSkillInput('');
+    if (skillsDraft.some((s) => s.toLowerCase() === trimmed.toLowerCase())) return;
+    setSkillsDraft((prev) => [...prev, trimmed]);
   };
 
   const handleRemoveSkill = (index: number) => {
-    const currentSkills = profile.skills || [];
-    const updatedSkills = currentSkills.filter((_, idx) => idx !== index);
-    onUpdateField?.('skills', updatedSkills);
+    setSkillsDraft((prev) => prev.filter((_, idx) => idx !== index));
   };
 
   const showServices = hasServices || canEdit || isEditing;
@@ -87,7 +144,7 @@ export function SkillsServicesSection({
                 Services
               </h2>
               {canEdit && !isEditing && (
-                <span className="opacity-0 group-hover/skills:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                <span className="opacity-0 group/skills:opacity-100 transition-opacity text-[10px] font-mono font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1">
                   <Pencil className="w-2.5 h-2.5" />
                   Edit Skills & Services
                 </span>
@@ -106,7 +163,7 @@ export function SkillsServicesSection({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {profile.services?.map((service) => (
+            {servicesDraft.map((service) => (
               <div
                 key={service.id}
                 className={`p-3 rounded-xl ${theme.cardBg} border ${theme.cardBorder} ${theme.hoverBorder} flex items-center justify-between gap-1 shadow-xs transition-all`}
@@ -118,6 +175,7 @@ export function SkillsServicesSection({
                       value={service.title}
                       onChange={(e) => handleUpdateServiceTitle(service.id, e.target.value)}
                       className={`w-full bg-transparent text-xs font-bold ${theme.textPrimary} focus:outline-none border-b border-dashed border-slate-300 dark:border-white/20`}
+                      placeholder="Service name"
                     />
                     <button
                       type="button"
@@ -149,7 +207,7 @@ export function SkillsServicesSection({
                 </p>
               </div>
             )}
-            {isEditing && (!profile.services || profile.services.length === 0) && (
+            {isEditing && (!servicesDraft || servicesDraft.length === 0) && (
               <button
                 type="button"
                 onClick={handleAddService}
@@ -172,56 +230,40 @@ export function SkillsServicesSection({
             </h2>
           </div>
 
-          {/* Inline Skill Add Input */}
+          {/* Searchable Combobox for 300+ skills + custom skills */}
           {isEditing && (
-            <div className="flex items-center gap-2 max-w-sm" onClick={(e) => e.stopPropagation()}>
-              <input
-                type="text"
-                value={newSkillInput}
-                onChange={(e) => setNewSkillInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddSkill();
-                  }
-                }}
-                placeholder="Type a skill (e.g. Next.js, Design)..."
-                className={`flex-1 text-xs p-2 rounded-xl border border-slate-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-800/80 ${theme.textPrimary} placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500`}
+            <div className="space-y-1.5 max-w-md" onClick={(e) => e.stopPropagation()}>
+              <FormLabel>Add Skills (Search or Type Custom)</FormLabel>
+              <SearchableCombobox
+                options={POPULAR_SKILLS}
+                value=""
+                onChange={handleAddSkillFromCombobox}
+                placeholder="Search 320+ skills (e.g. Next.js, Python, Figma)..."
+                allowCustom
               />
-              <button
-                type="button"
-                onClick={handleAddSkill}
-                className="px-3 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1 cursor-pointer transition-all active:scale-95"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add</span>
-              </button>
             </div>
           )}
 
           {hasSkills ? (
-            <div className="flex flex-wrap gap-1.5">
-              {profile.skills?.map((skill, idx) => {
-                const skillLabel = typeof skill === 'string' ? skill : skill.name;
-                return (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700/80 text-xs font-medium text-slate-800 dark:text-zinc-200 shadow-xs"
-                  >
-                    <span>{skillLabel}</span>
-                    {isEditing && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkill(idx)}
-                        className="text-slate-400 hover:text-rose-500 ml-0.5 p-0.5 cursor-pointer transition-colors"
-                        title="Remove skill"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </span>
-                );
-              })}
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {skillsDraft.map((skillLabel, idx) => (
+                <span
+                  key={`${skillLabel}-${idx}`}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700/80 text-xs font-medium text-slate-800 dark:text-zinc-200 shadow-xs"
+                >
+                  <span>{skillLabel}</span>
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSkill(idx)}
+                      className="text-slate-400 hover:text-rose-500 ml-0.5 p-0.5 cursor-pointer transition-colors"
+                      title="Remove skill"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </span>
+              ))}
             </div>
           ) : (
             <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>
@@ -232,7 +274,21 @@ export function SkillsServicesSection({
           )}
         </div>
       )}
+
+      {/* Unified Save & Cancel Bar for Skills and Services */}
+      {isEditing && (
+        <SectionSaveBar
+          onSave={handleSave}
+          onCancel={handleCancel}
+          isSaving={saveStatus === 'saving'}
+          isSaved={saveStatus === 'saved'}
+          isDirty={isDirty}
+          errorMessage={errorMessage}
+          saveLabel="Save Skills & Services"
+          cancelLabel="Cancel"
+          className="pt-2"
+        />
+      )}
     </section>
   );
 }
-

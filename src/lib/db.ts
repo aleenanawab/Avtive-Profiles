@@ -689,6 +689,7 @@ export async function createProfileForUser(
     designation: data.designation?.trim() || data.professionalTitle?.trim() || profession,
     company: data.company?.trim() || 'Avtive Network',
     location: data.location?.trim() || 'Global',
+    country: data.country?.trim() || '',
     avatar: data.avatar || SUPABASE_DEFAULT_AVATAR,
     coverImage: data.coverImage || SUPABASE_DEFAULT_COVER,
     bio: data.bio?.trim() || data.shortBio?.trim() || 'Welcome to my digital profile on Avtive.',
