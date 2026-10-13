@@ -86,6 +86,9 @@ export default function LoginClient() {
       if (sp.get('reset') === 'success') {
         setSuccessMessage('Password successfully updated! Please sign in with your new password.');
       }
+      if (sp.get('error')) {
+        setErrorMessage(decodeURIComponent(sp.get('error')!));
+      }
 
       // Check temporary registration credentials from new user sign up
       try {

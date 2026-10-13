@@ -140,9 +140,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (!authUser) {
-      console.error('Unable to retrieve user from auth code');
+      console.error('Unable to retrieve user from auth code. Check if NEXT_PUBLIC_SUPABASE_ANON_KEY is configured in .env.local.');
       const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('error', 'Google authentication failed. Please try signing in again.');
+      const detailError = !verifierJson 
+        ? 'OAuth session verifier expired or blocked by browser cookies. Please try again.'
+        : 'Google authentication exchange failed with Supabase. Please ensure NEXT_PUBLIC_SUPABASE_ANON_KEY is set in .env.local.';
+      loginUrl.searchParams.set('error', detailError);
       return NextResponse.redirect(loginUrl);
     }
 
