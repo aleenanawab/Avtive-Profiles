@@ -26,6 +26,7 @@ export interface DualScreenWorkspaceProps {
   badgeText?: string;
   className?: string;
   isSaving?: boolean;
+  showWindowHeader?: boolean;
 }
 
 export function DualScreenWorkspace({
@@ -33,7 +34,8 @@ export function DualScreenWorkspace({
   desktopContent,
   mobileContent,
   desktopToolbarRight,
-  className = ''
+  className = '',
+  showWindowHeader = true
 }: DualScreenWorkspaceProps) {
   const { isDark, toggleDarkMode } = usePortfolioTheme();
 
@@ -66,7 +68,8 @@ export function DualScreenWorkspace({
           className="flex-1 w-full min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
         >
           {/* Desktop Browser Window Header Frame */}
-          <div className="w-full bg-slate-50/90 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
+          {showWindowHeader && (
+            <div className="w-full bg-slate-50/90 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors">
             
             {/* macOS Window Controls */}
             <div className="flex items-center gap-2 shrink-0">
@@ -116,6 +119,7 @@ export function DualScreenWorkspace({
               </button>
             </div>
           </div>
+          )}
 
           {/* Desktop Screen Canvas Workspace */}
           <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col bg-slate-100/70 dark:bg-[#070D1A] transition-colors">

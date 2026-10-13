@@ -398,51 +398,6 @@ function PublicProfileClientInner({
     router.refresh();
   };
 
-  const desktopToolbarRight = (
-    <div className="flex items-center gap-1.5 sm:gap-2">
-      {isEditing && isOwner ? (
-        <>
-          <button
-            type="button"
-            onClick={handleCancelEdit}
-            disabled={isSaving}
-            className="px-2.5 py-1 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 dark:bg-white/10 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95 disabled:opacity-50"
-            title="Cancel and discard unsaved changes"
-          >
-            <X className="w-3.5 h-3.5 text-rose-500" />
-            <span className="hidden sm:inline">Cancel</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleSaveAndExit}
-            disabled={isSaving}
-            className="px-3 py-1 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95 disabled:opacity-50"
-            title="Save changes and view profile"
-          >
-            {isSaving ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Save className="w-3.5 h-3.5" />
-            )}
-            <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
-          </button>
-        </>
-      ) : (
-        isOwner && (
-          <button
-            type="button"
-            onClick={handleOpenEditMode}
-            className="px-2.5 py-1 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1.5 cursor-pointer shadow-xs transition-all active:scale-95"
-            title="Edit Profile"
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Edit Profile</span>
-          </button>
-        )
-      )}
-    </div>
-  );
-
   const desktopView = (
     <div className="w-full flex-1 flex flex-col min-h-0 relative">
       {/* Clean Public & Owner Header */}
@@ -502,44 +457,6 @@ function PublicProfileClientInner({
 
       {/* Main Responsive Profile Container - Identical in both View and Edit Mode */}
       <div className="flex-1 w-full max-w-3xl mx-auto p-3 sm:p-6 lg:p-8 min-w-0">
-        {/* Actions Strip Directly Below Header Toolbar (Dark Mode & Logout) */}
-        <div className="w-full flex items-center justify-end gap-2 mb-2 sm:mb-3 px-1">
-          {/* Dark Mode Button (Yellow Ellipse) */}
-          <button
-            type="button"
-            onClick={handleToggleTheme}
-            aria-label="Toggle Theme"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="px-3 py-1.5 rounded-full text-xs font-bold border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
-          >
-            {isDark ? (
-              <>
-                <Sun className="w-3.5 h-3.5 text-amber-400" />
-                <span>Light</span>
-              </>
-            ) : (
-              <>
-                <Moon className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
-                <span>Dark</span>
-              </>
-            )}
-          </button>
-
-          {/* Logout Button (Yellow Circle to the right of Dark target) */}
-          {currentUser && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              aria-label="Logout"
-              title="Sign Out"
-              className="px-3 py-1.5 rounded-full text-xs font-bold border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Logout</span>
-            </button>
-          )}
-        </div>
-
         <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden relative`}>
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
@@ -579,98 +496,7 @@ function PublicProfileClientInner({
 
   const mobileView = (
     <div className="w-full flex-1 flex flex-col min-h-0 relative">
-      {/* Mobile Profile Header with Sections button */}
-      <HeaderNav
-        currentProfile={{ ...profile, theme: activeTheme }}
-        profileType={profileType}
-        onSelectProfileType={(type) => setProfileType(type)}
-        canEdit={isOwner}
-        isEditing={isEditing}
-        onCancelEdit={handleCancelEdit}
-        onSaveEdits={handleSaveAndExit}
-        isSaving={isSaving}
-        onOpenEdit={handleOpenEditMode}
-        onOpenShare={() => setIsShareModalOpen(true)}
-        isDark={isDark}
-        onToggleTheme={handleToggleTheme}
-        session={currentUser}
-        onLogout={handleLogout}
-        theme={activeThemeConfig}
-        onToggleSections={handleTriggerClick}
-        onSectionsMouseEnter={handleTriggerMouseEnter}
-        onSectionsMouseLeave={handleTriggerMouseLeave}
-      />
-
-      {/* Slide-In Section Drawer on Mobile */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <>
-            <motion.div
-              key="mobile-sidebar-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              onClick={handleCloseSidebar}
-              className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-40 cursor-pointer"
-            />
-            <motion.div
-              key="mobile-sidebar-drawer"
-              initial={{ x: -340, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -340, opacity: 0 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              className="absolute top-0 bottom-0 left-0 z-50 h-full shadow-2xl max-w-full"
-            >
-              <DesktopProfileSidebar
-                onClose={handleCloseSidebar}
-                onSelectSection={handleSectionSelect}
-                isPublicView={!isOwner}
-              />
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
       <div className="flex-1 w-full overflow-y-auto min-h-0">
-        {/* Actions Strip Directly Below Header Toolbar (Dark Mode & Logout) */}
-        <div className="w-full flex items-center justify-end gap-2 p-2 sm:p-3 pb-1">
-          {/* Dark Mode Button (Yellow Ellipse) */}
-          <button
-            type="button"
-            onClick={handleToggleTheme}
-            aria-label="Toggle Theme"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="px-2.5 py-1 rounded-full text-xs font-bold border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
-          >
-            {isDark ? (
-              <>
-                <Sun className="w-3.5 h-3.5 text-amber-400" />
-                <span>Light</span>
-              </>
-            ) : (
-              <>
-                <Moon className="w-3.5 h-3.5 text-slate-700 dark:text-slate-300" />
-                <span>Dark</span>
-              </>
-            )}
-          </button>
-
-          {/* Logout Button (Yellow Circle to the right of Dark target) */}
-          {currentUser && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              aria-label="Logout"
-              title="Sign Out"
-              className="px-2.5 py-1 rounded-full text-xs font-bold border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Logout</span>
-            </button>
-          )}
-        </div>
-
         <AvtiveDigitalCard
           profile={{ ...profile, type: profileType, theme: activeTheme }}
           canEdit={isOwner}
@@ -722,7 +548,7 @@ function PublicProfileClientInner({
         workflowTitle="Digital Pass Identity"
         workflowSubtitle="Verified Public Profile"
         currentUrlPath={`/profile/${profile.slug || profile.id}`}
-        desktopToolbarRight={desktopToolbarRight}
+        showWindowHeader={false}
         desktopContent={desktopView}
         mobileContent={mobileView}
       />

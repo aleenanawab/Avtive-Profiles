@@ -141,7 +141,7 @@ export function HeaderNav({
           </div>
         )}
 
-        {/* Right Controls: Edit/Save/Cancel, Sections Icon, Theme Toggle, Share, and Auth Action */}
+        {/* Right Controls: Edit/Save/Cancel, Sections Icon, Theme Toggle, Share, and Logout */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0 min-w-0">
           {/* Edit Profile Button (Visible only to authenticated profile owner when not editing) */}
           {canEdit && !isEditing && onOpenEdit && (
@@ -193,8 +193,8 @@ export function HeaderNav({
             </div>
           )}
 
-          {/* Sections Icon Button (In view mode: Desktop: Hover opens menu; Mobile: Tap toggles menu) */}
-          {!isEditing && (onToggleSections || onSectionsMouseEnter) && (
+          {/* Sections Icon Button (Inside header in both view & edit modes: Hover on desktop, Tap on mobile) */}
+          {(onToggleSections || onSectionsMouseEnter) && (
             <button
               type="button"
               onClick={onToggleSections}
@@ -208,6 +208,23 @@ export function HeaderNav({
             </button>
           )}
 
+          {/* Theme Toggle Button */}
+          {onToggleTheme && (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              className={`w-8 h-8 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center active:scale-95`}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Moon className={`w-3.5 h-3.5 ${theme.accentText}`} />
+              )}
+            </button>
+          )}
+
           {/* Share Button */}
           {onOpenShare && (
             <button
@@ -217,8 +234,22 @@ export function HeaderNav({
               title="Share Profile"
               aria-label="Share Profile"
             >
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden sm:inline">Share</span>
+            </button>
+          )}
+
+          {/* Logout Button */}
+          {session && onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              className={`w-8 h-8 sm:w-auto px-2 sm:px-2.5 py-1.5 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold text-xs shadow-2xs transition-all active:scale-95 shrink-0 cursor-pointer flex items-center justify-center gap-1.5`}
+              title="Sign Out"
+              aria-label="Logout"
+            >
+              <LogOut className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Logout</span>
             </button>
           )}
         </div>

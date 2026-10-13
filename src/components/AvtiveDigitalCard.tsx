@@ -189,71 +189,13 @@ export function AvtiveDigitalCard({
         className="w-full overflow-hidden transition-colors duration-200"
       >
         
-        {/* ========================================================================= */}
-        {/* INSTAGRAM-STYLE IN-PLACE EDIT HEADER: Sticky top Save / Cancel & Themes    */}
-        {/* ========================================================================= */}
-        {isEditing && (
-          <div className={`sticky top-16 z-30 ${theme.headerBg} backdrop-blur-md border-b ${theme.divider} shadow-sm animate-in fade-in duration-150`}>
-            {/* Action Bar */}
-            <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                {(onToggleSections || onSectionsMouseEnter) && (
-                  <button
-                    type="button"
-                    onClick={onToggleSections}
-                    onMouseEnter={onSectionsMouseEnter}
-                    onMouseLeave={onSectionsMouseLeave}
-                    className={`w-7 h-7 rounded-lg ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center active:scale-95`}
-                    title="Profile Sections Menu"
-                    aria-label="Sections Menu"
-                  >
-                    <LayoutGrid className={`w-3.5 h-3.5 ${theme.accentText}`} />
-                  </button>
-                )}
-                <span className="relative flex h-2 w-2">
-                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${theme.accentText} opacity-75`}></span>
-                  <span className={`relative inline-flex rounded-full h-2 w-2 bg-current ${theme.accentText}`}></span>
-                </span>
-                <span className={`text-xs font-bold uppercase tracking-wider ${theme.textPrimary} font-mono`}>
-                  Edit Profile (In-Place)
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  disabled={isSaving}
-                  className={`py-1.5 px-3 rounded-full text-xs font-semibold border transition-all ${theme.cardBorder} ${theme.textSecondary} hover:opacity-80 disabled:opacity-50`}
-                >
-                  <X className="w-3.5 h-3.5 sm:mr-1 inline" />
-                  <span className="hidden sm:inline">Cancel</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className={`py-1.5 px-4 rounded-full text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 ${theme.btnPrimary} disabled:opacity-50`}
-                >
-                  {isSaving ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Save className="w-3.5 h-3.5" />
-                  )}
-                  <span>{isSaving ? 'Saving...' : 'Save'}</span>
-                </button>
-              </div>
+        {/* Error banner if save fails */}
+        {isEditing && errorMessage && (
+          <div className="px-4 sm:px-6 pt-3 pb-1">
+            <div className="p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{errorMessage}</span>
             </div>
-
-            {/* Error banner if save fails */}
-            {errorMessage && (
-              <div className="px-4 sm:px-6 pb-2">
-                <div className="p-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
