@@ -246,7 +246,7 @@ export function HeroSection({
             onOpenEdit?.();
           }
         }}
-        className={`relative h-44 sm:h-56 md:h-64 lg:h-72 w-full overflow-hidden bg-slate-900 ${
+        className={`relative h-36 sm:h-48 md:h-60 lg:h-72 w-full overflow-hidden bg-slate-900 ${
           canEdit || isEditing ? 'cursor-pointer group/cover hover:brightness-105 transition-all' : ''
         }`}
         title={isEditing ? 'Click to change cover image' : canEdit ? 'Click to edit profile' : undefined}
@@ -306,7 +306,7 @@ export function HeroSection({
       </div>
 
       {/* 2. Identity Header */}
-      <div className="px-4 sm:px-6 md:px-8 pb-6 -mt-12 sm:-mt-16 md:-mt-20 relative z-10 space-y-4">
+      <div className="px-4 sm:px-6 md:px-8 pb-6 -mt-10 sm:-mt-14 md:-mt-18 relative z-10 space-y-4">
         {/* Profile Photo / Company Logo */}
         {sharing.photo !== false && (
           isCompany ? (
@@ -319,7 +319,7 @@ export function HeroSection({
                   onOpenEdit?.();
                 }
               }}
-              className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-2xl sm:rounded-3xl p-2 sm:p-2.5 overflow-hidden border-4 border-white dark:border-[#18181B] shadow-xl bg-white dark:bg-zinc-900 shrink-0 flex items-center justify-center ${
+              className={`relative w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2.5 overflow-hidden border-4 border-white dark:border-[#18181B] shadow-xl bg-white dark:bg-zinc-900 shrink-0 flex items-center justify-center ${
                 canEdit || isEditing ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-blue-500/50 transition-all' : ''
               }`}
               title={isEditing ? 'Click to change logo' : canEdit ? 'Click to edit profile' : undefined}
@@ -336,8 +336,8 @@ export function HeroSection({
                 <div className={`absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white rounded-2xl sm:rounded-3xl transition-opacity ${
                   isEditing ? 'opacity-85 hover:opacity-100' : 'opacity-0 group-hover/avatar:opacity-100'
                 }`}>
-                  <Camera className="w-5 h-5 drop-shadow-md text-cyan-300" />
-                  <span className="text-[10px] font-bold mt-0.5">{isEditing ? 'Change Logo' : 'Edit Logo'}</span>
+                  <Camera className="w-4 h-4 sm:w-5 sm:h-5 drop-shadow-md text-cyan-300" />
+                  <span className="text-[9px] sm:text-[10px] font-bold mt-0.5">{isEditing ? 'Change Logo' : 'Edit Logo'}</span>
                 </div>
               )}
             </div>
@@ -351,7 +351,7 @@ export function HeroSection({
                   onOpenEdit?.();
                 }
               }}
-              className={`relative w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white dark:border-[#18181B] shadow-md bg-slate-100 dark:bg-zinc-800 shrink-0 ${
+              className={`relative w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white dark:border-[#18181B] shadow-md bg-slate-100 dark:bg-zinc-800 shrink-0 ${
                 canEdit || isEditing ? 'cursor-pointer group/avatar hover:ring-4 hover:ring-cyan-500/50 transition-all' : ''
               }`}
               title={isEditing ? 'Click to change photo' : canEdit ? 'Click to edit profile' : undefined}
@@ -368,8 +368,8 @@ export function HeroSection({
                 <div className={`absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white transition-opacity ${
                   isEditing ? 'opacity-85 hover:opacity-100' : 'opacity-0 group-hover/avatar:opacity-100'
                 }`}>
-                  <Camera className="w-5 h-5 drop-shadow-md text-cyan-300" />
-                  <span className="text-[10px] font-bold mt-0.5">{isEditing ? 'Change Photo' : 'Edit Photo'}</span>
+                  <Camera className="w-4 h-4 sm:w-5 sm:h-5 drop-shadow-md text-cyan-300" />
+                  <span className="text-[9px] sm:text-[10px] font-bold mt-0.5">{isEditing ? 'Change Photo' : 'Edit Photo'}</span>
                 </div>
               )}
             </div>
@@ -620,7 +620,7 @@ export function HeroSection({
         )}
 
         {/* Action Buttons Below Avatar */}
-        <div className="flex items-center gap-1.5 sm:gap-3 pt-2 max-w-md w-full min-w-0 flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 pt-2 max-w-md w-full min-w-0 flex-wrap sm:flex-nowrap">
           {canEdit ? (
             isCompany ? (
               /* Company Owner / Editor Actions */
@@ -628,7 +628,7 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={() => onOpenEdit?.()}
-                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1 sm:gap-2`}
                   title="Edit Company Details"
                 >
                   <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
@@ -638,7 +638,7 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={() => onSelectSection ? onSelectSection('teamMembers') : onOpenEdit?.()}
-                  className="flex-1 min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2"
+                  className="flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1 sm:gap-2"
                   title="Manage Team Members"
                 >
                   <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-white" />
@@ -648,7 +648,7 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={onOpenShare}
-                  className={`min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-2.5 sm:px-3.5 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 shrink-0`}
                   title="Share Company Profile"
                 >
                   <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
@@ -661,7 +661,7 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={() => onOpenEdit?.()}
-                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                   title={isEditing ? 'Editing In-Place' : 'Edit Profile'}
                 >
                   <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
@@ -671,7 +671,7 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={onOpenShare}
-                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                 >
                   <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                   <span className="truncate">Share Profile</span>
@@ -685,10 +685,10 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={onOpenConnect}
-                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-xl ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-5 rounded-xl ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                 >
                   <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">Contact Company</span>
+                  <span className="truncate">Contact</span>
                 </button>
 
                 <button
@@ -698,16 +698,16 @@ export function HeroSection({
                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                     else onSelectSection?.('teamMembers');
                   }}
-                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-5 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                 >
                   <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">Our Team ({activeMemberCount})</span>
+                  <span className="truncate">Team ({activeMemberCount})</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={onOpenShare}
-                  className={`min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-2.5 sm:px-3.5 rounded-xl ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 shrink-0`}
                   title="Share Company Profile"
                 >
                   <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
@@ -719,7 +719,7 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={onOpenConnect}
-                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                 >
                   <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                   <span className="truncate">Connect</span>
@@ -728,7 +728,7 @@ export function HeroSection({
                 <button
                   type="button"
                   onClick={onOpenShare}
-                  className={`flex-1 min-h-[40px] py-2 sm:py-2.5 px-4 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
+                  className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-5 rounded-full ${theme.btnSecondary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
                 >
                   <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                   <span className="truncate">Share</span>

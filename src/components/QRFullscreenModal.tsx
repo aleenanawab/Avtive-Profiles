@@ -46,7 +46,7 @@ export function QRFullscreenModal({ isOpen, onClose, profile }: QRFullscreenModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left overflow-y-auto">
-      <div className={`relative w-full max-w-sm max-h-[92vh] overflow-y-auto rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-4 sm:p-6 text-center space-y-4 sm:space-y-5 transition-colors`}>
+      <div className={`relative w-full max-w-sm max-h-[90dvh] overflow-y-auto rounded-[32px] ${theme.cardBg} border ${theme.cardBorder} shadow-2xl p-4 sm:p-6 text-center space-y-4 sm:space-y-5 transition-colors`}>
         <button
           onClick={onClose}
           className={`absolute top-4 right-4 p-2 rounded-full ${theme.textMuted} hover:${theme.textPrimary} ${theme.subCardBg} transition-colors`}

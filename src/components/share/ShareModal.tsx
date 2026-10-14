@@ -218,7 +218,7 @@ export function ShareModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 text-left font-sans">
-      <div className="relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl bg-white dark:bg-[#121216] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-lg max-h-[90dvh] flex flex-col rounded-3xl bg-white dark:bg-[#121216] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden">
         
         {/* Modal Header & Progress Stepper */}
         <div className="p-4 sm:p-5 border-b border-slate-200 dark:border-white/10 shrink-0 space-y-3">

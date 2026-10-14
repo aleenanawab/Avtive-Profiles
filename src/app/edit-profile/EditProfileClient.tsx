@@ -258,7 +258,7 @@ function EditProfileClientInner({
   };
 
   return (
-    <div className="min-h-screen xl:h-screen w-full flex flex-col justify-start xl:justify-center bg-slate-100 dark:bg-[#070D18] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-x-auto transition-colors">
+    <div className="h-[100dvh] max-h-[100dvh] w-full flex flex-col justify-start bg-slate-100 dark:bg-[#070D18] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative overflow-hidden transition-colors">
       
       {/* Toast Notification Banner */}
       {toastMessage && (
@@ -271,14 +271,14 @@ function EditProfileClientInner({
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN WORKING WORKSPACE (Clean Minimalist Window)          */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <main className="flex-1 w-full p-2 sm:p-3.5 lg:p-4 2xl:p-6 flex flex-col xl:flex-row items-center xl:items-start justify-center gap-4 lg:gap-5 2xl:gap-6 max-w-[1920px] mx-auto min-h-0 min-w-0 box-border overflow-x-hidden">
+      <main className="flex-1 h-full min-h-0 w-full p-0 sm:p-3.5 lg:p-4 2xl:p-6 flex flex-col xl:flex-row items-center xl:items-start justify-center gap-0 sm:gap-4 lg:gap-5 2xl:gap-6 max-w-[1920px] mx-auto min-w-0 box-border overflow-hidden">
         
         {/* ======================================================================= */}
         {/* WORKING SCREEN 1: DESKTOP PROFILE STUDIO EDITOR                        */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 w-full min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors min-h-0 flex"
+          className="flex-1 h-full min-h-0 w-full min-w-0 max-w-[1240px] flex flex-col rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-none sm:shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
         >
           {/* Desktop Frame Window Bar */}
           <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors overflow-x-auto sm:overflow-visible">
@@ -475,7 +475,7 @@ function EditProfileClientInner({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] min-w-0 shrink-0 flex flex-col items-center justify-start sticky top-2 sm:top-3 lg:top-4 self-center xl:self-start box-border transition-colors flex"
+          className="hidden xl:flex w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] min-w-0 shrink-0 flex-col items-center justify-start sticky top-2 sm:top-3 lg:top-4 self-center xl:self-start box-border transition-colors"
         >
           {/* Smartphone Chassis Frame (Responsive, fits viewport height at 100% zoom) */}
           <div className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] h-[min(667px,calc(100dvh-2rem))] sm:h-[min(667px,calc(100dvh-2.5rem))] rounded-[32px] sm:rounded-[38px] 2xl:rounded-[40px] border-[5px] sm:border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors min-h-0 box-border">

@@ -442,28 +442,30 @@ function PublicProfileClientInner({
   };
 
   const desktopView = (
-    <div className="w-full flex-1 flex flex-col min-h-0 relative">
-      {/* Clean Public & Owner Header */}
-      <HeaderNav
-        currentProfile={{ ...profile, theme: activeTheme }}
-        profileType={profileType}
-        onSelectProfileType={(type) => setProfileType(type)}
-        canEdit={isOwner}
-        isEditing={isEditing}
-        onCancelEdit={handleCancelEdit}
-        onSaveEdits={handleSaveAndExit}
-        isSaving={isSaving}
-        onOpenEdit={handleOpenEditMode}
-        onOpenShare={() => setIsShareModalOpen(true)}
-        isDark={isDark}
-        onToggleTheme={handleToggleTheme}
-        session={currentUser}
-        onLogout={handleLogout}
-        theme={activeThemeConfig}
-        onToggleSections={handleTriggerClick}
-        onSectionsMouseEnter={handleTriggerMouseEnter}
-        onSectionsMouseLeave={handleTriggerMouseLeave}
-      />
+    <div className="w-full h-full max-h-full flex-1 flex flex-col min-h-0 overflow-hidden relative">
+      {/* Clean Public & Owner Header - Firmly Docked at Top */}
+      <div className="shrink-0 z-40 w-full">
+        <HeaderNav
+          currentProfile={{ ...profile, theme: activeTheme }}
+          profileType={profileType}
+          onSelectProfileType={(type) => setProfileType(type)}
+          canEdit={isOwner}
+          isEditing={isEditing}
+          onCancelEdit={handleCancelEdit}
+          onSaveEdits={handleSaveAndExit}
+          isSaving={isSaving}
+          onOpenEdit={handleOpenEditMode}
+          onOpenShare={() => setIsShareModalOpen(true)}
+          isDark={isDark}
+          onToggleTheme={handleToggleTheme}
+          session={currentUser}
+          onLogout={handleLogout}
+          theme={activeThemeConfig}
+          onToggleSections={handleTriggerClick}
+          onSectionsMouseEnter={handleTriggerMouseEnter}
+          onSectionsMouseLeave={handleTriggerMouseLeave}
+        />
+      </div>
 
       {/* Slide-In Section Drawer on Hover (Desktop) or Tap (Mobile) */}
       <AnimatePresence>
@@ -486,7 +488,7 @@ function PublicProfileClientInner({
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
               onMouseEnter={handlePanelMouseEnter}
               onMouseLeave={handlePanelMouseLeave}
-              className="fixed top-0 bottom-0 left-0 z-50 h-full shadow-2xl max-w-full"
+              className="fixed top-0 bottom-0 left-0 z-50 h-full max-h-[100dvh] shadow-2xl max-w-full overflow-hidden"
             >
               <DesktopProfileSidebar
                 onClose={handleCloseSidebar}
@@ -498,9 +500,12 @@ function PublicProfileClientInner({
         )}
       </AnimatePresence>
 
-      {/* Main Responsive Profile Container - Identical in both View and Edit Mode */}
-      <div className="flex-1 w-full max-w-3xl mx-auto p-2 sm:p-4 lg:p-6 min-w-0">
-        <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden relative`}>
+      {/* Main Responsive Profile Container - Independently Scrollable */}
+      <div 
+        id="profile-scroll-panel"
+        className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain px-0 sm:px-4 lg:px-6 py-0 sm:py-4 box-border scrollbar-thin"
+      >
+        <div className={`w-full max-w-3xl mx-auto rounded-none sm:rounded-3xl border-0 sm:border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-none sm:shadow-xl overflow-hidden relative`}>
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
             canEdit={isOwner}
@@ -539,8 +544,8 @@ function PublicProfileClientInner({
   );
 
   const mobileView = (
-    <div className="w-full flex-1 flex flex-col min-h-0 relative">
-      <div className="flex-1 w-full overflow-y-auto min-h-0">
+    <div className="w-full h-full flex-1 flex flex-col min-h-0 relative overflow-hidden">
+      <div className="flex-1 w-full overflow-y-auto min-h-0 overscroll-contain">
         <AvtiveDigitalCard
           profile={{ ...profile, type: profileType, theme: activeTheme }}
           canEdit={isOwner}
@@ -580,7 +585,7 @@ function PublicProfileClientInner({
   return (
     <div 
       data-theme={activeTheme}
-      className={`min-h-screen w-full flex flex-col ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans`}
+      className={`h-[100dvh] max-h-[100dvh] w-full flex flex-col overflow-hidden ${activeThemeConfig.pageBg} ${activeThemeConfig.textPrimary} transition-all duration-300 font-sans`}
     >
       {/* Toast Notification Banner */}
       {toastMessage && (

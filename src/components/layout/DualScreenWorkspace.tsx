@@ -53,19 +53,19 @@ export function DualScreenWorkspace({
   };
 
   return (
-    <div className={`w-full min-h-screen flex flex-col justify-start bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-x-hidden ${className}`}>
+    <div className={`w-full h-[100dvh] max-h-[100dvh] flex flex-col justify-start bg-slate-100 dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-cyan-200 transition-colors duration-200 overflow-hidden ${className}`}>
       
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex-1 w-full p-2 sm:p-3.5 lg:p-4 2xl:p-6 flex flex-col xl:flex-row items-center xl:items-start justify-center gap-4 lg:gap-5 2xl:gap-6 max-w-[1920px] mx-auto box-border min-w-0">
+      <div className="flex-1 h-full min-h-0 w-full p-0 sm:p-3.5 lg:p-4 2xl:p-6 flex flex-col xl:flex-row items-center xl:items-start justify-center gap-0 sm:gap-4 lg:gap-5 2xl:gap-6 max-w-[1920px] mx-auto box-border min-w-0 overflow-hidden">
         
         {/* ======================================================================= */}
         {/* SCREEN 1: DESKTOP WORKING SCREEN (Clean Minimalist Window)              */}
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 w-full min-w-0 max-w-[1240px] flex flex-col rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
+          className="flex-1 h-full min-h-0 w-full min-w-0 max-w-[1240px] flex flex-col rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-none sm:shadow-xl shadow-slate-200/50 dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
         >
           {/* Desktop Browser Window Header Frame */}
           {showWindowHeader && (
@@ -122,17 +122,18 @@ export function DualScreenWorkspace({
           )}
 
           {/* Desktop Screen Canvas Workspace */}
-          <div className="flex-1 w-full overflow-y-auto overflow-x-hidden flex flex-col bg-slate-100/70 dark:bg-[#070D1A] transition-colors">
+          <div className="flex-1 h-full min-h-0 w-full overflow-hidden flex flex-col bg-slate-100/70 dark:bg-[#070D1A] transition-colors">
             {desktopContent}
           </div>
         </section>
 
         {/* ======================================================================= */}
         {/* SCREEN 2: MOBILE WORKING SCREEN (Exact 375×667 Smartphone Chassis)      */}
+        {/* Shown alongside working screen on desktop (>= xl); hidden on mobile/tab */}
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] min-w-0 shrink-0 flex flex-col items-center justify-start sticky top-2 sm:top-3 lg:top-4 self-center xl:self-start box-border transition-colors flex"
+          className="hidden xl:flex w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] min-w-0 shrink-0 flex-col items-center justify-start sticky top-2 sm:top-3 lg:top-4 self-center xl:self-start box-border transition-colors"
         >
           {/* Smartphone Chassis Frame (Responsive, fits viewport height at 100% zoom) */}
           <div className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] h-[min(667px,calc(100dvh-2rem))] sm:h-[min(667px,calc(100dvh-2.5rem))] rounded-[32px] sm:rounded-[38px] 2xl:rounded-[40px] border-[5px] sm:border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-xl shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors box-border">
