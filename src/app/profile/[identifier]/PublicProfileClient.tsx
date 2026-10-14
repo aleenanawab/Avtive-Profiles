@@ -499,7 +499,7 @@ function PublicProfileClientInner({
       </AnimatePresence>
 
       {/* Main Responsive Profile Container - Identical in both View and Edit Mode */}
-      <div className="flex-1 w-full max-w-3xl mx-auto p-3 sm:p-6 lg:p-8 min-w-0">
+      <div className="flex-1 w-full max-w-3xl mx-auto p-2 sm:p-4 lg:p-6 min-w-0">
         <div className={`w-full rounded-2xl sm:rounded-3xl border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-xl overflow-hidden relative`}>
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}

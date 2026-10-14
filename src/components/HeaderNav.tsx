@@ -79,7 +79,7 @@ export function HeaderNav({
 
   return (
     <header className={`sticky top-0 z-40 w-full backdrop-blur-md ${theme.headerBg} border-b ${theme.divider} transition-colors shadow-2xs`}>
-      <div className="max-w-6xl mx-auto px-2 sm:px-6 py-2.5 flex items-center justify-between gap-1.5 sm:gap-3 min-w-0">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-2.5 flex items-center justify-between gap-1.5 sm:gap-2.5 min-w-0">
         {/* Left: Avtive Brand */}
         <Link 
           href="/"
@@ -102,7 +102,7 @@ export function HeaderNav({
                 Official
               </span>
             </div>
-            <p className={`text-[10px] ${theme.textMuted} font-medium leading-tight`}>
+            <p className={`text-[10px] ${theme.textMuted} font-medium leading-tight hidden md:block`}>
               Digital Identity Platform
             </p>
           </div>

@@ -306,7 +306,7 @@ export function HeroSection({
       </div>
 
       {/* 2. Identity Header */}
-      <div className="px-5 sm:px-8 lg:px-10 pb-6 -mt-12 sm:-mt-16 md:-mt-20 relative z-10 space-y-4">
+      <div className="px-4 sm:px-6 md:px-8 pb-6 -mt-12 sm:-mt-16 md:-mt-20 relative z-10 space-y-4">
         {/* Profile Photo / Company Logo */}
         {sharing.photo !== false && (
           isCompany ? (
@@ -620,7 +620,7 @@ export function HeroSection({
         )}
 
         {/* Action Buttons Below Avatar */}
-        <div className="flex items-center gap-2 sm:gap-3 pt-2 max-w-md w-full">
+        <div className="flex items-center gap-1.5 sm:gap-3 pt-2 max-w-md w-full min-w-0 flex-wrap sm:flex-nowrap">
           {canEdit ? (
             isCompany ? (
               /* Company Owner / Editor Actions */

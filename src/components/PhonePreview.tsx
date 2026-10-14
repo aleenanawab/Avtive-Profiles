@@ -45,7 +45,7 @@ export function PhonePreview({
   onSelectSection
 }: PhonePreviewProps) {
   return (
-    <div className="w-[375px] min-w-[375px] max-w-[375px] flex flex-col items-center select-none">
+    <div className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] flex flex-col items-center select-none box-border">
       {/* Phone Header Label */}
       {!hideHeaderLabel && (
         <div 
@@ -62,9 +62,9 @@ export function PhonePreview({
         </div>
       )}
 
-      {/* Realistic Standard Smartphone Chassis (Strict 375px x 667px Specifications) */}
+      {/* Realistic Standard Smartphone Chassis (Responsive viewport-adaptive) */}
       <div 
-        className="relative w-[375px] min-w-[375px] max-w-[375px] h-[667px] min-h-[667px] max-h-[667px] rounded-[40px] p-2.5 bg-gradient-to-b from-[#222736] via-[#141824] to-[#0A0D15] shadow-2xl shadow-black/80 ring-1 ring-white/15 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0"
+        className="relative w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] h-[min(667px,calc(100dvh-2.5rem))] rounded-[32px] sm:rounded-[40px] p-2 sm:p-2.5 bg-gradient-to-b from-[#222736] via-[#141824] to-[#0A0D15] shadow-2xl shadow-black/80 ring-1 ring-white/15 border border-white/10 flex flex-col transition-all overflow-hidden shrink-0 box-border"
       >
         
         {/* Internal Screen Frame */}

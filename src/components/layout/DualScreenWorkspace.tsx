@@ -58,7 +58,7 @@ export function DualScreenWorkspace({
       {/* ────────────────────────────────────────────────────────────────────────── */}
       {/* PERMANENT TWIN-SCREEN STAGE CONTAINER                                      */}
       {/* ────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex-1 w-full p-2.5 sm:p-5 lg:p-7 flex flex-col xl:flex-row items-center xl:items-start justify-center gap-6 max-w-[1920px] mx-auto box-border min-w-0">
+      <div className="flex-1 w-full p-2 sm:p-3.5 lg:p-4 2xl:p-6 flex flex-col xl:flex-row items-center xl:items-start justify-center gap-4 lg:gap-5 2xl:gap-6 max-w-[1920px] mx-auto box-border min-w-0">
         
         {/* ======================================================================= */}
         {/* SCREEN 1: DESKTOP WORKING SCREEN (Clean Minimalist Window)              */}
@@ -132,10 +132,10 @@ export function DualScreenWorkspace({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="w-full max-w-[375px] min-w-0 shrink-0 flex flex-col items-center justify-start sticky top-2.5 sm:top-5 lg:top-7 self-center xl:self-start box-border transition-colors flex"
+          className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] min-w-0 shrink-0 flex flex-col items-center justify-start sticky top-2 sm:top-3 lg:top-4 self-center xl:self-start box-border transition-colors flex"
         >
-          {/* Smartphone Chassis Frame (Standard 375px × 667px) */}
-          <div className="w-full max-w-[375px] h-[640px] sm:h-[667px] rounded-[36px] sm:rounded-[40px] border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-xl shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors box-border">
+          {/* Smartphone Chassis Frame (Responsive, fits viewport height at 100% zoom) */}
+          <div className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] h-[min(667px,calc(100dvh-2rem))] sm:h-[min(667px,calc(100dvh-2.5rem))] rounded-[32px] sm:rounded-[38px] 2xl:rounded-[40px] border-[5px] sm:border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-xl shadow-slate-300/40 dark:shadow-2xl dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-900/5 dark:ring-white/10 transition-colors box-border">
             
             {/* Phone Top Notch / Dynamic Island + 9:41 Status Bar */}
             <div className="w-full bg-slate-100/90 dark:bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-700 dark:text-slate-300 shrink-0 border-b border-slate-200 dark:border-white/5 select-none transition-colors">

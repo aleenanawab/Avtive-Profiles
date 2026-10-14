@@ -146,7 +146,7 @@ function ThemeStepContent() {
       </div>
 
       {/* 3 Widescreen Theme Studio Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {THEME_OPTIONS.map((item) => {
           const isSelected = selectedTheme === item.id;
           const Icon = item.icon;

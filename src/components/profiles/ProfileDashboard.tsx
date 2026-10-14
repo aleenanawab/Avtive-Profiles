@@ -264,7 +264,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 lg:gap-5">
           {profiles.map((p) => {
           const isActive = p.id === activeProfile?.id;
 
@@ -272,7 +272,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
             <div
               key={p.id}
               onClick={() => setActiveProfileId(p.id)}
-              className={`p-5 rounded-3xl border transition-all flex flex-col justify-between cursor-pointer ${
+              className={`p-4 sm:p-5 rounded-3xl border transition-all flex flex-col justify-between cursor-pointer ${
                 isActive
                   ? 'bg-cyan-50/60 dark:bg-cyan-950/20 border-cyan-500 dark:border-cyan-400 shadow-xl ring-1 ring-cyan-500/40'
                   : 'bg-white dark:bg-[#0E1528] border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 shadow-xs'
@@ -280,7 +280,7 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-slate-200 dark:border-white/10 bg-slate-200 dark:bg-slate-800 shrink-0">
                       {p.avatar ? (
                         <img
@@ -295,15 +295,15 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                         </div>
                       )}
                     </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate">
                         {p.profileName || p.name}
                       </h3>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{p.designation || 'Professional'}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">{p.designation || 'Professional'}</p>
                     </div>
                   </div>
                   {isActive && (
-                    <span className="px-2 py-0.5 rounded-md bg-cyan-500 dark:bg-cyan-400 text-white dark:text-slate-950 font-mono text-[10px] font-extrabold">
+                    <span className="px-2 py-0.5 rounded-md bg-cyan-500 dark:bg-cyan-400 text-white dark:text-slate-950 font-mono text-[10px] font-extrabold shrink-0">
                       ACTIVE
                     </span>
                   )}
@@ -316,33 +316,33 @@ export function ProfileDashboard({ initialProfiles, user }: ProfileDashboardProp
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 dark:text-slate-400">Organization</span>
-                    <span className="font-semibold text-slate-900 dark:text-slate-200">{p.company || 'Personal'}</span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-200 truncate ml-2">{p.company || 'Personal'}</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 mt-2 flex items-center justify-between gap-2">
+              <div className="pt-4 mt-2 flex items-center justify-between gap-1.5 sm:gap-2">
                 <Link
                   href={`/profile/${encodeURIComponent(p.slug || p.id)}?edit=true`}
-                  className="flex-1 py-1.5 px-3 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 dark:text-cyan-300 text-xs font-bold text-center border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-center gap-1.5"
+                  className="flex-1 min-w-0 py-1.5 px-2.5 sm:px-3 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 dark:text-cyan-300 text-xs font-bold text-center border border-cyan-200 dark:border-cyan-500/30 flex items-center justify-center gap-1 sm:gap-1.5"
                 >
-                  <Edit3 className="w-3 h-3" />
-                  <span>Edit Studio</span>
+                  <Edit3 className="w-3 h-3 shrink-0" />
+                  <span className="truncate">Edit Studio</span>
                 </Link>
 
                 <Link
                   href={`/profile/${p.slug || p.id}`}
-                  className="py-1.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-white/10 flex items-center justify-center gap-1.5"
+                  className="py-1.5 px-2.5 sm:px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 text-xs font-semibold border border-slate-200 dark:border-white/10 flex items-center justify-center gap-1 sm:gap-1.5 shrink-0"
                 >
-                  <Eye className="w-3 h-3" />
-                  <span>Live Pass</span>
+                  <Eye className="w-3 h-3 shrink-0" />
+                  <span className="truncate">Live Pass</span>
                 </Link>
 
                 <button
                   type="button"
                   onClick={(e) => handleCopyLink(p, e)}
-                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-400 dark:hover:text-white border border-slate-200 dark:border-white/10 cursor-pointer"
+                  className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-400 dark:hover:text-white border border-slate-200 dark:border-white/10 cursor-pointer shrink-0"
                   title="Copy link"
                 >
                   <Copy className="w-3.5 h-3.5" />
