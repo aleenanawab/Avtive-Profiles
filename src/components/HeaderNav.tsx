@@ -193,21 +193,6 @@ export function HeaderNav({
             </div>
           )}
 
-          {/* Sections Icon Button (Inside header in both view & edit modes: Hover on desktop, Tap on mobile) */}
-          {(onToggleSections || onSectionsMouseEnter) && (
-            <button
-              type="button"
-              onClick={onToggleSections}
-              onMouseEnter={onSectionsMouseEnter}
-              onMouseLeave={onSectionsMouseLeave}
-              className={`w-8 h-8 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center active:scale-95`}
-              title="Profile Sections Menu"
-              aria-label="Sections Menu"
-            >
-              <LayoutGrid className={`w-4 h-4 ${theme.accentText}`} />
-            </button>
-          )}
-
           {/* Theme Toggle Button */}
           {onToggleTheme && (
             <button

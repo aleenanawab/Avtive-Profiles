@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare, Building2, Users } from 'lucide-react';
+import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare, Building2, Users, LayoutGrid } from 'lucide-react';
 import { ProfileData, normalizeProfileType, SocialLink, CompanyInfo } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon, WhatsAppIcon } from './BrandIcons';
@@ -30,6 +30,10 @@ interface HeroSectionProps {
   onNavigateBack?: () => void;
   onOpenVirtualCard?: () => void;
   onSelectSection?: (sectionKey: string, fieldKey?: string) => void;
+  onToggleSections?: () => void;
+  onSectionsMouseEnter?: () => void;
+  onSectionsMouseLeave?: () => void;
+  isSidebarOpen?: boolean;
 }
 
 export function HeroSection({
@@ -42,7 +46,11 @@ export function HeroSection({
   onOpenEdit,
   onOpenShare,
   onOpenConnect,
-  onSelectSection
+  onSelectSection,
+  onToggleSections,
+  onSectionsMouseEnter,
+  onSectionsMouseLeave,
+  isSidebarOpen = false
 }: HeroSectionProps) {
   const router = useRouter();
   const coverInputRef = React.useRef<HTMLInputElement>(null);
@@ -280,6 +288,29 @@ export function HeroSection({
             >
               <Camera className="w-3.5 h-3.5 text-cyan-400" />
               <span>{isEditing ? 'Change Cover Photo' : 'Edit Cover Banner'}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Cover Corner Section Navigation Button (Top corner of profile cover - Visible on Desktop & Mobile) */}
+        {(onToggleSections || onSectionsMouseEnter) && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSections?.();
+              }}
+              onMouseEnter={onSectionsMouseEnter}
+              onMouseLeave={onSectionsMouseLeave}
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-black/60 hover:bg-black/85 text-white backdrop-blur-md border border-white/20 shadow-md flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer z-20 ${
+                isSidebarOpen ? 'ring-2 ring-white/60 bg-black/85' : ''
+              }`}
+              title="Profile Sections Menu"
+              aria-label="Sections Menu"
+              aria-expanded={isSidebarOpen}
+            >
+              <LayoutGrid className="w-4 h-4 text-white sm:w-4.5 sm:h-4.5" />
             </button>
           </div>
         )}

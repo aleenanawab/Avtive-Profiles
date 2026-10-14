@@ -223,28 +223,31 @@ export async function sendPasswordResetEmail({
     }
   }
 
-  // 3. Try Supabase Auth password reset email trigger
-  try {
-    const { error: sbError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-      redirectTo: resetUrl
-    });
+  // Supabase Auth reset is only used if explicitly enabled and SMTP is not present,
+  // but note that Supabase requires custom SMTP in the dashboard for production delivery.
+  if (process.env.USE_SUPABASE_EMAIL === 'true') {
+    try {
+      const { error: sbError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+        redirectTo: resetUrl
+      });
 
-    if (!sbError) {
-      return {
-        success: true,
-        provider: 'supabase'
-      };
+      if (!sbError) {
+        return {
+          success: true,
+          provider: 'supabase'
+        };
+      }
+      console.warn('Supabase auth resetPasswordForEmail notice:', sbError.message);
+    } catch (sbErr: any) {
+      lastError = sbErr?.message || String(sbErr);
+      console.error('Supabase Auth reset exception:', sbErr);
     }
-    console.warn('Supabase auth resetPasswordForEmail notice:', sbError.message);
-  } catch (sbErr: any) {
-    lastError = sbErr?.message || String(sbErr);
-    console.error('Supabase Auth reset exception:', sbErr);
   }
 
   // If no email provider successfully delivered the message
   return {
     success: false,
-    error: lastError ? `Email delivery failed: ${lastError}` : 'Email delivery service is not configured or failed to dispatch. Please configure SMTP settings (SMTP_HOST, SMTP_USER, SMTP_PASS) in .env.local.'
+    error: lastError ? `Email delivery failed: ${lastError}` : 'Email delivery service is not configured (missing SMTP_HOST, SMTP_USER, SMTP_PASS in .env.local).'
   };
 }
 
@@ -255,10 +258,6 @@ export function isEmailServiceConfigured(): boolean {
     (process.env.SMTP_HOST || (process.env.SMTP_USER && process.env.SMTP_USER.endsWith('@gmail.com')))
   );
   const hasResend = Boolean(process.env.RESEND_API_KEY);
-  const hasSupabase = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
-  );
-  return hasSmtp || hasResend || hasSupabase;
+  return hasSmtp || hasResend;
 }
+

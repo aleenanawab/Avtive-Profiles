@@ -82,6 +82,7 @@ interface AvtiveDigitalCardProps {
   onToggleSections?: () => void;
   onSectionsMouseEnter?: () => void;
   onSectionsMouseLeave?: () => void;
+  isSidebarOpen?: boolean;
 }
 
 export function AvtiveDigitalCard({
@@ -95,6 +96,7 @@ export function AvtiveDigitalCard({
   onToggleSections,
   onSectionsMouseEnter,
   onSectionsMouseLeave,
+  isSidebarOpen = false,
   onOpenEdit,
   onSaveEdits,
   onSavePartial,
@@ -243,6 +245,10 @@ export function AvtiveDigitalCard({
               onNavigateBack={onNavigateBack}
               theme={theme}
               onSelectSection={onSelectSection}
+              onToggleSections={onToggleSections}
+              onSectionsMouseEnter={onSectionsMouseEnter}
+              onSectionsMouseLeave={onSectionsMouseLeave}
+              isSidebarOpen={isSidebarOpen}
             />
           </div>
         </div>

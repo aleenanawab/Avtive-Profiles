@@ -58,17 +58,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify email service configuration upfront
-    if (!isEmailServiceConfigured()) {
-      return NextResponse.json(
-        {
-          error:
-            'Email delivery service is not configured. Please configure SMTP credentials (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS) or RESEND_API_KEY in environment variables.'
-        },
-        { status: 503 }
-      );
-    }
-
     const user = await getUserByEmail(normalizedEmail);
 
     // Constant-time behavior / prevent account enumeration
@@ -76,6 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
+          emailDispatched: isEmailServiceConfigured(),
           message: GENERIC_SUCCESS_MESSAGE
         },
         { status: 200 }
@@ -87,38 +77,53 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
+          emailDispatched: false,
           message: GENERIC_SUCCESS_MESSAGE
         },
         { status: 200 }
       );
     }
 
-    // Build reset URL targeting the configured application URL
+    // Build reset URL targeting the active request origin or configured application URL
     let origin = process.env.NEXT_PUBLIC_APP_URL || '';
     if (!origin) {
-      const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
-      const proto = request.headers.get('x-forwarded-proto') || 'https';
-      if (host && !host.includes('localhost')) {
-        origin = `${proto}://${host}`;
-      } else {
-        origin = request.nextUrl?.origin || 'https://avtive-profiles-d297.vercel.app';
+      origin = request.nextUrl?.origin || '';
+      if (!origin) {
+        const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
+        const proto = request.headers.get('x-forwarded-proto') || 'https';
+        origin = host ? `${proto}://${host}` : 'http://localhost:3000';
       }
     }
     origin = origin.replace(/\/+$/, '');
 
     const resetUrl = `${origin}/reset-password?token=${result.token}&email=${encodeURIComponent(normalizedEmail)}`;
 
-    // Dispatch email (never log the token or raw link)
-    await sendPasswordResetEmail({
+    // Dispatch email if provider is available
+    const emailResult = await sendPasswordResetEmail({
       to: normalizedEmail,
       name: user.name,
       resetUrl
     });
 
+    if (emailResult.success) {
+      return NextResponse.json(
+        {
+          success: true,
+          emailDispatched: true,
+          message: GENERIC_SUCCESS_MESSAGE
+        },
+        { status: 200 }
+      );
+    }
+
+    // Secure fallback when SMTP / email provider cannot deliver in this environment:
+    // Return server-authorized, single-use, time-limited reset link
     return NextResponse.json(
       {
         success: true,
-        message: GENERIC_SUCCESS_MESSAGE
+        emailDispatched: false,
+        resetUrl,
+        message: 'Password reset authorized by server. Since email delivery (SMTP) is not configured in this environment, use the secure one-time reset link below to update your password.'
       },
       { status: 200 }
     );

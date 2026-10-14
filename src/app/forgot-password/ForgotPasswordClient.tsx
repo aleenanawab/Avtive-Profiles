@@ -24,6 +24,7 @@ export default function ForgotPasswordClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [resetUrl, setResetUrl] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -37,6 +38,7 @@ export default function ForgotPasswordClient() {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
+    setResetUrl(null);
 
     if (!email.trim() || !email.includes('@')) {
       setErrorMessage('Please enter a valid email address.');
@@ -61,6 +63,9 @@ export default function ForgotPasswordClient() {
       }
 
       setSuccessMessage(data.message || 'If an account exists with this email address, a password reset link has been sent.');
+      if (data.resetUrl) {
+        setResetUrl(data.resetUrl);
+      }
       setIsLoading(false);
     } catch (err) {
       console.error(err);
@@ -128,11 +133,43 @@ export default function ForgotPasswordClient() {
             <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-2">
               <div className="flex items-center gap-2 font-bold text-sm">
                 <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                <span>Password Reset Email Sent</span>
+                <span>{resetUrl ? 'Recovery Link Ready' : 'Password Reset Email Sent'}</span>
               </div>
               <p className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
-                {successMessage} Please check your inbox and click the secure link to set your new password.
+                {successMessage}
               </p>
+            </div>
+          )}
+
+          {resetUrl && (
+            <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-slate-800 dark:text-slate-100 text-xs space-y-3">
+              <div className="flex items-center gap-2 font-bold text-sm text-cyan-700 dark:text-cyan-300">
+                <ShieldCheck className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
+                <span>One-Time Direct Reset Link</span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Since SMTP email delivery is unconfigured in this environment, click below to set your new password using this verified, one-time server token:
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Link
+                  href={resetUrl}
+                  className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-cyan-500/20 cursor-pointer"
+                >
+                  <span>Reset Password Now</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(resetUrl);
+                    alert('Reset link copied to clipboard!');
+                  }}
+                  className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/10 cursor-pointer"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy Link</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -210,11 +247,43 @@ export default function ForgotPasswordClient() {
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-1.5">
             <div className="flex items-center gap-1.5 font-bold">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-              <span>Password Reset Email Sent</span>
+              <span>{resetUrl ? 'Recovery Link Ready' : 'Password Reset Email Sent'}</span>
             </div>
             <p className="text-[11px] text-emerald-800 dark:text-emerald-200">
-              {successMessage} Please check your email inbox to proceed.
+              {successMessage}
             </p>
+          </div>
+        )}
+
+        {resetUrl && (
+          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-slate-800 dark:text-slate-100 text-xs space-y-2">
+            <div className="flex items-center gap-1.5 font-bold text-xs text-cyan-700 dark:text-cyan-300">
+              <ShieldCheck className="w-4 h-4 shrink-0 text-cyan-600 dark:text-cyan-400" />
+              <span>One-Time Direct Reset Link</span>
+            </div>
+            <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-tight">
+              Since SMTP email is unconfigured, proceed with this verified server token:
+            </p>
+            <div className="flex flex-col gap-1.5 pt-0.5">
+              <Link
+                href={resetUrl}
+                className="py-2 px-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span>Reset Password Now</span>
+                <ExternalLink className="w-3 h-3" />
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(resetUrl);
+                  alert('Reset link copied to clipboard!');
+                }}
+                className="py-1.5 px-3 rounded-lg bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 font-medium text-[10px] flex items-center justify-center gap-1 border border-slate-200 dark:border-white/10 cursor-pointer"
+              >
+                <Copy className="w-3 h-3" />
+                <span>Copy Link</span>
+              </button>
+            </div>
           </div>
         )}
 

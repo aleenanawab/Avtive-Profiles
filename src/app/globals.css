@@ -3,6 +3,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --color-brand: #6C4CF1;
+  --color-brand-hover: #5838d9;
+  --color-brand-light: #EEF2FF;
+  --color-brand-dark: #4f35b8;
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-background: var(--bg-main);

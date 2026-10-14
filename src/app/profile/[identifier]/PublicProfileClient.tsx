@@ -21,7 +21,7 @@ import { ProjectDetailModal } from '@/components/ProjectDetailModal';
 import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditorContext';
 import { downloadVCard } from '@/lib/vcard';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
+import { DesktopProfileSidebar, DESKTOP_SIDEBAR_SECTIONS } from '@/components/profiles/DesktopProfileSidebar';
 import { ProfileSectionTabBar } from '@/components/profiles/ProfileSectionTabBar';
 import { Edit3, Save, X, Loader2, LayoutGrid, Sun, Moon, LogOut } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
@@ -83,6 +83,36 @@ function PublicProfileClientInner({
   const [currentUser, setCurrentUser] = useState<UserSession | null>(session);
 
   const activeThemeConfig = getThemeConfig(activeTheme);
+
+  const isCompany = profileType === 'team' || profile.type === 'team';
+  const mobileNavSections = React.useMemo(() => {
+    return DESKTOP_SIDEBAR_SECTIONS.filter(s => {
+      if (s.category !== 'core') return false;
+      if (!isCompany && (s.key === 'teamMembers' || s.key === 'companyInfo')) return false;
+      if (isCompany && (s.key === 'personalDetails' || s.key === 'experience' || s.key === 'education' || s.key === 'certifications' || s.key === 'languages' || s.key === 'recommendations')) return false;
+      return true;
+    });
+  }, [isCompany]);
+
+  const getMobileShortLabel = (key: string, fullLabel: string) => {
+    switch (key) {
+      case 'profile': return 'Profile';
+      case 'companyInfo': return 'Company';
+      case 'teamMembers': return 'Team';
+      case 'personalDetails': return 'Bio';
+      case 'skills': return 'Skills';
+      case 'projects': return 'Projects';
+      case 'education': return 'Edu';
+      case 'contactInfo': return 'Contact';
+      case 'socialLinks': return 'Social';
+      case 'experience': return 'Exp';
+      case 'certifications': return 'Certs';
+      case 'languages': return 'Langs';
+      case 'recommendations': return 'Reviews';
+      case 'customFields': return 'Custom';
+      default: return fullLabel;
+    }
+  };
 
   const clearCloseTimer = () => {
     if (closeTimerRef.current) {
@@ -209,11 +239,6 @@ function PublicProfileClientInner({
 
   const handleSectionSelect = (sectionKey: string) => {
     setActiveTabSection(sectionKey);
-
-    // If owner selects a section from the Sections sidebar, ensure edit mode is enabled
-    if (isOwner && !isEditing) {
-      handleOpenEditMode();
-    }
 
     const targetId = 
       sectionKey === 'profile' || sectionKey === 'hero'
@@ -565,10 +590,10 @@ function PublicProfileClientInner({
         />
       </div>
 
-      {/* Slide-In Section Drawer on Hover (Desktop) or Tap (Mobile) */}
+      {/* Slide-In Section Drawer on Hover (Desktop >= sm) */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <>
+          <div className="hidden sm:block">
             <motion.div
               key="public-sidebar-backdrop"
               initial={{ opacity: 0 }}
@@ -594,16 +619,120 @@ function PublicProfileClientInner({
                 isPublicView={!isOwner}
               />
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
 
-      {/* Main Responsive Profile Container - Independently Scrollable */}
-      <div 
-        id="profile-scroll-panel"
-        className="flex-1 min-h-0 w-full overflow-y-auto overscroll-contain px-0 sm:px-4 lg:px-6 py-0 sm:py-4 box-border scrollbar-thin"
-      >
-        <div className={`w-full max-w-3xl mx-auto rounded-none sm:rounded-3xl border-0 sm:border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-none sm:shadow-xl overflow-hidden relative`}>
+      {/* Main Responsive Profile Container + Mobile 80/20 Docked Panel */}
+      <div className="flex-1 min-h-0 w-full flex flex-row overflow-hidden relative">
+        <div 
+          id="profile-scroll-panel"
+          onClick={() => {
+            if (isSidebarOpen) handleCloseSidebar();
+          }}
+          className={`h-full min-h-0 overflow-y-auto overscroll-contain px-0 sm:px-4 lg:px-6 py-0 sm:py-4 box-border scrollbar-thin transition-all duration-300 ${
+            isSidebarOpen ? 'w-[78%] sm:w-full flex-[4] sm:flex-1' : 'w-full flex-1'
+          }`}
+        >
+          <div className={`w-full max-w-3xl mx-auto rounded-none sm:rounded-3xl border-0 sm:border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-none sm:shadow-xl overflow-hidden relative`}>
+            <AvtiveDigitalCard
+              profile={{ ...profile, type: profileType, theme: activeTheme }}
+              canEdit={isOwner}
+              isEditing={isEditing}
+              isConnected={false}
+              onDraftChange={handleDraftChange}
+              onOpenEdit={handleOpenEditMode}
+              onCancelEdit={handleCancelEdit}
+              onSaveEdits={handleSaveEdits}
+              onSavePartial={handleSavePartial}
+              onSaveContact={handleSaveContact}
+              onOpenShare={() => setIsShareModalOpen(true)}
+              onOpenConnect={() => setIsConnectModalOpen(true)}
+              onOpenQRModal={() => setIsQRModalOpen(true)}
+              onOpenResumeModal={() => setIsResumeModalOpen(true)}
+              onSelectProject={(project) => setSelectedProject(project)}
+              onSelectTeamMember={(member) => {
+                const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
+                router.push(`/profile/${slug}`);
+              }}
+              onViewCompany={() => {
+                if (profile.companyId) {
+                  router.push(`/profile/${profile.companyId}`);
+                }
+              }}
+              isDark={isDark}
+              viewMode="standard"
+              onSelectSection={handleSectionSelect}
+              onToggleSections={handleTriggerClick}
+              onSectionsMouseEnter={handleTriggerMouseEnter}
+              onSectionsMouseLeave={handleTriggerMouseLeave}
+              isSidebarOpen={isSidebarOpen}
+            />
+          </div>
+        </div>
+
+        {/* Mobile 80/20 Section Navigation Panel - Docked to right on mobile viewport (< sm) */}
+        {isSidebarOpen && (
+          <div
+            className="sm:hidden h-full w-[22%] min-w-[70px] max-w-[85px] shrink-0 flex flex-col items-center py-2 px-1 border-l border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-[#070D1A]/85 backdrop-blur-md shadow-2xl overflow-y-auto overscroll-contain scrollbar-none z-30 transition-all duration-300"
+          >
+            <div className="w-full flex flex-col items-center gap-1.5 pb-4">
+              {mobileNavSections.map((section) => {
+                const IconComponent = section.icon;
+                const isActive = activeTabSection === section.key;
+                return (
+                  <button
+                    key={`mobile-panel-${section.key}`}
+                    type="button"
+                    onClick={() => {
+                      handleSectionSelect(section.key);
+                    }}
+                    className={`min-h-[42px] h-[44px] w-full max-w-[68px] rounded-xl flex flex-col items-center justify-center p-1 transition-all cursor-pointer select-none active:scale-95 ${
+                      isActive
+                        ? 'bg-[#6C4CF1]/15 text-[#6C4CF1] dark:bg-cyan-500/20 dark:text-cyan-300 border border-[#6C4CF1]/30 dark:border-cyan-400/30 font-bold shadow-xs'
+                        : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10'
+                    }`}
+                    title={section.label}
+                    aria-label={section.label}
+                  >
+                    <IconComponent className="w-4 h-4 shrink-0" />
+                    <span className="text-[9px] font-medium leading-none tracking-tight truncate max-w-full mt-0.5">
+                      {getMobileShortLabel(section.key, section.label)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const mobileView = (
+    <div className="w-full h-full flex-1 flex flex-col min-h-0 relative overflow-hidden">
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+      <div className="shrink-0 z-30 w-full">
+        <ProfileSectionTabBar
+          profile={{ ...profile, type: profileType, theme: activeTheme }}
+          activeSection={activeTabSection}
+          onSelectSection={handleSectionSelect}
+          theme={activeThemeConfig}
+          isEditing={isEditing}
+          canEdit={isOwner}
+        />
+      </div>
+
+      <div className="flex-1 w-full min-h-0 flex flex-row overflow-hidden relative">
+        <div 
+          id="mobile-profile-scroll-panel" 
+          onClick={() => {
+            if (isSidebarOpen) handleCloseSidebar();
+          }}
+          className={`h-full min-h-0 overflow-y-auto overscroll-contain transition-all duration-300 ${
+            isSidebarOpen ? 'w-[78%] flex-[4]' : 'w-full flex-1'
+          }`}
+        >
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
             canEdit={isOwner}
@@ -635,58 +764,44 @@ function PublicProfileClientInner({
             onToggleSections={handleTriggerClick}
             onSectionsMouseEnter={handleTriggerMouseEnter}
             onSectionsMouseLeave={handleTriggerMouseLeave}
+            isSidebarOpen={isSidebarOpen}
           />
         </div>
-      </div>
-    </div>
-  );
 
-  const mobileView = (
-    <div className="w-full h-full flex-1 flex flex-col min-h-0 relative overflow-hidden">
-      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
-      <div className="shrink-0 z-30 w-full">
-        <ProfileSectionTabBar
-          profile={{ ...profile, type: profileType, theme: activeTheme }}
-          activeSection={activeTabSection}
-          onSelectSection={handleSectionSelect}
-          theme={activeThemeConfig}
-          isEditing={isEditing}
-          canEdit={isOwner}
-        />
-      </div>
-      <div id="mobile-profile-scroll-panel" className="flex-1 w-full overflow-y-auto min-h-0 overscroll-contain">
-        <AvtiveDigitalCard
-          profile={{ ...profile, type: profileType, theme: activeTheme }}
-          canEdit={isOwner}
-          isEditing={isEditing}
-          isConnected={false}
-          onDraftChange={handleDraftChange}
-          onOpenEdit={handleOpenEditMode}
-          onCancelEdit={handleCancelEdit}
-          onSaveEdits={handleSaveEdits}
-          onSavePartial={handleSavePartial}
-          onSaveContact={handleSaveContact}
-          onOpenShare={() => setIsShareModalOpen(true)}
-          onOpenConnect={() => setIsConnectModalOpen(true)}
-          onOpenQRModal={() => setIsQRModalOpen(true)}
-          onOpenResumeModal={() => setIsResumeModalOpen(true)}
-          onSelectProject={(project) => setSelectedProject(project)}
-          onSelectTeamMember={(member) => {
-            const slug = member.profileId === 'individual' ? 'syedmesumraza' : member.profileId === 'team-member' ? 'hamza-malik' : member.id;
-            router.push(`/profile/${slug}`);
-          }}
-          onViewCompany={() => {
-            if (profile.companyId) {
-              router.push(`/profile/${profile.companyId}`);
-            }
-          }}
-          isDark={isDark}
-          viewMode="standard"
-          onSelectSection={handleSectionSelect}
-          onToggleSections={handleTriggerClick}
-          onSectionsMouseEnter={handleTriggerMouseEnter}
-          onSectionsMouseLeave={handleTriggerMouseLeave}
-        />
+        {/* Mobile 80/20 Section Navigation Panel - Simulated Phone Chassis */}
+        {isSidebarOpen && (
+          <div
+            className="h-full w-[22%] min-w-[70px] max-w-[85px] shrink-0 flex flex-col items-center py-2 px-1 border-l border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-[#070D1A]/85 backdrop-blur-md shadow-2xl overflow-y-auto overscroll-contain scrollbar-none z-30 transition-all duration-300"
+          >
+            <div className="w-full flex flex-col items-center gap-1.5 pb-4">
+              {mobileNavSections.map((section) => {
+                const IconComponent = section.icon;
+                const isActive = activeTabSection === section.key;
+                return (
+                  <button
+                    key={`chassis-panel-${section.key}`}
+                    type="button"
+                    onClick={() => {
+                      handleSectionSelect(section.key);
+                    }}
+                    className={`min-h-[42px] h-[44px] w-full max-w-[68px] rounded-xl flex flex-col items-center justify-center p-1 transition-all cursor-pointer select-none active:scale-95 ${
+                      isActive
+                        ? 'bg-[#6C4CF1]/15 text-[#6C4CF1] dark:bg-cyan-500/20 dark:text-cyan-300 border border-[#6C4CF1]/30 dark:border-cyan-400/30 font-bold shadow-xs'
+                        : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10'
+                    }`}
+                    title={section.label}
+                    aria-label={section.label}
+                  >
+                    <IconComponent className="w-4 h-4 shrink-0" />
+                    <span className="text-[9px] font-medium leading-none tracking-tight truncate max-w-full mt-0.5">
+                      {getMobileShortLabel(section.key, section.label)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
