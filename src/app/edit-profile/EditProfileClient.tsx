@@ -8,6 +8,7 @@ import { ProfileData } from '@/types/profile';
 import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditorContext';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
+import { ProfileSectionTabBar } from '@/components/profiles/ProfileSectionTabBar';
 import { DesktopProfileContent } from '@/components/profiles/DesktopProfileContent';
 import { ProfileSwitcher } from '@/components/profiles/ProfileSwitcher';
 import { 
@@ -405,6 +406,26 @@ function EditProfileClientInner({
                 <LogOut className="w-3.5 h-3.5" />
               </button>
             </div>
+          </div>
+
+          {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+          <div className="shrink-0 z-20 w-full">
+            <ProfileSectionTabBar
+              profile={profile}
+              activeSection={activeSection}
+              onSelectSection={(secKey) => {
+                setActiveSection(secKey);
+                const el = 
+                  document.getElementById(`section-card-${secKey}`) ||
+                  document.getElementById(`section-${secKey}`) ||
+                  (secKey === 'profile' ? document.getElementById('top-profile-header') : null);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+              }}
+              isEditing={true}
+              canEdit={true}
+            />
           </div>
 
           {/* Desktop Editor Canvas (Relative container for slide-in drawer) */}

@@ -53,6 +53,7 @@ import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { PhonePreview } from '@/components/PhonePreview';
 import { DESKTOP_SIDEBAR_SECTIONS } from './DesktopProfileSidebar';
+import { ProfileSectionTabBar } from './ProfileSectionTabBar';
 import { CompanyTeamManager } from './CompanyTeamManager';
 import { 
   ProfileTheme, 
@@ -868,6 +869,17 @@ export function DesktopProfileContent({
               )}
             </button>
           </div>
+        </div>
+
+        {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+        <div className="shrink-0 z-20 w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10">
+          <ProfileSectionTabBar
+            profile={profile}
+            activeSection={activeSection}
+            onSelectSection={handleSelectSectionFromDropdown}
+            isEditing={true}
+            canEdit={true}
+          />
         </div>
 
         {/* ══════════════════════════════════════════════════════════════════════════ */}

@@ -16,6 +16,7 @@ import { useProfileEditor } from '@/context/ProfileEditorContext';
 import { usePortfolioTheme } from '@/context/ThemeContext';
 import { AvtiveDigitalCard } from '@/components/AvtiveDigitalCard';
 import { DESKTOP_SIDEBAR_SECTIONS } from './DesktopProfileSidebar';
+import { ProfileSectionTabBar } from './ProfileSectionTabBar';
 import { downloadVCard } from '@/lib/vcard';
 
 export interface MobileSliderProfileViewProps {
@@ -281,6 +282,15 @@ export function MobileSliderProfileView({ onSave, onNext: _onNext, className = '
             )}
           </button>
         </div>
+      </div>
+
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+      <div className="shrink-0 z-20 w-full">
+        <ProfileSectionTabBar
+          profile={liveProfile}
+          activeSection={activeSection}
+          onSelectSection={handleSelectSection}
+        />
       </div>
 
       {/* ────────────────────────────────────────────────────────────────────────── */}

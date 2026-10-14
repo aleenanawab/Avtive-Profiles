@@ -22,6 +22,7 @@ import { ProfileEditorProvider, useProfileEditor } from '@/context/ProfileEditor
 import { downloadVCard } from '@/lib/vcard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DesktopProfileSidebar } from '@/components/profiles/DesktopProfileSidebar';
+import { ProfileSectionTabBar } from '@/components/profiles/ProfileSectionTabBar';
 import { Edit3, Save, X, Loader2, LayoutGrid, Sun, Moon, LogOut } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 import { usePortfolioTheme } from '@/context/ThemeContext';
@@ -137,7 +138,78 @@ function PublicProfileClientInner({
     setIsSidebarPinned(false);
   };
 
+  const [activeTabSection, setActiveTabSection] = useState<string>('profile');
+
+  // Track scroll position in the profile content panel to update active tab highlight
+  useEffect(() => {
+    const getScrollPanel = () =>
+      document.getElementById('profile-scroll-panel') ||
+      document.getElementById('mobile-profile-scroll-panel');
+
+    const sectionIds = [
+      'section-hero',
+      'section-profile',
+      'section-company',
+      'section-companyInfo',
+      'section-teamMembers',
+      'section-about',
+      'section-personalDetails',
+      'section-skills',
+      'section-services',
+      'section-projects',
+      'section-experience',
+      'section-education',
+      'section-certifications',
+      'section-languages',
+      'section-recommendations',
+      'section-contact',
+      'section-contactInfo',
+      'section-socialLinks',
+      'section-custom-fields',
+      'section-customFields',
+      'section-virtual-card',
+      'virtual-card-section'
+    ];
+
+    const handleScroll = () => {
+      const panel = getScrollPanel();
+      if (!panel) return;
+      const panelTop = panel.getBoundingClientRect().top;
+      let currentSection = 'profile';
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top - panelTop <= 160) {
+            const rawKey = id.replace('section-', '');
+            if (rawKey === 'hero') currentSection = 'profile';
+            else if (rawKey === 'about') currentSection = 'personalDetails';
+            else if (rawKey === 'services') currentSection = 'skills';
+            else if (rawKey === 'contact') currentSection = 'contactInfo';
+            else if (rawKey === 'socials') currentSection = 'socialLinks';
+            else if (rawKey === 'custom-fields') currentSection = 'customFields';
+            else if (rawKey === 'virtual-card' || id === 'virtual-card-section') currentSection = 'virtualCard';
+            else currentSection = rawKey;
+          }
+        }
+      }
+      setActiveTabSection(currentSection);
+    };
+
+    const panel = getScrollPanel();
+    if (panel) {
+      panel.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    return () => {
+      const p = getScrollPanel();
+      if (p) p.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const handleSectionSelect = (sectionKey: string) => {
+    setActiveTabSection(sectionKey);
+
     // If owner selects a section from the Sections sidebar, ensure edit mode is enabled
     if (isOwner && !isEditing) {
       handleOpenEditMode();
@@ -176,8 +248,22 @@ function PublicProfileClientInner({
         ? 'virtual-card-section'
         : `section-${sectionKey}`;
 
+    const scrollPanel = 
+      document.getElementById('profile-scroll-panel') || 
+      document.getElementById('mobile-profile-scroll-panel');
+
     const el = document.getElementById(targetId) || document.getElementById(`section-${sectionKey}`);
-    if (el) {
+
+    if (el && scrollPanel) {
+      if (sectionKey === 'profile' || sectionKey === 'hero') {
+        scrollPanel.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const panelRect = scrollPanel.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const offsetTop = elRect.top - panelRect.top + scrollPanel.scrollTop - 10;
+        scrollPanel.scrollTo({ top: Math.max(0, offsetTop), behavior: 'smooth' });
+      }
+    } else if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     handleCloseSidebar();
@@ -467,6 +553,18 @@ function PublicProfileClientInner({
         />
       </div>
 
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+      <div className="shrink-0 z-30 w-full">
+        <ProfileSectionTabBar
+          profile={{ ...profile, type: profileType, theme: activeTheme }}
+          activeSection={activeTabSection}
+          onSelectSection={handleSectionSelect}
+          theme={activeThemeConfig}
+          isEditing={isEditing}
+          canEdit={isOwner}
+        />
+      </div>
+
       {/* Slide-In Section Drawer on Hover (Desktop) or Tap (Mobile) */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -545,7 +643,18 @@ function PublicProfileClientInner({
 
   const mobileView = (
     <div className="w-full h-full flex-1 flex flex-col min-h-0 relative overflow-hidden">
-      <div className="flex-1 w-full overflow-y-auto min-h-0 overscroll-contain">
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+      <div className="shrink-0 z-30 w-full">
+        <ProfileSectionTabBar
+          profile={{ ...profile, type: profileType, theme: activeTheme }}
+          activeSection={activeTabSection}
+          onSelectSection={handleSectionSelect}
+          theme={activeThemeConfig}
+          isEditing={isEditing}
+          canEdit={isOwner}
+        />
+      </div>
+      <div id="mobile-profile-scroll-panel" className="flex-1 w-full overflow-y-auto min-h-0 overscroll-contain">
         <AvtiveDigitalCard
           profile={{ ...profile, type: profileType, theme: activeTheme }}
           canEdit={isOwner}
