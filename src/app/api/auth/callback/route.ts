@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { supabaseUrl, supabaseAnonKey, SUPABASE_AUTH_STORAGE_KEY } from '@/lib/supabase';
+import { supabaseUrl, supabaseAnonKey, supabaseServiceKey, SUPABASE_AUTH_STORAGE_KEY } from '@/lib/supabase';
 import { getUserByEmail, getUserById, createUser, getProfileByUserId, getProfilesByUserId } from '@/lib/db';
 import { setSessionCookie, setReturningUserCookie, sanitizeReturnUrl, resolveReturnUrlForExistingUser } from '@/lib/auth';
 
@@ -83,7 +83,13 @@ export async function GET(request: NextRequest) {
         removeItem: () => {},
       };
 
-      const serverAuthClient = createClient(supabaseUrl, supabaseAnonKey, {
+      const serverAuthKey = (supabaseServiceKey && !supabaseServiceKey.includes('placeholder'))
+        ? supabaseServiceKey
+        : (supabaseAnonKey && !supabaseAnonKey.includes('placeholder'))
+        ? supabaseAnonKey
+        : supabaseAnonKey;
+
+      const serverAuthClient = createClient(supabaseUrl, serverAuthKey, {
         auth: {
           storageKey: SUPABASE_AUTH_STORAGE_KEY,
           storage: serverStorage,
@@ -115,7 +121,7 @@ export async function GET(request: NextRequest) {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'apikey': supabaseAnonKey,
+              'apikey': serverAuthKey,
             },
             body: JSON.stringify({
               auth_code: code,
@@ -140,11 +146,11 @@ export async function GET(request: NextRequest) {
     }
 
     if (!authUser) {
-      console.error('Unable to retrieve user from auth code. Check if NEXT_PUBLIC_SUPABASE_ANON_KEY is configured in .env.local.');
+      console.error('Unable to retrieve user from auth code. Check Supabase keys in environment variables.');
       const loginUrl = new URL('/login', request.url);
       const detailError = !verifierJson 
         ? 'OAuth session verifier expired or blocked by browser cookies. Please try again.'
-        : 'Google authentication exchange failed with Supabase. Please ensure NEXT_PUBLIC_SUPABASE_ANON_KEY is set in .env.local.';
+        : 'Google authentication exchange failed with Supabase. Please ensure your Supabase keys (NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY) are added to your Vercel Environment Variables.';
       loginUrl.searchParams.set('error', detailError);
       return NextResponse.redirect(loginUrl);
     }
