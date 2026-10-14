@@ -75,10 +75,14 @@ function ThemeStepContent() {
       .then((res) => res.json())
       .then((data) => {
         if (data.user) {
-          const hasProfiles = Boolean((data.profiles && data.profiles.length > 0) || data.profile);
-          if (hasProfiles) {
-            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug || data.user.id;
-            router.replace(`/profile/${targetSlug}`);
+          const hasCompleted = Boolean(data.user.onboardingCompleted || (data.profiles && data.profiles.length > 0) || data.profile);
+          if (hasCompleted) {
+            const targetSlug = data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
+            if (targetSlug) {
+              router.replace(`/profile/${targetSlug}`);
+            } else {
+              router.replace('/dashboard');
+            }
           }
         }
       })

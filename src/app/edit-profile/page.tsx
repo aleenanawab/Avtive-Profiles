@@ -7,7 +7,8 @@ import {
   createProfileForUser, 
   updateProfile,
   getCompanyByOwnerUserId,
-  createCompany 
+  createCompany,
+  completeUserOnboarding 
 } from '@/lib/db';
 import { normalizeProfileType, ProfileTheme } from '@/types/profile';
 import type { Metadata } from 'next';
@@ -60,6 +61,11 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
               targetProfile = updateRes.profile;
             }
           }
+          await completeUserOnboarding(
+            session.id,
+            targetProfile.type,
+            targetProfile.theme
+          );
         } else {
           const selectedRole = normalizeProfileType(role || 'individual');
           const selectedTheme = (theme && theme !== 'default' ? theme : 'editorial') as ProfileTheme;
@@ -71,6 +77,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
             type: selectedRole,
             theme: selectedTheme
           });
+          await completeUserOnboarding(session.id, selectedRole, selectedTheme);
         }
       } catch (profErr) {
         console.error('Error in profile lookup/creation in edit-profile:', profErr);

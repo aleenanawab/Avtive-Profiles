@@ -40,28 +40,31 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // 2. Check existing user
+    // 2. Check duplicate accounts on server & DB
     const existingUser = await getUserByEmail(normalizedEmail);
-
-    // 3. Constant-time defense against timing-based email enumeration:
-    // Always compute password hash to eliminate timing differences between existing and new emails
-    const passwordHash = await hashPassword(password);
-
-    // 4. Anti-enumeration defense:
-    // Return generic error without exposing whether this specific email exists in the system.
-    // Do not set cookies on error to prevent cookie-based account existence enumeration.
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Unable to process registration with the provided credentials. Please try signing in or use different details.' },
-        { status: 400 }
+        { error: 'An account with this email address already exists. Please sign in or use another email.' },
+        { status: 409 }
       );
     }
 
-    // 5. Save account (profile will be created via onboarding theme selection)
-    const { user, profile } = await createUser({
+    // 3. Compute password hash
+    const passwordHash = await hashPassword(password);
+
+    // 4. Generate one-time recovery code (format: RC-XXXX-XXXX) and store only its SHA-256 hash
+    const crypto = await import('crypto');
+    const rawCode = crypto.randomBytes(4).toString('hex').toUpperCase();
+    const recoveryCode = `RC-${rawCode.slice(0, 4)}-${rawCode.slice(4)}`;
+    const recoveryCodeHash = crypto.createHash('sha256').update(recoveryCode.trim().toUpperCase()).digest('hex');
+
+    // 5. Save account with recovery code hash (onboarding will be completed upon setup)
+    const { user } = await createUser({
       name: name.trim(),
       email: normalizedEmail,
       passwordHash,
+      recoveryCodeHash,
+      onboardingCompleted: false,
       createProfile: false
     });
 
@@ -74,12 +77,10 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json(
       {
         success: true,
-        autoLogin: false,
-        message: 'Account created successfully. Please sign in with your email and password.',
-        user: sessionUser,
-        hasProfile: false,
-        profile: null,
-        profileSlug: null
+        message: 'Account created successfully.',
+        recoveryCode, // Sent once to display with copy button and warning
+        email: user.email,
+        user: sessionUser
       },
       { status: 201 }
     );

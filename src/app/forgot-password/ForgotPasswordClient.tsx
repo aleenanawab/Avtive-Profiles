@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   KeyRound, 
   Mail, 
+  Lock,
   ArrowRight, 
   ArrowLeft, 
   Loader2, 
@@ -12,36 +13,63 @@ import {
   CheckCircle2, 
   ShieldCheck, 
   Sparkles,
-  ExternalLink,
   Copy,
-  Check
+  Check,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
 export default function ForgotPasswordClient() {
-  const [email, setEmail] = useState('');
-  const [returnUrl, setReturnUrl] = useState<string | null>(null);
+  const [identifier, setIdentifier] = useState('');
+  const [recoveryCode, setRecoveryCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [resetUrl, setResetUrl] = useState<string | null>(null);
+  const [newRecoveryCode, setNewRecoveryCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const sp = new URLSearchParams(window.location.search);
-      const raw = sp.get('returnUrl');
-      if (raw) setReturnUrl(raw);
+      const emailParam = sp.get('email');
+      if (emailParam) {
+        setIdentifier(emailParam);
+      }
     }
   }, []);
 
-  const handleSendResetLink = async (e: React.FormEvent) => {
+  const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
-    setResetUrl(null);
+    setNewRecoveryCode(null);
 
-    if (!email.trim() || !email.includes('@')) {
-      setErrorMessage('Please enter a valid email address.');
+    const cleanIdentifier = identifier.trim();
+    const cleanCode = recoveryCode.trim().toUpperCase();
+
+    if (!cleanIdentifier) {
+      setErrorMessage('Please enter your registered email address or username.');
+      return;
+    }
+
+    if (!cleanCode) {
+      setErrorMessage('Please enter your recovery code.');
+      return;
+    }
+
+    if (!newPassword || newPassword.length < 8) {
+      setErrorMessage('New password must be at least 8 characters long.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setErrorMessage('Passwords do not match. Please verify both passwords.');
       return;
     }
 
@@ -51,26 +79,39 @@ export default function ForgotPasswordClient() {
       const res = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() })
+        body: JSON.stringify({
+          identifier: cleanIdentifier,
+          recoveryCode: cleanCode,
+          newPassword,
+          confirmPassword
+        })
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMessage(data.error || 'Failed to send reset link.');
+        setErrorMessage(data.error || 'Failed to reset password. Please check your recovery code.');
         setIsLoading(false);
         return;
       }
 
-      setSuccessMessage(data.message || 'If an account exists with this email address, a password reset link has been sent.');
-      if (data.resetUrl) {
-        setResetUrl(data.resetUrl);
+      setSuccessMessage(data.message || 'Your password has been successfully reset.');
+      if (data.newRecoveryCode) {
+        setNewRecoveryCode(data.newRecoveryCode);
       }
       setIsLoading(false);
     } catch (err) {
       console.error(err);
-      setErrorMessage('Network error while requesting password reset.');
+      setErrorMessage('Network error occurred while resetting password.');
       setIsLoading(false);
+    }
+  };
+
+  const copyToClipboard = (code: string) => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
     }
   };
 
@@ -79,12 +120,11 @@ export default function ForgotPasswordClient() {
   // ──────────────────────────────────────────────────────────────────────────
   const desktopView = (
     <div className="w-full max-w-4xl mx-auto my-auto py-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-      
-      {/* Left Column: Brand & Security Highlights */}
+      {/* Left Column: Brand & Security Instructions */}
       <div className="lg:col-span-5 space-y-6 text-left">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-700 dark:text-cyan-300 text-xs font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
-          <span>Avtive Account Recovery</span>
+          <span>In-App Account Recovery</span>
         </div>
 
         <div className="space-y-2">
@@ -95,7 +135,7 @@ export default function ForgotPasswordClient() {
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Reset Password</h1>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-            Enter your account email to receive a secure, one-time password reset link.
+            Enter your email or username along with the one-time recovery code provided during registration to securely set a new password.
           </p>
         </div>
 
@@ -105,73 +145,33 @@ export default function ForgotPasswordClient() {
               <ShieldCheck className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Cryptographic Verification</h4>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Time-limited encrypted reset tokens valid for 1 hour.</p>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white">Zero-Knowledge Recovery</h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Only the cryptographic hash of your code is verified. No external email links required.
+              </p>
             </div>
           </div>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-slate-400 flex items-center justify-between">
           <span>Remember your password?</span>
-          <Link href={returnUrl ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : '/login'} className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 flex items-center gap-1">
+          <Link href="/login" className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 flex items-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Sign In</span>
           </Link>
         </div>
       </div>
 
-      {/* Right Column: Reset Link Form */}
+      {/* Right Column: Reset Password Form */}
       <div className="lg:col-span-7">
         <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-xl space-y-5 text-left">
           
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Forgot Your Password?</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">We will send a reset link to verify your identity</p>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Account Recovery</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Verify your ownership code and choose a new password
+            </p>
           </div>
-
-          {successMessage && (
-            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-2">
-              <div className="flex items-center gap-2 font-bold text-sm">
-                <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                <span>{resetUrl ? 'Recovery Link Ready' : 'Password Reset Email Sent'}</span>
-              </div>
-              <p className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
-                {successMessage}
-              </p>
-            </div>
-          )}
-
-          {resetUrl && (
-            <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-slate-800 dark:text-slate-100 text-xs space-y-3">
-              <div className="flex items-center gap-2 font-bold text-sm text-cyan-700 dark:text-cyan-300">
-                <ShieldCheck className="w-5 h-5 shrink-0 text-cyan-600 dark:text-cyan-400" />
-                <span>One-Time Direct Reset Link</span>
-              </div>
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                Since SMTP email delivery is unconfigured in this environment, click below to set your new password using this verified, one-time server token:
-              </p>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Link
-                  href={resetUrl}
-                  className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-cyan-500/20 cursor-pointer"
-                >
-                  <span>Reset Password Now</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(resetUrl);
-                    alert('Reset link copied to clipboard!');
-                  }}
-                  className="py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 border border-slate-200 dark:border-white/10 cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Copy Link</span>
-                </button>
-              </div>
-            </div>
-          )}
 
           {errorMessage && (
             <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
@@ -180,44 +180,151 @@ export default function ForgotPasswordClient() {
             </div>
           )}
 
-          <form onSubmit={handleSendResetLink} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Registered Email Address</label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. aleena@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
-                />
+          {successMessage && newRecoveryCode ? (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 text-xs space-y-2">
+                <div className="flex items-center gap-2 font-bold text-sm text-emerald-700 dark:text-emerald-300">
+                  <CheckCircle2 className="w-5 h-5 shrink-0" />
+                  <span>Password Reset Successfully!</span>
+                </div>
+                <p className="text-xs leading-relaxed">
+                  Your password has been updated. Your previous recovery code has been invalidated, and a fresh code has been issued below.
+                </p>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 px-6 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Dispatching Reset Link...</span>
-                </>
-              ) : (
-                <>
-                  <span>Send Reset Link</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Your New Recovery Code:</p>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 font-mono text-sm font-bold tracking-wider text-slate-900 dark:text-white">
+                  <span>{newRecoveryCode}</span>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(newRecoveryCode)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/20 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copied ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-300 text-[11px] flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <span>Save this new code now. You will need it if you ever reset your password again.</span>
+                </div>
+              </div>
+
+              <Link
+                href={`/login?email=${encodeURIComponent(identifier.trim())}&reset=success`}
+                className="w-full py-3 px-6 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <span>Return to Login</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Email Address or Username
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="e.g. aleena@example.com or aleena"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  One-Time Recovery Code
+                </label>
+                <div className="relative">
+                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={recoveryCode}
+                    onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
+                    placeholder="e.g. RC-A1B2-C3D4"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm font-mono tracking-wider text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">New Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="At least 8 characters"
+                    className="w-full pl-10 pr-11 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-white p-1"
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Confirm New Password</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Repeat new password"
+                    className="w-full pl-10 pr-11 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-white p-1"
+                    aria-label="Toggle confirm password visibility"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 px-6 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Resetting Password...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Reset Password</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
 
         </div>
       </div>
-
     </div>
   );
 
@@ -226,7 +333,6 @@ export default function ForgotPasswordClient() {
   // ──────────────────────────────────────────────────────────────────────────
   const mobileView = (
     <div className="w-full flex-1 flex flex-col justify-between p-3.5 sm:p-4 text-left overflow-y-auto">
-      
       <div className="space-y-3">
         {/* Mobile Header */}
         <div className="flex flex-col items-center justify-center pt-1 pb-1 text-center">
@@ -239,53 +345,8 @@ export default function ForgotPasswordClient() {
             <KeyRound className="w-5 h-5 text-white" />
           </div>
           <h2 className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">Reset Password</h2>
-          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">Enter your email to receive a reset link</p>
+          <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">Use your one-time code to set a new password</p>
         </div>
-
-        {/* Notifications */}
-        {successMessage && (
-          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-1.5">
-            <div className="flex items-center gap-1.5 font-bold">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-              <span>{resetUrl ? 'Recovery Link Ready' : 'Password Reset Email Sent'}</span>
-            </div>
-            <p className="text-[11px] text-emerald-800 dark:text-emerald-200">
-              {successMessage}
-            </p>
-          </div>
-        )}
-
-        {resetUrl && (
-          <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-slate-800 dark:text-slate-100 text-xs space-y-2">
-            <div className="flex items-center gap-1.5 font-bold text-xs text-cyan-700 dark:text-cyan-300">
-              <ShieldCheck className="w-4 h-4 shrink-0 text-cyan-600 dark:text-cyan-400" />
-              <span>One-Time Direct Reset Link</span>
-            </div>
-            <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-tight">
-              Since SMTP email is unconfigured, proceed with this verified server token:
-            </p>
-            <div className="flex flex-col gap-1.5 pt-0.5">
-              <Link
-                href={resetUrl}
-                className="py-2 px-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-              >
-                <span>Reset Password Now</span>
-                <ExternalLink className="w-3 h-3" />
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(resetUrl);
-                  alert('Reset link copied to clipboard!');
-                }}
-                className="py-1.5 px-3 rounded-lg bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 text-slate-700 dark:text-slate-200 font-medium text-[10px] flex items-center justify-center gap-1 border border-slate-200 dark:border-white/10 cursor-pointer"
-              >
-                <Copy className="w-3 h-3" />
-                <span>Copy Link</span>
-              </button>
-            </div>
-          </div>
-        )}
 
         {errorMessage && (
           <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
@@ -294,60 +355,161 @@ export default function ForgotPasswordClient() {
           </div>
         )}
 
-        {/* Mobile Form Card */}
-        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-lg space-y-3">
-          <form onSubmit={handleSendResetLink} className="space-y-3">
-            <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">Email Address</label>
-              <div className="relative">
-                <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. aleena@example.com"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
-                />
+        {successMessage && newRecoveryCode ? (
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-lg space-y-3">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 text-xs space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-700 dark:text-emerald-300">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>Password Reset Successfully!</span>
               </div>
+              <p className="text-[10px] leading-tight">Your new recovery code has been issued below:</p>
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+            <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-between font-mono text-xs font-bold text-slate-900 dark:text-white">
+              <span>{newRecoveryCode}</span>
+              <button
+                type="button"
+                onClick={() => copyToClipboard(newRecoveryCode)}
+                className="px-2 py-1 rounded text-[10px] font-semibold bg-white dark:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 flex items-center gap-1 cursor-pointer"
+              >
+                {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                <span>{copied ? 'Copied' : 'Copy'}</span>
+              </button>
+            </div>
+
+            <Link
+              href={`/login?email=${encodeURIComponent(identifier.trim())}&reset=success`}
+              className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center justify-center gap-1.5"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Sending...</span>
-                </>
-              ) : (
-                <>
-                  <span>Send Reset Link</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </>
-              )}
-            </button>
-          </form>
-        </div>
+              <span>Return to Login</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        ) : (
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-lg space-y-3">
+            <form onSubmit={handleResetPassword} className="space-y-2.5">
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">
+                  Email or Username
+                </label>
+                <div className="relative">
+                  <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="e.g. aleena@example.com"
+                    className="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">
+                  Recovery Code
+                </label>
+                <div className="relative">
+                  <KeyRound className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={recoveryCode}
+                    onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
+                    placeholder="RC-XXXX-XXXX"
+                    className="w-full pl-8 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs font-mono tracking-wider text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">
+                  New Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="At least 8 chars"
+                    className="w-full pl-8 pr-9 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-white p-0.5"
+                    aria-label="Toggle password visibility"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 ml-0.5">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    minLength={8}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Repeat password"
+                    className="w-full pl-8 pr-9 py-2 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-300 dark:border-white/10 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-white p-0.5"
+                    aria-label="Toggle confirm password visibility"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5 mt-2"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Resetting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Reset Password</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Footer Link */}
       <div className="pt-3 pb-1 text-center text-[11px] text-slate-500 dark:text-slate-400">
         <span>Remembered your password? </span>
-        <Link href={returnUrl ? `/login?returnUrl=${encodeURIComponent(returnUrl)}` : '/login'} className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 ml-1">
+        <Link href="/login" className="font-bold text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 underline underline-offset-4 ml-1">
           Back to Login
         </Link>
       </div>
-
     </div>
   );
 
   return (
     <DualScreenWorkspace
       workflowTitle="Forgot Password"
-      workflowSubtitle="Secure Account Password Reset"
+      workflowSubtitle="In-App Recovery with One-Time Code"
       currentUrlPath="/forgot-password"
       desktopContent={desktopView}
       mobileContent={mobileView}

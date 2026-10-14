@@ -130,6 +130,8 @@ export interface UserRecord {
   resetToken?: string;
   resetTokenExpires?: string;
   onboardingCompleted?: boolean;
+  recoveryCodeHash?: string;
+  preferredTheme?: ProfileTheme;
 }
 
 export interface UserConnection {

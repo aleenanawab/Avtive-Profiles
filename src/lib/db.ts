@@ -469,6 +469,30 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
   return null;
 }
 
+export async function getUserByEmailOrUsername(identifier: string): Promise<UserRecord | null> {
+  const clean = identifier.toLowerCase().trim();
+  if (clean.includes('@')) {
+    return getUserByEmail(clean);
+  }
+  // Try direct username lookup on user records
+  const db = loadDb();
+  const matchedUser = db.users.find(
+    (u) => (u as any).username?.toLowerCase().trim() === clean || u.name?.toLowerCase().trim() === clean
+  );
+  if (matchedUser) return matchedUser;
+
+  // Try lookup via profile slug or username
+  const matchedProfile = Object.values(db.profiles).find(
+    (p) => p.slug?.toLowerCase().trim() === clean || p.username?.toLowerCase().trim() === clean
+  );
+  if (matchedProfile && matchedProfile.userId) {
+    const user = await getUserById(matchedProfile.userId);
+    if (user) return user;
+  }
+
+  return getUserByEmail(clean);
+}
+
 export async function createUser(data: {
   id?: string;
   name: string;
@@ -477,6 +501,9 @@ export async function createUser(data: {
   avatar?: string;
   role?: ProfileType;
   createProfile?: boolean;
+  recoveryCodeHash?: string;
+  onboardingCompleted?: boolean;
+  preferredTheme?: ProfileTheme;
 }): Promise<{ user: UserRecord; profile?: ProfileData }> {
   const db = loadDb();
   const userId = data.id || `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
@@ -488,7 +515,9 @@ export async function createUser(data: {
     passwordHash: data.passwordHash || `oauth_verified_${Date.now()}`,
     avatar: data.avatar,
     role: data.role ? normalizeProfileType(data.role) : undefined,
-    onboardingCompleted: data.createProfile ? true : false,
+    onboardingCompleted: data.onboardingCompleted !== undefined ? data.onboardingCompleted : (data.createProfile ? true : false),
+    recoveryCodeHash: data.recoveryCodeHash,
+    preferredTheme: data.preferredTheme,
     createdAt: new Date().toISOString()
   };
 
@@ -513,6 +542,7 @@ export async function createUser(data: {
         password_hash: newUser.passwordHash,
         avatar_url: newUser.avatar,
         role: newUser.role,
+        recovery_code_hash: newUser.recoveryCodeHash,
         onboarding_completed: newUser.onboardingCompleted,
         created_at: newUser.createdAt
       })
@@ -657,6 +687,106 @@ export async function resetUserPassword(email: string, token: string, newPasswor
 
   saveDb(db);
   return user;
+}
+
+export async function verifyRecoveryCode(
+  emailOrUsername: string,
+  recoveryCode: string
+): Promise<{ valid: boolean; user?: UserRecord; error?: string }> {
+  const user = await getUserByEmailOrUsername(emailOrUsername);
+  if (!user) {
+    return { valid: false, error: 'Invalid email/username or recovery code.' };
+  }
+
+  if (!user.recoveryCodeHash) {
+    return { valid: false, error: 'No recovery code configured for this account. Please contact support.' };
+  }
+
+  const crypto = await import('crypto');
+  const codeHash = crypto.createHash('sha256').update(recoveryCode.trim().toUpperCase()).digest('hex');
+
+  if (user.recoveryCodeHash !== codeHash) {
+    return { valid: false, error: 'Invalid email/username or recovery code.' };
+  }
+
+  return { valid: true, user };
+}
+
+export async function resetPasswordWithRecoveryCode(
+  emailOrUsername: string,
+  recoveryCode: string,
+  newPasswordHash: string,
+  newRecoveryCodeHash: string
+): Promise<{ success: boolean; user?: UserRecord; error?: string }> {
+  const db = loadDb();
+  const identifier = emailOrUsername.toLowerCase().trim();
+  const userIndex = db.users.findIndex(
+    (u) => u.email.toLowerCase().trim() === identifier || (u as any).username?.toLowerCase().trim() === identifier
+  );
+
+  const user = userIndex !== -1 ? db.users[userIndex] : await getUserByEmailOrUsername(identifier);
+  if (!user) {
+    return { success: false, error: 'User account not found.' };
+  }
+
+  const crypto = await import('crypto');
+  const codeHash = crypto.createHash('sha256').update(recoveryCode.trim().toUpperCase()).digest('hex');
+
+  if (!user.recoveryCodeHash || user.recoveryCodeHash !== codeHash) {
+    return { success: false, error: 'Invalid recovery code.' };
+  }
+
+  user.passwordHash = newPasswordHash;
+  user.recoveryCodeHash = newRecoveryCodeHash; // invalidate old code, set new one
+  delete user.resetToken;
+  delete user.resetTokenExpires;
+
+  if (userIndex !== -1) {
+    db.users[userIndex] = user;
+  }
+  saveDb(db);
+
+  // Sync to Supabase if available
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('users').update({
+        password_hash: newPasswordHash,
+        recovery_code_hash: newRecoveryCodeHash
+      }).eq('id', user.id)
+    );
+  } catch {}
+
+  return { success: true, user };
+}
+
+export async function completeUserOnboarding(
+  userId: string,
+  role?: ProfileType,
+  theme?: ProfileTheme
+): Promise<{ success: boolean; user?: UserRecord }> {
+  const db = loadDb();
+  const userIndex = db.users.findIndex((u) => u.id === userId);
+  if (userIndex === -1) {
+    return { success: false };
+  }
+  const user = db.users[userIndex];
+  user.onboardingCompleted = true;
+  if (role) user.role = normalizeProfileType(role);
+  if (theme) user.preferredTheme = theme;
+  db.users[userIndex] = user;
+  saveDb(db);
+
+  try {
+    asyncSyncSupabase(
+      supabaseAdmin.from('users').update({
+        onboarding_completed: true,
+        role: user.role,
+        theme: user.preferredTheme
+      }).eq('id', userId)
+    );
+  } catch {}
+
+  return { success: true, user };
 }
 
 export async function createProfileForUser(

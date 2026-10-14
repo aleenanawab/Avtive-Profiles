@@ -68,14 +68,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userProfile = await getProfileByUserId(user.id);
+    const isOnboardingComplete = Boolean(user.onboardingCompleted || userProfile);
+
     // Set persistent, secure session cookie
     const sessionUser = {
       id: user.id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      onboardingCompleted: isOnboardingComplete,
+      role: user.role || userProfile?.type || 'individual',
+      preferredTheme: user.preferredTheme || userProfile?.theme || 'editorial'
     };
-
-    const userProfile = await getProfileByUserId(user.id);
 
     const response = NextResponse.json({
       success: true,
@@ -83,6 +87,7 @@ export async function POST(request: NextRequest) {
       user: sessionUser,
       hasProfile: Boolean(userProfile),
       profileSlug: userProfile?.slug || userProfile?.id || null,
+      onboardingCompleted: isOnboardingComplete,
       role: userProfile?.type || user.role || null
     });
 

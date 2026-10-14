@@ -108,8 +108,8 @@ export function HeaderNav({
           </div>
         </Link>
 
-        {/* Center: Navigation Options (Only shown when profile has both Individual and Team profiles) */}
-        {hasTeamOrCompany && onSelectProfileType && (
+        {/* Center: Navigation Options (Only shown when not editing and profile has both Individual and Team profiles) */}
+        {hasTeamOrCompany && onSelectProfileType && !isEditing && (
           <div className={`hidden sm:flex items-center p-0.5 sm:p-1 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-xs shrink-0`}>
             {/* 1. Individual */}
             <button
@@ -141,36 +141,34 @@ export function HeaderNav({
           </div>
         )}
 
-        {/* Right Controls: Edit/Save/Cancel, Sections Icon, Theme Toggle, Share, and Logout */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0 min-w-0">
+        {/* Right Controls: Edit/Save/Cancel, Theme Toggle, Share, and Logout */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
           {/* Edit Profile Button (Visible only to authenticated profile owner when not editing) */}
           {canEdit && !isEditing && onOpenEdit && (
             <button
               type="button"
               onClick={onOpenEdit}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} text-xs font-bold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8 active:scale-95`}
+              className={`w-8 h-8 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center active:scale-95`}
               title="Edit Profile"
               aria-label="Edit Profile"
             >
               <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
-              <span className="hidden sm:inline">Edit</span>
             </button>
           )}
 
           {/* Edit Mode Actions: Cancel and Save (Visible when isEditing) */}
           {isEditing && (
-            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {onCancelEdit && (
                 <button
                   type="button"
                   onClick={onCancelEdit}
                   disabled={isSaving}
-                  className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} text-xs font-semibold border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer h-8 active:scale-95 disabled:opacity-50`}
-                  title="Cancel and discard unsaved changes"
+                  className={`w-8 h-8 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textSecondary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center active:scale-95 disabled:opacity-50`}
+                  title="Cancel and discard changes"
                   aria-label="Cancel Changes"
                 >
                   <X className="w-3.5 h-3.5 text-rose-500" />
-                  <span className="hidden sm:inline">Cancel</span>
                 </button>
               )}
               {onSaveEdits && (
@@ -178,7 +176,7 @@ export function HeaderNav({
                   type="button"
                   onClick={onSaveEdits}
                   disabled={isSaving}
-                  className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl ${theme.btnPrimary} text-xs font-bold shadow-xs transition-all shrink-0 cursor-pointer h-8 active:scale-95 disabled:opacity-50`}
+                  className={`h-8 px-3 rounded-xl ${theme.btnPrimary} text-xs font-bold shadow-xs transition-all shrink-0 cursor-pointer flex items-center gap-1.5 active:scale-95 disabled:opacity-50`}
                   title="Save profile changes"
                   aria-label="Save Changes"
                 >
@@ -187,7 +185,7 @@ export function HeaderNav({
                   ) : (
                     <Save className="w-3.5 h-3.5" />
                   )}
-                  <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
+                  <span>{isSaving ? 'Saving...' : 'Save'}</span>
                 </button>
               )}
             </div>
@@ -210,17 +208,16 @@ export function HeaderNav({
             </button>
           )}
 
-          {/* Share Button */}
-          {onOpenShare && (
+          {/* Share Button (When not editing) */}
+          {onOpenShare && !isEditing && (
             <button
               type="button"
               onClick={onOpenShare}
-              className={`w-8 h-8 sm:w-auto px-2 sm:px-3 py-1.5 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer flex items-center justify-center gap-1.5`}
+              className={`w-8 h-8 rounded-xl ${theme.btnPrimary} font-bold text-xs shadow-xs transition-all active:scale-95 shrink-0 cursor-pointer flex items-center justify-center`}
               title="Share Profile"
               aria-label="Share Profile"
             >
               <Share2 className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden sm:inline">Share</span>
             </button>
           )}
 
@@ -229,12 +226,11 @@ export function HeaderNav({
             <button
               type="button"
               onClick={onLogout}
-              className={`w-8 h-8 sm:w-auto px-2 sm:px-2.5 py-1.5 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold text-xs shadow-2xs transition-all active:scale-95 shrink-0 cursor-pointer flex items-center justify-center gap-1.5`}
+              className="w-8 h-8 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold text-xs shadow-2xs transition-all active:scale-95 shrink-0 cursor-pointer flex items-center justify-center"
               title="Sign Out"
               aria-label="Logout"
             >
               <LogOut className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden sm:inline">Logout</span>
             </button>
           )}
         </div>

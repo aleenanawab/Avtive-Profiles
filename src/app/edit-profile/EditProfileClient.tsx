@@ -24,7 +24,8 @@ import {
   X,
   ArrowRight,
   Sun,
-  Moon
+  Moon,
+  Smartphone
 } from 'lucide-react';
 
 export interface EditProfileClientProps {
@@ -87,6 +88,7 @@ function EditProfileClientInner({
   const [isSidebarPinned, setIsSidebarPinned] = useState(false);
   const closeTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const isTouchRef = React.useRef(false);
+  const [mobileView, setMobileView] = useState<'editor' | 'preview'>('editor');
 
   const { 
     profile, 
@@ -279,7 +281,9 @@ function EditProfileClientInner({
         {/* ======================================================================= */}
         <section 
           aria-label="Desktop Working Screen"
-          className="flex-1 h-full min-h-0 w-full min-w-0 max-w-[1240px] flex flex-col rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-none sm:shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors flex"
+          className={`${
+            mobileView === 'preview' ? 'hidden xl:flex' : 'flex'
+          } flex-1 h-full min-h-0 w-full min-w-0 max-w-[1240px] flex-col rounded-none sm:rounded-2xl lg:rounded-3xl border-0 sm:border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0A101E] shadow-none sm:shadow-xl dark:shadow-2xl dark:shadow-black/60 overflow-hidden transition-colors`}
         >
           {/* Desktop Frame Window Bar */}
           <div className="w-full bg-slate-50 dark:bg-[#0E1528] border-b border-slate-200 dark:border-white/10 px-4 py-2.5 flex items-center justify-between gap-3 shrink-0 transition-colors overflow-x-auto sm:overflow-visible">
@@ -332,51 +336,46 @@ function EditProfileClientInner({
               </button>
             </div>
 
-            {/* Inside Action Buttons: Functional Buttons Moved Inside Screen */}
-            <div className="flex items-center gap-2 shrink-0">
-              {userProfiles && userProfiles.length > 1 && (
-                <ProfileSwitcher
-                  currentProfileIdOrSlug={identifier}
-                  initialProfiles={userProfiles}
-                  onSelectProfile={handleSwitchToProfile}
-                />
-              )}
-
+            {/* Inside Action Buttons: Functional Buttons Moved Inside Screen (Save, Theme, Logout) */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
                 onClick={onGlobalSave}
                 disabled={isSaving}
-                aria-label="Save All"
-                title="Save All"
-                className="p-1.5 px-3 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white shadow-2xs dark:shadow-md dark:shadow-cyan-500/25 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all active:scale-95"
+                aria-label="Save Changes"
+                title="Save Changes"
+                className="h-8 px-3 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white shadow-2xs dark:shadow-md dark:shadow-cyan-500/25 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all active:scale-95 shrink-0"
               >
                 {isSaving ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
                   <Save className="w-3.5 h-3.5" />
                 )}
-                <span className="hidden sm:inline">Save</span>
+                <span>{isSaving ? 'Saving...' : 'Save'}</span>
               </button>
 
-              {/* Next Button */}
+              {/* Mobile Editor/Preview Toggle Button */}
               <button
                 type="button"
-                onClick={handleTopBarNext}
-                aria-label="Next"
-                title="Next section"
-                className="p-1.5 px-3 rounded-xl text-xs font-semibold bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-2xs dark:bg-white/10 dark:hover:bg-white/15 dark:text-white dark:border-white/10 dark:shadow-none flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shrink-0"
+                onClick={() => setMobileView(prev => prev === 'editor' ? 'preview' : 'editor')}
+                aria-label={mobileView === 'editor' ? "View Mobile Preview" : "View Editor"}
+                title={mobileView === 'editor' ? "Switch to Phone Preview" : "Switch to Editor"}
+                className="xl:hidden w-8 h-8 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer shrink-0 active:scale-95"
               >
-                <span className="hidden sm:inline">Next</span>
-                <ArrowRight className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                {mobileView === 'editor' ? (
+                  <Smartphone className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                ) : (
+                  <Menu className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
+                )}
               </button>
 
               {/* Minimal Light/Dark Theme Toggle: icon only, no text */}
               <button
                 type="button"
                 onClick={toggleDarkMode}
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label="Toggle Theme"
                 title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer shrink-0"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer shrink-0 active:scale-95"
               >
                 {isDark ? (
                   <Sun className="w-3.5 h-3.5 text-amber-400" />
@@ -385,47 +384,16 @@ function EditProfileClientInner({
                 )}
               </button>
 
-              <Link
-                href={`/profile/${identifier}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Live URL"
-                title="Open public profile in new tab"
-                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors shrink-0"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
-              </Link>
-
               <button
                 type="button"
                 onClick={handleLogout}
-                aria-label="Logout"
-                title="Sign Out"
-                className="p-1.5 rounded-lg text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/15 border border-rose-200 dark:border-rose-500/20 transition-colors cursor-pointer shrink-0"
+                aria-label="Sign Out"
+                title="Logout"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/15 border border-rose-200 dark:border-rose-500/20 transition-colors cursor-pointer shrink-0 active:scale-95"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
             </div>
-          </div>
-
-          {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
-          <div className="shrink-0 z-20 w-full">
-            <ProfileSectionTabBar
-              profile={profile}
-              activeSection={activeSection}
-              onSelectSection={(secKey) => {
-                setActiveSection(secKey);
-                const el = 
-                  document.getElementById(`section-card-${secKey}`) ||
-                  document.getElementById(`section-${secKey}`) ||
-                  (secKey === 'profile' ? document.getElementById('top-profile-header') : null);
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-              }}
-              isEditing={true}
-              canEdit={true}
-            />
           </div>
 
           {/* Desktop Editor Canvas (Relative container for slide-in drawer) */}
@@ -496,14 +464,28 @@ function EditProfileClientInner({
         {/* ======================================================================= */}
         <aside 
           aria-label="Mobile Working Screen"
-          className="hidden xl:flex w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] min-w-0 shrink-0 flex-col items-center justify-start sticky top-2 sm:top-3 lg:top-4 self-center xl:self-start box-border transition-colors"
+          className={`${
+            mobileView === 'preview' ? 'flex' : 'hidden xl:flex'
+          } w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] min-w-0 shrink-0 flex-col items-center justify-start sticky top-2 sm:top-3 lg:top-4 self-center xl:self-start box-border transition-colors`}
         >
           {/* Smartphone Chassis Frame (Responsive, fits viewport height at 100% zoom) */}
           <div className="w-full max-w-[340px] sm:max-w-[360px] 2xl:max-w-[375px] h-[min(667px,calc(100dvh-2rem))] sm:h-[min(667px,calc(100dvh-2.5rem))] rounded-[32px] sm:rounded-[38px] 2xl:rounded-[40px] border-[5px] sm:border-[6px] border-slate-300 dark:border-slate-800 bg-white dark:bg-[#090E1B] shadow-2xl shadow-slate-400/20 dark:shadow-black/80 flex flex-col overflow-hidden relative ring-1 ring-slate-200 dark:ring-white/10 transition-colors min-h-0 box-border">
             
             {/* Phone Status Bar (9:41, Wifi, Battery) */}
             <div className="w-full bg-slate-100 dark:bg-[#090E1B] pt-2 px-4 pb-1 flex items-center justify-between text-[11px] font-mono font-semibold text-slate-700 dark:text-slate-300 shrink-0 border-b border-slate-200 dark:border-white/5 select-none transition-colors">
-              <span>9:41</span>
+              <div className="flex items-center gap-2">
+                <span>9:41</span>
+                {mobileView === 'preview' && (
+                  <button
+                    type="button"
+                    onClick={() => setMobileView('editor')}
+                    aria-label="Back to Editor"
+                    className="xl:hidden px-1.5 py-0.5 rounded text-[10px] font-bold bg-cyan-600 hover:bg-cyan-500 text-white cursor-pointer"
+                  >
+                    ← Editor
+                  </button>
+                )}
+              </div>
               <div className="w-20 h-4 rounded-full bg-slate-900 dark:bg-black border border-slate-700 dark:border-white/10 flex items-center justify-center">
                 <span className="w-2 h-2 rounded-full bg-slate-800 dark:bg-slate-900 border border-slate-600 dark:border-white/20" />
               </div>

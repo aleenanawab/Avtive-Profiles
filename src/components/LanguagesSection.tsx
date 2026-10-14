@@ -73,19 +73,34 @@ export function LanguagesSection({
   }
 
   const handleAddLanguage = () => {
+    const existing = new Set(languagesDraft.map((l) => l.language.toLowerCase().trim()));
+    const firstOpt = WORLD_LANGUAGES.find((lang) => !existing.has(lang.name.toLowerCase()) && !existing.has(lang.value.toLowerCase()));
+    const firstAvailable = firstOpt ? firstOpt.name : '';
     const newLang: LanguageItem = {
-      language: '',
+      language: firstAvailable,
       proficiency: 'Professional Working'
     };
-    setLanguagesDraft((prev) => [...prev, newLang]);
+    setLanguagesDraft((prev) => {
+      const next = [...prev, newLang];
+      onUpdateField?.('languages', next);
+      return next;
+    });
   };
 
   const handleUpdateLanguage = (index: number, updates: Partial<LanguageItem>) => {
-    setLanguagesDraft((prev) => prev.map((l, idx) => (idx === index ? { ...l, ...updates } : l)));
+    setLanguagesDraft((prev) => {
+      const next = prev.map((l, idx) => (idx === index ? { ...l, ...updates } : l));
+      onUpdateField?.('languages', next);
+      return next;
+    });
   };
 
   const handleRemoveLanguage = (index: number) => {
-    setLanguagesDraft((prev) => prev.filter((_, idx) => idx !== index));
+    setLanguagesDraft((prev) => {
+      const next = prev.filter((_, idx) => idx !== index);
+      onUpdateField?.('languages', next);
+      return next;
+    });
   };
 
   return (
@@ -119,27 +134,37 @@ export function LanguagesSection({
 
       {hasLanguages ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          {languagesDraft.map((lang, idx) => (
-            <div
-              key={idx}
-              className={`p-3.5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} shadow-2xs`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {isEditing ? (
-                /* Editable Language Item */
-                <div className="space-y-2.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 space-y-2">
-                      <div>
-                        <FormLabel>Language</FormLabel>
-                        <SearchableCombobox
-                          options={WORLD_LANGUAGES}
-                          value={lang.language || ''}
-                          onChange={(val) => handleUpdateLanguage(idx, { language: val as string })}
-                          placeholder="Select or type language (e.g. English, French)..."
-                          allowCustom
-                        />
-                      </div>
+          {languagesDraft.map((lang, idx) => {
+            const otherSelected = new Set(
+              languagesDraft
+                .filter((_, i) => i !== idx && Boolean(_.language))
+                .map((item) => item.language.trim().toLowerCase())
+            );
+            const availableOptions = WORLD_LANGUAGES.filter(
+              (opt) => !otherSelected.has(opt.name.toLowerCase()) && !otherSelected.has(opt.value.toLowerCase())
+            );
+
+            return (
+              <div
+                key={idx}
+                className={`p-3.5 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} shadow-2xs`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {isEditing ? (
+                  /* Editable Language Item */
+                  <div className="space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 space-y-2">
+                        <div>
+                          <FormLabel>Language</FormLabel>
+                          <SearchableCombobox
+                            options={availableOptions}
+                            value={lang.language || ''}
+                            onChange={(val) => handleUpdateLanguage(idx, { language: val as string })}
+                            placeholder="Select or type language (e.g. English, French)..."
+                            allowCustom
+                          />
+                        </div>
                       <div>
                         <FormLabel>Proficiency Level</FormLabel>
                         <select
@@ -184,7 +209,8 @@ export function LanguagesSection({
                 </div>
               )}
             </div>
-          ))}
+          );
+        })}
         </div>
       ) : (
         <div className={`p-4 rounded-2xl ${theme.cardBg} border ${theme.cardBorder} text-center`}>

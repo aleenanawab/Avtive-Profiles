@@ -292,8 +292,8 @@ export function HeroSection({
           </div>
         )}
 
-        {/* Cover Corner Section Navigation Button (Top corner of profile cover - Visible on Desktop & Mobile) */}
-        {(onToggleSections || onSectionsMouseEnter) && (
+        {/* Cover Corner Section Navigation Button (Top corner of profile cover - Visible on Desktop & Mobile in Public Profile View) */}
+        {!isEditing && (onToggleSections || onSectionsMouseEnter) && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
             <button
               type="button"
@@ -315,23 +315,21 @@ export function HeroSection({
           </div>
         )}
 
-        {/* Cover Header Controls: Multi-Role Persona Switcher & Edit Icon (Owner Only) */}
-        {canEdit && (
+        {/* Cover Header Controls: Multi-Role Persona Switcher & Edit Icon (Owner Only in Public/Preview View) */}
+        {canEdit && !isEditing && (
           <div className="absolute top-3 right-3 sm:top-4 sm:right-5 flex items-center gap-2 z-20">
             <ProfileSwitcher currentProfileIdOrSlug={profile.slug || profile.id} />
-            {!isEditing && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenEdit?.();
-                }}
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                title="Edit Profile"
-              >
-                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenEdit?.();
+              }}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md border border-white/20 shadow-xs flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              title="Edit Profile"
+            >
+              <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+            </button>
           </div>
         )}
       </div>
@@ -420,12 +418,6 @@ export function HeroSection({
                 <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-black/5 dark:bg-white/10 text-slate-700 dark:text-zinc-300 border border-black/5 dark:border-white/10">
                   {typeBadgeLabel}
                 </div>
-              )}
-              {isEditing && (
-                <span className="text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
-                  <Pencil className="w-2.5 h-2.5" />
-                  Editing In-Place
-                </span>
               )}
             </div>
 
@@ -653,7 +645,7 @@ export function HeroSection({
         {/* Action Buttons Below Avatar */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 pt-2 max-w-md w-full min-w-0 flex-wrap sm:flex-nowrap">
           {canEdit ? (
-            isCompany ? (
+            isEditing ? null : isCompany ? (
               /* Company Owner / Editor Actions */
               <>
                 <button
@@ -663,7 +655,7 @@ export function HeroSection({
                   title="Edit Company Details"
                 >
                   <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">{isEditing ? 'Editing Profile' : 'Edit Company'}</span>
+                  <span className="truncate">Edit Company</span>
                 </button>
 
                 <button
@@ -693,10 +685,10 @@ export function HeroSection({
                   type="button"
                   onClick={() => onOpenEdit?.()}
                   className={`flex-1 min-w-0 min-h-[38px] sm:min-h-[40px] py-2 sm:py-2.5 px-3 sm:px-5 rounded-full ${theme.btnPrimary} font-bold text-xs sm:text-sm shadow-xs hover:opacity-90 transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2`}
-                  title={isEditing ? 'Editing In-Place' : 'Edit Profile'}
+                  title="Edit Profile"
                 >
                   <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="truncate">{isEditing ? 'Editing In-Place' : 'Edit Profile'}</span>
+                  <span className="truncate">Edit Profile</span>
                 </button>
 
                 <button

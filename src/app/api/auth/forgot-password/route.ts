@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserByEmail, createPasswordResetToken } from '@/lib/db';
-import { sendPasswordResetEmail, isEmailServiceConfigured } from '@/lib/email';
+import crypto from 'crypto';
+import { getUserByEmailOrUsername, resetPasswordWithRecoveryCode } from '@/lib/db';
+import { hashPassword } from '@/lib/auth';
 
-// In-memory rate limiting by IP and email address
+// In-memory rate limiting by IP and email/identifier
 interface RateLimitEntry {
   count: number;
   resetAt: number;
 }
 const rateLimitMap = new Map<string, RateLimitEntry>();
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS_PER_WINDOW = 5;
+const MAX_ATTEMPTS = 5;
 
 function isRateLimited(key: string): boolean {
   const now = Date.now();
@@ -18,118 +19,130 @@ function isRateLimited(key: string): boolean {
     rateLimitMap.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
     return false;
   }
-  if (entry.count >= MAX_REQUESTS_PER_WINDOW) {
+  if (entry.count >= MAX_ATTEMPTS) {
     return true;
   }
   entry.count++;
   return false;
 }
 
-const GENERIC_SUCCESS_MESSAGE =
-  'If an account exists with this email address, a password reset link has been sent.';
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
-    const { email } = body;
+    const { 
+      email, 
+      username, 
+      identifier, 
+      recoveryCode, 
+      newPassword, 
+      password, 
+      confirmPassword 
+    } = body;
 
-    if (!email || typeof email !== 'string' || !email.trim()) {
+    const emailOrUsername = (identifier || email || username || '').trim();
+    const cleanRecoveryCode = (recoveryCode || '').trim().toUpperCase();
+    const targetPassword = newPassword || password || '';
+
+    // 1. Validate Identifier
+    if (!emailOrUsername) {
       return NextResponse.json(
-        { error: 'Please enter your registered email address.' },
+        { error: 'Please enter your registered email address or username.' },
         { status: 400 }
       );
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(normalizedEmail)) {
-      return NextResponse.json(
-        { error: 'Please enter a valid email address.' },
-        { status: 400 }
-      );
-    }
-
-    // Rate limiting by IP and email
+    // 2. Rate Limiting Check
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown-ip';
-    if (isRateLimited(`ip:${ip}`) || isRateLimited(`email:${normalizedEmail}`)) {
+    if (isRateLimited(`ip:${ip}`) || isRateLimited(`acc:${emailOrUsername.toLowerCase()}`)) {
       return NextResponse.json(
-        { error: 'Too many password reset requests. Please try again in 15 minutes.' },
+        { error: 'Too many recovery attempts. Please try again in 15 minutes.' },
         { status: 429 }
       );
     }
 
-    const user = await getUserByEmail(normalizedEmail);
+    // 3. Validate Recovery Code
+    if (!cleanRecoveryCode) {
+      return NextResponse.json(
+        { error: 'Please enter your one-time recovery code.' },
+        { status: 400 }
+      );
+    }
 
-    // Constant-time behavior / prevent account enumeration
+    // 4. Validate Passwords
+    if (!targetPassword || typeof targetPassword !== 'string' || targetPassword.length < 8) {
+      return NextResponse.json(
+        { error: 'New password must be at least 8 characters long.' },
+        { status: 400 }
+      );
+    }
+
+    if (targetPassword !== confirmPassword) {
+      return NextResponse.json(
+        { error: 'Passwords do not match. Please verify both passwords.' },
+        { status: 400 }
+      );
+    }
+
+    // 5. Look up user account
+    const user = await getUserByEmailOrUsername(emailOrUsername);
     if (!user) {
       return NextResponse.json(
-        {
-          success: true,
-          emailDispatched: isEmailServiceConfigured(),
-          message: GENERIC_SUCCESS_MESSAGE
-        },
-        { status: 200 }
+        { error: 'Invalid email/username or recovery code.' },
+        { status: 400 }
       );
     }
 
-    const result = await createPasswordResetToken(normalizedEmail);
-    if (!result || !result.token) {
+    if (!user.recoveryCodeHash) {
       return NextResponse.json(
-        {
-          success: true,
-          emailDispatched: false,
-          message: GENERIC_SUCCESS_MESSAGE
-        },
-        { status: 200 }
+        { error: 'No recovery code configured for this account. Please sign in or contact support.' },
+        { status: 400 }
       );
     }
 
-    // Build reset URL targeting the active request origin or configured application URL
-    let origin = process.env.NEXT_PUBLIC_APP_URL || '';
-    if (!origin) {
-      origin = request.nextUrl?.origin || '';
-      if (!origin) {
-        const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
-        const proto = request.headers.get('x-forwarded-proto') || 'https';
-        origin = host ? `${proto}://${host}` : 'http://localhost:3000';
-      }
-    }
-    origin = origin.replace(/\/+$/, '');
-
-    const resetUrl = `${origin}/reset-password?token=${result.token}&email=${encodeURIComponent(normalizedEmail)}`;
-
-    // Dispatch email if provider is available
-    const emailResult = await sendPasswordResetEmail({
-      to: normalizedEmail,
-      name: user.name,
-      resetUrl
-    });
-
-    if (emailResult.success) {
+    // 6. Verify Recovery Code Hash (SHA-256)
+    const codeHash = crypto.createHash('sha256').update(cleanRecoveryCode).digest('hex');
+    if (user.recoveryCodeHash !== codeHash) {
       return NextResponse.json(
-        {
-          success: true,
-          emailDispatched: true,
-          message: GENERIC_SUCCESS_MESSAGE
-        },
-        { status: 200 }
+        { error: 'Invalid recovery code. Please check the code you saved at registration and try again.' },
+        { status: 400 }
       );
     }
 
-    // Secure fallback when SMTP / email provider cannot deliver in this environment:
-    // Return server-authorized, single-use, time-limited reset link
+    // 7. Hash the new password on server
+    const passwordHash = await hashPassword(targetPassword);
+
+    // 8. Invalidate old recovery code and issue a brand new one
+    const rawNewCode = crypto.randomBytes(4).toString('hex').toUpperCase();
+    const newRecoveryCode = `RC-${rawNewCode.slice(0, 4)}-${rawNewCode.slice(4)}`;
+    const newRecoveryCodeHash = crypto.createHash('sha256').update(newRecoveryCode.trim().toUpperCase()).digest('hex');
+
+    const result = await resetPasswordWithRecoveryCode(
+      emailOrUsername,
+      cleanRecoveryCode,
+      passwordHash,
+      newRecoveryCodeHash
+    );
+
+    if (!result.success) {
+      return NextResponse.json(
+        { error: result.error || 'Failed to update password. Please try again.' },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       {
         success: true,
-        emailDispatched: false,
-        resetUrl,
-        message: 'Password reset authorized by server. Since email delivery (SMTP) is not configured in this environment, use the secure one-time reset link below to update your password.'
+        message: 'Your password has been successfully reset.',
+        newRecoveryCode, // Newly issued recovery code for future use
+        redirectTo: '/login?reset=success'
       },
       { status: 200 }
     );
   } catch (error: any) {
+    console.error('Password reset with recovery code error:', error);
     return NextResponse.json(
-      { error: 'An unexpected error occurred while processing your password reset request.' },
+      { error: 'An unexpected error occurred while resetting your password.' },
       { status: 500 }
     );
   }

@@ -578,17 +578,19 @@ function PublicProfileClientInner({
         />
       </div>
 
-      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
-      <div className="shrink-0 z-30 w-full">
-        <ProfileSectionTabBar
-          profile={{ ...profile, type: profileType, theme: activeTheme }}
-          activeSection={activeTabSection}
-          onSelectSection={handleSectionSelect}
-          theme={activeThemeConfig}
-          isEditing={isEditing}
-          canEdit={isOwner}
-        />
-      </div>
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design - Public View Only) */}
+      {!isEditing && (
+        <div className="shrink-0 z-30 w-full">
+          <ProfileSectionTabBar
+            profile={{ ...profile, type: profileType, theme: activeTheme }}
+            activeSection={activeTabSection}
+            onSelectSection={handleSectionSelect}
+            theme={activeThemeConfig}
+            isEditing={isEditing}
+            canEdit={isOwner}
+          />
+        </div>
+      )}
 
       {/* Slide-In Section Drawer on Hover (Desktop >= sm) */}
       <AnimatePresence>
@@ -711,17 +713,19 @@ function PublicProfileClientInner({
 
   const mobileView = (
     <div className="w-full h-full flex-1 flex flex-col min-h-0 relative overflow-hidden">
-      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
-      <div className="shrink-0 z-30 w-full">
-        <ProfileSectionTabBar
-          profile={{ ...profile, type: profileType, theme: activeTheme }}
-          activeSection={activeTabSection}
-          onSelectSection={handleSectionSelect}
-          theme={activeThemeConfig}
-          isEditing={isEditing}
-          canEdit={isOwner}
-        />
-      </div>
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design - Public View Only) */}
+      {!isEditing && (
+        <div className="shrink-0 z-30 w-full">
+          <ProfileSectionTabBar
+            profile={{ ...profile, type: profileType, theme: activeTheme }}
+            activeSection={activeTabSection}
+            onSelectSection={handleSectionSelect}
+            theme={activeThemeConfig}
+            isEditing={isEditing}
+            canEdit={isOwner}
+          />
+        </div>
+      )}
 
       <div className="flex-1 w-full min-h-0 flex flex-row overflow-hidden relative">
         <div 
@@ -729,9 +733,7 @@ function PublicProfileClientInner({
           onClick={() => {
             if (isSidebarOpen) handleCloseSidebar();
           }}
-          className={`h-full min-h-0 overflow-y-auto overscroll-contain transition-all duration-300 ${
-            isSidebarOpen ? 'w-[78%] flex-[4]' : 'w-full flex-1'
-          }`}
+          className="h-full min-h-0 overflow-y-auto overscroll-contain transition-all duration-300 w-full flex-1"
         >
           <AvtiveDigitalCard
             profile={{ ...profile, type: profileType, theme: activeTheme }}
@@ -768,40 +770,59 @@ function PublicProfileClientInner({
           />
         </div>
 
-        {/* Mobile 80/20 Section Navigation Panel - Simulated Phone Chassis */}
-        {isSidebarOpen && (
-          <div
-            className="h-full w-[22%] min-w-[70px] max-w-[85px] shrink-0 flex flex-col items-center py-2 px-1 border-l border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-[#070D1A]/85 backdrop-blur-md shadow-2xl overflow-y-auto overscroll-contain scrollbar-none z-30 transition-all duration-300"
-          >
-            <div className="w-full flex flex-col items-center gap-1.5 pb-4">
-              {mobileNavSections.map((section) => {
-                const IconComponent = section.icon;
-                const isActive = activeTabSection === section.key;
-                return (
-                  <button
-                    key={`chassis-panel-${section.key}`}
-                    type="button"
-                    onClick={() => {
-                      handleSectionSelect(section.key);
-                    }}
-                    className={`min-h-[42px] h-[44px] w-full max-w-[68px] rounded-xl flex flex-col items-center justify-center p-1 transition-all cursor-pointer select-none active:scale-95 ${
-                      isActive
-                        ? 'bg-[#6C4CF1]/15 text-[#6C4CF1] dark:bg-cyan-500/20 dark:text-cyan-300 border border-[#6C4CF1]/30 dark:border-cyan-400/30 font-bold shadow-xs'
-                        : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10'
-                    }`}
-                    title={section.label}
-                    aria-label={section.label}
-                  >
-                    <IconComponent className="w-4 h-4 shrink-0" />
-                    <span className="text-[9px] font-medium leading-none tracking-tight truncate max-w-full mt-0.5">
-                      {getMobileShortLabel(section.key, section.label)}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* Mobile Section Navigation Drawer - Floating Overlay (Does NOT affect card layout or editor state) */}
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <>
+              <motion.div
+                key="mobile-drawer-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                onClick={handleCloseSidebar}
+                className="absolute inset-0 bg-black/40 backdrop-blur-xs z-30 cursor-pointer"
+              />
+              <motion.div
+                key="mobile-drawer-panel"
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+                className="absolute top-0 bottom-0 right-0 h-full w-[80px] shrink-0 flex flex-col items-center py-2 px-1 border-l border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#070D1A]/95 backdrop-blur-md shadow-2xl overflow-y-auto overscroll-contain scrollbar-none z-40"
+              >
+                <div className="w-full flex flex-col items-center gap-1.5 pb-4">
+                  {mobileNavSections.map((section) => {
+                    const IconComponent = section.icon;
+                    const isActive = activeTabSection === section.key;
+                    return (
+                      <button
+                        key={`chassis-panel-${section.key}`}
+                        type="button"
+                        onClick={() => {
+                          handleSectionSelect(section.key);
+                          handleCloseSidebar();
+                        }}
+                        className={`min-h-[42px] h-[44px] w-full max-w-[68px] rounded-xl flex flex-col items-center justify-center p-1 transition-all cursor-pointer select-none active:scale-95 ${
+                          isActive
+                            ? 'bg-[#6C4CF1]/15 text-[#6C4CF1] dark:bg-cyan-500/20 dark:text-cyan-300 border border-[#6C4CF1]/30 dark:border-cyan-400/30 font-bold shadow-xs'
+                            : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10'
+                        }`}
+                        title={section.label}
+                        aria-label={section.label}
+                      >
+                        <IconComponent className="w-4 h-4 shrink-0" />
+                        <span className="text-[9px] font-medium leading-none tracking-tight truncate max-w-full mt-0.5">
+                          {getMobileShortLabel(section.key, section.label)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

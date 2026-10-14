@@ -93,20 +93,22 @@ export default function LoginClient() {
         setErrorMessage(decodeURIComponent(sp.get('error')!));
       }
 
-      // Check temporary registration credentials from new user sign up
-      try {
-        const raw = sessionStorage.getItem('avtive_temp_reg_creds');
-        if (raw) {
-          const creds = JSON.parse(raw);
-          if (creds?.email) setEmail(creds.email);
-          if (creds?.password) setPassword(creds.password);
-        } else {
-          // Check remembered identifier after logout
+      // Prefill email if provided in query string or remembered, never prefill password or demo credentials
+      const queryEmail = sp.get('email');
+      if (queryEmail) {
+        setEmail(queryEmail);
+      } else {
+        try {
           const savedEmail = localStorage.getItem('avtive_remembered_identifier');
           if (savedEmail) {
             setEmail(savedEmail);
           }
-        }
+        } catch {}
+      }
+      // Strictly ensure password input is never prefilled with demo credentials or passwords
+      setPassword('');
+      try {
+        sessionStorage.removeItem('avtive_temp_reg_creds');
       } catch {}
     }
   }, [setTheme]);
@@ -291,11 +293,7 @@ export default function LoginClient() {
   };
 
   const openForgotPasswordView = () => {
-    setForgotEmail(email);
-    setForgotErrorMessage(null);
-    setForgotSuccessMessage(null);
-    setForgotResetUrl(null);
-    setShowForgotPassword(true);
+    window.location.href = `/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ''}`;
   };
 
   const closeForgotPasswordView = () => {
