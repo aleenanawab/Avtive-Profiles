@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ProfileData, 
@@ -240,6 +240,8 @@ function PublicProfileClientInner({
     };
   }, []);
 
+  const prevWidthRef = useRef<number | null>(null);
+
   // Independent Mobile Sections Slider Handlers
   const handleToggleMobile = () => {
     if (!isEditing) return;
@@ -269,14 +271,26 @@ function PublicProfileClientInner({
     handleSectionSelect(sectionKey, false);
   };
 
-  // Resizing the window must not leave a drawer stuck open or open the wrong one
+  // Resizing the window: only close the inactive drawer when crossing the 1024px boundary
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      prevWidthRef.current = window.innerWidth;
+    }
     const handleResize = () => {
       if (typeof window === 'undefined') return;
-      if (window.innerWidth >= 1024) {
-        setMobileOpen(false);
-      } else {
-        setDesktopOpen(false);
+      const currentWidth = window.innerWidth;
+      const prevWidth = prevWidthRef.current;
+      prevWidthRef.current = currentWidth;
+
+      if (prevWidth !== null) {
+        // Crossing from mobile (< 1024) to desktop (>= 1024): close mobile drawer
+        if (prevWidth < 1024 && currentWidth >= 1024) {
+          setMobileOpen(false);
+        }
+        // Crossing from desktop (>= 1024) to mobile (< 1024): close desktop drawer
+        else if (prevWidth >= 1024 && currentWidth < 1024) {
+          setDesktopOpen(false);
+        }
       }
     };
     window.addEventListener('resize', handleResize);
@@ -331,11 +345,13 @@ function PublicProfileClientInner({
         ? 'virtual-card-section'
         : `section-${sectionKey}`;
 
-    const scrollPanel = 
-      document.getElementById('profile-scroll-panel') || 
-      document.getElementById('mobile-profile-scroll-panel');
+    const scrollPanel = isFromMobile
+      ? document.getElementById('mobile-profile-scroll-panel') || document.getElementById('profile-scroll-panel')
+      : document.getElementById('profile-scroll-panel') || document.getElementById('mobile-profile-scroll-panel');
 
-    const el = document.getElementById(targetId) || document.getElementById(`section-${sectionKey}`);
+    const el = scrollPanel
+      ? scrollPanel.querySelector(`#${targetId}`) || scrollPanel.querySelector(`#section-${sectionKey}`) || document.getElementById(targetId) || document.getElementById(`section-${sectionKey}`)
+      : document.getElementById(targetId) || document.getElementById(`section-${sectionKey}`);
 
     if (el && scrollPanel) {
       if (sectionKey === 'profile' || sectionKey === 'hero') {
@@ -665,7 +681,7 @@ function PublicProfileClientInner({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={handleCloseDesktop}
-              className="fixed inset-0 bg-black/50 z-50 cursor-pointer"
+              className="fixed inset-0 bg-black/40 z-50 cursor-pointer"
             />
             <motion.div
               key="desktop-sidebar-drawer"
@@ -698,7 +714,7 @@ function PublicProfileClientInner({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={handleCloseMobile}
-              className="fixed inset-0 bg-black/50 z-50 cursor-pointer"
+              className="fixed inset-0 bg-black/40 z-50 cursor-pointer"
             />
             <motion.div
               key="mobile-viewport-sidebar-drawer"
@@ -832,8 +848,6 @@ function PublicProfileClientInner({
             isSidebarOpen={isSidebarOpen}
             onToggleMobileSections={handleToggleMobile}
             isMobileSectionsOpen={mobileOpen}
-            onToggleDesktopSections={handleToggleDesktop}
-            isDesktopSectionsOpen={desktopOpen}
           />
         </div>
 
@@ -856,7 +870,7 @@ function PublicProfileClientInner({
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-                className="absolute top-0 bottom-0 right-0 h-full w-[80px] shrink-0 flex flex-col items-center py-2 px-1 border-l border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#070D1A]/95 backdrop-blur-md shadow-2xl overflow-y-auto overscroll-contain scrollbar-none z-40"
+                className="absolute top-0 bottom-0 right-0 h-full w-[80px] shrink-0 flex flex-col items-center py-2 px-1 border-l border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#070D1A] shadow-2xl overflow-y-auto overscroll-contain scrollbar-none z-40"
               >
                 <div className="w-full flex flex-col items-center gap-1.5 pb-4">
                   {mobileNavSections.map((section) => {
@@ -902,7 +916,7 @@ function PublicProfileClientInner({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
                 onClick={handleCloseMobile}
-                className="absolute inset-0 bg-black/50 z-40 cursor-pointer"
+                className="absolute inset-0 bg-black/40 z-40 cursor-pointer"
               />
               <motion.div
                 key="mobile-chassis-sidebar-drawer"
