@@ -632,9 +632,7 @@ function PublicProfileClientInner({
           onClick={() => {
             if (isSidebarOpen) handleCloseSidebar();
           }}
-          className={`h-full min-h-0 overflow-y-auto overscroll-contain px-0 sm:px-4 lg:px-6 py-0 sm:py-4 box-border scrollbar-thin transition-all duration-300 ${
-            isSidebarOpen ? 'w-[78%] sm:w-full flex-[4] sm:flex-1' : 'w-full flex-1'
-          }`}
+          className="h-full min-h-0 overflow-y-auto overscroll-contain px-0 sm:px-4 lg:px-6 py-0 sm:py-4 box-border scrollbar-thin transition-all duration-300 w-full flex-1"
         >
           <div className={`w-full max-w-3xl mx-auto rounded-none sm:rounded-3xl border-0 sm:border ${activeThemeConfig.cardBorder} ${activeThemeConfig.cardBg} shadow-none sm:shadow-xl overflow-hidden relative`}>
             <AvtiveDigitalCard
@@ -672,41 +670,6 @@ function PublicProfileClientInner({
             />
           </div>
         </div>
-
-        {/* Mobile 80/20 Section Navigation Panel - Docked to right on mobile viewport (< sm) */}
-        {isSidebarOpen && (
-          <div
-            className="sm:hidden h-full w-[22%] min-w-[70px] max-w-[85px] shrink-0 flex flex-col items-center py-2 px-1 border-l border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-[#070D1A]/85 backdrop-blur-md shadow-2xl overflow-y-auto overscroll-contain scrollbar-none z-30 transition-all duration-300"
-          >
-            <div className="w-full flex flex-col items-center gap-1.5 pb-4">
-              {mobileNavSections.map((section) => {
-                const IconComponent = section.icon;
-                const isActive = activeTabSection === section.key;
-                return (
-                  <button
-                    key={`mobile-panel-${section.key}`}
-                    type="button"
-                    onClick={() => {
-                      handleSectionSelect(section.key);
-                    }}
-                    className={`min-h-[42px] h-[44px] w-full max-w-[68px] rounded-xl flex flex-col items-center justify-center p-1 transition-all cursor-pointer select-none active:scale-95 ${
-                      isActive
-                        ? 'bg-[#6C4CF1]/15 text-[#6C4CF1] dark:bg-cyan-500/20 dark:text-cyan-300 border border-[#6C4CF1]/30 dark:border-cyan-400/30 font-bold shadow-xs'
-                        : 'text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/10'
-                    }`}
-                    title={section.label}
-                    aria-label={section.label}
-                  >
-                    <IconComponent className="w-4 h-4 shrink-0" />
-                    <span className="text-[9px] font-medium leading-none tracking-tight truncate max-w-full mt-0.5">
-                      {getMobileShortLabel(section.key, section.label)}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
