@@ -237,7 +237,16 @@ function PublicProfileClientInner({
     };
   }, []);
 
-  const handleSectionSelect = (sectionKey: string) => {
+  const handleToggleSectionsDrawer = () => {
+    if (!isEditing) return;
+    setIsSidebarOpen(prev => !prev);
+  };
+
+  const handleSectionSelect = (sectionKey: string, fieldKey?: string | boolean) => {
+    const isFromMobile = fieldKey === true;
+    if (isOwner && !isEditing) {
+      handleOpenEditMode();
+    }
     setActiveTabSection(sectionKey);
 
     const targetId = 
@@ -247,7 +256,7 @@ function PublicProfileClientInner({
         ? 'section-about'
         : sectionKey === 'contactInfo' || sectionKey === 'contact' || sectionKey === 'basicInfo'
         ? 'section-contact'
-        : sectionKey === 'skills' || sectionKey === 'services'
+        : sectionKey === 'skills' || sectionKey === 'services' || sectionKey === 'expertise'
         ? 'section-skills'
         : sectionKey === 'projects' || sectionKey === 'portfolio'
         ? 'section-projects'
@@ -255,8 +264,16 @@ function PublicProfileClientInner({
         ? 'section-education'
         : sectionKey === 'experience'
         ? 'section-experience'
+        : sectionKey === 'certifications'
+        ? 'section-certifications'
+        : sectionKey === 'languages'
+        ? 'section-languages'
+        : sectionKey === 'recommendations'
+        ? 'section-recommendations'
         : sectionKey === 'socialLinks' || sectionKey === 'socials'
         ? 'section-socialLinks'
+        : sectionKey === 'customFields' || sectionKey === 'custom-fields' || sectionKey === 'enhanceProfile'
+        ? 'section-custom-fields'
         : sectionKey === 'teamMembers' || sectionKey === 'team'
         ? 'section-teamMembers'
         : sectionKey === 'companyInfo' || sectionKey === 'company'
@@ -291,7 +308,11 @@ function PublicProfileClientInner({
     } else if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    handleCloseSidebar();
+
+    const isMobileScreen = typeof window !== 'undefined' && window.innerWidth < 768;
+    if (isFromMobile || isMobileScreen) {
+      handleCloseSidebar();
+    }
   };
 
   const showToast = (msg: string) => {
@@ -592,12 +613,12 @@ function PublicProfileClientInner({
         </div>
       )}
 
-      {/* Slide-In Section Drawer on Hover (Desktop >= sm) */}
+      {/* Slide-In Section Drawer on Desktop - STRICTLY EDIT MODE ONLY */}
       <AnimatePresence>
-        {isSidebarOpen && (
+        {isEditing && isSidebarOpen && (
           <div className="hidden sm:block">
             <motion.div
-              key="public-sidebar-backdrop"
+              key="desktop-sidebar-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -606,7 +627,7 @@ function PublicProfileClientInner({
               className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 cursor-pointer"
             />
             <motion.div
-              key="public-sidebar-drawer"
+              key="desktop-sidebar-drawer"
               initial={{ x: -340, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -340, opacity: 0 }}
@@ -617,8 +638,8 @@ function PublicProfileClientInner({
             >
               <DesktopProfileSidebar
                 onClose={handleCloseSidebar}
-                onSelectSection={handleSectionSelect}
-                isPublicView={!isOwner}
+                onSelectSection={(secKey) => handleSectionSelect(secKey, false)}
+                isPublicView={false}
               />
             </motion.div>
           </div>
@@ -730,12 +751,14 @@ function PublicProfileClientInner({
             onSectionsMouseEnter={handleTriggerMouseEnter}
             onSectionsMouseLeave={handleTriggerMouseLeave}
             isSidebarOpen={isSidebarOpen}
+            onToggleSectionsDrawer={handleToggleSectionsDrawer}
+            isSectionsDrawerOpen={isSidebarOpen}
           />
         </div>
 
-        {/* Mobile Section Navigation Drawer - Floating Overlay (Does NOT affect card layout or editor state) */}
+        {/* Mobile Section Navigation Drawer - Floating Overlay (Public View) */}
         <AnimatePresence>
-          {isSidebarOpen && (
+          {!isEditing && isSidebarOpen && (
             <>
               <motion.div
                 key="mobile-drawer-backdrop"
@@ -782,6 +805,37 @@ function PublicProfileClientInner({
                     );
                   })}
                 </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Slide-In Section Drawer on Mobile - STRICTLY EDIT MODE ONLY */}
+        <AnimatePresence>
+          {isEditing && isSidebarOpen && (
+            <>
+              <motion.div
+                key="mobile-sidebar-backdrop"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                onClick={handleCloseSidebar}
+                className="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-40 cursor-pointer"
+              />
+              <motion.div
+                key="mobile-sidebar-drawer"
+                initial={{ x: '-100%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: '-100%', opacity: 0 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+                className="absolute top-0 bottom-0 left-0 z-50 h-full w-full max-w-[320px] shadow-2xl"
+              >
+                <DesktopProfileSidebar
+                  onClose={handleCloseSidebar}
+                  onSelectSection={(secKey) => handleSectionSelect(secKey, true)}
+                  isPublicView={false}
+                />
               </motion.div>
             </>
           )}

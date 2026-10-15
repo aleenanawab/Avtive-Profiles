@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare, Building2, Users, LayoutGrid } from 'lucide-react';
+import { Pencil, Camera, Globe, Mail, Phone, UserPlus, Share2, MessageSquare, Building2, Users, LayoutGrid, SlidersHorizontal } from 'lucide-react';
 import { ProfileData, normalizeProfileType, SocialLink, CompanyInfo } from '../types/profile';
 import { ThemeConfig, getThemeConfig } from './themeStyles';
 import { GithubIcon, LinkedInIcon, TwitterXIcon, WhatsAppIcon } from './BrandIcons';
@@ -34,6 +34,8 @@ interface HeroSectionProps {
   onSectionsMouseEnter?: () => void;
   onSectionsMouseLeave?: () => void;
   isSidebarOpen?: boolean;
+  onToggleSectionsDrawer?: () => void;
+  isSectionsDrawerOpen?: boolean;
 }
 
 export function HeroSection({
@@ -50,7 +52,9 @@ export function HeroSection({
   onToggleSections,
   onSectionsMouseEnter,
   onSectionsMouseLeave,
-  isSidebarOpen = false
+  isSidebarOpen = false,
+  onToggleSectionsDrawer,
+  isSectionsDrawerOpen = false
 }: HeroSectionProps) {
   const router = useRouter();
   const coverInputRef = React.useRef<HTMLInputElement>(null);
@@ -268,6 +272,26 @@ export function HeroSection({
           className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
+
+        {/* Stitch-style Sections Slider Button - STRICTLY EDIT MODE ONLY */}
+        {isEditing && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSectionsDrawer?.();
+              }}
+              aria-label="Toggle profile sections slider"
+              aria-expanded={isSectionsDrawerOpen}
+              className="px-3 py-1.5 rounded-xl bg-black/75 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 shadow-lg flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer text-xs font-semibold select-none group"
+              title="Open Sections navigation slider"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-90 transition-transform duration-200" />
+              <span>Sections</span>
+            </button>
+          </div>
+        )}
 
         {/* Cover Edit Overlay Badge */}
         {(isEditing || canEdit) && (

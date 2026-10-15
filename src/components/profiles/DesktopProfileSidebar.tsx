@@ -29,6 +29,8 @@ import {
   Award,
   Globe,
   Tag,
+  Layers,
+  CheckCircle2,
   MessageSquare
 } from 'lucide-react';
 import { useProfileEditor } from '@/context/ProfileEditorContext';
@@ -44,29 +46,30 @@ export interface SidebarSectionItem {
 }
 
 export const DESKTOP_SIDEBAR_SECTIONS: SidebarSectionItem[] = [
-  // 1-12: Core Profile Sections
+  // 1-13: Core Profile Sections
   { key: 'profile', label: 'Profile', icon: User, category: 'core' },
   { key: 'companyInfo', label: 'Company Info', icon: Building2, category: 'core' },
   { key: 'teamMembers', label: 'Team Members', icon: Users, category: 'core' },
   { key: 'personalDetails', label: 'Personal Details', icon: FileText, category: 'core' },
+  { key: 'contactInfo', label: 'Contact Info', icon: Phone, category: 'core' },
   { key: 'skills', label: 'Skills & Services', icon: Code, category: 'core' },
   { key: 'projects', label: 'Projects', icon: FolderGit2, category: 'core' },
-  { key: 'education', label: 'Education', icon: GraduationCap, category: 'core' },
-  { key: 'contactInfo', label: 'Contact Info', icon: Phone, category: 'core' },
-  { key: 'socialLinks', label: 'Social Links', icon: Link2, category: 'core' },
+  { key: 'customFields', label: 'Custom Fields', icon: Layers, category: 'core' },
   { key: 'experience', label: 'Experience', icon: Briefcase, category: 'core' },
-  { key: 'certifications', label: 'Certificates', icon: Award, category: 'core' },
+  { key: 'education', label: 'Education', icon: GraduationCap, category: 'core' },
+  { key: 'expertise', label: 'Expertise', icon: Award, category: 'core' },
+  { key: 'certifications', label: 'Certifications', icon: CheckCircle2, category: 'core' },
   { key: 'languages', label: 'Languages', icon: Globe, category: 'core' },
   { key: 'recommendations', label: 'Recommendations', icon: MessageSquare, category: 'core' },
-  { key: 'customFields', label: 'Custom Fields', icon: Tag, category: 'core' },
+  { key: 'socialLinks', label: 'Social Links', icon: Link2, category: 'core' },
   
-  // 13-16: Advanced Management
+  // 14-17: Advanced Management
   { key: 'enhanceProfile', label: 'Enhance Profile', icon: Sparkles, category: 'advanced' },
   { key: 'limitations', label: 'Limitations', icon: EyeOff, category: 'advanced' },
   { key: 'accountInfo', label: 'Account Info', icon: UserCheck, category: 'advanced' },
   { key: 'archive', label: 'Archive', icon: Archive, category: 'advanced' },
   
-  // 17-18: Security & Settings
+  // 18-19: Security & Settings
   { key: 'security', label: 'Security', icon: ShieldCheck, category: 'system' },
   { key: 'settings', label: 'Settings', icon: Settings, category: 'system' }
 ];
@@ -124,21 +127,14 @@ export function DesktopProfileSidebar({
       case 'archive':
         return hiddenCount > 0 ? `${hiddenCount} hidden` : undefined;
       case 'enhanceProfile':
+      case 'customFields':
         return customFieldsCount > 0 ? `${customFieldsCount} fields` : undefined;
       case 'certifications':
-        return Array.isArray(profile.certifications) && profile.certifications.length > 0 
-          ? profile.certifications.length 
-          : undefined;
+        return Array.isArray(profile.certifications) && profile.certifications.length > 0 ? profile.certifications.length : undefined;
       case 'languages':
-        return Array.isArray(profile.languages) && profile.languages.length > 0 
-          ? profile.languages.length 
-          : undefined;
+        return Array.isArray(profile.languages) && profile.languages.length > 0 ? profile.languages.length : undefined;
       case 'recommendations':
-        return Array.isArray(profile.recommendations) && profile.recommendations.length > 0 
-          ? profile.recommendations.length 
-          : undefined;
-      case 'customFields':
-        return customFieldsCount > 0 ? customFieldsCount : undefined;
+        return Array.isArray(profile.recommendations) && profile.recommendations.length > 0 ? profile.recommendations.length : undefined;
       default:
         return undefined;
     }
@@ -193,7 +189,7 @@ export function DesktopProfileSidebar({
   };
 
   return (
-    <aside className="w-[min(320px,calc(100vw-48px))] sm:w-[300px] xl:w-[330px] max-w-full shrink-0 h-full min-h-0 bg-slate-50 dark:bg-[#080D1A] border-r border-slate-200 dark:border-white/10 flex flex-col select-none relative z-30 shadow-2xl transition-colors">
+    <aside className="w-[min(320px,100%)] max-w-full sm:w-[300px] xl:w-[330px] shrink-0 h-full min-h-0 bg-white dark:bg-[#080D1A] border-r border-slate-200 dark:border-white/10 flex flex-col select-none relative z-30 shadow-2xl transition-colors overflow-hidden">
       
       {/* 1. Header with Avtive Branding & Close Button */}
       <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between gap-3 shrink-0">
@@ -202,13 +198,13 @@ export function DesktopProfileSidebar({
           className="flex items-center gap-2.5 group"
           title="Return to Public Profile"
         >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-500/25 group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#6C4CF1] to-cyan-500 flex items-center justify-center shadow-md shadow-[#6C4CF1]/25 group-hover:scale-105 transition-transform">
             <AvtiveLogoIcon className="w-4 h-4 text-white" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-extrabold text-slate-900 dark:text-white tracking-tight">avtive</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-mono font-bold border border-cyan-500/30">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#6C4CF1]/15 text-[#6C4CF1] dark:text-[#a594fd] font-mono font-bold border border-[#6C4CF1]/30">
                 {isPublicView ? 'SECTIONS' : 'STUDIO'}
               </span>
             </div>
@@ -233,9 +229,9 @@ export function DesktopProfileSidebar({
       </div>
 
       {/* 2. User Profile Summary Card / Persona Switcher */}
-      <div className="px-3.5 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-100/50 dark:bg-white/[0.02] shrink-0">
+      <div className="px-3.5 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] shrink-0">
         <div className="flex items-center gap-3">
-          <div className="relative w-10 h-10 rounded-full border-2 border-cyan-500/40 overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 shadow-sm">
+          <div className="relative w-10 h-10 rounded-full border-2 border-[#6C4CF1]/40 overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 shadow-sm">
             <img 
               src={profile.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop'} 
               alt={profile.name}
@@ -260,9 +256,14 @@ export function DesktopProfileSidebar({
                 />
               )}
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-              {profile.professionalTitle || profile.designation || 'Professional'}
-            </p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                {profile.professionalTitle || profile.designation || 'Professional'}
+              </p>
+              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded-full bg-[#6C4CF1]/10 text-[#6C4CF1] dark:text-[#a594fd] border border-[#6C4CF1]/20 font-mono">
+                Professional Plan
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -273,8 +274,8 @@ export function DesktopProfileSidebar({
         {/* Group 1: Core Profile Sections with Drag & Drop Reordering */}
         <div>
           <div className="flex items-center justify-between px-2 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">
-            <span>Profile Sections</span>
-            <span className="text-[9px] text-cyan-400/80 lowercase">drag to reorder</span>
+            <span>Section Navigation</span>
+            <span className="text-[9px] text-[#6C4CF1]/80 lowercase">drag to reorder</span>
           </div>
 
           <Reorder.Group 
@@ -352,6 +353,7 @@ export function DesktopProfileSidebar({
                           handleToggleSectionVisibility(sec.key);
                           if (sec.key === 'personalDetails') handleToggleSectionVisibility('about');
                           if (sec.key === 'contactInfo') handleToggleSectionVisibility('contact');
+                          if (sec.key === 'customFields') handleToggleSectionVisibility('custom-fields');
                         }}
                         title={isVisible ? `Hide ${sec.label}` : `Show ${sec.label}`}
                         aria-label={isVisible ? `Hide ${sec.label}` : `Show ${sec.label}`}
@@ -485,24 +487,24 @@ export function DesktopProfileSidebar({
 
       </div>
 
-      {/* 4. Bottom Sticky Action Footer */}
+      {/* 4. Bottom Sticky Action Footer - Stitch style */}
       {!isPublicView && (
-        <div className="p-3.5 border-t border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-[#080D1A]/95 backdrop-blur-md space-y-2 shrink-0 transition-colors">
+        <div className="p-3.5 border-t border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#080D1A]/95 backdrop-blur-md space-y-2 shrink-0 transition-colors">
           <button
             type="button"
             onClick={() => saveProfile()}
             disabled={isSaving}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 dark:bg-gradient-to-r dark:from-cyan-500 dark:to-blue-600 dark:hover:from-cyan-400 dark:hover:to-blue-500 text-white shadow-2xs dark:shadow-md dark:shadow-cyan-500/25 transition-all cursor-pointer disabled:opacity-50 active:scale-98"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold bg-[#6C4CF1] hover:bg-[#5b3de0] text-white shadow-md shadow-[#6C4CF1]/25 transition-all cursor-pointer disabled:opacity-50 active:scale-98"
           >
             {isSaving ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Saving...</span>
+                <span>Saving Changes...</span>
               </>
             ) : (
               <>
                 <Save className="w-3.5 h-3.5" />
-                <span>Save</span>
+                <span>Save Changes</span>
               </>
             )}
           </button>
@@ -511,10 +513,10 @@ export function DesktopProfileSidebar({
             href={`/profile/${currentIdentifier}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-colors shadow-2xs"
+            className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors shadow-2xs"
             title="Open Public Card in New Tab"
           >
-            <ExternalLink className="w-3 h-3 text-cyan-400" />
+            <ExternalLink className="w-3 h-3 text-[#6C4CF1] dark:text-cyan-400" />
             <span>View Public Profile</span>
           </Link>
         </div>

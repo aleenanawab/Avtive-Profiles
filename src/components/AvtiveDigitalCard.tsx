@@ -83,6 +83,8 @@ interface AvtiveDigitalCardProps {
   onSectionsMouseEnter?: () => void;
   onSectionsMouseLeave?: () => void;
   isSidebarOpen?: boolean;
+  onToggleSectionsDrawer?: () => void;
+  isSectionsDrawerOpen?: boolean;
 }
 
 export function AvtiveDigitalCard({
@@ -115,7 +117,9 @@ export function AvtiveDigitalCard({
   onSendMessage,
   onOpenMyCard,
   isDark,
-  viewMode = 'standard'
+  viewMode = 'standard',
+  onToggleSectionsDrawer,
+  isSectionsDrawerOpen = false
 }: AvtiveDigitalCardProps) {
   const [draftProfile, setDraftProfile] = useState<ProfileData>(profile);
   const [isSaving, setIsSaving] = useState(false);
@@ -248,7 +252,9 @@ export function AvtiveDigitalCard({
               onToggleSections={onToggleSections}
               onSectionsMouseEnter={onSectionsMouseEnter}
               onSectionsMouseLeave={onSectionsMouseLeave}
-              isSidebarOpen={isSidebarOpen}
+              isSidebarOpen={isSidebarOpen || isSectionsDrawerOpen}
+              onToggleSectionsDrawer={onToggleSectionsDrawer || onToggleSections}
+              isSectionsDrawerOpen={isSectionsDrawerOpen || isSidebarOpen}
             />
           </div>
         </div>
