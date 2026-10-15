@@ -85,6 +85,10 @@ interface AvtiveDigitalCardProps {
   isSidebarOpen?: boolean;
   onToggleSectionsDrawer?: () => void;
   isSectionsDrawerOpen?: boolean;
+  onToggleMobileSections?: () => void;
+  isMobileSectionsOpen?: boolean;
+  onToggleDesktopSections?: () => void;
+  isDesktopSectionsOpen?: boolean;
 }
 
 export function AvtiveDigitalCard({
@@ -119,7 +123,11 @@ export function AvtiveDigitalCard({
   isDark,
   viewMode = 'standard',
   onToggleSectionsDrawer,
-  isSectionsDrawerOpen = false
+  isSectionsDrawerOpen = false,
+  onToggleMobileSections,
+  isMobileSectionsOpen = false,
+  onToggleDesktopSections,
+  isDesktopSectionsOpen = false
 }: AvtiveDigitalCardProps) {
   const [draftProfile, setDraftProfile] = useState<ProfileData>(profile);
   const [isSaving, setIsSaving] = useState(false);
@@ -255,6 +263,10 @@ export function AvtiveDigitalCard({
               isSidebarOpen={isSidebarOpen || isSectionsDrawerOpen}
               onToggleSectionsDrawer={onToggleSectionsDrawer || onToggleSections}
               isSectionsDrawerOpen={isSectionsDrawerOpen || isSidebarOpen}
+              onToggleMobileSections={onToggleMobileSections}
+              isMobileSectionsOpen={isMobileSectionsOpen}
+              onToggleDesktopSections={onToggleDesktopSections}
+              isDesktopSectionsOpen={isDesktopSectionsOpen}
             />
           </div>
         </div>

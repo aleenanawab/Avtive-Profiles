@@ -36,6 +36,10 @@ interface HeroSectionProps {
   isSidebarOpen?: boolean;
   onToggleSectionsDrawer?: () => void;
   isSectionsDrawerOpen?: boolean;
+  onToggleMobileSections?: () => void;
+  isMobileSectionsOpen?: boolean;
+  onToggleDesktopSections?: () => void;
+  isDesktopSectionsOpen?: boolean;
 }
 
 export function HeroSection({
@@ -54,7 +58,11 @@ export function HeroSection({
   onSectionsMouseLeave,
   isSidebarOpen = false,
   onToggleSectionsDrawer,
-  isSectionsDrawerOpen = false
+  isSectionsDrawerOpen = false,
+  onToggleMobileSections,
+  isMobileSectionsOpen = false,
+  onToggleDesktopSections,
+  isDesktopSectionsOpen = false
 }: HeroSectionProps) {
   const router = useRouter();
   const coverInputRef = React.useRef<HTMLInputElement>(null);
@@ -273,18 +281,35 @@ export function HeroSection({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
 
-        {/* Stitch-style Sections Slider Button - STRICTLY EDIT MODE ONLY */}
+        {/* Stitch-style Sections Slider Buttons - STRICTLY EDIT MODE ONLY */}
         {isEditing && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center">
+            {/* Mobile Sections button: strictly visible on mobile screens (< lg) */}
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleSectionsDrawer?.();
+                onToggleMobileSections?.();
               }}
-              aria-label="Toggle profile sections slider"
-              aria-expanded={isSectionsDrawerOpen}
-              className="px-3 py-1.5 rounded-xl bg-black/75 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 shadow-lg flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer text-xs font-semibold select-none group"
+              aria-label="Toggle mobile profile sections slider"
+              aria-expanded={isMobileSectionsOpen}
+              className="lg:hidden px-3 py-1.5 rounded-xl bg-black/80 hover:bg-black/95 text-white border border-white/20 shadow-lg flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer text-xs font-semibold select-none group"
+              title="Open Sections navigation slider"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-90 transition-transform duration-200" />
+              <span>Sections</span>
+            </button>
+
+            {/* Desktop Sections button: strictly visible on desktop screens (>= lg) */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleDesktopSections?.();
+              }}
+              aria-label="Toggle desktop profile sections slider"
+              aria-expanded={isDesktopSectionsOpen}
+              className="hidden lg:flex px-3 py-1.5 rounded-xl bg-black/80 hover:bg-black/95 text-white border border-white/20 shadow-lg items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer text-xs font-semibold select-none group"
               title="Open Sections navigation slider"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-90 transition-transform duration-200" />

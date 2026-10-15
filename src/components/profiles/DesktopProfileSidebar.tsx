@@ -489,7 +489,7 @@ export function DesktopProfileSidebar({
 
       {/* 4. Bottom Sticky Action Footer - Stitch style */}
       {!isPublicView && (
-        <div className="p-3.5 border-t border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#080D1A]/95 backdrop-blur-md space-y-2 shrink-0 transition-colors">
+        <div className="p-3.5 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-[#080D1A] space-y-2 shrink-0 transition-colors">
           <button
             type="button"
             onClick={() => saveProfile()}

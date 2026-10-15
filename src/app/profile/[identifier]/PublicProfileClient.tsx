@@ -70,6 +70,9 @@ function PublicProfileClientInner({
   );
   const { isDark, toggleDarkMode } = usePortfolioTheme();
   const [isEditing, setIsEditing] = useState(Boolean(initialIsEditing && isOwner));
+  // Two independent sliders for Edit Mode Sections Navigation:
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarPinned, setIsSidebarPinned] = useState(false);
   const closeTimerRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -237,10 +240,48 @@ function PublicProfileClientInner({
     };
   }, []);
 
-  const handleToggleSectionsDrawer = () => {
+  // Independent Mobile Sections Slider Handlers
+  const handleToggleMobile = () => {
     if (!isEditing) return;
-    setIsSidebarOpen(prev => !prev);
+    setMobileOpen(prev => !prev);
   };
+
+  const handleCloseMobile = () => {
+    setMobileOpen(false);
+  };
+
+  const handleMobileSectionSelect = (sectionKey: string) => {
+    handleSectionSelect(sectionKey, true);
+    setMobileOpen(false);
+  };
+
+  // Independent Desktop Sections Slider Handlers
+  const handleToggleDesktop = () => {
+    if (!isEditing) return;
+    setDesktopOpen(prev => !prev);
+  };
+
+  const handleCloseDesktop = () => {
+    setDesktopOpen(false);
+  };
+
+  const handleDesktopSectionSelect = (sectionKey: string) => {
+    handleSectionSelect(sectionKey, false);
+  };
+
+  // Resizing the window must not leave a drawer stuck open or open the wrong one
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === 'undefined') return;
+      if (window.innerWidth >= 1024) {
+        setMobileOpen(false);
+      } else {
+        setDesktopOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleSectionSelect = (sectionKey: string, fieldKey?: string | boolean) => {
     const isFromMobile = fieldKey === true;
@@ -613,18 +654,18 @@ function PublicProfileClientInner({
         </div>
       )}
 
-      {/* Slide-In Section Drawer on Desktop - STRICTLY EDIT MODE ONLY */}
+      {/* Slide-In Section Drawer on Desktop (>= lg) - STRICTLY EDIT MODE ONLY */}
       <AnimatePresence>
-        {isEditing && isSidebarOpen && (
-          <div className="hidden sm:block">
+        {isEditing && desktopOpen && (
+          <div className="hidden lg:block">
             <motion.div
               key="desktop-sidebar-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              onClick={handleCloseSidebar}
-              className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 cursor-pointer"
+              onClick={handleCloseDesktop}
+              className="fixed inset-0 bg-black/50 z-50 cursor-pointer"
             />
             <motion.div
               key="desktop-sidebar-drawer"
@@ -637,8 +678,39 @@ function PublicProfileClientInner({
               className="fixed top-0 bottom-0 left-0 z-50 h-full max-h-[100dvh] shadow-2xl max-w-full overflow-hidden"
             >
               <DesktopProfileSidebar
-                onClose={handleCloseSidebar}
-                onSelectSection={(secKey) => handleSectionSelect(secKey, false)}
+                onClose={handleCloseDesktop}
+                onSelectSection={handleDesktopSectionSelect}
+                isPublicView={false}
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Slide-In Section Drawer on Mobile (< lg) - STRICTLY EDIT MODE ONLY */}
+      <AnimatePresence>
+        {isEditing && mobileOpen && (
+          <div className="lg:hidden">
+            <motion.div
+              key="mobile-viewport-sidebar-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={handleCloseMobile}
+              className="fixed inset-0 bg-black/50 z-50 cursor-pointer"
+            />
+            <motion.div
+              key="mobile-viewport-sidebar-drawer"
+              initial={{ x: '-100%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '-100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              className="fixed top-0 bottom-0 left-0 z-50 h-full w-full max-w-[320px] shadow-2xl"
+            >
+              <DesktopProfileSidebar
+                onClose={handleCloseMobile}
+                onSelectSection={handleMobileSectionSelect}
                 isPublicView={false}
               />
             </motion.div>
@@ -651,6 +723,8 @@ function PublicProfileClientInner({
         <div 
           id="profile-scroll-panel"
           onClick={() => {
+            if (desktopOpen) handleCloseDesktop();
+            if (mobileOpen) handleCloseMobile();
             if (isSidebarOpen) handleCloseSidebar();
           }}
           className="h-full min-h-0 overflow-y-auto overscroll-contain px-0 sm:px-4 lg:px-6 py-0 sm:py-4 box-border scrollbar-thin transition-all duration-300 w-full flex-1"
@@ -688,6 +762,10 @@ function PublicProfileClientInner({
               onSectionsMouseEnter={handleTriggerMouseEnter}
               onSectionsMouseLeave={handleTriggerMouseLeave}
               isSidebarOpen={isSidebarOpen}
+              onToggleMobileSections={handleToggleMobile}
+              isMobileSectionsOpen={mobileOpen}
+              onToggleDesktopSections={handleToggleDesktop}
+              isDesktopSectionsOpen={desktopOpen}
             />
           </div>
         </div>
@@ -715,6 +793,7 @@ function PublicProfileClientInner({
         <div 
           id="mobile-profile-scroll-panel" 
           onClick={() => {
+            if (mobileOpen) handleCloseMobile();
             if (isSidebarOpen) handleCloseSidebar();
           }}
           className="h-full min-h-0 overflow-y-auto overscroll-contain transition-all duration-300 w-full flex-1"
@@ -751,8 +830,10 @@ function PublicProfileClientInner({
             onSectionsMouseEnter={handleTriggerMouseEnter}
             onSectionsMouseLeave={handleTriggerMouseLeave}
             isSidebarOpen={isSidebarOpen}
-            onToggleSectionsDrawer={handleToggleSectionsDrawer}
-            isSectionsDrawerOpen={isSidebarOpen}
+            onToggleMobileSections={handleToggleMobile}
+            isMobileSectionsOpen={mobileOpen}
+            onToggleDesktopSections={handleToggleDesktop}
+            isDesktopSectionsOpen={desktopOpen}
           />
         </div>
 
@@ -767,7 +848,7 @@ function PublicProfileClientInner({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
                 onClick={handleCloseSidebar}
-                className="absolute inset-0 bg-black/40 backdrop-blur-xs z-30 cursor-pointer"
+                className="absolute inset-0 bg-black/40 z-30 cursor-pointer"
               />
               <motion.div
                 key="mobile-drawer-panel"
@@ -810,21 +891,21 @@ function PublicProfileClientInner({
           )}
         </AnimatePresence>
 
-        {/* Slide-In Section Drawer on Mobile - STRICTLY EDIT MODE ONLY */}
+        {/* Slide-In Section Drawer on Mobile Phone Chassis - STRICTLY EDIT MODE ONLY */}
         <AnimatePresence>
-          {isEditing && isSidebarOpen && (
+          {isEditing && mobileOpen && (
             <>
               <motion.div
-                key="mobile-sidebar-backdrop"
+                key="mobile-chassis-sidebar-backdrop"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                onClick={handleCloseSidebar}
-                className="absolute inset-0 bg-black/50 backdrop-blur-[2px] z-40 cursor-pointer"
+                onClick={handleCloseMobile}
+                className="absolute inset-0 bg-black/50 z-40 cursor-pointer"
               />
               <motion.div
-                key="mobile-sidebar-drawer"
+                key="mobile-chassis-sidebar-drawer"
                 initial={{ x: '-100%', opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: '-100%', opacity: 0 }}
@@ -832,8 +913,8 @@ function PublicProfileClientInner({
                 className="absolute top-0 bottom-0 left-0 z-50 h-full w-full max-w-[320px] shadow-2xl"
               >
                 <DesktopProfileSidebar
-                  onClose={handleCloseSidebar}
-                  onSelectSection={(secKey) => handleSectionSelect(secKey, true)}
+                  onClose={handleCloseMobile}
+                  onSelectSection={handleMobileSectionSelect}
                   isPublicView={false}
                 />
               </motion.div>
