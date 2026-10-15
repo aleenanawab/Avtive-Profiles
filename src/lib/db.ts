@@ -38,7 +38,7 @@ interface DatabaseSchema {
 
 const globalForDb = globalThis as unknown as { __AVTIVE_DB__?: DatabaseSchema };
 
-async function withTimeout<T = any>(promise: PromiseLike<T> | any, ms: number = 2000): Promise<any> {
+async function withTimeout<T = any>(promise: PromiseLike<T> | any, ms: number = 6000): Promise<any> {
   return Promise.race([
     Promise.resolve(promise),
     new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
@@ -47,7 +47,7 @@ async function withTimeout<T = any>(promise: PromiseLike<T> | any, ms: number = 
 
 async function asyncSyncSupabase(action: PromiseLike<any>) {
   try {
-    await withTimeout(action, 2000);
+    await withTimeout(action, 6000);
   } catch {}
 }
 
@@ -388,8 +388,9 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
       supabaseAdmin
         .from('users')
         .select('*')
-        .eq('email', normalizedEmail)
-        .maybeSingle()
+        .ilike('email', normalizedEmail)
+        .maybeSingle(),
+      6000
     );
 
     if (data && !error) {
@@ -534,7 +535,7 @@ export async function createUser(data: {
 
   // Sync user to Supabase
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('users').upsert({
         id: newUser.id,
         name: newUser.name,
@@ -631,15 +632,50 @@ export async function createPasswordResetToken(email: string): Promise<{ token: 
 }
 
 export async function verifyPasswordResetToken(email: string, token: string): Promise<{ valid: boolean; error?: string; user?: UserRecord }> {
-  const normalizedEmail = email.toLowerCase().trim();
-  const user = await getUserByEmail(normalizedEmail);
+  const db = loadDb();
+  const normalizedEmail = email ? email.toLowerCase().trim() : '';
+  const crypto = await import('crypto');
+  const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
+
+  let user: UserRecord | null = null;
+  if (normalizedEmail) {
+    user = await getUserByEmail(normalizedEmail);
+  }
+
+  // If user not found by email or email was omitted in token-only reset link, search by reset token
+  if (!user) {
+    user = db.users.find((u) => u.resetToken === tokenHash || u.resetToken === token.trim()) || null;
+  }
+
+  // Fallback to Supabase
+  if (!user) {
+    try {
+      const { data, error } = await withTimeout(
+        supabaseAdmin
+          .from('users')
+          .select('*')
+          .or(`reset_token.eq.${tokenHash},reset_token.eq.${token.trim()}`)
+          .maybeSingle(),
+        6000
+      );
+      if (data && !error) {
+        user = {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          passwordHash: data.password_hash || data.passwordHash,
+          resetToken: data.reset_token || data.resetToken,
+          resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
+          createdAt: data.created_at || data.createdAt || new Date().toISOString()
+        };
+        db.users.push(user);
+      }
+    } catch {}
+  }
 
   if (!user) {
     return { valid: false, error: 'Invalid or expired password reset link.' };
   }
-
-  const crypto = await import('crypto');
-  const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
 
   // Verify against hashed token, with backward compatibility for any existing plaintext tokens
   const isMatch = user.resetToken === tokenHash || user.resetToken === token.trim();
@@ -657,16 +693,19 @@ export async function verifyPasswordResetToken(email: string, token: string): Pr
 
 export async function resetUserPassword(email: string, token: string, newPasswordHash: string): Promise<UserRecord | null> {
   const db = loadDb();
-  const normalizedEmail = email.toLowerCase().trim();
-  const userIndex = db.users.findIndex((u) => u.email.toLowerCase().trim() === normalizedEmail);
-
-  const user = userIndex !== -1 ? db.users[userIndex] : await getUserByEmail(normalizedEmail);
-  if (!user) return null;
-
+  const normalizedEmail = email ? email.toLowerCase().trim() : '';
   const crypto = await import('crypto');
   const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
-  const isMatch = user.resetToken === tokenHash || user.resetToken === token.trim();
 
+  let userIndex = normalizedEmail ? db.users.findIndex((u) => u.email.toLowerCase().trim() === normalizedEmail) : -1;
+  if (userIndex === -1) {
+    userIndex = db.users.findIndex((u) => u.resetToken === tokenHash || u.resetToken === token.trim());
+  }
+
+  const user = userIndex !== -1 ? db.users[userIndex] : (normalizedEmail ? await getUserByEmail(normalizedEmail) : null);
+  if (!user) return null;
+
+  const isMatch = user.resetToken === tokenHash || user.resetToken === token.trim();
   if (!user.resetToken || !isMatch) return null;
   if (!user.resetTokenExpires || new Date(user.resetTokenExpires).getTime() < Date.now()) return null;
 
@@ -676,12 +715,12 @@ export async function resetUserPassword(email: string, token: string, newPasswor
 
   // Sync password reset to Supabase
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('users').update({
         password_hash: newPasswordHash,
         reset_token: null,
         reset_token_expires: null
-      }).eq('email', normalizedEmail)
+      }).eq('id', user.id)
     );
   } catch {}
 
@@ -1050,49 +1089,68 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
 
 export async function getProfileByUserId(userId: string): Promise<ProfileData | null> {
   const db = loadDb();
-  // Prioritize individual profile if user has multiple (e.g. personal + team)
-  const individualProfile = Object.values(db.profiles).find(
-    (p) => p.userId === userId && normalizeProfileType(p.type) === 'individual'
-  );
-  if (individualProfile) return individualProfile;
 
-  const profile = Object.values(db.profiles).find((p) => p.userId === userId);
-  if (profile) return profile;
-
-  // Check if profile exists by matching user's email
-  const user = db.users.find((u) => u.id === userId);
-  if (user && user.email) {
-    const userEmail = user.email.toLowerCase().trim();
-    const byEmail = Object.values(db.profiles).find(
-      (p) => p.email && p.email.toLowerCase().trim() === userEmail
-    );
-    if (byEmail) {
-      byEmail.userId = userId;
-      saveDb(db);
-      return byEmail;
+  // 1. Check if there is an active/last selected profile via cookie for this user
+  try {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const lastProfileRaw = cookieStore.get('avtive_last_profile')?.value;
+    if (lastProfileRaw) {
+      const p = JSON.parse(decodeURIComponent(lastProfileRaw));
+      if (p && (p.userId === userId || !p.userId)) {
+        const found = Object.values(db.profiles).find(
+          (cand) => (cand.id === p.id || cand.slug === p.slug) && (cand.userId === userId || !cand.userId)
+        );
+        if (found) {
+          found.userId = userId;
+          return found;
+        }
+      }
     }
+  } catch {}
+
+  // 2. Fetch all profiles for this user from DB and honor saved profile type
+  const user = db.users.find((u) => u.id === userId);
+  const userEmail = user?.email?.toLowerCase().trim();
+
+  // Find all profiles belonging to this user
+  const matchingProfiles = Object.values(db.profiles).filter(
+    (p) => p.userId === userId || (userEmail && p.email && p.email.toLowerCase().trim() === userEmail)
+  );
+
+  if (matchingProfiles.length > 0) {
+    // If user's registered role is team/company, prioritize team/company profile
+    const userRoleType = user?.role ? normalizeProfileType(user.role) : undefined;
+    if (userRoleType === 'team') {
+      const companyProfile = matchingProfiles.find((p) => normalizeProfileType(p.type) === 'team');
+      if (companyProfile) return companyProfile;
+    }
+    // Return the first saved profile record without arbitrarily forcing individual
+    return matchingProfiles[0];
   }
 
-  // Supabase lookup fallback across serverless lambdas
+  // 3. Supabase lookup fallback across serverless lambdas
   try {
     const { data, error } = await withTimeout(
       supabaseAdmin
         .from('profiles')
         .select('*')
         .or(`user_id.eq.${userId}${user?.email ? `,email.eq.${user.email}` : ''}`)
-        .maybeSingle()
+        .limit(1),
+      6000
     );
 
-    if (data && !error) {
+    if (data && !error && data.length > 0) {
+      const item = data[0];
       const sp: ProfileData = {
-        ...(data.data || {}),
-        id: data.id,
+        ...(item.data || {}),
+        id: item.id,
         userId: userId,
-        slug: data.slug,
-        name: data.name,
-        email: data.email,
-        type: data.type || 'individual',
-        theme: data.theme || 'editorial'
+        slug: item.slug,
+        name: item.name,
+        email: item.email,
+        type: item.type || (user?.role ? normalizeProfileType(user.role) : 'individual'),
+        theme: item.theme || 'editorial'
       };
       normalizeProfiles({ [sp.id]: sp });
       db.profiles[sp.id] = sp;

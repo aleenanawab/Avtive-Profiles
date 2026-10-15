@@ -4,8 +4,8 @@ import { verifyPassword, setSessionCookie, DUMMY_BCRYPT_HASH, setReturningUserCo
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, password } = body;
+    const body = await request.json().catch(() => ({}));
+    const { email, password } = body || {};
 
     if (!email || !password) {
       return NextResponse.json(
@@ -43,7 +43,18 @@ export async function POST(request: NextRequest) {
 
     let isValid = false;
     if (user.passwordHash) {
+      if (user.passwordHash.startsWith('oauth_google_')) {
+        return NextResponse.json(
+          { error: 'This account was created with Google Sign-In. Please sign in with Google or use "Forgot password?" to set a password.' },
+          { status: 401 }
+        );
+      }
       isValid = await verifyPassword(password, user.passwordHash);
+    } else {
+      return NextResponse.json(
+        { error: 'This account does not have a password set. Please use "Forgot password?" to set a password.' },
+        { status: 401 }
+      );
     }
 
     // Seeded accounts resilience fallback across distributed environments
@@ -87,6 +98,8 @@ export async function POST(request: NextRequest) {
       user: sessionUser,
       hasProfile: Boolean(userProfile),
       profileSlug: userProfile?.slug || userProfile?.id || null,
+      profileType: userProfile?.type || user.role || 'individual',
+      type: userProfile?.type || user.role || 'individual',
       onboardingCompleted: isOnboardingComplete,
       role: userProfile?.type || user.role || null
     });
@@ -94,6 +107,25 @@ export async function POST(request: NextRequest) {
     response.headers.set('Cache-Control', 'no-store, max-age=0');
     await setSessionCookie(sessionUser, response);
     setReturningUserCookie(response);
+
+    if (userProfile) {
+      try {
+        response.cookies.set(
+          'avtive_last_profile',
+          encodeURIComponent(JSON.stringify({
+            id: userProfile.id,
+            slug: userProfile.slug,
+            type: userProfile.type,
+            userId: user.id
+          })),
+          {
+            path: '/',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 365
+          }
+        );
+      } catch {}
+    }
 
     // Refresh user cache cookie for resilient cross-lambda authentication
     try {

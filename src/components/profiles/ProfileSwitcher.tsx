@@ -29,6 +29,13 @@ interface ProfileSwitcherProps {
   className?: string;
 }
 
+function setLastProfileCookie(p: { id: string; slug?: string; type?: string; userId?: string }) {
+  if (typeof document === 'undefined') return;
+  try {
+    document.cookie = `avtive_last_profile=${encodeURIComponent(JSON.stringify(p))}; path=/; max-age=31536000; SameSite=Lax`;
+  } catch {}
+}
+
 export function ProfileSwitcher({
   currentProfileIdOrSlug,
   initialProfiles,
@@ -153,6 +160,7 @@ export function ProfileSwitcher({
   const handleSwitch = (profile: ProfileData) => {
     setIsOpen(false);
     setIsCreatingInline(false);
+    setLastProfileCookie({ id: profile.id, slug: profile.slug, type: profile.type, userId: profile.userId });
     if (onSelectProfile) {
       onSelectProfile(profile);
     } else {
@@ -190,6 +198,7 @@ export function ProfileSwitcher({
       }
 
       const created: ProfileData = data.profile;
+      setLastProfileCookie({ id: created.id, slug: created.slug, type: created.type, userId: created.userId });
       setProfiles((prev) => [created, ...prev.filter((p) => p.id !== created.id)]);
       setIsCreatingInline(false);
       setNewProfileName('');

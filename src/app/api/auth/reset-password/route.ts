@@ -9,9 +9,9 @@ export async function POST(request: NextRequest) {
     const token = body.token;
     const password = body.password || body.newPassword;
 
-    if (!email || !token || !password) {
+    if (!token || !password) {
       return NextResponse.json(
-        { error: 'Email, reset token, and new password are required.' },
+        { error: 'Reset token and new password are required.' },
         { status: 400 }
       );
     }
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail = email ? email.trim().toLowerCase() : '';
 
     // Verify token validity and expiration
     const verification = await verifyPasswordResetToken(normalizedEmail, token);

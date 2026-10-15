@@ -220,7 +220,7 @@ export function RecommendationsSection({
 
                     {isExpanded && (
                       <div className={`pt-2 border-t ${theme.divider} space-y-2 text-xs leading-relaxed ${theme.textSecondary}`}>
-                        <p className="italic font-serif">
+                        <p className="italic font-sans">
                           &ldquo;{rec.fullText || rec.summary}&rdquo;
                         </p>
                       </div>

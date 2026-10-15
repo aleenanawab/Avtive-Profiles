@@ -23,7 +23,7 @@ import { ENABLE_GOOGLE_AUTH } from '@/lib/authConfig';
 
 import { sanitizeReturnUrl, resolveReturnUrlForExistingUser } from '@/lib/utils';
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
 export default function LoginClient() {
   const router = useRouter();
@@ -126,7 +126,8 @@ export default function LoginClient() {
 
   const getReturnUrl = () => {
     if (typeof window === 'undefined') return null;
-    const raw = new URLSearchParams(window.location.search).get('returnUrl');
+    const sp = new URLSearchParams(window.location.search);
+    const raw = sp.get('returnUrl') || sp.get('redirect') || sp.get('next');
     return sanitizeReturnUrl(raw, null);
   };
 
@@ -190,10 +191,11 @@ export default function LoginClient() {
     setIsLoading(true);
 
     try {
+      const normalizedEmail = trimmedEmail.toLowerCase();
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmedEmail, password })
+        body: JSON.stringify({ email: normalizedEmail, password })
       });
 
       let data: any;
@@ -201,13 +203,21 @@ export default function LoginClient() {
         data = await res.json();
       } catch (parseErr) {
         console.error('Failed to parse login response:', parseErr);
-        setErrorMessage('Server returned an invalid response. Please try again.');
+        setErrorMessage('Server returned a malformed response. Please try again.');
         setIsLoading(false);
         return;
       }
 
       if (!res.ok) {
-        setErrorMessage(data?.error || 'Invalid credentials. Please check email and password.');
+        if (res.status === 401) {
+          setErrorMessage(data?.error || 'Invalid email or password. Please verify your credentials.');
+        } else if (res.status === 403) {
+          setErrorMessage(data?.error || 'Your session has expired or access is denied. Please sign in again.');
+        } else if (res.status >= 500) {
+          setErrorMessage(data?.error || 'A server error occurred. Please try again in a few moments.');
+        } else {
+          setErrorMessage(data?.error || 'Unable to log in. Please check your credentials and try again.');
+        }
         setIsLoading(false);
         return;
       }
@@ -216,14 +226,14 @@ export default function LoginClient() {
         sessionStorage.removeItem('avtive_temp_reg_creds');
         sessionStorage.setItem('avtive_active_session', 'true');
         localStorage.setItem('avtive_returning_user', 'true');
-        localStorage.setItem('avtive_remembered_identifier', trimmedEmail);
+        localStorage.setItem('avtive_remembered_identifier', normalizedEmail);
       } catch {}
 
       const returnUrl = getReturnUrl();
       let targetPath = '/onboarding/role';
 
       if (data.hasProfile && (data.profileSlug || data.user?.id)) {
-        // EXISTING USER DETECTED -> Direct to their own profile in VIEW MODE
+        // EXISTING USER DETECTED -> Direct to their saved profile (Company or Individual) in VIEW MODE
         const userProfileUrl = `/profile/${data.profileSlug || data.user.id}`;
         targetPath = resolveReturnUrlForExistingUser(returnUrl, userProfileUrl);
       } else {
@@ -238,7 +248,7 @@ export default function LoginClient() {
       window.location.href = targetPath;
     } catch (err) {
       console.error(err);
-      setErrorMessage('Network error during login. Please try again.');
+      setErrorMessage('Unable to connect to the server. Please check your network connection and try again.');
       setIsLoading(false);
     }
   };
