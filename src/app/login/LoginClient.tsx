@@ -236,6 +236,9 @@ export default function LoginClient() {
         // EXISTING USER DETECTED -> Direct to their saved profile (Company or Individual) in VIEW MODE
         const userProfileUrl = `/profile/${data.profileSlug || data.user.id}`;
         targetPath = resolveReturnUrlForExistingUser(returnUrl, userProfileUrl);
+        if (targetPath === '/profile' || targetPath === '/profile/' || targetPath === '/my-profile') {
+          targetPath = userProfileUrl;
+        }
       } else {
         // NEW USER DETECTED -> Must complete Role -> Theme/Skip -> Existing Editor
         try {

@@ -85,7 +85,6 @@ export function ProfileSectionTabBar({
     if (isCompany) {
       const companyTabs: SectionTabItem[] = [
         { key: 'profile', label: 'Overview', icon: Building2 },
-        { key: 'companyInfo', label: 'Company Info', icon: Building2 },
         { key: 'teamMembers', label: 'Team', icon: Users },
         { key: 'skills', label: 'Services', icon: Code },
         { key: 'projects', label: 'Projects', icon: FolderGit2 },

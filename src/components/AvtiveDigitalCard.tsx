@@ -276,8 +276,7 @@ export function AvtiveDigitalCard({
         {/* ========================================================================= */}
         {(() => {
           const defaultCardSectionOrder = [
-            'company',
-            'teamMembers',
+            ...(isCompany ? ['teamMembers'] : ['company']),
             'about',
             'contact',
             'custom-fields',
@@ -306,7 +305,7 @@ export function AvtiveDigitalCard({
               ? 'skills' 
               : (s === 'socials' 
               ? 'socialLinks' 
-              : ((s === 'company' || s === 'team') && isCompany ? 'teamMembers' : s));
+              : ((s === 'company' || s === 'team' || s === 'companyInfo') && isCompany ? 'teamMembers' : s));
             if (!effectiveOrder.includes(normalized) && defaultCardSectionOrder.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
@@ -317,8 +316,8 @@ export function AvtiveDigitalCard({
               ? 'skills' 
               : (s === 'socials' 
               ? 'socialLinks' 
-              : ((s === 'company' || s === 'team') && isCompany ? 'teamMembers' : s));
-            if (!effectiveOrder.includes(normalized)) {
+              : ((s === 'company' || s === 'team' || s === 'companyInfo') && isCompany ? 'teamMembers' : s));
+            if (!effectiveOrder.includes(normalized) && defaultCardSectionOrder.includes(normalized)) {
               effectiveOrder.push(normalized);
             }
           }
@@ -365,30 +364,32 @@ export function AvtiveDigitalCard({
           const renderSectionContent = (sectionKey: string) => {
             switch (sectionKey) {
               case 'company':
-              case 'teamMembers':
-              case 'team':
-                if (!isSectionVisible(sectionKey)) return null;
-                if (isCompany) {
-                  return (
-                    <TeamSection
-                      key="team"
-                      profile={activeProfile}
-                      onSelectTeamMember={onSelectTeamMember}
-                      theme={theme}
-                      canEdit={canEdit}
-                      isEditing={isEditing}
-                      onUpdateField={handleFieldUpdate}
-                      onSavePartial={handleSavePartial}
-                      onSelectSection={onSelectSection}
-                    />
-                  );
-                }
+                if (isCompany) return null;
+                if (!isSectionVisible('company')) return null;
                 return (
                   <CompanyCard
                     key="company"
                     companyInfo={activeProfile.companyInfo}
                     profile={activeProfile}
                     onViewCompany={onViewCompany ? () => onViewCompany(activeProfile.companyId || 'avtive-company') : undefined}
+                    theme={theme}
+                    canEdit={canEdit}
+                    isEditing={isEditing}
+                    onUpdateField={handleFieldUpdate}
+                    onSavePartial={handleSavePartial}
+                    onSelectSection={onSelectSection}
+                  />
+                );
+
+              case 'teamMembers':
+              case 'team':
+                if (!isCompany) return null;
+                if (!isSectionVisible('teamMembers') && !isSectionVisible('team') && !isSectionVisible('company')) return null;
+                return (
+                  <TeamSection
+                    key="team"
+                    profile={activeProfile}
+                    onSelectTeamMember={onSelectTeamMember}
                     theme={theme}
                     canEdit={canEdit}
                     isEditing={isEditing}

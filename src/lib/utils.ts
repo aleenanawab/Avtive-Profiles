@@ -82,6 +82,17 @@ export function resolveReturnUrlForExistingUser(
       return userProfileUrl;
     }
 
+    // Direct /profile, /my-profile, or undefined identifier paths to user's saved profile
+    if (
+      pathname === '' ||
+      pathname === '/profile' ||
+      pathname === '/my-profile' ||
+      pathname === '/profile/undefined' ||
+      pathname === '/profile/null'
+    ) {
+      return userProfileUrl;
+    }
+
     // If pathname is an edit route, ends with /edit, or contains an edit flag
     if (
       pathname === '/edit-profile' ||
