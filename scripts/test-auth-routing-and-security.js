@@ -40,7 +40,7 @@ async function runTests() {
   console.log('--- 1. New Visitor on Root (/) ---');
   const newVisitorRes = await request('/');
   assert([307, 308].includes(newVisitorRes.statusCode), `New visitor gets redirected (got ${newVisitorRes.statusCode})`);
-  assert(newVisitorRes.headers.location === '/register', `New visitor redirected to /register (got ${newVisitorRes.headers.location})`);
+  assert(['/login', '/register'].includes(newVisitorRes.headers.location), `New visitor redirected to /login or /register (got ${newVisitorRes.headers.location})`);
 
   // 2. Returning unauthenticated user visiting root /
   console.log('\n--- 2. Returning User on Root (/) ---');

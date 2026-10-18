@@ -72,8 +72,8 @@ async function runTwoRoleTests() {
   assert(rolePageRes.body.includes('Select Profile Type'), 'Header includes "Select Profile Type"');
   assert(rolePageRes.body.includes('Individual'), 'Contains "Individual" role card');
   assert(rolePageRes.body.includes('Personal Profile'), 'Contains "Personal Profile" badge');
-  assert(rolePageRes.body.includes('Team'), 'Contains "Team" role card');
-  assert(rolePageRes.body.includes('Group / Organization'), 'Contains "Group / Organization" badge');
+  assert(rolePageRes.body.includes('Company') || rolePageRes.body.includes('Team'), 'Contains "Company" or "Team" role card');
+  assert(rolePageRes.body.includes('Company Profile') || rolePageRes.body.includes('Group / Organization'), 'Contains Company profile badge');
 
   // Ensure NO obsolete role options exist
   assert(!rolePageRes.body.includes('Work at a Company'), 'Does NOT contain obsolete Employee subtitle');

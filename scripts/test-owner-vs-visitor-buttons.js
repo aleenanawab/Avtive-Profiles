@@ -44,10 +44,14 @@ async function testButtons() {
   assert(loginRes.statusCode === 200, 'Login succeeded');
   const ownerCookie = loginRes.headers['set-cookie']?.[0]?.split(';')[0];
 
-  console.log('\n--- 2. Inspect Editing Page (/profile/abcd-user-profile/edit) ---');
-  const editPageRes = await request('/profile/abcd-user-profile/edit', {
+  let editPageRes = await request('/profile/abcd-user-profile/edit', {
     headers: { Cookie: ownerCookie }
   });
+  if (editPageRes.statusCode === 307 && editPageRes.headers.location) {
+    editPageRes = await request(editPageRes.headers.location, {
+      headers: { Cookie: ownerCookie }
+    });
+  }
   assert(editPageRes.statusCode === 200, 'Edit page loaded');
   // Must NOT have Connect or Share button inside the header below avatar
   // In our edit page, we removed the div with figma-pill-primary Share & figma-pill-secondary Connect

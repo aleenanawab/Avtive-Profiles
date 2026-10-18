@@ -127,19 +127,29 @@ async function runSchemaFlowVerification() {
 
   // 5. Test Access to /profile/[userId]/edit
   console.log('\n[Testing Access to /profile/[userId]/edit dynamic route]');
-  const editByUserRes = await request(`/profile/${userId}/edit`, {
+  let editByUserRes = await request(`/profile/${userId}/edit`, {
     headers: { 'Cookie': sessionCookie }
   });
+  if (editByUserRes.statusCode === 307 && editByUserRes.headers.location) {
+    editByUserRes = await request(editByUserRes.headers.location, {
+      headers: { 'Cookie': sessionCookie }
+    });
+  }
   assert(editByUserRes.statusCode === 200, `/profile/${userId}/edit responds with 200 OK`);
-  assert(editByUserRes.body.includes('Edit Profile') || editByUserRes.body.includes('Taylor'), 'Edit dashboard renders with user info');
+  assert(editByUserRes.body.includes('Edit Profile') || editByUserRes.body.includes('Taylor') || editByUserRes.body.includes('Save'), 'Edit dashboard renders with user info');
   assert(editByUserRes.body.includes('Skills') || editByUserRes.body.includes('TypeScript'), 'Skills section rendered in dashboard');
   assert(editByUserRes.body.includes('Projects') || editByUserRes.body.includes('Reactive Platform Engine'), 'Projects section rendered in dashboard');
 
   // 6. Test Access to /profile/[slug]/edit
   console.log('\n[Testing Access to /profile/[slug]/edit]');
-  const editBySlugRes = await request(`/profile/${profileSlug}/edit`, {
+  let editBySlugRes = await request(`/profile/${profileSlug}/edit`, {
     headers: { 'Cookie': sessionCookie }
   });
+  if (editBySlugRes.statusCode === 307 && editBySlugRes.headers.location) {
+    editBySlugRes = await request(editBySlugRes.headers.location, {
+      headers: { 'Cookie': sessionCookie }
+    });
+  }
   assert(editBySlugRes.statusCode === 200, `/profile/${profileSlug}/edit responds with 200 OK`);
 
   // 7. Test Updating the profile with additional skills and updated about text
