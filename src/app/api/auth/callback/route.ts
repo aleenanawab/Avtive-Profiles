@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get('code');
   const error = requestUrl.searchParams.get('error');
   const errorDescription = requestUrl.searchParams.get('error_description');
-  const next = requestUrl.searchParams.get('next') || requestUrl.searchParams.get('returnUrl');
+  const next = requestUrl.searchParams.get('next') || requestUrl.searchParams.get('returnUrl') || request.cookies.get('auth_return_url')?.value;
 
   if (error) {
     console.error('OAuth Callback Error:', error, errorDescription);
@@ -218,6 +218,7 @@ export async function GET(request: NextRequest) {
     await setSessionCookie(sessionUser, response);
     setReturningUserCookie(response);
 
+    response.cookies.delete('auth_return_url');
     // Clean up transient code-verifier cookie once exchanged
     request.cookies.getAll().forEach(c => {
       if (c.name.includes('code-verifier')) {
