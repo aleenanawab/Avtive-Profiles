@@ -867,8 +867,8 @@ export function HeroSection({
           )}
         </div>
 
-        {/* Direct Social Icon Bar: Respects exact drag-and-drop order from socials */}
-        {sharing.socialLinks !== false && (
+        {/* Direct Social Icon Bar: Respects exact drag-and-drop order from socials (hidden in Edit Mode) */}
+        {!isEditing && sharing.socialLinks !== false && (
           <div 
             onClick={(e) => {
               if (canEdit && onSelectSection && (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains('edit-socials-trigger'))) {

@@ -16,7 +16,17 @@ export async function GET() {
     ]);
 
     const userProfile = profile || (profiles && profiles.length > 0 ? profiles[0] : null);
-    const isOnboardingComplete = Boolean(dbUser?.onboardingCompleted || userProfile);
+    const hasRealProfileData = Boolean(
+      userProfile && (
+        (userProfile.designation && userProfile.designation !== 'Professional') ||
+        (userProfile.skills && userProfile.skills.length > 0) ||
+        (userProfile.experience && userProfile.experience.length > 0) ||
+        (userProfile.services && userProfile.services.length > 0) ||
+        (userProfile.customFields && userProfile.customFields.length > 0) ||
+        (userProfile.shortBio && !userProfile.shortBio.includes('Welcome to my digital profile on Avtive.'))
+      )
+    );
+    const isOnboardingComplete = Boolean(dbUser?.onboardingCompleted || hasRealProfileData);
 
     return NextResponse.json({
       user: {

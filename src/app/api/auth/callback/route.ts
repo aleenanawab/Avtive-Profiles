@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { supabaseUrl, supabaseAnonKey, supabaseServiceKey, SUPABASE_AUTH_STORAGE_KEY } from '@/lib/supabase';
+import { createServerClient } from '@supabase/ssr';
+import { supabaseUrl, supabaseAnonKey } from '@/lib/supabase';
 import { getUserByEmail, getUserById, createUser, getProfileByUserId, getProfilesByUserId } from '@/lib/db';
 import { setSessionCookie, setReturningUserCookie, sanitizeReturnUrl, resolveReturnUrlForExistingUser } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
+
+// In-memory cache for recent and in-flight code exchanges to prevent duplicate code burning
+interface CodeExchangeCache {
+  user: any;
+  timestamp: number;
+}
+const processedCodes = new Map<string, CodeExchangeCache>();
+const inFlightExchanges = new Map<string, Promise<any>>();
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -14,7 +22,7 @@ export async function GET(request: NextRequest) {
   const next = requestUrl.searchParams.get('next') || requestUrl.searchParams.get('returnUrl') || request.cookies.get('auth_return_url')?.value;
 
   if (error) {
-    console.error('OAuth Callback Error:', error, errorDescription);
+    console.error('[OAuth Callback] Provider returned error:', error, errorDescription);
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('error', errorDescription || error);
     return NextResponse.redirect(loginUrl);
@@ -25,132 +33,53 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 1. Locate the PKCE code verifier cookie set during signInWithOAuth
-    const findCodeVerifier = (): string | null => {
-      // Direct lookup by expected storage key
-      const expectedKey = `${SUPABASE_AUTH_STORAGE_KEY}-code-verifier`;
-      const direct = request.cookies.get(expectedKey)?.value;
-      if (direct) {
-        return direct.includes('%') ? decodeURIComponent(direct) : direct;
-      }
-
-      // Search all cookies for code-verifier (excluding 'flows' index list)
-      const allCookies = request.cookies.getAll();
-      for (const cookie of allCookies) {
-        if (
-          cookie.name.includes('code-verifier') &&
-          !cookie.name.includes('flows') &&
-          cookie.value
-        ) {
-          const val = cookie.value.includes('%') ? decodeURIComponent(cookie.value) : cookie.value;
-          if (!val.startsWith('[') && !val.startsWith('%5B')) {
-            return val;
-          }
-        }
-      }
-      return null;
-    };
-
-    const verifierRaw = findCodeVerifier();
-    let cleanVerifier = verifierRaw ? verifierRaw.trim() : null;
-    if (cleanVerifier && cleanVerifier.startsWith('"') && cleanVerifier.endsWith('"')) {
-      try {
-        cleanVerifier = JSON.parse(cleanVerifier);
-      } catch {}
-    }
-    const verifierJson = cleanVerifier ? JSON.stringify(cleanVerifier) : null;
-
+    // 1. Check if this code was already exchanged recently (prevents double-execution / prefetch code burning)
+    const cached = processedCodes.get(code);
     let authUser: any = null;
+    const cookiesToSetOnResponse: Array<{ name: string; value: string; options: any }> = [];
 
-    if (verifierJson && cleanVerifier) {
-      // Server-side storage adapter reading the incoming PKCE code_verifier
-      const serverStorage = {
-        getItem: (key: string) => {
-          if (key.includes('code-verifier') && !key.includes('flows')) {
-            return verifierJson;
-          }
-          const val = request.cookies.get(key)?.value;
-          if (!val) return null;
-          const decoded = val.includes('%') ? decodeURIComponent(val) : val;
-          try {
-            JSON.parse(decoded);
-            return decoded;
-          } catch {
-            return JSON.stringify(decoded);
-          }
-        },
-        setItem: () => {},
-        removeItem: () => {},
-      };
-
-      const serverAuthKey = (supabaseServiceKey && !supabaseServiceKey.includes('placeholder'))
-        ? supabaseServiceKey
-        : (supabaseAnonKey && !supabaseAnonKey.includes('placeholder'))
-        ? supabaseAnonKey
-        : supabaseAnonKey;
-
-      const serverAuthClient = createClient(supabaseUrl, serverAuthKey, {
-        auth: {
-          storageKey: SUPABASE_AUTH_STORAGE_KEY,
-          storage: serverStorage,
-          persistSession: false,
-          autoRefreshToken: false,
-          flowType: 'pkce',
-        }
-      });
-
-      try {
-        const flowId = requestUrl.searchParams.get('sb_flow_id');
-        const { data: sessionData, error: exchangeError } = await serverAuthClient.auth.exchangeCodeForSession(
-          code,
-          flowId ? { flowId } : undefined
-        );
-        if (!exchangeError && sessionData?.user) {
-          authUser = sessionData.user;
-        } else if (exchangeError) {
-          console.error('OAuth exchangeCodeForSession error:', exchangeError);
-        }
-      } catch (e) {
-        console.error('OAuth exchangeCodeForSession exception:', e);
-      }
-
-      // Direct token endpoint fallback using cleanVerifier if client method failed
-      if (!authUser) {
-        try {
-          const tokenRes = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=pkce`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'apikey': serverAuthKey,
-            },
-            body: JSON.stringify({
-              auth_code: code,
-              code_verifier: cleanVerifier,
-            }),
-          });
-          if (tokenRes.ok) {
-            const tokenData = await tokenRes.json();
-            if (tokenData?.user) {
-              authUser = tokenData.user;
-            }
-          } else {
-            const errBody = await tokenRes.text();
-            console.error('Direct token endpoint fallback response:', tokenRes.status, errBody);
-          }
-        } catch (fetchErr) {
-          console.error('Direct token fetch error:', fetchErr);
-        }
-      }
+    if (cached && (Date.now() - cached.timestamp < 60000)) {
+      authUser = cached.user;
+    } else if (inFlightExchanges.has(code)) {
+      authUser = await inFlightExchanges.get(code);
     } else {
-      console.error('No PKCE code verifier cookie found in request');
+      const exchangePromise = (async () => {
+        const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll();
+            },
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach((c) => cookiesToSetOnResponse.push(c));
+            },
+          },
+        });
+
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeError) {
+          console.error('[OAuth Callback] exchangeCodeForSession error:', exchangeError.message || exchangeError);
+          return null;
+        }
+
+        return data?.user || (data as any)?.session?.user || null;
+      })();
+
+      inFlightExchanges.set(code, exchangePromise);
+      try {
+        authUser = await exchangePromise;
+        if (authUser) {
+          processedCodes.set(code, { user: authUser, timestamp: Date.now() });
+          setTimeout(() => processedCodes.delete(code), 120000);
+        }
+      } finally {
+        inFlightExchanges.delete(code);
+      }
     }
 
     if (!authUser) {
-      console.error('Unable to retrieve user from auth code. Check Supabase keys in environment variables.');
+      console.error('[OAuth Callback] Unable to retrieve user from auth code. Code length:', code.length);
       const loginUrl = new URL('/login', request.url);
-      const detailError = !verifierJson 
-        ? 'OAuth session verifier expired or blocked by browser cookies. Please try again.'
-        : 'Google authentication exchange failed with Supabase. Please ensure your Supabase keys (NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY) are added to your Vercel Environment Variables.';
+      const detailError = 'Google authentication exchange failed with Supabase. Please ensure your Supabase keys (NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY) are added to your Vercel Environment Variables.';
       loginUrl.searchParams.set('error', detailError);
       return NextResponse.redirect(loginUrl);
     }
@@ -184,12 +113,23 @@ export async function GET(request: NextRequest) {
       if (avatarUrl && !user.avatar) user.avatar = avatarUrl;
     }
 
-    // Check onboarding completion status: does the user have an existing profile?
+    // Check onboarding completion status: does the user have an existing completed profile?
     const [profile, profiles] = await Promise.all([
       getProfileByUserId(user.id),
       getProfilesByUserId(user.id)
     ]);
-    const hasCompletedOnboarding = Boolean(profile || (profiles && profiles.length > 0));
+    const userProfile = profile || (profiles && profiles.length > 0 ? profiles[0] : null);
+    const hasRealProfileData = Boolean(
+      userProfile && (
+        (userProfile.designation && userProfile.designation !== 'Professional') ||
+        (userProfile.skills && userProfile.skills.length > 0) ||
+        (userProfile.experience && userProfile.experience.length > 0) ||
+        (userProfile.services && userProfile.services.length > 0) ||
+        (userProfile.customFields && userProfile.customFields.length > 0) ||
+        (userProfile.shortBio && !userProfile.shortBio.includes('Welcome to my digital profile on Avtive.'))
+      )
+    );
+    const hasCompletedOnboarding = Boolean(user.onboardingCompleted || hasRealProfileData);
 
     const sessionUser = {
       id: user.id,
@@ -201,30 +141,38 @@ export async function GET(request: NextRequest) {
     const safeNext = sanitizeReturnUrl(next, null);
     let destinationPath = '/onboarding/role';
 
-    if (hasCompletedOnboarding) {
+    if (hasCompletedOnboarding && userProfile) {
       // Completed user: redirect directly to their own profile in view mode (or valid returnUrl)
-      const targetSlug = profile?.slug || profile?.id || profiles?.[0]?.slug || profiles?.[0]?.id || user.id;
+      const targetSlug = userProfile.slug || userProfile.id || user.id;
       const userProfileUrl = `/profile/${targetSlug}`;
       destinationPath = resolveReturnUrlForExistingUser(safeNext, userProfileUrl);
     } else {
-      // New user or incomplete onboarding: redirect to role onboarding step
-      destinationPath = '/onboarding/role';
+      // New user or incomplete onboarding: resume only the missing step
+      const userRole = user.role || userProfile?.type;
+      const userTheme = user.preferredTheme || userProfile?.theme;
+      if (!userRole) {
+        destinationPath = '/onboarding/role';
+      } else if (!userTheme) {
+        destinationPath = `/onboarding/theme?role=${encodeURIComponent(userRole)}`;
+      } else {
+        destinationPath = `/edit-profile?role=${encodeURIComponent(userRole)}&theme=${encodeURIComponent(userTheme)}&edit=true`;
+      }
     }
 
     const redirectUrl = new URL(destinationPath, request.url);
     const response = NextResponse.redirect(redirectUrl);
+
+    // Apply Supabase auth cookies on response
+    cookiesToSetOnResponse.forEach(({ name, value, options }) => {
+      response.cookies.set(name, value, options);
+    });
 
     response.headers.set('Cache-Control', 'no-store, max-age=0');
     await setSessionCookie(sessionUser, response);
     setReturningUserCookie(response);
 
     response.cookies.delete('auth_return_url');
-    // Clean up transient code-verifier cookie once exchanged
-    request.cookies.getAll().forEach(c => {
-      if (c.name.includes('code-verifier')) {
-        response.cookies.delete(c.name);
-      }
-    });
+    response.cookies.delete('sb-pkce-verifier');
 
     return response;
 

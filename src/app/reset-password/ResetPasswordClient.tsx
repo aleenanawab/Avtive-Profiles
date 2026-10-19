@@ -14,6 +14,7 @@ import {
   Check
 } from 'lucide-react';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
+import { supabase } from '@/lib/supabase';
 
 export default function ResetPasswordClient() {
   const router = useRouter();
@@ -102,13 +103,8 @@ export default function ResetPasswordClient() {
 
       if (!res.ok) {
         // Check if Supabase client can handle hash recovery token as fallback
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-        if (supabaseUrl && supabaseAnonKey && token) {
+        if (token) {
           try {
-            const modName = '@supabase/supabase-js';
-            const { createClient } = await import(/* webpackIgnore: true */ modName);
-            const supabase = createClient(supabaseUrl, supabaseAnonKey);
             const { error: sbErr } = await supabase.auth.updateUser({ password: newPassword });
             if (!sbErr) {
               setIsSuccess(true);

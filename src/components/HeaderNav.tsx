@@ -148,11 +148,12 @@ export function HeaderNav({
             <button
               type="button"
               onClick={onOpenEdit}
-              className={`w-8 h-8 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center justify-center active:scale-95`}
+              className={`h-8 px-2.5 sm:px-3 rounded-xl ${theme.cardBg} hover:opacity-90 ${theme.textPrimary} border ${theme.cardBorder} transition-colors shadow-2xs shrink-0 cursor-pointer flex items-center gap-1.5 active:scale-95 text-xs font-semibold`}
               title="Edit Profile"
               aria-label="Edit Profile"
             >
               <Edit3 className={`w-3.5 h-3.5 ${theme.accentText}`} />
+              <span className="hidden sm:inline">Edit Profile</span>
             </button>
           )}
 

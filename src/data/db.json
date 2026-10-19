@@ -20,8 +20,11 @@
       "id": "user-abcd",
       "name": "ABCD User",
       "email": "abcd@gmail.com",
-      "passwordHash": "$2b$10$6QjvHUrf.fZfgceDcQThn.QlBAd4GoSZZjrDLjOTUcx8TsJtvlJTm",
-      "createdAt": "2026-09-15T06:00:00.000Z"
+      "passwordHash": "$2b$10$f8BhKiLvexNfi3NXbfmA1.zZ/tQwySWiSSN2yzc9QypS7as1rEThC",
+      "createdAt": "2026-09-15T06:00:00.000Z",
+      "onboardingCompleted": true,
+      "role": "individual",
+      "preferredTheme": "editorial"
     },
     {
       "id": "user-leap",
@@ -1032,6 +1035,24 @@
       "onboardingCompleted": false,
       "recoveryCodeHash": "e9121e09b6d4145983586ab3bea8238d5c19b88e132de4845f80e9a70f473c44",
       "createdAt": "2026-10-15T06:29:51.361Z"
+    },
+    {
+      "id": "0615fb3f-c361-4839-871f-a84cbb8096f1",
+      "name": "QA Tester",
+      "email": "qa_tester_1792391866527@example.com",
+      "passwordHash": "$2b$10$Z5QjRLkEKiNHINz9nGdCdeJw9HFpdbFZ4fdY.JsC7aBdJUC9I5T2i",
+      "onboardingCompleted": false,
+      "recoveryCodeHash": "ab204c0dfeb07b5e1955d1d7f9c8df7d3bcda406f9cb169923b5163bdd1b47cc",
+      "createdAt": "2026-10-19T06:37:48.241Z"
+    },
+    {
+      "id": "71b10928-ea58-4d55-b42a-a34e5a4b73a0",
+      "name": "QA Tester",
+      "email": "qa_tester_1792391924550@example.com",
+      "passwordHash": "$2b$10$wheOI0OlHOXMZRCeGZUqIeWlsQxYmEt20adhpJIp49AQ4sXM2oLQm",
+      "onboardingCompleted": false,
+      "recoveryCodeHash": "f0c4dd9b053e55b19736abd4d416258fedbab3eb34ef253c9265a37d883b3138",
+      "createdAt": "2026-10-19T06:38:44.936Z"
     }
   ],
   "profiles": {
@@ -13083,14 +13104,14 @@
       "secondName": "User",
       "lastName": "User",
       "professionalTitle": "Full Stack Engineer",
-      "designation": "Full Stack Engineer",
+      "designation": "Principal Engineer & Director",
       "company": "Avtive",
       "location": "Global",
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
       "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
       "bio": "Testing profile creation workflow",
       "about": "About story content",
-      "shortBio": "Testing profile creation workflow",
+      "shortBio": "Updated bio after second edit",
       "fullBio": "About story content",
       "phone": "",
       "whatsapp": "",
@@ -13105,9 +13126,9 @@
       "socials": [],
       "socialLinks": [],
       "skills": [
+        "TypeScript",
         "Next.js",
-        "React",
-        "TypeScript"
+        "React"
       ],
       "experience": [],
       "experiences": [],
@@ -13141,21 +13162,26 @@
       },
       "sectionOrder": [
         "hero",
-        "about",
-        "services",
-        "skills",
         "experience",
-        "projects",
-        "certifications",
-        "volunteer",
-        "languages",
-        "recommendations",
-        "virtual-card"
+        "skills",
+        "about",
+        "custom-fields",
+        "education",
+        "contact"
       ],
       "createdAt": "2026-09-15T06:49:00.742Z",
-      "updatedAt": "2026-09-15T06:49:00.742Z",
+      "updatedAt": "2026-10-19T06:38:47.412Z",
       "username": "abcd-user-primary-profile-i0da",
-      "customFields": [],
+      "customFields": [
+        {
+          "id": "cf-github",
+          "label": "Primary GitHub",
+          "value": "https://github.com/aleenanawab/Avtive-Profiles",
+          "type": "link",
+          "visible": true,
+          "order": 0
+        }
+      ],
       "dynamicSections": [],
       "sectionVisibility": {
         "hero": true,
@@ -13188,14 +13214,14 @@
       "secondName": "User",
       "lastName": "User",
       "professionalTitle": "Full Stack Engineer",
-      "designation": "Full Stack Engineer",
+      "designation": "Principal Engineer & Director",
       "company": "Avtive",
       "location": "Global",
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
       "coverImage": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop",
       "bio": "Testing profile creation workflow",
       "about": "About story content",
-      "shortBio": "Testing profile creation workflow",
+      "shortBio": "Updated bio after second edit",
       "fullBio": "About story content",
       "phone": "",
       "whatsapp": "",
@@ -13210,9 +13236,9 @@
       "socials": [],
       "socialLinks": [],
       "skills": [
+        "TypeScript",
         "Next.js",
-        "React",
-        "TypeScript"
+        "React"
       ],
       "experience": [],
       "experiences": [],
@@ -13246,21 +13272,26 @@
       },
       "sectionOrder": [
         "hero",
-        "about",
-        "services",
-        "skills",
         "experience",
-        "projects",
-        "certifications",
-        "volunteer",
-        "languages",
-        "recommendations",
-        "virtual-card"
+        "skills",
+        "about",
+        "custom-fields",
+        "education",
+        "contact"
       ],
       "createdAt": "2026-09-15T06:49:00.742Z",
-      "updatedAt": "2026-09-15T06:49:00.742Z",
+      "updatedAt": "2026-10-19T06:38:47.412Z",
       "username": "abcd-user-primary-profile-i0da",
-      "customFields": [],
+      "customFields": [
+        {
+          "id": "cf-github",
+          "label": "Primary GitHub",
+          "value": "https://github.com/aleenanawab/Avtive-Profiles",
+          "type": "link",
+          "visible": true,
+          "order": 0
+        }
+      ],
       "dynamicSections": [],
       "sectionVisibility": {
         "hero": true,

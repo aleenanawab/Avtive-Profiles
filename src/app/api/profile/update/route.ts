@@ -7,7 +7,8 @@ import {
   setProfileResponseCookies,
   getCompanyByOwnerUserId,
   getCompanyBySlug,
-  updateCompany
+  updateCompany,
+  completeUserOnboarding
 } from '@/lib/db';
 import { ensureSupabaseAssetUrl } from '@/lib/supabase';
 import { ProfileData } from '@/types/profile';
@@ -78,6 +79,9 @@ async function handleProfileUpdate(request: NextRequest) {
         { status: result.status || 500 }
       );
     }
+
+    // Persist onboarding completed status upon successful profile save
+    await completeUserOnboarding(session.id, result.profile.type, result.profile.theme);
 
     // If updating a team profile, keep CompanyRecord in sync
     if (result.profile.type === 'team') {

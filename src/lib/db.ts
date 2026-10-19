@@ -376,6 +376,96 @@ function saveDb(data: DatabaseSchema): void {
   }
 }
 
+export function isUuidString(val?: string | null): boolean {
+  if (!val || typeof val !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val.trim());
+}
+
+export function mapSupabaseProfileToProfileData(
+  item: any,
+  fallbackUserId?: string,
+  fallbackRole?: ProfileType
+): ProfileData {
+  const servicesData = item.services;
+  const isComplexServices = servicesData && typeof servicesData === 'object' && !Array.isArray(servicesData);
+  const customFields = isComplexServices && Array.isArray(servicesData.customFields)
+    ? servicesData.customFields
+    : (item.data?.customFields || []);
+  const dynamicSections = isComplexServices && Array.isArray(servicesData.dynamicSections)
+    ? servicesData.dynamicSections
+    : (item.data?.dynamicSections || []);
+  const sectionOrder = isComplexServices && Array.isArray(servicesData.sectionOrder)
+    ? servicesData.sectionOrder
+    : (item.data?.sectionOrder || [...DEFAULT_SECTION_ORDER]);
+  const sectionVisibility = isComplexServices && servicesData.sectionVisibility
+    ? servicesData.sectionVisibility
+    : (item.data?.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY });
+  const sharingSettings = isComplexServices && servicesData.sharingSettings
+    ? servicesData.sharingSettings
+    : (item.data?.sharingSettings || { ...DEFAULT_SHARING_SETTINGS });
+  const companyInfo = isComplexServices && servicesData.companyInfo
+    ? servicesData.companyInfo
+    : (item.data?.companyInfo || undefined);
+  const nfcCard = isComplexServices && servicesData.nfcCard
+    ? servicesData.nfcCard
+    : (item.data?.nfcCard || undefined);
+  const servicesItems = isComplexServices
+    ? (servicesData.items || [])
+    : (Array.isArray(servicesData) ? servicesData : []);
+
+  const name = item.name || item.data?.name || '';
+  const designation = item.designation || item.data?.designation || item.professionalTitle || item.data?.professionalTitle || '';
+  const company = item.company || item.data?.company || '';
+  const shortBio = item.short_bio || item.data?.shortBio || item.bio || item.data?.bio || item.full_bio || '';
+  const fullBio = item.full_bio || item.data?.fullBio || item.about || item.data?.about || '';
+
+  const sp: ProfileData = {
+    ...(item.data || {}),
+    id: item.id,
+    userId: item.user_id || fallbackUserId || '',
+    slug: item.slug,
+    name,
+    email: item.email || item.data?.email || '',
+    designation,
+    professionalTitle: designation,
+    profession: designation || 'Professional',
+    company,
+    location: item.location || item.data?.location || '',
+    avatar: item.avatar || item.data?.avatar || SUPABASE_DEFAULT_AVATAR,
+    coverImage: item.cover_image || item.coverImage || item.data?.coverImage || item.data?.cover_image || SUPABASE_DEFAULT_COVER,
+    shortBio,
+    bio: shortBio,
+    fullBio,
+    about: fullBio,
+    phone: item.phone || item.data?.phone || '',
+    whatsapp: item.whatsapp || item.data?.whatsapp || '',
+    website: item.website || item.data?.website || '',
+    bookingUrl: item.booking_url || item.data?.bookingUrl || '',
+    tagline: item.tagline || item.data?.tagline || '',
+    skills: Array.isArray(item.skills) ? item.skills : (item.data?.skills || []),
+    socials: Array.isArray(item.socials) ? item.socials : (item.data?.socials || []),
+    socialLinks: Array.isArray(item.socials) ? item.socials : (item.data?.socialLinks || []),
+    experiences: Array.isArray(item.experiences) ? item.experiences : (item.data?.experiences || []),
+    experience: Array.isArray(item.experiences) ? item.experiences : (item.data?.experience || []),
+    projects: Array.isArray(item.projects) ? item.projects : (item.data?.projects || []),
+    certifications: Array.isArray(item.certifications) ? item.certifications : (item.data?.certifications || []),
+    services: servicesItems,
+    customFields,
+    dynamicSections,
+    sectionOrder,
+    sectionVisibility,
+    sharingSettings,
+    companyInfo,
+    nfcCard,
+    type: item.type ? normalizeProfileType(item.type) : (fallbackRole ? normalizeProfileType(fallbackRole) : 'individual'),
+    theme: (item.theme && item.theme !== 'default' ? item.theme : 'editorial') as ProfileTheme,
+    createdAt: item.created_at || new Date().toISOString(),
+    updatedAt: item.updated_at || new Date().toISOString()
+  };
+
+  return sp;
+}
+
 export async function getUserByEmail(email: string): Promise<UserRecord | null> {
   const db = loadDb();
   const normalizedEmail = email.toLowerCase().trim();
@@ -394,6 +484,18 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
     );
 
     if (data && !error) {
+      // Check if user has completed onboarding by checking profile
+      const profQuery = isUuidString(data.id)
+        ? supabaseAdmin.from('profiles').select('id, designation, short_bio, skills').or(`user_id.eq.${data.id},email.eq.${normalizedEmail}`).limit(1)
+        : supabaseAdmin.from('profiles').select('id, designation, short_bio, skills').eq('email', normalizedEmail).limit(1);
+
+      const { data: profData } = await withTimeout(profQuery, 4000).catch(() => ({ data: null }));
+
+      const hasSavedContent = Boolean(
+        profData && profData.length > 0 &&
+        (profData[0].designation || profData[0].short_bio || (Array.isArray(profData[0].skills) && profData[0].skills.length > 0))
+      );
+
       const su: UserRecord = {
         id: data.id,
         name: data.name,
@@ -401,6 +503,7 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
         passwordHash: data.password_hash || data.passwordHash,
         resetToken: data.reset_token || data.resetToken,
         resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
+        onboardingCompleted: hasSavedContent,
         createdAt: data.created_at || data.createdAt || new Date().toISOString()
       };
       db.users.push(su);
@@ -507,7 +610,7 @@ export async function createUser(data: {
   preferredTheme?: ProfileTheme;
 }): Promise<{ user: UserRecord; profile?: ProfileData }> {
   const db = loadDb();
-  const userId = data.id || `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const userId = data.id || crypto.randomUUID();
 
   const newUser: UserRecord = {
     id: userId,
@@ -522,7 +625,7 @@ export async function createUser(data: {
     createdAt: new Date().toISOString()
   };
 
-  // Check if existing user with same ID already in DB
+  // Check if existing user with same ID or email already in DB
   const existingIndex = db.users.findIndex((u) => u.id === userId || u.email.toLowerCase().trim() === newUser.email);
   if (existingIndex !== -1) {
     db.users[existingIndex] = {
@@ -533,7 +636,7 @@ export async function createUser(data: {
     db.users.push(newUser);
   }
 
-  // Sync user to Supabase
+  // Sync user to Supabase strictly with valid columns
   try {
     await asyncSyncSupabase(
       supabaseAdmin.from('users').upsert({
@@ -541,20 +644,17 @@ export async function createUser(data: {
         name: newUser.name,
         email: newUser.email,
         password_hash: newUser.passwordHash,
-        avatar_url: newUser.avatar,
-        role: newUser.role,
-        recovery_code_hash: newUser.recoveryCodeHash,
-        onboarding_completed: newUser.onboardingCompleted,
         created_at: newUser.createdAt
-      })
+      }, { onConflict: 'email' })
     );
   } catch {}
 
   let newProfile: ProfileData | undefined;
   if (data.createProfile) {
     const slug = `${slugify(data.name)}-${Math.random().toString(36).substring(2, 6)}`;
+    const profileUuid = crypto.randomUUID();
     newProfile = {
-      id: `prof-${Date.now()}`,
+      id: profileUuid,
       userId: userId,
       slug: slug,
       type: 'individual',
@@ -580,18 +680,37 @@ export async function createUser(data: {
     db.profiles[newProfile.id] = newProfile;
     db.profiles[newProfile.slug] = newProfile;
 
-    // Sync profile to Supabase
+    // Sync profile to Supabase with proper columns and services jsonb wrapper
     try {
+      const servicesPayload = {
+        items: newProfile.services || [],
+        customFields: newProfile.customFields || [],
+        dynamicSections: newProfile.dynamicSections || [],
+        sectionOrder: newProfile.sectionOrder || [...DEFAULT_SECTION_ORDER],
+        sectionVisibility: newProfile.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY },
+        sharingSettings: newProfile.sharingSettings || { ...DEFAULT_SHARING_SETTINGS }
+      };
+
       asyncSyncSupabase(
         supabaseAdmin.from('profiles').upsert({
           id: newProfile.id,
           user_id: newProfile.userId,
           slug: newProfile.slug,
           name: newProfile.name,
+          designation: newProfile.designation || 'Professional',
+          company: newProfile.company || '',
+          location: newProfile.location || '',
+          avatar: newProfile.avatar || SUPABASE_DEFAULT_AVATAR,
+          cover_image: newProfile.coverImage || SUPABASE_DEFAULT_COVER,
+          short_bio: newProfile.shortBio || '',
+          full_bio: newProfile.fullBio || '',
           email: newProfile.email,
           type: newProfile.type,
           theme: newProfile.theme,
-          created_at: new Date().toISOString()
+          socials: newProfile.socials || [],
+          services: servicesPayload,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
       );
     } catch {}
@@ -618,7 +737,7 @@ export async function createPasswordResetToken(email: string): Promise<{ token: 
 
   // Sync token hash update to Supabase
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('users').update({
         reset_token: tokenHash,
         reset_token_expires: expires
@@ -787,10 +906,11 @@ export async function resetPasswordWithRecoveryCode(
 
   // Sync to Supabase if available
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('users').update({
         password_hash: newPasswordHash,
-        recovery_code_hash: newRecoveryCodeHash
+        reset_token: null,
+        reset_token_expires: null
       }).eq('id', user.id)
     );
   } catch {}
@@ -816,13 +936,16 @@ export async function completeUserOnboarding(
   saveDb(db);
 
   try {
-    asyncSyncSupabase(
-      supabaseAdmin.from('users').update({
-        onboarding_completed: true,
-        role: user.role,
-        theme: user.preferredTheme
-      }).eq('id', userId)
-    );
+    const updatePayload: any = {};
+    if (role) updatePayload.type = normalizeProfileType(role);
+    if (theme) updatePayload.theme = theme;
+    if (Object.keys(updatePayload).length > 0) {
+      if (isUuidString(userId)) {
+        asyncSyncSupabase(
+          supabaseAdmin.from('profiles').update(updatePayload).eq('user_id', userId)
+        );
+      }
+    }
   } catch {}
 
   return { success: true, user };
@@ -839,7 +962,7 @@ export async function createProfileForUser(
   const profession = (data.profession || data.designation || 'Professional').trim();
   const slugBase = slugify(data.profileName ? `${name}-${data.profileName}` : name);
   const slug = `${slugBase}-${Math.random().toString(36).substring(2, 6)}`;
-  const profileId = `prof-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const profileId = data.id && isUuidString(data.id) ? data.id : crypto.randomUUID();
   const now = new Date().toISOString();
 
   const newProfile: ProfileData = {
@@ -931,19 +1054,48 @@ export async function createProfileForUser(
 
   // Sync profile to Supabase so it is accessible across serverless lambdas
   try {
-    asyncSyncSupabase(
-      supabaseAdmin.from('profiles').upsert({
-        id: newProfile.id,
-        user_id: newProfile.userId,
-        slug: newProfile.slug,
-        name: newProfile.name,
-        email: newProfile.email,
-        type: newProfile.type,
-        theme: newProfile.theme,
-        data: newProfile,
-        created_at: newProfile.createdAt
-      })
-    );
+    const servicesPayload = {
+      items: newProfile.services || [],
+      customFields: newProfile.customFields || [],
+      dynamicSections: newProfile.dynamicSections || [],
+      sectionOrder: newProfile.sectionOrder || [...DEFAULT_SECTION_ORDER],
+      sectionVisibility: newProfile.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY },
+      sharingSettings: newProfile.sharingSettings || { ...DEFAULT_SHARING_SETTINGS },
+      companyInfo: newProfile.companyInfo || null,
+      nfcCard: newProfile.nfcCard || null
+    };
+
+    if (isUuidString(newProfile.userId)) {
+      asyncSyncSupabase(
+        supabaseAdmin.from('profiles').upsert({
+          id: newProfile.id,
+          user_id: newProfile.userId,
+          slug: newProfile.slug,
+          name: newProfile.name,
+          designation: newProfile.designation || 'Professional',
+          company: newProfile.company || '',
+          location: newProfile.location || '',
+          avatar: newProfile.avatar || SUPABASE_DEFAULT_AVATAR,
+          cover_image: newProfile.coverImage || SUPABASE_DEFAULT_COVER,
+          short_bio: newProfile.shortBio || '',
+          full_bio: newProfile.fullBio || '',
+          phone: newProfile.phone || '',
+          whatsapp: newProfile.whatsapp || '',
+          email: newProfile.email,
+          website: newProfile.website || '',
+          type: newProfile.type,
+          theme: newProfile.theme,
+          skills: newProfile.skills || [],
+          socials: newProfile.socials || [],
+          services: servicesPayload,
+          experiences: newProfile.experiences || [],
+          projects: newProfile.projects || [],
+          certifications: newProfile.certifications || [],
+          created_at: newProfile.createdAt,
+          updated_at: newProfile.updatedAt
+        })
+      );
+    }
   } catch {}
 
   return newProfile;
@@ -1041,27 +1193,22 @@ export async function getProfileByIdOrSlug(idOrSlug: string): Promise<ProfileDat
 
   // Supabase lookup fallback across serverless lambdas
   try {
+    const isIdUuid = isUuidString(idOrSlug);
+    const filter = isIdUuid
+      ? `id.eq.${idOrSlug},user_id.eq.${idOrSlug},slug.eq.${idOrSlug}`
+      : `slug.eq.${idOrSlug},slug.eq.${clean}`;
+
     const { data, error } = await withTimeout(
       supabaseAdmin
         .from('profiles')
         .select('*')
-        .or(`id.eq.${idOrSlug},slug.eq.${idOrSlug},slug.eq.${clean},user_id.eq.${idOrSlug}`)
-        .maybeSingle()
+        .or(filter)
+        .maybeSingle(),
+      6000
     );
 
     if (data && !error) {
-      const sp: ProfileData = {
-        ...(data.data || {}),
-        id: data.id,
-        userId: data.user_id,
-        slug: data.slug,
-        name: data.name,
-        email: data.email,
-        avatar: data.avatar || (data.data && data.data.avatar) || '',
-        coverImage: data.cover_image || data.coverImage || (data.data && (data.data.coverImage || data.data.cover_image)) || '',
-        type: data.type || 'individual',
-        theme: data.theme || 'editorial'
-      };
+      const sp = mapSupabaseProfileToProfileData(data);
       normalizeProfiles({ [sp.id]: sp });
       db.profiles[sp.id] = sp;
       db.profiles[sp.slug] = sp;
@@ -1131,31 +1278,29 @@ export async function getProfileByUserId(userId: string): Promise<ProfileData | 
 
   // 3. Supabase lookup fallback across serverless lambdas
   try {
-    const { data, error } = await withTimeout(
-      supabaseAdmin
-        .from('profiles')
-        .select('*')
-        .or(`user_id.eq.${userId}${user?.email ? `,email.eq.${user.email}` : ''}`)
-        .limit(1),
-      6000
-    );
+    const isUserUuid = isUuidString(userId);
+    const filter = isUserUuid
+      ? `user_id.eq.${userId}${userEmail ? `,email.eq.${userEmail}` : ''}`
+      : (userEmail ? `email.eq.${userEmail}` : '');
 
-    if (data && !error && data.length > 0) {
-      const item = data[0];
-      const sp: ProfileData = {
-        ...(item.data || {}),
-        id: item.id,
-        userId: userId,
-        slug: item.slug,
-        name: item.name,
-        email: item.email,
-        type: item.type || (user?.role ? normalizeProfileType(user.role) : 'individual'),
-        theme: item.theme || 'editorial'
-      };
-      normalizeProfiles({ [sp.id]: sp });
-      db.profiles[sp.id] = sp;
-      db.profiles[sp.slug] = sp;
-      return sp;
+    if (filter) {
+      const { data, error } = await withTimeout(
+        supabaseAdmin
+          .from('profiles')
+          .select('*')
+          .or(filter)
+          .limit(1),
+        6000
+      );
+
+      if (data && !error && data.length > 0) {
+        const item = data[0];
+        const sp = mapSupabaseProfileToProfileData(item, userId, user?.role);
+        normalizeProfiles({ [sp.id]: sp });
+        db.profiles[sp.id] = sp;
+        db.profiles[sp.slug] = sp;
+        return sp;
+      }
     }
   } catch {}
 
@@ -1193,31 +1338,27 @@ export async function getProfilesByUserId(userId: string): Promise<ProfileData[]
 
   if (unique.size === 0) {
     try {
-      const { data, error } = await withTimeout(
-        supabaseAdmin
-          .from('profiles')
-          .select('*')
-          .or(`user_id.eq.${userId}${userEmail ? `,email.eq.${userEmail}` : ''}`)
-      );
+      const isUserUuid = isUuidString(userId);
+      const filter = isUserUuid
+        ? `user_id.eq.${userId}${userEmail ? `,email.eq.${userEmail}` : ''}`
+        : (userEmail ? `email.eq.${userEmail}` : '');
 
-      if (data && !error && data.length > 0) {
-        for (const item of data) {
-          const sp: ProfileData = {
-            ...(item.data || {}),
-            id: item.id,
-            userId: userId,
-            slug: item.slug,
-            name: item.name,
-            email: item.email,
-            avatar: item.avatar || (item.data && item.data.avatar) || '',
-            coverImage: item.cover_image || item.coverImage || (item.data && (item.data.coverImage || item.data.cover_image)) || '',
-            type: item.type || 'individual',
-            theme: item.theme || 'editorial'
-          };
-          normalizeProfiles({ [sp.id]: sp });
-          db.profiles[sp.id] = sp;
-          db.profiles[sp.slug] = sp;
-          unique.set(sp.id, sp);
+      if (filter) {
+        const { data, error } = await withTimeout(
+          supabaseAdmin
+            .from('profiles')
+            .select('*')
+            .or(filter)
+        );
+
+        if (data && !error && data.length > 0) {
+          for (const item of data) {
+            const sp = mapSupabaseProfileToProfileData(item, userId, user?.role);
+            normalizeProfiles({ [sp.id]: sp });
+            db.profiles[sp.id] = sp;
+            db.profiles[sp.slug] = sp;
+            unique.set(sp.id, sp);
+          }
         }
       }
     } catch {}
@@ -1288,8 +1429,9 @@ export async function updateProfile(
       ? updatedData.username.toLowerCase().replace(/[^a-z0-9_-]/g, '')
       : slug;
 
+    const newProfileId = (profileId && isUuidString(profileId)) ? profileId : crypto.randomUUID();
     const newProfile: ProfileData = {
-      id: profileId || `prof-${Date.now()}`,
+      id: newProfileId,
       userId: sessionUserId,
       slug: slug,
       username: effectiveUsername,
@@ -1313,6 +1455,52 @@ export async function updateProfile(
       db.profiles[newProfile.username] = newProfile;
     }
     saveDb(db);
+
+    try {
+      const servicesPayload = {
+        items: newProfile.services || [],
+        customFields: newProfile.customFields || [],
+        dynamicSections: newProfile.dynamicSections || [],
+        sectionOrder: newProfile.sectionOrder || [...DEFAULT_SECTION_ORDER],
+        sectionVisibility: newProfile.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY },
+        sharingSettings: newProfile.sharingSettings || { ...DEFAULT_SHARING_SETTINGS },
+        companyInfo: newProfile.companyInfo || null,
+        nfcCard: newProfile.nfcCard || null
+      };
+
+      if (isUuidString(newProfile.id) && isUuidString(newProfile.userId)) {
+        asyncSyncSupabase(
+          supabaseAdmin.from('profiles').upsert({
+            id: newProfile.id,
+            user_id: newProfile.userId,
+            slug: newProfile.slug,
+            name: newProfile.name,
+            designation: newProfile.designation || 'Professional',
+            company: newProfile.company || '',
+            location: newProfile.location || '',
+            avatar: newProfile.avatar || SUPABASE_DEFAULT_AVATAR,
+            cover_image: newProfile.coverImage || SUPABASE_DEFAULT_COVER,
+            short_bio: newProfile.shortBio || '',
+            full_bio: newProfile.fullBio || '',
+            phone: newProfile.phone || '',
+            whatsapp: newProfile.whatsapp || '',
+            email: newProfile.email || '',
+            website: newProfile.website || '',
+            type: newProfile.type,
+            theme: newProfile.theme || 'editorial',
+            skills: newProfile.skills || [],
+            socials: newProfile.socials || [],
+            services: servicesPayload,
+            experiences: newProfile.experiences || [],
+            projects: newProfile.projects || [],
+            certifications: newProfile.certifications || [],
+            created_at: newProfile.createdAt,
+            updated_at: newProfile.updatedAt
+          }, { onConflict: 'id' })
+        );
+      }
+    } catch {}
+
     return { success: true, profile: newProfile, status: 200 };
   }
 
@@ -1413,21 +1601,49 @@ export async function updateProfile(
   saveDb(db);
 
   // Sync profile update to Supabase
-  asyncSyncSupabase(
-    supabaseAdmin.from('profiles').upsert({
-      id: merged.id,
-      user_id: merged.userId,
-      slug: merged.slug,
-      name: merged.name,
-      email: merged.email || '',
-      type: merged.type,
-      theme: merged.theme,
-      avatar: merged.avatar || '',
-      cover_image: merged.coverImage || '',
-      data: merged,
-      updated_at: merged.updatedAt
-    }, { onConflict: 'id' })
-  );
+  try {
+    const servicesPayload = {
+      items: merged.services || [],
+      customFields: merged.customFields || [],
+      dynamicSections: merged.dynamicSections || [],
+      sectionOrder: merged.sectionOrder || [...DEFAULT_SECTION_ORDER],
+      sectionVisibility: merged.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY },
+      sharingSettings: merged.sharingSettings || { ...DEFAULT_SHARING_SETTINGS },
+      companyInfo: merged.companyInfo || null,
+      nfcCard: merged.nfcCard || null
+    };
+
+    if (isUuidString(merged.id) && isUuidString(merged.userId)) {
+      asyncSyncSupabase(
+        supabaseAdmin.from('profiles').upsert({
+          id: merged.id,
+          user_id: merged.userId,
+          slug: merged.slug,
+          name: merged.name,
+          designation: merged.designation || 'Professional',
+          company: merged.company || '',
+          location: merged.location || '',
+          avatar: merged.avatar || SUPABASE_DEFAULT_AVATAR,
+          cover_image: merged.coverImage || SUPABASE_DEFAULT_COVER,
+          short_bio: merged.shortBio || '',
+          full_bio: merged.fullBio || '',
+          phone: merged.phone || '',
+          whatsapp: merged.whatsapp || '',
+          email: merged.email || '',
+          website: merged.website || '',
+          type: merged.type,
+          theme: merged.theme,
+          skills: merged.skills || [],
+          socials: merged.socials || [],
+          services: servicesPayload,
+          experiences: merged.experiences || [],
+          projects: merged.projects || [],
+          certifications: merged.certifications || [],
+          updated_at: merged.updatedAt
+        }, { onConflict: 'id' })
+      );
+    }
+  } catch {}
 
   return { success: true, profile: merged, status: 200 };
 }
@@ -1452,7 +1668,7 @@ export async function duplicateProfile(
     };
   }
 
-  const newId = `prof-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const newId = crypto.randomUUID();
   const duplicateName = target.profileName ? `${target.profileName} (Copy)` : `${target.name} (Copy)`;
   const slugBase = slugify(`${target.name}-${duplicateName}`);
   const newSlug = `${slugBase}-${Math.random().toString(36).substring(2, 6)}`;
@@ -1473,22 +1689,50 @@ export async function duplicateProfile(
   saveDb(db);
 
   // Sync duplicate to Supabase
-  asyncSyncSupabase(
-    supabaseAdmin.from('profiles').upsert({
-      id: cloned.id,
-      user_id: cloned.userId,
-      slug: cloned.slug,
-      name: cloned.name,
-      email: cloned.email || '',
-      type: cloned.type,
-      theme: cloned.theme,
-      avatar: cloned.avatar || '',
-      cover_image: cloned.coverImage || '',
-      data: cloned,
-      created_at: cloned.createdAt,
-      updated_at: cloned.updatedAt
-    }, { onConflict: 'id' })
-  );
+  try {
+    const servicesPayload = {
+      items: cloned.services || [],
+      customFields: cloned.customFields || [],
+      dynamicSections: cloned.dynamicSections || [],
+      sectionOrder: cloned.sectionOrder || [...DEFAULT_SECTION_ORDER],
+      sectionVisibility: cloned.sectionVisibility || { ...DEFAULT_SECTION_VISIBILITY },
+      sharingSettings: cloned.sharingSettings || { ...DEFAULT_SHARING_SETTINGS },
+      companyInfo: cloned.companyInfo || null,
+      nfcCard: cloned.nfcCard || null
+    };
+
+    if (isUuidString(cloned.userId)) {
+      asyncSyncSupabase(
+        supabaseAdmin.from('profiles').upsert({
+          id: cloned.id,
+          user_id: cloned.userId,
+          slug: cloned.slug,
+          name: cloned.name,
+          designation: cloned.designation || 'Professional',
+          company: cloned.company || '',
+          location: cloned.location || '',
+          avatar: cloned.avatar || SUPABASE_DEFAULT_AVATAR,
+          cover_image: cloned.coverImage || SUPABASE_DEFAULT_COVER,
+          short_bio: cloned.shortBio || '',
+          full_bio: cloned.fullBio || '',
+          phone: cloned.phone || '',
+          whatsapp: cloned.whatsapp || '',
+          email: cloned.email || '',
+          website: cloned.website || '',
+          type: cloned.type,
+          theme: cloned.theme,
+          skills: cloned.skills || [],
+          socials: cloned.socials || [],
+          services: servicesPayload,
+          experiences: cloned.experiences || [],
+          projects: cloned.projects || [],
+          certifications: cloned.certifications || [],
+          created_at: cloned.createdAt,
+          updated_at: cloned.updatedAt
+        }, { onConflict: 'id' })
+      );
+    }
+  } catch {}
 
   return { success: true, profile: cloned, status: 201 };
 }

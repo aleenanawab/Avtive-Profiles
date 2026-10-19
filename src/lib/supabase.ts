@@ -1,62 +1,44 @@
+import { createBrowserClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 
-export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://hprlnnbnzomgvscmyane.supabase.co';
+function cleanEnv(val?: string): string {
+  if (!val) return '';
+  let v = val.trim();
+  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+    v = v.slice(1, -1).trim();
+  }
+  return v;
+}
+
+function isServiceRoleKey(key: string): boolean {
+  if (!key) return false;
+  const serviceKey = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  if (serviceKey && key === serviceKey) return true;
+  if (key.startsWith('eyJ')) {
+    try {
+      const parts = key.split('.');
+      if (parts.length >= 2) {
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+        return payload?.role === 'service_role';
+      }
+    } catch {}
+  }
+  return false;
+}
+
+export const supabaseUrl = (cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL) || 'https://hprlnnbnzomgvscmyane.supabase.co').replace(/\/+$/, '');
 const fallbackKey = 'sb_publishable_bNsqgK4UHrzGybL-a6hjJg_07aZL1_7';
-export const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || fallbackKey;
-export const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
+
+const rawAnonKey = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) || cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+// Protect against accidental exposure or usage of service_role key as anon key:
+export const supabaseAnonKey = (rawAnonKey && !isServiceRoleKey(rawAnonKey)) ? rawAnonKey : fallbackKey;
+
+export const supabaseServiceKey = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) || supabaseAnonKey;
 
 export const SUPABASE_AUTH_STORAGE_KEY = 'sb-avtive-auth-token';
 
-const isClient = typeof window !== 'undefined' && typeof document !== 'undefined';
-
-// Hybrid cookie + localStorage storage adapter for browser client:
-// Ensures OAuth PKCE code_verifier is accessible in document.cookie for SSR route handlers
-const hybridStorage = isClient ? {
-  getItem: (key: string): string | null => {
-    try {
-      const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${encodeURIComponent(key)}=([^;]*)`));
-      if (match) return decodeURIComponent(match[1]);
-    } catch {}
-    try {
-      return window.localStorage.getItem(key);
-    } catch {}
-    return null;
-  },
-  setItem: (key: string, value: string): void => {
-    try {
-      // Mirror PKCE code-verifier to cookies for SSR callback exchange
-      if (key.includes('code-verifier')) {
-        const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-        document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=/; max-age=3600; SameSite=Lax${secure}`;
-      }
-    } catch {}
-    try {
-      window.localStorage.setItem(key, value);
-    } catch {}
-  },
-  removeItem: (key: string): void => {
-    try {
-      if (key.includes('code-verifier')) {
-        document.cookie = `${encodeURIComponent(key)}=; path=/; max-age=0`;
-      }
-    } catch {}
-    try {
-      window.localStorage.removeItem(key);
-    } catch {}
-  }
-} : undefined;
-
-// Public client for browser / client-side operations
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storageKey: SUPABASE_AUTH_STORAGE_KEY,
-    storage: hybridStorage,
-    flowType: 'pkce',
-    detectSessionInUrl: false,
-    persistSession: true,
-    autoRefreshToken: false,
-  }
-});
+// Public client for browser / client-side operations using official @supabase/ssr
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
 // Admin / Server client with elevated privileges for server route handlers
 // Instantiated ONLY on the server to prevent duplicate GoTrueClient instances in the browser

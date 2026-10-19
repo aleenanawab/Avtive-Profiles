@@ -299,9 +299,6 @@ function PublicProfileClientInner({
 
   const handleSectionSelect = (sectionKey: string, fieldKey?: string | boolean) => {
     const isFromMobile = fieldKey === true;
-    if (isOwner && !isEditing) {
-      handleOpenEditMode();
-    }
     setActiveTabSection(sectionKey);
 
     const targetId = 
@@ -364,6 +361,13 @@ function PublicProfileClientInner({
       }
     } else if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    if (el && isEditing) {
+      const inputEl = el.querySelector('input, textarea, select') as HTMLElement | null;
+      if (inputEl) {
+        setTimeout(() => inputEl.focus(), 250);
+      }
     }
 
     const isMobileScreen = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -656,19 +660,17 @@ function PublicProfileClientInner({
         />
       </div>
 
-      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design - Public View Only) */}
-      {!isEditing && (
-        <div className="shrink-0 z-30 w-full">
-          <ProfileSectionTabBar
-            profile={{ ...profile, type: profileType, theme: activeTheme }}
-            activeSection={activeTabSection}
-            onSelectSection={handleSectionSelect}
-            theme={activeThemeConfig}
-            isEditing={isEditing}
-            canEdit={isOwner}
-          />
-        </div>
-      )}
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+      <div className="shrink-0 z-30 w-full">
+        <ProfileSectionTabBar
+          profile={{ ...profile, type: profileType, theme: activeTheme }}
+          activeSection={activeTabSection}
+          onSelectSection={handleSectionSelect}
+          theme={activeThemeConfig}
+          isEditing={isEditing}
+          canEdit={isOwner}
+        />
+      </div>
 
       {/* Slide-In Section Drawer on Desktop (>= lg) - STRICTLY EDIT MODE ONLY */}
       <AnimatePresence>
@@ -791,19 +793,17 @@ function PublicProfileClientInner({
 
   const mobileView = (
     <div className="w-full h-full flex-1 flex flex-col min-h-0 relative overflow-hidden">
-      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design - Public View Only) */}
-      {!isEditing && (
-        <div className="shrink-0 z-30 w-full">
-          <ProfileSectionTabBar
-            profile={{ ...profile, type: profileType, theme: activeTheme }}
-            activeSection={activeTabSection}
-            onSelectSection={handleSectionSelect}
-            theme={activeThemeConfig}
-            isEditing={isEditing}
-            canEdit={isOwner}
-          />
-        </div>
-      )}
+      {/* Pinned Visible Section Navigation Tab Bar (Stitch Design) */}
+      <div className="shrink-0 z-30 w-full">
+        <ProfileSectionTabBar
+          profile={{ ...profile, type: profileType, theme: activeTheme }}
+          activeSection={activeTabSection}
+          onSelectSection={handleSectionSelect}
+          theme={activeThemeConfig}
+          isEditing={isEditing}
+          canEdit={isOwner}
+        />
+      </div>
 
       <div className="flex-1 w-full min-h-0 flex flex-row overflow-hidden relative">
         <div 

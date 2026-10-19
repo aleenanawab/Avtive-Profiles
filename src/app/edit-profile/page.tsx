@@ -107,7 +107,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
 
     const targetSlug = targetProfile?.slug || targetProfile?.id;
     if (targetSlug) {
-      const editSuffix = edit === 'true' ? '?edit=true' : '';
+      const editSuffix = edit !== 'false' ? '?edit=true' : '';
       redirect(`/profile/${encodeURIComponent(targetSlug)}${editSuffix}`);
     } else {
       redirect('/dashboard');

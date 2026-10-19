@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { getUserByEmailOrUsername, resetPasswordWithRecoveryCode } from '@/lib/db';
+import { getUserByEmailOrUsername, resetPasswordWithRecoveryCode, createPasswordResetToken } from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
+import { sendPasswordResetEmail } from '@/lib/email';
 
 // In-memory rate limiting by IP and email/identifier
 interface RateLimitEntry {
@@ -60,14 +61,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Validate Recovery Code
+    // 3. Handle Password Reset Link vs One-Time Recovery Code
     if (!cleanRecoveryCode) {
+      // Flow A: Standard Password Reset Link generation
+      const resetInfo = await createPasswordResetToken(emailOrUsername);
+      let resetUrl: string | undefined;
+
+      if (resetInfo) {
+        const origin = request.nextUrl.origin || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+        resetUrl = `${origin}/reset-password?token=${resetInfo.token}&email=${encodeURIComponent(resetInfo.user.email)}`;
+        try {
+          await sendPasswordResetEmail({
+            to: resetInfo.user.email,
+            name: resetInfo.user.name,
+            resetUrl
+          });
+        } catch (emailErr) {
+          console.error('Failed to send reset email:', emailErr);
+        }
+      }
+
+      // Consistent response to prevent user enumeration
       return NextResponse.json(
-        { error: 'Please enter your one-time recovery code.' },
-        { status: 400 }
+        {
+          success: true,
+          message: 'If an account exists with this email address, a password reset link has been sent.',
+          ...(resetUrl ? { resetUrl } : {})
+        },
+        { status: 200 }
       );
     }
 
+    // Flow B: In-App One-Time Recovery Code Password Reset
     // 4. Validate Passwords
     if (!targetPassword || typeof targetPassword !== 'string' || targetPassword.length < 8) {
       return NextResponse.json(
@@ -85,16 +110,9 @@ export async function POST(request: NextRequest) {
 
     // 5. Look up user account
     const user = await getUserByEmailOrUsername(emailOrUsername);
-    if (!user) {
+    if (!user || !user.recoveryCodeHash) {
       return NextResponse.json(
         { error: 'Invalid email/username or recovery code.' },
-        { status: 400 }
-      );
-    }
-
-    if (!user.recoveryCodeHash) {
-      return NextResponse.json(
-        { error: 'No recovery code configured for this account. Please sign in or contact support.' },
         { status: 400 }
       );
     }
@@ -103,7 +121,7 @@ export async function POST(request: NextRequest) {
     const codeHash = crypto.createHash('sha256').update(cleanRecoveryCode).digest('hex');
     if (user.recoveryCodeHash !== codeHash) {
       return NextResponse.json(
-        { error: 'Invalid recovery code. Please check the code you saved at registration and try again.' },
+        { error: 'Invalid email/username or recovery code.' },
         { status: 400 }
       );
     }

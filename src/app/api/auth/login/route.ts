@@ -80,7 +80,17 @@ export async function POST(request: NextRequest) {
     }
 
     const userProfile = await getProfileByUserId(user.id);
-    const isOnboardingComplete = Boolean(user.onboardingCompleted || userProfile);
+    const hasRealProfileData = Boolean(
+      userProfile && (
+        (userProfile.designation && userProfile.designation !== 'Professional') ||
+        (userProfile.skills && userProfile.skills.length > 0) ||
+        (userProfile.experience && userProfile.experience.length > 0) ||
+        (userProfile.services && userProfile.services.length > 0) ||
+        (userProfile.customFields && userProfile.customFields.length > 0) ||
+        (userProfile.shortBio && !userProfile.shortBio.includes('Welcome to my digital profile on Avtive.'))
+      )
+    );
+    const isOnboardingComplete = Boolean(user.onboardingCompleted || hasRealProfileData);
 
     // Set persistent, secure session cookie
     const sessionUser = {
@@ -92,6 +102,10 @@ export async function POST(request: NextRequest) {
       preferredTheme: user.preferredTheme || userProfile?.theme || 'editorial'
     };
 
+    const redirectUrl = isOnboardingComplete
+      ? `/profile/${userProfile?.slug || userProfile?.id || user.id}`
+      : (!user.role ? '/onboarding/role' : (!user.preferredTheme ? `/onboarding/theme?role=${encodeURIComponent(user.role)}` : `/edit-profile?role=${encodeURIComponent(user.role)}&theme=${encodeURIComponent(user.preferredTheme)}&edit=true`));
+
     const response = NextResponse.json({
       success: true,
       message: 'Login successful.',
@@ -101,7 +115,8 @@ export async function POST(request: NextRequest) {
       profileType: userProfile?.type || user.role || 'individual',
       type: userProfile?.type || user.role || 'individual',
       onboardingCompleted: isOnboardingComplete,
-      role: userProfile?.type || user.role || null
+      role: userProfile?.type || user.role || null,
+      redirectTo: redirectUrl
     });
 
     response.headers.set('Cache-Control', 'no-store, max-age=0');

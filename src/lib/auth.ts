@@ -6,7 +6,7 @@ import { UserSession } from '@/types/profile';
 const SESSION_COOKIE_NAME = 'avtive_session';
 export const RETURNING_USER_COOKIE_NAME = 'avtive_returning_user';
 export const DUMMY_BCRYPT_HASH = '$2a$10$wN1Q/X8Oa6xG/G9x0.GzOuq8Z9y2j4yJz/uVl3IqNfO1.tJ5bI5Ki';
-const SESSION_SECRET = process.env.SESSION_SECRET || 'avtive-super-secret-key-prod-2026-secure-session-auth';
+const SESSION_SECRET = process.env.SESSION_SECRET || process.env.JWT_SECRET || 'avtive-super-secret-key-prod-2026-secure-session-auth';
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 export function setReturningUserCookie(response?: any): void {
