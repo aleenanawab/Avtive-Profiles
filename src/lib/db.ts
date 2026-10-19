@@ -3,7 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { supabaseAdmin, SUPABASE_DEFAULT_AVATAR, SUPABASE_DEFAULT_COVER } from '@/lib/supabase';
-import { ProfileData, UserRecord, ProfileTheme, ProfileType, UserConnection, SharingSettings, normalizeProfileType, TeamMemberItem } from '@/types/profile';
+import { ProfileData, UserRecord, ProfileTheme, ProfileType, UserConnection, normalizeProfileType, TeamMemberItem } from '@/types/profile';
 import { 
   CompanyRecord, 
   CompanyMemberRecord, 
@@ -45,16 +45,23 @@ async function withTimeout<T = any>(promise: PromiseLike<T> | any, ms: number = 
   ]);
 }
 
-async function asyncSyncSupabase(action: PromiseLike<any>) {
-  try {
-    await withTimeout(action, 6000);
-  } catch {}
+async function awaitSupabaseWrite(action: PromiseLike<any>, description: string = 'database operation'): Promise<any> {
+  const result: any = await action;
+  if (result && result.error) {
+    console.error(`[Database Error] ${description} failed:`, result.error.message || result.error);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw new Error(`Database error: Failed to execute ${description}.`);
+    }
+  }
+  return result;
+}
+
+// In production, Supabase is the only source of truth. All writes are awaited and errors checked.
+async function asyncSyncSupabase(action: PromiseLike<any>, description: string = 'database write'): Promise<any> {
+  return awaitSupabaseWrite(action, description);
 }
 
 function getWritableDbPath(): string {
-  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    return path.join('/tmp', 'avtive_db.json');
-  }
   return path.join(process.cwd(), 'src', 'data', 'db.json');
 }
 
@@ -93,13 +100,6 @@ function getInitialSeedData(): DatabaseSchema {
     createdAt: new Date().toISOString()
   };
 
-  const abcdUser: UserRecord = {
-    id: 'user-abcd',
-    name: 'ABCD User',
-    email: 'abcd@gmail.com',
-    passwordHash: abcdPasswordHash,
-    createdAt: new Date().toISOString()
-  };
 
   const leapUser: UserRecord = {
     id: 'user-leap',
@@ -135,17 +135,6 @@ function getInitialSeedData(): DatabaseSchema {
     theme: (companyProfile.theme || 'elegant') as ProfileTheme
   };
 
-  const seededAbcdProfile: ProfileData = {
-    ...founderProfile,
-    id: 'prof-abcd',
-    slug: 'abcd-user-profile',
-    userId: abcdUser.id,
-    name: 'ABCD User',
-    email: 'abcd@gmail.com',
-    profileName: 'Primary Profile',
-    designation: 'Professional',
-    theme: 'editorial'
-  };
 
   const seededAleenaProfile: ProfileData = {
     ...founderProfile,
@@ -217,7 +206,7 @@ function getInitialSeedData(): DatabaseSchema {
   };
 
   return {
-    users: [founderUser, teamUser, abcdUser, leapUser, aleenaUser],
+    users: [founderUser, teamUser, leapUser, aleenaUser],
     profiles: {
       [seededFounderProfile.id]: seededFounderProfile,
       [seededFounderProfile.slug]: seededFounderProfile,
@@ -225,8 +214,6 @@ function getInitialSeedData(): DatabaseSchema {
       [seededTeamProfile.slug]: seededTeamProfile,
       [seededCompanyProfile.id]: seededCompanyProfile,
       [seededCompanyProfile.slug]: seededCompanyProfile,
-      [seededAbcdProfile.id]: seededAbcdProfile,
-      [seededAbcdProfile.slug]: seededAbcdProfile,
       [seededAleenaProfile.id]: seededAleenaProfile,
       [seededAleenaProfile.slug]: seededAleenaProfile
     },
@@ -357,6 +344,10 @@ function loadDb(): DatabaseSchema {
 
 function saveDb(data: DatabaseSchema): void {
   globalForDb.__AVTIVE_DB__ = data;
+  if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+    // In production, Supabase is the single source of truth. Never write to /tmp or file system.
+    return;
+  }
   const writablePath = getWritableDbPath();
 
   try {
@@ -366,13 +357,7 @@ function saveDb(data: DatabaseSchema): void {
     }
     fs.writeFileSync(writablePath, JSON.stringify(data, null, 2), 'utf8');
   } catch (e) {
-    console.error(`Failed to write to ${writablePath}, attempting /tmp fallback:`, e);
-    try {
-      const tmpPath = path.join('/tmp', 'avtive_db.json');
-      fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf8');
-    } catch (tmpErr) {
-      console.error('Failed to write to fallback /tmp:', tmpErr);
-    }
+    console.warn(`Local file write to ${writablePath} skipped in dev:`, e);
   }
 }
 
@@ -501,40 +486,29 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
         name: data.name,
         email: data.email,
         passwordHash: data.password_hash || data.passwordHash,
-        resetToken: data.reset_token || data.resetToken,
+        resetToken: data.reset_token_hash || data.reset_token || data.resetToken,
         resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
-        onboardingCompleted: hasSavedContent,
+        recoveryCodeHash: data.recovery_code_hash || data.recoveryCodeHash,
+        onboardingCompleted: Boolean(data.onboarding_completed || hasSavedContent),
+        role: data.role ? normalizeProfileType(data.role) : undefined,
+        preferredTheme: data.preferred_theme,
         createdAt: data.created_at || data.createdAt || new Date().toISOString()
       };
-      db.users.push(su);
+      if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+        db.users.push(su);
+      }
       return su;
     }
-  } catch {}
-
-  try {
-    const { cookies } = await import('next/headers');
-    const cookieStore = await cookies();
-    const cachedUserRaw = cookieStore.get('avtive_user_cache')?.value;
-    if (cachedUserRaw) {
-      const cu = JSON.parse(decodeURIComponent(cachedUserRaw));
-      if (cu && cu.email?.toLowerCase().trim() === normalizedEmail) {
-        db.users.push(cu);
-        return cu;
-      }
+  } catch (err: any) {
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      console.error('[Database Error] getUserByEmail failed:', err?.message || 'Query error');
     }
-  } catch {}
+  }
 
-  if (normalizedEmail === 'abcd@gmail.com') {
-    const abcdHash = bcrypt.hashSync('12345678', 10);
-    const abcdUser: UserRecord = {
-      id: 'user-abcd',
-      name: 'ABCD User',
-      email: 'abcd@gmail.com',
-      passwordHash: abcdHash,
-      createdAt: new Date().toISOString()
-    };
-    db.users.push(abcdUser);
-    return abcdUser;
+  // Fallback to local in-memory DB in development only
+  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    const localUser = db.users.find((u) => u.email.toLowerCase().trim() === normalizedEmail);
+    if (localUser) return localUser;
   }
 
   return null;
@@ -561,16 +535,40 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
         name: data.name,
         email: data.email,
         passwordHash: data.password_hash || data.passwordHash,
-        resetToken: data.reset_token || data.resetToken,
+        resetToken: data.reset_token_hash || data.reset_token || data.resetToken,
         resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
+        recoveryCodeHash: data.recovery_code_hash || data.recoveryCodeHash,
+        onboardingCompleted: Boolean(data.onboarding_completed),
+        role: data.role ? normalizeProfileType(data.role) : undefined,
+        preferredTheme: data.preferred_theme,
         createdAt: data.created_at || data.createdAt || new Date().toISOString()
       };
       db.users.push(su);
       return su;
     }
-  } catch {}
+  } catch (err: any) {
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      console.error('[Database Error] getUserById failed:', err?.message || 'Query error');
+    }
+  }
 
   return null;
+}
+
+export async function checkDatabaseConnection(): Promise<{ ok: boolean; latencyMs?: number; error?: string }> {
+  const start = Date.now();
+  try {
+    const { error } = await withTimeout(
+      supabaseAdmin.from('profiles').select('id').limit(1),
+      3000
+    );
+    if (error) {
+      return { ok: false, error: error.message };
+    }
+    return { ok: true, latencyMs: Date.now() - start };
+  } catch (err: any) {
+    return { ok: false, latencyMs: Date.now() - start, error: err?.message || 'Database connection timeout or error' };
+  }
 }
 
 export async function getUserByEmailOrUsername(identifier: string): Promise<UserRecord | null> {
@@ -644,10 +642,18 @@ export async function createUser(data: {
         name: newUser.name,
         email: newUser.email,
         password_hash: newUser.passwordHash,
+        recovery_code_hash: newUser.recoveryCodeHash,
+        preferred_theme: newUser.preferredTheme,
         created_at: newUser.createdAt
-      }, { onConflict: 'email' })
+      }, { onConflict: 'email' }),
+      'sync user to Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error syncing user to Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   let newProfile: ProfileData | undefined;
   if (data.createProfile) {
@@ -691,7 +697,7 @@ export async function createUser(data: {
         sharingSettings: newProfile.sharingSettings || { ...DEFAULT_SHARING_SETTINGS }
       };
 
-      asyncSyncSupabase(
+      await asyncSyncSupabase(
         supabaseAdmin.from('profiles').upsert({
           id: newProfile.id,
           user_id: newProfile.userId,
@@ -711,9 +717,15 @@ export async function createUser(data: {
           services: servicesPayload,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        })
+        }),
+        'sync new profile to Supabase'
       );
-    } catch {}
+    } catch (err: any) {
+      console.error('Error syncing new profile to Supabase:', err?.message || err);
+      if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+        throw err;
+      }
+    }
   }
 
   saveDb(db);
@@ -941,12 +953,15 @@ export async function completeUserOnboarding(
     if (theme) updatePayload.theme = theme;
     if (Object.keys(updatePayload).length > 0) {
       if (isUuidString(userId)) {
-        asyncSyncSupabase(
-          supabaseAdmin.from('profiles').update(updatePayload).eq('user_id', userId)
+        await asyncSyncSupabase(
+          supabaseAdmin.from('profiles').update(updatePayload).eq('user_id', userId),
+          'update profile onboarding in Supabase'
         );
       }
     }
-  } catch {}
+  } catch (err: any) {
+    console.error('Error syncing onboarding status to Supabase:', err?.message || err);
+  }
 
   return { success: true, user };
 }
@@ -1066,7 +1081,7 @@ export async function createProfileForUser(
     };
 
     if (isUuidString(newProfile.userId)) {
-      asyncSyncSupabase(
+      await asyncSyncSupabase(
         supabaseAdmin.from('profiles').upsert({
           id: newProfile.id,
           user_id: newProfile.userId,
@@ -1093,10 +1108,16 @@ export async function createProfileForUser(
           certifications: newProfile.certifications || [],
           created_at: newProfile.createdAt,
           updated_at: newProfile.updatedAt
-        })
+        }),
+        'create profile for user in Supabase'
       );
     }
-  } catch {}
+  } catch (err: any) {
+    console.error('Error syncing created profile to Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return newProfile;
 }
@@ -1469,7 +1490,7 @@ export async function updateProfile(
       };
 
       if (isUuidString(newProfile.id) && isUuidString(newProfile.userId)) {
-        asyncSyncSupabase(
+        await asyncSyncSupabase(
           supabaseAdmin.from('profiles').upsert({
             id: newProfile.id,
             user_id: newProfile.userId,
@@ -1496,10 +1517,16 @@ export async function updateProfile(
             certifications: newProfile.certifications || [],
             created_at: newProfile.createdAt,
             updated_at: newProfile.updatedAt
-          }, { onConflict: 'id' })
+          }, { onConflict: 'id' }),
+          'upsert fallback profile in Supabase'
         );
       }
-    } catch {}
+    } catch (err: any) {
+      console.error('Error syncing fallback profile to Supabase:', err?.message || err);
+      if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+        throw err;
+      }
+    }
 
     return { success: true, profile: newProfile, status: 200 };
   }
@@ -1614,7 +1641,7 @@ export async function updateProfile(
     };
 
     if (isUuidString(merged.id) && isUuidString(merged.userId)) {
-      asyncSyncSupabase(
+      await asyncSyncSupabase(
         supabaseAdmin.from('profiles').upsert({
           id: merged.id,
           user_id: merged.userId,
@@ -1640,10 +1667,16 @@ export async function updateProfile(
           projects: merged.projects || [],
           certifications: merged.certifications || [],
           updated_at: merged.updatedAt
-        }, { onConflict: 'id' })
+        }, { onConflict: 'id' }),
+        'update profile in Supabase'
       );
     }
-  } catch {}
+  } catch (err: any) {
+    console.error('Error syncing updated profile to Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, profile: merged, status: 200 };
 }
@@ -1702,7 +1735,7 @@ export async function duplicateProfile(
     };
 
     if (isUuidString(cloned.userId)) {
-      asyncSyncSupabase(
+      await asyncSyncSupabase(
         supabaseAdmin.from('profiles').upsert({
           id: cloned.id,
           user_id: cloned.userId,
@@ -1729,10 +1762,16 @@ export async function duplicateProfile(
           certifications: cloned.certifications || [],
           created_at: cloned.createdAt,
           updated_at: cloned.updatedAt
-        }, { onConflict: 'id' })
+        }, { onConflict: 'id' }),
+        'duplicate profile in Supabase'
       );
     }
-  } catch {}
+  } catch (err: any) {
+    console.error('Error syncing duplicated profile to Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, profile: cloned, status: 201 };
 }
@@ -1771,9 +1810,17 @@ export async function deleteProfile(
   saveDb(db);
 
   // Delete from Supabase
-  asyncSyncSupabase(
-    supabaseAdmin.from('profiles').delete().eq('id', target.id)
-  );
+  try {
+    await asyncSyncSupabase(
+      supabaseAdmin.from('profiles').delete().eq('id', target.id),
+      'delete profile in Supabase'
+    );
+  } catch (err: any) {
+    console.error('Error deleting profile from Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, status: 200 };
 }
@@ -1941,6 +1988,24 @@ export async function createConnection(data: {
   db.connections.push(newConn);
   saveDb(db);
 
+  try {
+    await asyncSyncSupabase(
+      supabaseAdmin.from('connections').upsert({
+        id: newConn.id,
+        profile_id: targetProfile.id,
+        name: data.fromUserName,
+        email: data.fromUserEmail,
+        notes: data.note?.trim() || '',
+        connected_at: newConn.createdAt,
+        created_at: newConn.createdAt,
+        updated_at: newConn.createdAt
+      }),
+      'sync connection to Supabase'
+    );
+  } catch (err: any) {
+    console.error('Failed to sync connection to Supabase:', err?.message || err);
+  }
+
   return { success: true, connection: newConn, status: 201 };
 }
 
@@ -2055,7 +2120,7 @@ export async function syncCompanyToProfile(companyId: string): Promise<ProfileDa
   saveDb(db);
 
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('profiles').upsert({
         id: companyProfileData.id,
         user_id: companyProfileData.userId,
@@ -2066,9 +2131,12 @@ export async function syncCompanyToProfile(companyId: string): Promise<ProfileDa
         theme: companyProfileData.theme,
         data: companyProfileData,
         updated_at: companyProfileData.updatedAt
-      })
+      }),
+      'sync company profile to Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error syncing company profile to Supabase:', err?.message || err);
+  }
 
   return companyProfileData;
 }
@@ -2172,7 +2240,7 @@ export async function createCompany(
 
   // Sync to Supabase
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('companies').upsert({
         id: newCompany.id,
         owner_user_id: newCompany.ownerUserId,
@@ -2190,9 +2258,10 @@ export async function createCompany(
         visibility: newCompany.visibility,
         created_at: newCompany.createdAt,
         updated_at: newCompany.updatedAt
-      })
+      }),
+      'create company in Supabase'
     );
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('company_members').upsert({
         id: ownerMember.id,
         company_id: ownerMember.companyId,
@@ -2207,9 +2276,15 @@ export async function createCompany(
         status: ownerMember.status,
         created_at: ownerMember.createdAt,
         updated_at: ownerMember.updatedAt
-      })
+      }),
+      'create company owner member in Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error syncing new company to Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   // Synchronize company profile data
   const profile = (await syncCompanyToProfile(companyId)) || db.profiles[companyId];
@@ -2435,7 +2510,7 @@ export async function updateCompany(
   await syncCompanyToProfile(company.id);
 
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('companies').update({
         name: company.name,
         slug: company.slug,
@@ -2450,9 +2525,15 @@ export async function updateCompany(
         theme: company.theme,
         visibility: company.visibility,
         updated_at: company.updatedAt
-      }).eq('id', company.id)
+      }).eq('id', company.id),
+      'update company in Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error updating company in Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, company, status: 200 };
 }
@@ -2487,10 +2568,15 @@ export async function deleteCompany(
   saveDb(db);
 
   try {
-    asyncSyncSupabase(supabaseAdmin.from('companies').delete().eq('id', id));
-    asyncSyncSupabase(supabaseAdmin.from('company_members').delete().eq('company_id', id));
-    asyncSyncSupabase(supabaseAdmin.from('profiles').delete().eq('id', id));
-  } catch {}
+    await asyncSyncSupabase(supabaseAdmin.from('companies').delete().eq('id', id), 'delete company in Supabase');
+    await asyncSyncSupabase(supabaseAdmin.from('company_members').delete().eq('company_id', id), 'delete company members in Supabase');
+    await asyncSyncSupabase(supabaseAdmin.from('profiles').delete().eq('id', id), 'delete company profile in Supabase');
+  } catch (err: any) {
+    console.error('Error deleting company from Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, status: 200 };
 }
@@ -2662,7 +2748,7 @@ export async function addCompanyMember(
   await syncCompanyToProfile(companyId);
 
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('company_members').upsert({
         id: newMember.id,
         company_id: newMember.companyId,
@@ -2680,9 +2766,15 @@ export async function addCompanyMember(
         invited_by_user_id: newMember.invitedByUserId,
         created_at: newMember.createdAt,
         updated_at: newMember.updatedAt
-      })
+      }),
+      'add company member in Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error adding company member to Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   const inviteLink = `/company/invite?token=${encodeURIComponent(rawToken)}`;
 
@@ -2762,7 +2854,7 @@ export async function updateCompanyMember(
   await syncCompanyToProfile(companyId);
 
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('company_members').update({
         name: member.name,
         title: member.title,
@@ -2771,9 +2863,15 @@ export async function updateCompanyMember(
         avatar_url: member.avatarUrl,
         role: member.role,
         updated_at: member.updatedAt
-      }).eq('id', member.id)
+      }).eq('id', member.id),
+      'update company member in Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error updating company member in Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, member, status: 200 };
 }
@@ -2833,13 +2931,19 @@ export async function removeCompanyMember(
   await syncCompanyToProfile(companyId);
 
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('company_members').update({
         status: 'REMOVED',
         updated_at: member.updatedAt
-      }).eq('id', member.id)
+      }).eq('id', member.id),
+      'remove company member in Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error removing company member in Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, status: 200 };
 }
@@ -2914,16 +3018,22 @@ export async function acceptCompanyInvite(
   await syncCompanyToProfile(company.id);
 
   try {
-    asyncSyncSupabase(
+    await asyncSyncSupabase(
       supabaseAdmin.from('company_members').update({
         status: 'ACTIVE',
         user_id: user.id,
         invite_token: null,
         invite_expires_at: null,
         updated_at: member.updatedAt
-      }).eq('id', member.id)
+      }).eq('id', member.id),
+      'accept company invite in Supabase'
     );
-  } catch {}
+  } catch (err: any) {
+    console.error('Error accepting company invite in Supabase:', err?.message || err);
+    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
+      throw err;
+    }
+  }
 
   return { success: true, company, member, status: 200 };
 }

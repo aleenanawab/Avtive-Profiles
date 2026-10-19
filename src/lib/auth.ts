@@ -3,11 +3,29 @@ import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { UserSession } from '@/types/profile';
 
-const SESSION_COOKIE_NAME = 'avtive_session';
+export const SESSION_COOKIE_NAME = 'avtive_session';
 export const RETURNING_USER_COOKIE_NAME = 'avtive_returning_user';
 export const DUMMY_BCRYPT_HASH = '$2a$10$wN1Q/X8Oa6xG/G9x0.GzOuq8Z9y2j4yJz/uVl3IqNfO1.tJ5bI5Ki';
-const SESSION_SECRET = process.env.SESSION_SECRET || process.env.JWT_SECRET || 'avtive-super-secret-key-prod-2026-secure-session-auth';
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * Validates and retrieves SESSION_SECRET.
+ * In production, fails closed (throws) if SESSION_SECRET is missing or < 32 characters.
+ */
+export function getSessionSecret(): string {
+  const secret = (process.env.SESSION_SECRET || process.env.JWT_SECRET || '').trim();
+  if (process.env.NODE_ENV === 'production') {
+    if (!secret || secret.length < 32) {
+      throw new Error('FATAL: SESSION_SECRET must be configured and at least 32 characters long in production.');
+    }
+    return secret;
+  }
+  // In development/test environments: require 32 chars or provide dev fallback
+  if (secret.length >= 32) {
+    return secret;
+  }
+  return 'dev-local-session-secret-key-32chars-minimum-fallback!!';
+}
 
 export function setReturningUserCookie(response?: any): void {
   if (response && response.cookies) {
@@ -42,6 +60,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
  * Generate a signed session token: base64(payload).signature
  */
 export function createSessionToken(user: UserSession): string {
+  const secret = getSessionSecret();
   const payload = {
     id: user.id,
     name: user.name,
@@ -52,7 +71,7 @@ export function createSessionToken(user: UserSession): string {
 
   const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const signature = crypto
-    .createHmac('sha256', SESSION_SECRET)
+    .createHmac('sha256', secret)
     .update(payloadBase64)
     .digest('base64url');
 
@@ -60,7 +79,7 @@ export function createSessionToken(user: UserSession): string {
 }
 
 /**
- * Verify and decode a signed session token
+ * Verify and decode a signed session token using timing-safe comparison
  */
 export function verifySessionToken(token: string): UserSession | null {
   try {
@@ -68,12 +87,16 @@ export function verifySessionToken(token: string): UserSession | null {
     if (parts.length !== 2) return null;
 
     const [payloadBase64, signature] = parts;
+    const secret = getSessionSecret();
     const expectedSignature = crypto
-      .createHmac('sha256', SESSION_SECRET)
+      .createHmac('sha256', secret)
       .update(payloadBase64)
       .digest('base64url');
 
-    if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+    const sigBuf = Buffer.from(signature);
+    const expectedBuf = Buffer.from(expectedSignature);
+
+    if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) {
       return null;
     }
 
@@ -112,6 +135,21 @@ export async function getSession(): Promise<UserSession | null> {
 }
 
 /**
+ * Shared server-side helper that enforces an authenticated session.
+ * Throws 401 Unauthorized if no valid session is present.
+ */
+export async function requireSession(): Promise<UserSession> {
+  const session = await getSession();
+  if (!session || !session.id) {
+    const err = new Error('Authentication required. Please log in to access this resource.');
+    (err as any).statusCode = 401;
+    (err as any).status = 401;
+    throw err;
+  }
+  return session;
+}
+
+/**
  * Server-side helper to set session cookie on response
  */
 export async function setSessionCookie(user: UserSession, response?: any): Promise<string> {
@@ -139,7 +177,28 @@ export async function setSessionCookie(user: UserSession, response?: any): Promi
 }
 
 /**
- * Server-side helper to clear session cookie and all profile cached cookies on logout
+ * Clears legacy user cache cookie unconditionally with expired date
+ */
+export function clearLegacyCacheCookie(response?: any): void {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: 0,
+    expires: new Date(0)
+  };
+
+  if (response && response.cookies) {
+    try {
+      response.cookies.set('avtive_user_cache', '', cookieOptions);
+      response.cookies.delete('avtive_user_cache');
+    } catch {}
+  }
+}
+
+/**
+ * Server-side helper to clear session cookie and all legacy cache cookies on logout
  */
 export async function clearSessionCookie(response?: any): Promise<void> {
   const cookiesToClear = [
@@ -186,6 +245,3 @@ export async function clearSessionCookie(response?: any): Promise<void> {
 }
 
 export { sanitizeReturnUrl, resolveReturnUrlForExistingUser } from './utils';
-
-
-

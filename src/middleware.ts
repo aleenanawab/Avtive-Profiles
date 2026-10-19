@@ -8,7 +8,6 @@ const PUBLIC_PATHS = [
   '/forgot-password',
   '/reset-password',
   '/auth/callback',
-  '/api/upload',
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/social',
@@ -21,7 +20,64 @@ const PUBLIC_PATHS = [
   '/company/invite'
 ];
 
-export function middleware(request: NextRequest) {
+function getMiddlewareSecret(): string {
+  const secret = (process.env.SESSION_SECRET || process.env.JWT_SECRET || '').trim();
+  if (process.env.NODE_ENV === 'production') {
+    if (!secret || secret.length < 32) {
+      throw new Error('FATAL: SESSION_SECRET must be configured and at least 32 characters in production.');
+    }
+    return secret;
+  }
+  if (secret.length >= 32) return secret;
+  return 'dev-local-session-secret-key-32chars-minimum-fallback!!';
+}
+
+async function verifySessionTokenEdge(token: string): Promise<boolean> {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 2) return false;
+
+    const [payloadB64, sigB64] = parts;
+    const secret = getMiddlewareSecret();
+    const encoder = new TextEncoder();
+
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify']
+    );
+
+    // Decode base64url signature
+    const base64 = sigB64.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = base64.length % 4;
+    const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
+    const binStr = atob(padded);
+    const sigBin = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) {
+      sigBin[i] = binStr.charCodeAt(i);
+    }
+
+    const isValid = await crypto.subtle.verify('HMAC', key, sigBin, encoder.encode(payloadB64));
+    if (!isValid) return false;
+
+    // Check payload expiry
+    const payloadPadded = payloadB64.replace(/-/g, '+').replace(/_/g, '/');
+    const payloadPad = payloadPadded.length % 4;
+    const payloadStr = atob(payloadPad ? payloadPadded + '='.repeat(4 - payloadPad) : payloadPadded);
+    const payload = JSON.parse(payloadStr);
+
+    if (!payload || !payload.id || !payload.exp) return false;
+    if (payload.exp < Math.floor(Date.now() / 1000)) return false;
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   // 1. Allow public static assets and next internal assets
@@ -57,12 +113,27 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. Check for active session cookie
+  // 3c. Allow public profile API viewing (/api/profile/[id] via GET, excluding /list, /share-settings, etc.)
+  if (
+    pathname.startsWith('/api/profile/') &&
+    request.method === 'GET' &&
+    !pathname.endsWith('/list') &&
+    !pathname.endsWith('/share-settings') &&
+    !pathname.endsWith('/create') &&
+    !pathname.endsWith('/update') &&
+    !pathname.endsWith('/duplicate')
+  ) {
+    return NextResponse.next();
+  }
+
+  // 4. Check for active session cookie with cryptographic signature and expiry verification
   const sessionCookie = request.cookies.get('avtive_session');
-  const hasValidSession = Boolean(sessionCookie && sessionCookie.value && sessionCookie.value.includes('.'));
+  let hasValidSession = false;
+  if (sessionCookie?.value) {
+    hasValidSession = await verifySessionTokenEdge(sessionCookie.value);
+  }
 
-
-  // 4. Strict gatekeeper: If no valid session, deny access to site and data
+  // 5. Strict gatekeeper: If no valid session, deny access to site and data
   if (!hasValidSession) {
     // For API endpoints: return 401 Unauthorized
     if (pathname.startsWith('/api/')) {

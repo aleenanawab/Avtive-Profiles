@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { getUserByEmail, createUser } from '@/lib/db';
-import { hashPassword, setSessionCookie, setReturningUserCookie } from '@/lib/auth';
+import { hashPassword, setSessionCookie, setReturningUserCookie, clearLegacyCacheCookie } from '@/lib/auth';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
     const { name, email, password, confirmPassword } = body;
 
     // 1. Validation
@@ -53,13 +54,12 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hashPassword(password);
 
     // 4. Generate one-time recovery code (format: RC-XXXX-XXXX) and store only its SHA-256 hash
-    const crypto = await import('crypto');
     const rawCode = crypto.randomBytes(4).toString('hex').toUpperCase();
     const recoveryCode = `RC-${rawCode.slice(0, 4)}-${rawCode.slice(4)}`;
     const recoveryCodeHash = crypto.createHash('sha256').update(recoveryCode.trim().toUpperCase()).digest('hex');
 
-    // 5. Save account with recovery code hash (onboarding will be completed upon setup)
-    const { user } = await createUser({
+    // 5. Save account with recovery code hash. Must check error before issuing session!
+    const createResult = await createUser({
       name: name.trim(),
       email: normalizedEmail,
       passwordHash,
@@ -67,6 +67,14 @@ export async function POST(request: NextRequest) {
       onboardingCompleted: false,
       createProfile: false
     });
+
+    const user = createResult?.user;
+    if (!user || !user.id) {
+      return NextResponse.json(
+        { error: 'Failed to create user account. Please try again.' },
+        { status: 500 }
+      );
+    }
 
     const sessionUser = {
       id: user.id,
@@ -86,26 +94,9 @@ export async function POST(request: NextRequest) {
     );
 
     response.headers.set('Cache-Control', 'no-store, max-age=0');
+    await setSessionCookie(sessionUser, response);
     setReturningUserCookie(response);
-
-    // Set backup user cache cookie for resilient cross-lambda authentication
-    try {
-      response.cookies.set(
-        'avtive_user_cache',
-        encodeURIComponent(JSON.stringify({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          passwordHash: user.passwordHash
-        })),
-        {
-          path: '/',
-          httpOnly: true,
-          sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 30
-        }
-      );
-    } catch {}
+    clearLegacyCacheCookie(response);
 
     return response;
   } catch (error) {

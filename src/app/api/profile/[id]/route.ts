@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
+import { getSession, requireSession } from '@/lib/auth';
 import { getProfileByIdOrSlug, deleteProfile, sanitizeProfileForPublic } from '@/lib/db';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * Public profile endpoint: returns fields allowed by visibility/sharing settings.
+ * Never returns password_hash, reset fields, recovery hashes, or private unshared fields.
+ */
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const session = await getSession();
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized: You must be logged in to access profile data.' },
-        { status: 401 }
-      );
-    }
-
     const { id } = await context.params;
     const profile = await getProfileByIdOrSlug(id);
 
@@ -26,7 +23,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const isOwner = Boolean(profile.userId && session.id === profile.userId);
+    const isOwner = Boolean(session?.id && profile.userId && session.id === profile.userId);
     const sanitized = sanitizeProfileForPublic(profile, isOwner);
 
     return NextResponse.json({
@@ -43,23 +40,35 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 }
 
+/**
+ * Private profile delete: requires authenticated session and ownership check.
+ */
 export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
-    const session = await getSession();
-    if (!session) {
+    const session = await requireSession();
+    const { id } = await context.params;
+
+    const profile = await getProfileByIdOrSlug(id);
+    if (!profile) {
       return NextResponse.json(
-        { error: 'Unauthorized: You must be logged in to delete a profile.' },
-        { status: 401 }
+        { error: 'Profile not found.' },
+        { status: 404 }
       );
     }
 
-    const { id } = await context.params;
+    if (profile.userId && profile.userId !== session.id) {
+      return NextResponse.json(
+        { error: 'Forbidden: You do not have permission to delete this profile.' },
+        { status: 403 }
+      );
+    }
+
     const result = await deleteProfile(id, session.id);
 
     if (!result.success) {
       return NextResponse.json(
         { error: result.error || 'Failed to delete profile.' },
-        { status: result.status }
+        { status: result.status || 500 }
       );
     }
 
@@ -67,7 +76,13 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       success: true,
       message: 'Profile deleted successfully.'
     }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.status === 401 || error?.statusCode === 401) {
+      return NextResponse.json(
+        { error: 'Unauthorized: You must be logged in to delete a profile.' },
+        { status: 401 }
+      );
+    }
     console.error('Delete Profile API Error:', error);
     return NextResponse.json(
       { error: 'Internal server error while deleting profile.' },

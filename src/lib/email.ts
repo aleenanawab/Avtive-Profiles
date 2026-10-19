@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { supabase, supabaseAdmin } from './supabase';
+import { supabase } from './supabase';
 
 export interface SendPasswordResetEmailParams {
   to: string;
@@ -35,9 +35,6 @@ function getSmtpTransporter() {
       auth: {
         user: user.trim(),
         pass: pass.trim().replace(/\s+/g, '') // remove any accidental spaces in app password
-      },
-      tls: {
-        rejectUnauthorized: false
       }
     });
   }
@@ -53,9 +50,6 @@ function getSmtpTransporter() {
     auth: {
       user: user.trim(),
       pass: pass.trim()
-    },
-    tls: {
-      rejectUnauthorized: false
     }
   });
 }

@@ -48,18 +48,43 @@ export const supabase = (supabaseUrl && supabaseAnonKey)
   ? createBrowserClient(supabaseUrl, supabaseAnonKey)
   : createBrowserClient('https://placeholder.supabase.co', 'placeholder-anon-key');
 
-// Admin / Server client with elevated privileges for server route handlers
-// Instantiated ONLY on the server to prevent duplicate GoTrueClient instances in the browser
-export const supabaseAdmin = typeof window === 'undefined' && supabaseUrl && (supabaseServiceKey || supabaseAnonKey)
-  ? createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey, {
+// Admin / Server client with elevated privileges for server route handlers.
+// Uses ONLY SUPABASE_SERVICE_ROLE_KEY, server-only. No anon-key fallback.
+let _adminClient: any = null;
+
+function getAdminClient() {
+  if (typeof window !== 'undefined') {
+    throw new Error('Supabase configuration error: supabaseAdmin cannot be accessed in the browser.');
+  }
+  if (!supabaseUrl) {
+    throw new Error('Supabase configuration error: NEXT_PUBLIC_SUPABASE_URL is not configured.');
+  }
+  if (!supabaseServiceKey) {
+    throw new Error('Supabase configuration error: SUPABASE_SERVICE_ROLE_KEY is required for server database access.');
+  }
+  if (!_adminClient) {
+    _adminClient = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         storageKey: 'sb-avtive-admin-token',
         persistSession: false,
         autoRefreshToken: false,
         detectSessionInUrl: false,
       }
-    })
-  : (null as any);
+    });
+  }
+  return _adminClient;
+}
+
+export const supabaseAdmin: any = new Proxy({}, {
+  get(_target, prop) {
+    const client = getAdminClient();
+    const value = client[prop];
+    if (typeof value === 'function') {
+      return value.bind(client);
+    }
+    return value;
+  }
+});
 
 export const PROFILES_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || 'profiles';
 export const LINKS_STORAGE_BUCKET = process.env.SUPABASE_LINKS_BUCKET || 'links';
@@ -101,6 +126,28 @@ export async function uploadToSupabaseStorage(
   preferredBucket: string = PROFILES_STORAGE_BUCKET
 ): Promise<{ success: boolean; url?: string; error?: string; bucket?: string }> {
   try {
+    // Enforce 5MB max size
+    if (buffer.length > 5 * 1024 * 1024) {
+      return { success: false, error: 'File size exceeds 5MB limit.' };
+    }
+
+    // Verify magic bytes (JPEG, PNG, WebP only; strictly reject SVG and unknown formats)
+    let verifiedMime = '';
+    if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+      verifiedMime = 'image/jpeg';
+    } else if (buffer.length >= 8 && buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
+      verifiedMime = 'image/png';
+    } else if (
+      buffer.length >= 12 &&
+      buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+      buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+    ) {
+      verifiedMime = 'image/webp';
+    } else {
+      return { success: false, error: 'Unsupported or corrupted image format. Only JPEG, PNG, and WebP are permitted.' };
+    }
+
+    const safeContentType = verifiedMime || contentType;
     const bucketsToTry = [preferredBucket, ...CANDIDATE_BUCKETS.filter(b => b !== preferredBucket)];
 
     let lastError: any = null;
@@ -110,8 +157,8 @@ export async function uploadToSupabaseStorage(
       const { data, error } = await supabaseAdmin.storage
         .from(bucket)
         .upload(filename, buffer, {
-          contentType,
-          upsert: true
+          contentType: safeContentType,
+          upsert: false
         });
 
       if (!error && data?.path) {

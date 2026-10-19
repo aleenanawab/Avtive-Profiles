@@ -65,11 +65,11 @@ export async function POST(request: NextRequest) {
     if (!cleanRecoveryCode) {
       // Flow A: Standard Password Reset Link generation
       const resetInfo = await createPasswordResetToken(emailOrUsername);
-      let resetUrl: string | undefined;
 
-      if (resetInfo) {
-        const origin = request.nextUrl.origin || process.env.NEXTAUTH_URL || 'http://localhost:3000';
-        resetUrl = `${origin}/reset-password?token=${resetInfo.token}&email=${encodeURIComponent(resetInfo.user.email)}`;
+      if (resetInfo && resetInfo.user?.email) {
+        // Build link from configured APP_URL / NEXT_PUBLIC_APP_URL, never from request Host header
+        const baseUrl = (process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/+$/, '') || 'http://localhost:3000';
+        const resetUrl = `${baseUrl}/reset-password?token=${resetInfo.token}&email=${encodeURIComponent(resetInfo.user.email)}`;
         try {
           await sendPasswordResetEmail({
             to: resetInfo.user.email,
@@ -77,16 +77,15 @@ export async function POST(request: NextRequest) {
             resetUrl
           });
         } catch (emailErr) {
-          console.error('Failed to send reset email:', emailErr);
+          console.error('Failed to dispatch reset email to user.');
         }
       }
 
-      // Consistent response to prevent user enumeration
+      // Consistent response to prevent user enumeration: NEVER return resetUrl or token
       return NextResponse.json(
         {
           success: true,
-          message: 'If an account exists with this email address, a password reset link has been sent.',
-          ...(resetUrl ? { resetUrl } : {})
+          message: 'If an account exists with this email address, a password reset link has been sent.'
         },
         { status: 200 }
       );
