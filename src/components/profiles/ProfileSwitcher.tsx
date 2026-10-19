@@ -83,13 +83,16 @@ export function ProfileSwitcher({
   // Fetch profiles & listen for real-time updates
   useEffect(() => {
     fetch('/api/profile/list')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
-        if (data.profiles && Array.isArray(data.profiles) && data.profiles.length > 0) {
+        if (data?.profiles && Array.isArray(data.profiles) && data.profiles.length > 0) {
           setProfiles(data.profiles);
         }
       })
-      .catch((err) => console.error('Failed to load profiles for switcher', err))
+      .catch(() => {})
       .finally(() => setLoading(false));
 
     const handleProfileUpdate = (e: Event) => {

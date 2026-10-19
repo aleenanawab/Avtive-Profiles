@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { getUserByEmail, createUser } from '@/lib/db';
+import { getUserByEmail, createUser, DatabaseUnavailableError } from '@/lib/db';
 import { hashPassword, setSessionCookie, setReturningUserCookie, clearLegacyCacheCookie } from '@/lib/auth';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,7 +42,20 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.trim().toLowerCase();
 
     // 2. Check duplicate accounts on server & DB
-    const existingUser = await getUserByEmail(normalizedEmail);
+    let existingUser;
+    try {
+      existingUser = await getUserByEmail(normalizedEmail);
+    } catch (err: any) {
+      if (err instanceof DatabaseUnavailableError || err?.code === 'DATABASE_UNAVAILABLE' || err?.status === 503) {
+        console.error('[Register API Error] Database unavailable during duplicate check:', err?.message || 'Database error');
+        return NextResponse.json(
+          { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
+          { status: 503 }
+        );
+      }
+      throw err;
+    }
+
     if (existingUser) {
       return NextResponse.json(
         { error: 'An account with this email address already exists. Please sign in or use another email.' },
@@ -59,14 +72,26 @@ export async function POST(request: NextRequest) {
     const recoveryCodeHash = crypto.createHash('sha256').update(recoveryCode.trim().toUpperCase()).digest('hex');
 
     // 5. Save account with recovery code hash. Must check error before issuing session!
-    const createResult = await createUser({
-      name: name.trim(),
-      email: normalizedEmail,
-      passwordHash,
-      recoveryCodeHash,
-      onboardingCompleted: false,
-      createProfile: false
-    });
+    let createResult;
+    try {
+      createResult = await createUser({
+        name: name.trim(),
+        email: normalizedEmail,
+        passwordHash,
+        recoveryCodeHash,
+        onboardingCompleted: false,
+        createProfile: false
+      });
+    } catch (err: any) {
+      if (err instanceof DatabaseUnavailableError || err?.code === 'DATABASE_UNAVAILABLE' || err?.status === 503) {
+        console.error('[Register API Error] Database unavailable during user creation:', err?.message || 'Database error');
+        return NextResponse.json(
+          { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
+          { status: 503 }
+        );
+      }
+      throw err;
+    }
 
     const user = createResult?.user;
     if (!user || !user.id) {
@@ -99,7 +124,14 @@ export async function POST(request: NextRequest) {
     clearLegacyCacheCookie(response);
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
+    if (error instanceof DatabaseUnavailableError || error?.code === 'DATABASE_UNAVAILABLE' || error?.status === 503) {
+      console.error('[Register API Error] Database unavailable:', error?.message);
+      return NextResponse.json(
+        { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
+        { status: 503 }
+      );
+    }
     console.error('Registration API Error:', error);
     return NextResponse.json(
       { error: 'An unexpected error occurred during registration. Please try again.' },

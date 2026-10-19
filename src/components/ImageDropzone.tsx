@@ -80,9 +80,10 @@ export function ImageDropzone({
         body: formData
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data.error || 'Upload failed');
+        setErrorMessage(data.error || (res.status === 401 ? 'Please sign in to upload assets.' : 'Upload failed.'));
+        return;
       }
 
       onChange(data.url);
@@ -90,7 +91,6 @@ export function ImageDropzone({
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 2500);
     } catch (err: any) {
-      console.error(err);
       setErrorMessage(err.message || 'Error uploading file.');
     } finally {
       setIsUploading(false);

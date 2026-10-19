@@ -451,108 +451,197 @@ export function mapSupabaseProfileToProfileData(
   return sp;
 }
 
+export class DatabaseUnavailableError extends Error {
+  readonly code = 'DATABASE_UNAVAILABLE';
+  readonly status = 503;
+
+  constructor(message: string = 'Database service is temporarily unavailable.', cause?: unknown) {
+    super(message);
+    this.name = 'DatabaseUnavailableError';
+    if (cause) {
+      this.cause = cause;
+    }
+  }
+}
+
 export async function getUserByEmail(email: string): Promise<UserRecord | null> {
-  const db = loadDb();
   const normalizedEmail = email.toLowerCase().trim();
-  const user = db.users.find((u) => u.email.toLowerCase().trim() === normalizedEmail);
-  if (user) return user;
+  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
 
-  // Supabase lookup fallback
-  try {
-    const { data, error } = await withTimeout(
-      supabaseAdmin
-        .from('users')
-        .select('*')
-        .ilike('email', normalizedEmail)
-        .maybeSingle(),
-      6000
-    );
+  // In production, Supabase is the sole authoritative source of truth.
+  // Never authenticate against bundled db.json or seeded in-memory users in production.
+  if (isProduction) {
+    let result: any;
+    try {
+      result = await withTimeout(
+        supabaseAdmin
+          .from('users')
+          .select('id, name, email, password_hash, reset_token, reset_token_expires, created_at')
+          .ilike('email', normalizedEmail)
+          .maybeSingle(),
+        6000
+      );
+    } catch (err: any) {
+      console.error('[Database Error] getUserByEmail failed to query Supabase:', err?.message || err);
+      throw new DatabaseUnavailableError(`Database query failed or timed out: ${err?.message || 'Unknown error'}`, err);
+    }
 
-    if (data && !error) {
-      // Check if user has completed onboarding by checking profile
+    if (result && result.error) {
+      console.error('[Database Error] Supabase returned error in getUserByEmail:', result.error.message || result.error);
+      throw new DatabaseUnavailableError(`Database query error: ${result.error.message || 'Supabase error'}`, result.error);
+    }
+
+    const data = result?.data;
+    // Successful lookup returning no row -> genuine nonexistent user
+    if (!data) {
+      return null;
+    }
+
+    // Check if user has completed onboarding by checking profile
+    let hasSavedContent = false;
+    try {
       const profQuery = isUuidString(data.id)
         ? supabaseAdmin.from('profiles').select('id, designation, short_bio, skills').or(`user_id.eq.${data.id},email.eq.${normalizedEmail}`).limit(1)
         : supabaseAdmin.from('profiles').select('id, designation, short_bio, skills').eq('email', normalizedEmail).limit(1);
 
-      const { data: profData } = await withTimeout(profQuery, 4000).catch(() => ({ data: null }));
-
-      const hasSavedContent = Boolean(
+      const { data: profData } = await withTimeout(profQuery, 3000);
+      hasSavedContent = Boolean(
         profData && profData.length > 0 &&
         (profData[0].designation || profData[0].short_bio || (Array.isArray(profData[0].skills) && profData[0].skills.length > 0))
       );
+    } catch {
+      // Non-critical profile enrichment failure does not block authentication
+    }
 
+    const su: UserRecord = {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      passwordHash: data.password_hash || '',
+      resetToken: data.reset_token,
+      resetTokenExpires: data.reset_token_expires,
+      onboardingCompleted: hasSavedContent,
+      createdAt: data.created_at || new Date().toISOString()
+    };
+
+    return su;
+  }
+
+  // Development / test mode:
+  // Query Supabase directly if configured, distinguishing query errors from empty rows
+  try {
+    const result = await withTimeout(
+      supabaseAdmin
+        .from('users')
+        .select('id, name, email, password_hash, reset_token, reset_token_expires, created_at')
+        .ilike('email', normalizedEmail)
+        .maybeSingle(),
+      5000
+    );
+
+    if (result && result.error) {
+      console.error('[Database Error] Supabase returned error in dev getUserByEmail:', result.error.message || result.error);
+      throw new DatabaseUnavailableError(`Database query error: ${result.error.message || 'Supabase error'}`, result.error);
+    }
+
+    if (result && result.data) {
+      const data = result.data;
       const su: UserRecord = {
         id: data.id,
         name: data.name,
         email: data.email,
-        passwordHash: data.password_hash || data.passwordHash,
-        resetToken: data.reset_token_hash || data.reset_token || data.resetToken,
-        resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
-        recoveryCodeHash: data.recovery_code_hash || data.recoveryCodeHash,
-        onboardingCompleted: Boolean(data.onboarding_completed || hasSavedContent),
-        role: data.role ? normalizeProfileType(data.role) : undefined,
-        preferredTheme: data.preferred_theme,
-        createdAt: data.created_at || data.createdAt || new Date().toISOString()
+        passwordHash: data.password_hash || '',
+        resetToken: data.reset_token,
+        resetTokenExpires: data.reset_token_expires,
+        onboardingCompleted: false,
+        createdAt: data.created_at || new Date().toISOString()
       };
-      if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-        db.users.push(su);
-      }
       return su;
     }
-  } catch (err: any) {
-    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
-      console.error('[Database Error] getUserByEmail failed:', err?.message || 'Query error');
-    }
-  }
 
-  // Fallback to local in-memory DB in development only
-  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+    // Query succeeded, data is null in Supabase. Check local dev DB
+    const db = loadDb();
     const localUser = db.users.find((u) => u.email.toLowerCase().trim() === normalizedEmail);
-    if (localUser) return localUser;
+    return localUser || null;
+  } catch (err: any) {
+    if (err instanceof DatabaseUnavailableError) {
+      throw err;
+    }
+    console.error('[Database Error] getUserByEmail failed in dev/test:', err?.message || err);
+    throw new DatabaseUnavailableError(`Database query failed or timed out: ${err?.message || 'Unknown error'}`, err);
   }
-
-  return null;
 }
 
 export async function getUserById(id: string): Promise<UserRecord | null> {
-  const db = loadDb();
-  const user = db.users.find((u) => u.id === id);
-  if (user) return user;
+  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
 
-  // Supabase lookup fallback
+  if (isProduction) {
+    let result: any;
+    try {
+      result = await withTimeout(
+        supabaseAdmin
+          .from('users')
+          .select('id, name, email, password_hash, reset_token, reset_token_expires, created_at')
+          .eq('id', id)
+          .maybeSingle(),
+        6000
+      );
+    } catch (err: any) {
+      console.error('[Database Error] getUserById failed to query Supabase:', err?.message || err);
+      throw new DatabaseUnavailableError(`Database query failed or timed out: ${err?.message || 'Unknown error'}`, err);
+    }
+
+    if (result && result.error) {
+      console.error('[Database Error] Supabase returned error in getUserById:', result.error.message || result.error);
+      throw new DatabaseUnavailableError(`Database query error: ${result.error.message || 'Supabase error'}`, result.error);
+    }
+
+    const data = result?.data;
+    if (!data) return null;
+
+    const su: UserRecord = {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      passwordHash: data.password_hash || '',
+      resetToken: data.reset_token,
+      resetTokenExpires: data.reset_token_expires,
+      createdAt: data.created_at || new Date().toISOString()
+    };
+    return su;
+  }
+
+  // Development fallback:
   try {
-    const { data, error } = await withTimeout(
+    const result = await withTimeout(
       supabaseAdmin
         .from('users')
-        .select('*')
+        .select('id, name, email, password_hash, reset_token, reset_token_expires, created_at')
         .eq('id', id)
-        .maybeSingle()
+        .maybeSingle(),
+      4000
     );
 
-    if (data && !error) {
+    if (result && !result.error && result.data) {
+      const data = result.data;
       const su: UserRecord = {
         id: data.id,
         name: data.name,
         email: data.email,
-        passwordHash: data.password_hash || data.passwordHash,
-        resetToken: data.reset_token_hash || data.reset_token || data.resetToken,
-        resetTokenExpires: data.reset_token_expires || data.resetTokenExpires,
-        recoveryCodeHash: data.recovery_code_hash || data.recoveryCodeHash,
-        onboardingCompleted: Boolean(data.onboarding_completed),
-        role: data.role ? normalizeProfileType(data.role) : undefined,
-        preferredTheme: data.preferred_theme,
-        createdAt: data.created_at || data.createdAt || new Date().toISOString()
+        passwordHash: data.password_hash || '',
+        resetToken: data.reset_token,
+        resetTokenExpires: data.reset_token_expires,
+        createdAt: data.created_at || new Date().toISOString()
       };
-      db.users.push(su);
       return su;
     }
   } catch (err: any) {
-    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
-      console.error('[Database Error] getUserById failed:', err?.message || 'Query error');
-    }
+    console.warn('[Database Warning] Dev Supabase getUserById error:', err?.message);
   }
 
-  return null;
+  const db = loadDb();
+  const user = db.users.find((u) => u.id === id);
+  return user || null;
 }
 
 export async function checkDatabaseConnection(): Promise<{ ok: boolean; latencyMs?: number; error?: string }> {
@@ -576,14 +665,38 @@ export async function getUserByEmailOrUsername(identifier: string): Promise<User
   if (clean.includes('@')) {
     return getUserByEmail(clean);
   }
-  // Try direct username lookup on user records
+
+  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
+  if (isProduction) {
+    try {
+      const { data: prof, error } = await withTimeout(
+        supabaseAdmin
+          .from('profiles')
+          .select('user_id, slug')
+          .ilike('slug', clean)
+          .maybeSingle(),
+        6000
+      );
+      if (error) {
+        throw new DatabaseUnavailableError(`Database query error: ${error.message || 'Supabase error'}`, error);
+      }
+      if (prof && prof.user_id) {
+        return getUserById(prof.user_id);
+      }
+      return null;
+    } catch (err: any) {
+      if (err instanceof DatabaseUnavailableError) throw err;
+      throw new DatabaseUnavailableError(`Database error during username lookup: ${err?.message}`, err);
+    }
+  }
+
+  // Dev fallback
   const db = loadDb();
   const matchedUser = db.users.find(
     (u) => (u as any).username?.toLowerCase().trim() === clean || u.name?.toLowerCase().trim() === clean
   );
   if (matchedUser) return matchedUser;
 
-  // Try lookup via profile slug or username
   const matchedProfile = Object.values(db.profiles).find(
     (p) => p.slug?.toLowerCase().trim() === clean || p.username?.toLowerCase().trim() === clean
   );
@@ -607,6 +720,7 @@ export async function createUser(data: {
   onboardingCompleted?: boolean;
   preferredTheme?: ProfileTheme;
 }): Promise<{ user: UserRecord; profile?: ProfileData }> {
+  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
   const db = loadDb();
   const userId = data.id || crypto.randomUUID();
 
@@ -623,7 +737,30 @@ export async function createUser(data: {
     createdAt: new Date().toISOString()
   };
 
-  // Check if existing user with same ID or email already in DB
+  // Sync user to Supabase strictly with valid columns in the live users table
+  // Columns in Supabase 'users': id, name, email, password_hash, reset_token, reset_token_expires, created_at
+  try {
+    const { error } = await withTimeout(
+      supabaseAdmin.from('users').upsert({
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        password_hash: newUser.passwordHash,
+        created_at: newUser.createdAt
+      }, { onConflict: 'email' }),
+      6000
+    );
+
+    if (error) {
+      console.error('[Database Error] Failed to persist user to Supabase:', error.message || error);
+      throw new DatabaseUnavailableError(`Failed to persist user to database: ${error.message || 'Supabase write error'}`, error);
+    }
+  } catch (err: any) {
+    console.error('[Database Error] createUser sync to Supabase failed:', err?.message || err);
+    throw (err instanceof DatabaseUnavailableError ? err : new DatabaseUnavailableError(err?.message || 'Database write failed', err));
+  }
+
+  // Update local DB cache
   const existingIndex = db.users.findIndex((u) => u.id === userId || u.email.toLowerCase().trim() === newUser.email);
   if (existingIndex !== -1) {
     db.users[existingIndex] = {
@@ -632,27 +769,6 @@ export async function createUser(data: {
     };
   } else {
     db.users.push(newUser);
-  }
-
-  // Sync user to Supabase strictly with valid columns
-  try {
-    await asyncSyncSupabase(
-      supabaseAdmin.from('users').upsert({
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email,
-        password_hash: newUser.passwordHash,
-        recovery_code_hash: newUser.recoveryCodeHash,
-        preferred_theme: newUser.preferredTheme,
-        created_at: newUser.createdAt
-      }, { onConflict: 'email' }),
-      'sync user to Supabase'
-    );
-  } catch (err: any) {
-    console.error('Error syncing user to Supabase:', err?.message || err);
-    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
-      throw err;
-    }
   }
 
   let newProfile: ProfileData | undefined;

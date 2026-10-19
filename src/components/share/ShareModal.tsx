@@ -96,20 +96,24 @@ export function ShareModal({
   const [showQrCode, setShowQrCode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch all user profiles for Step 1 if not passed
+  // Fetch all user profiles for Step 1 only if user is authenticated and profiles not passed
   useEffect(() => {
     if (isOpen && (!userProfiles || userProfiles.length <= 1)) {
-      fetch('/api/profile/list')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.profiles && data.profiles.length > 0) {
-            setRoles(data.profiles);
-            // If current profile is in list, keep it; otherwise set first
-            const found = data.profiles.find((p: ProfileData) => p.id === profile.id || p.slug === profile.slug);
-            if (found) {
-              setSelectedProfile(found);
-            }
-          }
+      fetch('/api/auth/me')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((meData) => {
+          if (!meData?.user) return; // Unauthenticated visitor: do not fire protected profile list
+          return fetch('/api/profile/list')
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+              if (data?.profiles && data.profiles.length > 0) {
+                setRoles(data.profiles);
+                const found = data.profiles.find((p: ProfileData) => p.id === profile.id || p.slug === profile.slug);
+                if (found) {
+                  setSelectedProfile(found);
+                }
+              }
+            });
         })
         .catch(() => {});
     }

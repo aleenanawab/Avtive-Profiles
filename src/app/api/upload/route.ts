@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { requireSession } from '@/lib/auth';
+import { requireSession, logAuthDiagnostic, ServerConfigError } from '@/lib/auth';
 import { supabaseAdmin, DEFAULT_STORAGE_BUCKET, CANDIDATE_BUCKETS } from '@/lib/supabase';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB real byte limit
@@ -54,14 +54,34 @@ function sniffImageMagicBytes(buffer: Buffer): SniffResult | null {
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = request.headers.get('x-request-id') || crypto.randomUUID().slice(0, 8);
   try {
     // 1. Enforce authenticated session
     let session;
     try {
       session = await requireSession();
-    } catch {
+      logAuthDiagnostic(requestId, request.method, '/api/upload', 'AUTHORIZED_SESSION');
+    } catch (authErr: any) {
+      if (
+        authErr instanceof ServerConfigError ||
+        authErr?.statusCode === 500 ||
+        authErr?.code === 'SERVER_CONFIGURATION_ERROR'
+      ) {
+        logAuthDiagnostic(requestId, request.method, '/api/upload', 'SERVER_CONFIG_ERROR');
+        return NextResponse.json(
+          {
+            error: 'Server configuration error: Authentication is misconfigured in production.',
+            code: 'SERVER_CONFIGURATION_ERROR'
+          },
+          { status: 500 }
+        );
+      }
+      logAuthDiagnostic(requestId, request.method, '/api/upload', 'DENIED_UNAUTHORIZED');
       return NextResponse.json(
-        { error: 'Unauthorized: You must be signed in to upload assets.' },
+        {
+          error: 'Unauthorized: You must be signed in to upload assets.',
+          code: 'UNAUTHORIZED'
+        },
         { status: 401 }
       );
     }

@@ -8,15 +8,46 @@ export const RETURNING_USER_COOKIE_NAME = 'avtive_returning_user';
 export const DUMMY_BCRYPT_HASH = '$2a$10$wN1Q/X8Oa6xG/G9x0.GzOuq8Z9y2j4yJz/uVl3IqNfO1.tJ5bI5Ki';
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
+export class ServerConfigError extends Error {
+  statusCode: number = 500;
+  status: number = 500;
+  code: string = 'SERVER_CONFIGURATION_ERROR';
+
+  constructor(message: string = 'Server configuration error: Authentication secret is missing or misconfigured.') {
+    super(message);
+    this.name = 'ServerConfigError';
+  }
+}
+
+export class AuthenticationError extends Error {
+  statusCode: number = 401;
+  status: number = 401;
+  code: string = 'UNAUTHORIZED';
+
+  constructor(message: string = 'Authentication required. Please log in to access this resource.', code: string = 'UNAUTHORIZED') {
+    super(message);
+    this.name = 'AuthenticationError';
+    this.code = code;
+  }
+}
+
+/**
+ * Safe diagnostic logging helper: logs request path, method, outcome, and request ID.
+ * NEVER logs cookies, authorization headers, passwords, reset tokens, or secrets.
+ */
+export function logAuthDiagnostic(requestId: string, method: string, path: string, outcome: string): void {
+  console.log(`[AUTH-API] [${requestId}] ${method} ${path} -> ${outcome}`);
+}
+
 /**
  * Validates and retrieves SESSION_SECRET.
- * In production, fails closed (throws) if SESSION_SECRET is missing or < 32 characters.
+ * In production, fails closed (throws ServerConfigError) if SESSION_SECRET is missing or < 32 characters.
  */
 export function getSessionSecret(): string {
   const secret = (process.env.SESSION_SECRET || process.env.JWT_SECRET || '').trim();
   if (process.env.NODE_ENV === 'production') {
     if (!secret || secret.length < 32) {
-      throw new Error('FATAL: SESSION_SECRET must be configured and at least 32 characters long in production.');
+      throw new ServerConfigError('FATAL: SESSION_SECRET must be configured and at least 32 characters long in production.');
     }
     return secret;
   }
@@ -79,15 +110,18 @@ export function createSessionToken(user: UserSession): string {
 }
 
 /**
- * Verify and decode a signed session token using timing-safe comparison
+ * Verify and decode a signed session token using timing-safe comparison.
+ * Propagates ServerConfigError if secret is misconfigured.
  */
 export function verifySessionToken(token: string): UserSession | null {
+  // Never swallow ServerConfigError: let it propagate
+  const secret = getSessionSecret();
+
   try {
     const parts = token.split('.');
     if (parts.length !== 2) return null;
 
     const [payloadBase64, signature] = parts;
-    const secret = getSessionSecret();
     const expectedSignature = crypto
       .createHmac('sha256', secret)
       .update(payloadBase64)
@@ -113,38 +147,49 @@ export function verifySessionToken(token: string): UserSession | null {
       email: payload.email,
       avatar: payload.avatar
     };
-  } catch {
+  } catch (err) {
+    if (err instanceof ServerConfigError) throw err;
     return null;
   }
 }
 
 /**
- * Server-side helper to read the current authenticated user session
+ * Server-side helper to read the current authenticated user session.
+ * Propagates ServerConfigError when configuration is invalid.
  */
 export async function getSession(): Promise<UserSession | null> {
-  try {
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
-    if (!sessionCookie || !sessionCookie.value) {
-      return null;
-    }
-    return verifySessionToken(sessionCookie.value);
-  } catch {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
+  if (!sessionCookie || !sessionCookie.value) {
     return null;
   }
+  const session = verifySessionToken(sessionCookie.value);
+  if (!session) {
+    // Cookie is expired or invalid: clear it from cookieStore so browser/subsequent calls don't retain it
+    try {
+      cookieStore.set(SESSION_COOKIE_NAME, '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 0,
+        expires: new Date(0)
+      });
+      cookieStore.delete(SESSION_COOKIE_NAME);
+    } catch {}
+  }
+  return session;
 }
 
 /**
  * Shared server-side helper that enforces an authenticated session.
- * Throws 401 Unauthorized if no valid session is present.
+ * Throws AuthenticationError (401) if no valid session is present.
+ * Throws ServerConfigError (500) if session secret is misconfigured.
  */
 export async function requireSession(): Promise<UserSession> {
   const session = await getSession();
   if (!session || !session.id) {
-    const err = new Error('Authentication required. Please log in to access this resource.');
-    (err as any).statusCode = 401;
-    (err as any).status = 401;
-    throw err;
+    throw new AuthenticationError('Authentication required. Please log in to access this resource.');
   }
   return session;
 }

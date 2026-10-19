@@ -640,7 +640,7 @@ export function ProfileEditorProvider({
       const formData = new FormData();
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) {
         setCoverImage(data.url);
         updateField('coverImage', data.url);
@@ -652,12 +652,13 @@ export function ProfileEditorProvider({
           window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: updatedObj }));
         } catch {}
         showToast('✓ Cover banner updated!');
+      } else if (res.status === 401) {
+        showToast(data.error || 'Authentication required: please log in to upload cover banner.');
       } else {
-        showToast('✓ Cover updated (preview mode)');
+        showToast(data.error || 'Failed to upload cover banner.');
       }
-    } catch (e) {
-      console.error(e);
-      showToast('✓ Cover updated (local mode)');
+    } catch {
+      showToast('Error uploading cover banner. Please try again.');
     } finally {
       setIsUploadingCover(false);
     }
@@ -678,7 +679,7 @@ export function ProfileEditorProvider({
       const formData = new FormData();
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) {
         setAvatar(data.url);
         updateField('avatar', data.url);
@@ -690,12 +691,13 @@ export function ProfileEditorProvider({
           window.dispatchEvent(new CustomEvent('avtive_profile_updated', { detail: updatedObj }));
         } catch {}
         showToast('✓ Profile photo updated!');
+      } else if (res.status === 401) {
+        showToast(data.error || 'Authentication required: please log in to upload avatar photo.');
       } else {
-        showToast('✓ Photo updated (preview mode)');
+        showToast(data.error || 'Failed to upload avatar photo.');
       }
-    } catch (e) {
-      console.error(e);
-      showToast('✓ Photo updated (local mode)');
+    } catch {
+      showToast('Error uploading avatar photo. Please try again.');
     } finally {
       setIsUploadingAvatar(false);
     }

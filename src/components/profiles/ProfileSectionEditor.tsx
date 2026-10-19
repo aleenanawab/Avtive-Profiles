@@ -340,13 +340,17 @@ export function ProfileSectionEditor({
       const formData = new FormData();
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) {
         setCoverImage(data.url);
         onLiveUpdate?.({ coverImage: data.url });
+      } else if (res.status === 401) {
+        setStatusFeedback({ type: 'error', text: data.error || 'Authentication required: please log in to upload cover banner.' });
+      } else {
+        setStatusFeedback({ type: 'error', text: data.error || 'Failed to upload cover banner.' });
       }
-    } catch (e) {
-      console.error('Cover upload failed:', e);
+    } catch {
+      setStatusFeedback({ type: 'error', text: 'Error uploading cover banner. Please try again.' });
     } finally {
       setIsUploadingCover(false);
     }
@@ -371,13 +375,17 @@ export function ProfileSectionEditor({
       const formData = new FormData();
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) {
         setAvatar(data.url);
         onLiveUpdate?.({ avatar: data.url });
+      } else if (res.status === 401) {
+        setStatusFeedback({ type: 'error', text: data.error || 'Authentication required: please log in to upload avatar photo.' });
+      } else {
+        setStatusFeedback({ type: 'error', text: data.error || 'Failed to upload avatar photo.' });
       }
-    } catch (e) {
-      console.error('Avatar upload failed:', e);
+    } catch {
+      setStatusFeedback({ type: 'error', text: 'Error uploading avatar photo. Please try again.' });
     } finally {
       setIsUploadingAvatar(false);
     }

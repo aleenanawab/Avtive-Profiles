@@ -439,15 +439,17 @@ export function DesktopProfileContent({
       const formData = new FormData();
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) {
         updateField('avatar', data.url);
         showToast('✓ Avatar photo updated!');
+      } else if (res.status === 401) {
+        showToast(data.error || 'Authentication required: please log in to upload avatar photo.');
       } else {
-        showToast(data.error || 'Avatar photo uploaded locally.');
+        showToast(data.error || 'Failed to upload avatar photo.');
       }
     } catch {
-      showToast('✓ Avatar updated (local mode).');
+      showToast('Error uploading avatar photo. Please try again.');
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -472,15 +474,17 @@ export function DesktopProfileContent({
       const formData = new FormData();
       formData.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.url) {
         updateField('coverImage', data.url);
         showToast('✓ Cover banner updated!');
+      } else if (res.status === 401) {
+        showToast(data.error || 'Authentication required: please log in to upload cover banner.');
       } else {
-        showToast(data.error || 'Cover banner uploaded locally.');
+        showToast(data.error || 'Failed to upload cover banner.');
       }
     } catch {
-      showToast('✓ Cover updated (local mode).');
+      showToast('Error uploading cover banner. Please try again.');
     } finally {
       setIsUploadingCover(false);
     }

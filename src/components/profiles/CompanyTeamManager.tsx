@@ -141,8 +141,8 @@ export function CompanyTeamManager({
         }
       } else {
         const errData = await res.json().catch(() => ({}));
-        // If not a member yet, fallback to profile.teamMembers if available
-        if (res.status === 403 || res.status === 404) {
+        // If unauthenticated (401), not a member yet (403), or not found (404), fallback to profile.teamMembers if available
+        if (res.status === 401 || res.status === 403 || res.status === 404) {
           if (Array.isArray(profile.teamMembers) && profile.teamMembers.length > 0) {
             const fallbackRecords: CompanyMemberRecord[] = profile.teamMembers.map((m) => ({
               id: m.id,

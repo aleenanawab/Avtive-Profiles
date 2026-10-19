@@ -56,21 +56,27 @@ export function ProfileNotFoundFallback({ identifier, session, initialIsEditing 
           }
         }
 
-        // 3. Fallback: Query /api/auth/me or /api/profile/list from client to recover user profile
+        // 3. Fallback: Query /api/auth/me first, and only query /api/profile/list if user is authenticated
         if (!candidate) {
           try {
-            const res = await fetch('/api/profile/list');
-            if (res.ok) {
-              const data = await res.json();
-              if (data.profiles && Array.isArray(data.profiles)) {
-                const matched = data.profiles.find((p: any) => 
-                  p.slug === identifier || 
-                  p.id === identifier ||
-                  (p.slug && identifier && p.slug.toLowerCase() === identifier.toLowerCase()) ||
-                  (p.id && identifier && p.id.toLowerCase() === identifier.toLowerCase())
-                );
-                if (matched) {
-                  candidate = matched;
+            const meRes = await fetch('/api/auth/me');
+            if (meRes.ok) {
+              const meData = await meRes.json();
+              if (meData?.user) {
+                const res = await fetch('/api/profile/list');
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data.profiles && Array.isArray(data.profiles)) {
+                    const matched = data.profiles.find((p: any) => 
+                      p.slug === identifier || 
+                      p.id === identifier ||
+                      (p.slug && identifier && p.slug.toLowerCase() === identifier.toLowerCase()) ||
+                      (p.id && identifier && p.id.toLowerCase() === identifier.toLowerCase())
+                    );
+                    if (matched) {
+                      candidate = matched;
+                    }
+                  }
                 }
               }
             }

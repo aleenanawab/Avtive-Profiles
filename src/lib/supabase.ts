@@ -12,7 +12,7 @@ function cleanEnv(val?: string): string {
 
 function isServiceRoleKey(key: string): boolean {
   if (!key) return false;
-  const serviceKey = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const serviceKey = cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) || cleanEnv(process.env.SUPABASE_SERVICE_KEY);
   if (serviceKey && key === serviceKey) return true;
   if (key.startsWith('eyJ')) {
     try {
@@ -38,7 +38,7 @@ if (rawAnonKey && isServiceRoleKey(rawAnonKey)) {
 export const supabaseAnonKey = (rawAnonKey && !isServiceRoleKey(rawAnonKey)) ? rawAnonKey : '';
 
 // Server-only service role key for privileged database operations (never exposed to client)
-export const supabaseServiceKey = typeof window === 'undefined' ? cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) : '';
+export const supabaseServiceKey = typeof window === 'undefined' ? (cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) || cleanEnv(process.env.SUPABASE_SERVICE_KEY)) : '';
 
 export const SUPABASE_AUTH_STORAGE_KEY = 'sb-avtive-auth-token';
 

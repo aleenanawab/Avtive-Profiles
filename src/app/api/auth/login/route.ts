@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserByEmail, getProfileByUserId } from '@/lib/db';
+import { getUserByEmail, getProfileByUserId, DatabaseUnavailableError } from '@/lib/db';
 import { verifyPassword, setSessionCookie, DUMMY_BCRYPT_HASH, setReturningUserCookie, clearLegacyCacheCookie } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
@@ -15,7 +15,27 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    const user = await getUserByEmail(normalizedEmail);
+    let user;
+    try {
+      user = await getUserByEmail(normalizedEmail);
+    } catch (dbErr: any) {
+      const isDbUnavailable =
+        dbErr instanceof DatabaseUnavailableError ||
+        dbErr?.code === 'DATABASE_UNAVAILABLE' ||
+        dbErr?.status === 503;
+
+      if (isDbUnavailable) {
+        console.error(`[Login API Error] Database/configuration unavailable: [code=${dbErr?.code || 'DATABASE_UNAVAILABLE'}] ${dbErr?.message || 'Database error'}`);
+        return NextResponse.json(
+          {
+            error: 'Authentication service is temporarily unavailable. Please try again in a few moments.',
+            code: 'DATABASE_UNAVAILABLE'
+          },
+          { status: 503 }
+        );
+      }
+      throw dbErr;
+    }
 
     // ANTI-ENUMERATION TIMING DEFENSE:
     // If user does not exist, run verifyPassword against constant dummy hash
@@ -47,7 +67,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userProfile = await getProfileByUserId(user.id);
+    let userProfile = null;
+    try {
+      userProfile = await getProfileByUserId(user.id);
+    } catch (profErr: any) {
+      console.warn('[Login API Warning] Profile fetch error for authenticated user:', profErr?.message || 'Profile lookup failed');
+    }
+
     const hasRealProfileData = Boolean(
       userProfile && (
         (userProfile.designation && userProfile.designation !== 'Professional') ||
@@ -92,8 +118,18 @@ export async function POST(request: NextRequest) {
     clearLegacyCacheCookie(response);
 
     return response;
-  } catch (error) {
-    console.error('Login API Error:', error);
+  } catch (error: any) {
+    if (error instanceof DatabaseUnavailableError || error?.code === 'DATABASE_UNAVAILABLE' || error?.status === 503) {
+      console.error('[Login API Error] Database unavailable in login handler:', error?.message);
+      return NextResponse.json(
+        {
+          error: 'Authentication service is temporarily unavailable. Please try again in a few moments.',
+          code: 'DATABASE_UNAVAILABLE'
+        },
+        { status: 503 }
+      );
+    }
+    console.error('Login API Error:', error?.message || error);
     return NextResponse.json(
       { error: 'An unexpected error occurred during login.' },
       { status: 500 }
