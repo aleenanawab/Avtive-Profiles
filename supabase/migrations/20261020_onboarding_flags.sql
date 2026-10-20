@@ -39,7 +39,7 @@ WHERE EXISTS (
     AND (
       (p.slug IS NOT NULL AND p.slug != '') OR
       (p.designation IS NOT NULL AND p.designation != '' AND p.designation != 'Professional') OR
-      (p.bio IS NOT NULL AND p.bio != '' AND p.bio != 'Welcome to my digital profile on Avtive.') OR
-      (p.short_bio IS NOT NULL AND p.short_bio != '' AND p.short_bio != 'Welcome to my digital profile on Avtive.')
+      (p.short_bio IS NOT NULL AND p.short_bio != '' AND p.short_bio != 'Welcome to my digital profile on Avtive.') OR
+      (p.full_bio IS NOT NULL AND p.full_bio != '' AND p.full_bio != 'Welcome to my digital profile on Avtive.')
     )
 );

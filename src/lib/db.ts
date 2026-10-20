@@ -496,7 +496,7 @@ async function mapSupabaseUserRowWithSchemaFallback(data: any): Promise<UserReco
     try {
       const { data: profRows } = await supabaseAdmin
         .from('profiles')
-        .select('id, type, theme, slug, designation, bio, short_bio')
+        .select('id, type, theme, slug, designation, short_bio, full_bio')
         .eq('user_id', data.id)
         .limit(1);
 
@@ -505,8 +505,8 @@ async function mapSupabaseUserRowWithSchemaFallback(data: any): Promise<UserReco
         const hasRealData = Boolean(
           p.slug ||
           (p.designation && p.designation !== 'Professional') ||
-          (p.bio && !p.bio.includes('Welcome to my digital profile on Avtive.')) ||
-          (p.short_bio && !p.short_bio.includes('Welcome to my digital profile on Avtive.'))
+          (p.short_bio && !p.short_bio.includes('Welcome to my digital profile on Avtive.')) ||
+          (p.full_bio && !p.full_bio.includes('Welcome to my digital profile on Avtive.'))
         );
         if (hasRealData) {
           hasExistingProfile = true;
