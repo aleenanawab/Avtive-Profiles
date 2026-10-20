@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, ArrowRight, ArrowLeft, User, Users, Shield, Sparkles, Building2 } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, User, Users, Shield, Sparkles, Building2, Loader2, AlertCircle } from 'lucide-react';
 import { ProfileType, ProfileTheme, normalizeProfileType } from '@/types/profile';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
 
@@ -65,18 +65,19 @@ function RoleStepContent() {
             const targetSlug = data.profileSlug || data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
             router.replace(targetSlug ? `/profile/${targetSlug}` : '/profile');
           } else if (data.user.roleCompleted) {
-            router.replace(data.nextRoute || `/onboarding/theme?role=${data.user.role || selectedRole}&theme=${theme}`);
+            router.replace(data.nextRoute || `/onboarding/theme?role=${data.user.role || initialRole}&theme=${theme}`);
           }
         }
       })
       .catch(() => {});
-  }, [router, theme, selectedRole]);
+  }, [router, theme, initialRole]);
 
   const handleBack = () => {
     router.push('/login');
   };
 
   const handleNext = async () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setErrorMessage(null);
     try {
@@ -85,7 +86,7 @@ function RoleStepContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ step: 'role', role: selectedRole })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setErrorMessage(data?.error || 'Failed to save role. Please try again.');
         setIsSubmitting(false);
@@ -135,13 +136,30 @@ function RoleStepContent() {
           <button
             type="button"
             onClick={handleNext}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
+            disabled={isSubmitting}
+            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center gap-2 cursor-pointer transition-all active:scale-95 disabled:opacity-50"
           >
-            <span>Next: Choose Theme</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Saving Role...</span>
+              </>
+            ) : (
+              <>
+                <span>Next: Choose Theme</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </>
+            )}
           </button>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2.5">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* 2 Widescreen Role Studio Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -297,16 +315,33 @@ function RoleStepContent() {
             );
           })}
         </div>
+        {errorMessage && (
+          <div className="mb-3 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-500" />
+            <span className="text-[11px]">{errorMessage}</span>
+          </div>
+        )}
+
       </div>
 
       <div className="pt-2 w-full max-w-full box-border">
         <button
           type="button"
           onClick={handleNext}
-          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+          disabled={isSubmitting}
+          className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
-          <span>Continue to Theme</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Saving Role...</span>
+            </>
+          ) : (
+            <>
+              <span>Continue to Theme</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </>
+          )}
         </button>
       </div>
 

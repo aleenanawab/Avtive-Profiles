@@ -1142,6 +1142,7 @@ export async function saveOnboardingStep(
     scriptData?: any;
   } = {}
 ): Promise<{ success: boolean; user: UserRecord }> {
+  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
   const db = loadDb();
   let userIndex = db.users.findIndex((u) => u.id === userId);
   let user: UserRecord;
@@ -1155,53 +1156,97 @@ export async function saveOnboardingStep(
     db.users.push(user);
     userIndex = db.users.length - 1;
   } else {
-    user = db.users[userIndex];
+    user = { ...db.users[userIndex] };
   }
 
   const supabaseUserUpdate: Record<string, any> = {};
 
   if (step === 'role') {
-    user.roleCompleted = true;
     supabaseUserUpdate.role_completed = true;
     if (payload.role) {
-      user.role = normalizeProfileType(payload.role as string);
-      supabaseUserUpdate.role = user.role;
+      supabaseUserUpdate.role = normalizeProfileType(payload.role as string);
     }
   } else if (step === 'theme') {
-    user.themeCompleted = true;
     supabaseUserUpdate.theme_completed = true;
     if (payload.theme) {
-      user.preferredTheme = payload.theme as ProfileTheme;
-      supabaseUserUpdate.preferred_theme = user.preferredTheme;
+      supabaseUserUpdate.preferred_theme = payload.theme as ProfileTheme;
     }
   } else if (step === 'script') {
-    user.scriptCompleted = true;
     supabaseUserUpdate.script_completed = true;
   }
-
-  db.users[userIndex] = user;
-  saveDb(db);
 
   if (isUuidString(userId) && Object.keys(supabaseUserUpdate).length > 0) {
     try {
       const res = await withTimeout(
-        supabaseAdmin.from('users').update(supabaseUserUpdate).eq('id', userId),
+        supabaseAdmin
+          .from('users')
+          .update(supabaseUserUpdate)
+          .eq('id', userId)
+          .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
         6000
       );
+
       if (res && res.error) {
         console.error(`[Database Error] saveOnboardingStep to Supabase failed for step ${step}:`, res.error.message || res.error);
-        if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
-          throw new DatabaseUnavailableError(`Failed to persist onboarding step ${step} to database.`, res.error);
-        }
+        const isColumnMissing = res.error.code === '42703' || res.error.message?.includes('column');
+        const detailedMsg = isColumnMissing
+          ? `Database schema mismatch: missing onboarding columns on users table. Please apply supabase/migrations/20261020_onboarding_flags.sql.`
+          : `Failed to persist onboarding step ${step} to database: ${res.error.message}`;
+        throw new DatabaseUnavailableError(detailedMsg, res.error);
+      }
+
+      // Check whether the expected user row was actually updated
+      if (!res.data || res.data.length === 0) {
+        console.error(`[Database Error] saveOnboardingStep: zero rows updated in Supabase users for user ${userId}`);
+        throw new DatabaseUnavailableError(`User with ID ${userId} not found in database. Zero rows updated.`);
+      }
+
+      // Supabase write confirmed! Update user record with confirmed persisted values
+      const updatedRow = res.data[0];
+      user.roleCompleted = Boolean(updatedRow.role_completed ?? true);
+      user.themeCompleted = Boolean(updatedRow.theme_completed ?? (step === 'theme' ? true : user.themeCompleted));
+      user.scriptCompleted = Boolean(updatedRow.script_completed ?? (step === 'script' ? true : user.scriptCompleted));
+      user.onboardingCompleted = Boolean(updatedRow.onboarding_completed ?? user.onboardingCompleted);
+      if (updatedRow.role) user.role = normalizeProfileType(updatedRow.role);
+      if (updatedRow.preferred_theme) user.preferredTheme = updatedRow.preferred_theme;
+
+      // Sync role or theme to existing profile in Supabase if exists
+      if (step === 'role' && payload.role) {
+        await supabaseAdmin
+          .from('profiles')
+          .update({ type: normalizeProfileType(payload.role as string) })
+          .eq('user_id', userId)
+          .catch(() => {});
+      } else if (step === 'theme' && payload.theme) {
+        await supabaseAdmin
+          .from('profiles')
+          .update({ theme: payload.theme })
+          .eq('user_id', userId)
+          .catch(() => {});
       }
     } catch (err: any) {
       if (err instanceof DatabaseUnavailableError) throw err;
       console.error(`[Database Error] saveOnboardingStep exception for step ${step}:`, err?.message || err);
-      if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
-        throw new DatabaseUnavailableError(`Database unavailable during onboarding save.`, err);
-      }
+      throw new DatabaseUnavailableError(`Database unavailable during onboarding save: ${err?.message || 'Unknown error'}`, err);
+    }
+  } else if (isProduction) {
+    throw new DatabaseUnavailableError(`Invalid user ID format: ${userId}.`);
+  } else {
+    // Development / non-UUID mock fallback
+    if (step === 'role') {
+      user.roleCompleted = true;
+      if (payload.role) user.role = normalizeProfileType(payload.role as string);
+    } else if (step === 'theme') {
+      user.themeCompleted = true;
+      if (payload.theme) user.preferredTheme = payload.theme as ProfileTheme;
+    } else if (step === 'script') {
+      user.scriptCompleted = true;
     }
   }
+
+  // Persist to local cache only after confirmed success
+  db.users[userIndex] = user;
+  saveDb(db);
 
   return { success: true, user };
 }
@@ -1211,6 +1256,7 @@ export async function completeUserOnboarding(
   role?: ProfileType,
   theme?: ProfileTheme
 ): Promise<{ success: boolean; user?: UserRecord }> {
+  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
   const db = loadDb();
   let userIndex = db.users.findIndex((u) => u.id === userId);
   let user: UserRecord;
@@ -1224,7 +1270,64 @@ export async function completeUserOnboarding(
     db.users.push(user);
     userIndex = db.users.length - 1;
   } else {
-    user = db.users[userIndex];
+    user = { ...db.users[userIndex] };
+  }
+
+  const supabaseUserUpdate: Record<string, any> = {
+    role_completed: true,
+    theme_completed: true,
+    script_completed: true,
+    onboarding_completed: true
+  };
+  if (role) supabaseUserUpdate.role = normalizeProfileType(role);
+  if (theme) supabaseUserUpdate.preferred_theme = theme;
+
+  if (isUuidString(userId)) {
+    try {
+      const res = await withTimeout(
+        supabaseAdmin
+          .from('users')
+          .update(supabaseUserUpdate)
+          .eq('id', userId)
+          .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
+        6000
+      );
+
+      if (res && res.error) {
+        console.error(`[Database Error] completeUserOnboarding to Supabase failed:`, res.error.message || res.error);
+        const isColumnMissing = res.error.code === '42703' || res.error.message?.includes('column');
+        const detailedMsg = isColumnMissing
+          ? `Database schema mismatch: missing onboarding columns on users table. Please apply supabase/migrations/20261020_onboarding_flags.sql.`
+          : `Failed to persist onboarding completion to database: ${res.error.message}`;
+        if (isProduction) {
+          throw new DatabaseUnavailableError(detailedMsg, res.error);
+        }
+      }
+
+      if (res && (!res.data || res.data.length === 0)) {
+        console.error(`[Database Error] completeUserOnboarding: zero rows updated in Supabase users for ${userId}`);
+        if (isProduction) {
+          throw new DatabaseUnavailableError(`User with ID ${userId} not found in database. Zero rows updated.`);
+        }
+      }
+
+      const profilePayload: any = {};
+      if (role) profilePayload.type = normalizeProfileType(role);
+      if (theme) profilePayload.theme = theme;
+      if (Object.keys(profilePayload).length > 0) {
+        await supabaseAdmin
+          .from('profiles')
+          .update(profilePayload)
+          .eq('user_id', userId)
+          .catch(() => {});
+      }
+    } catch (err: any) {
+      if (err instanceof DatabaseUnavailableError) throw err;
+      console.error('Error syncing onboarding status to Supabase:', err?.message || err);
+      if (isProduction) {
+        throw new DatabaseUnavailableError(`Failed to persist onboarding completion to database: ${err?.message || 'Unknown error'}`, err);
+      }
+    }
   }
 
   user.roleCompleted = true;
@@ -1235,39 +1338,6 @@ export async function completeUserOnboarding(
   if (theme) user.preferredTheme = theme;
   db.users[userIndex] = user;
   saveDb(db);
-
-  try {
-    if (isUuidString(userId)) {
-      const supabaseUserUpdate: Record<string, any> = {
-        role_completed: true,
-        theme_completed: true,
-        script_completed: true,
-        onboarding_completed: true
-      };
-      if (role) supabaseUserUpdate.role = normalizeProfileType(role);
-      if (theme) supabaseUserUpdate.preferred_theme = theme;
-
-      await asyncSyncSupabase(
-        supabaseAdmin.from('users').update(supabaseUserUpdate).eq('id', userId),
-        'update user onboarding in Supabase users'
-      );
-
-      const profilePayload: any = {};
-      if (role) profilePayload.type = normalizeProfileType(role);
-      if (theme) profilePayload.theme = theme;
-      if (Object.keys(profilePayload).length > 0) {
-        await asyncSyncSupabase(
-          supabaseAdmin.from('profiles').update(profilePayload).eq('user_id', userId),
-          'update profile onboarding in Supabase profiles'
-        );
-      }
-    }
-  } catch (err: any) {
-    console.error('Error syncing onboarding status to Supabase:', err?.message || err);
-    if (process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL)) {
-      throw new DatabaseUnavailableError(`Failed to persist onboarding completion to database.`, err);
-    }
-  }
 
   return { success: true, user };
 }

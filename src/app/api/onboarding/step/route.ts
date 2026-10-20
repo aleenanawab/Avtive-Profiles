@@ -74,7 +74,10 @@ export async function POST(request: NextRequest) {
     if (error instanceof DatabaseUnavailableError || error?.status === 503) {
       console.error('[Onboarding Step API Error] Database unavailable:', error?.message);
       return NextResponse.json(
-        { error: 'Database service is temporarily unavailable. Please try again.', code: 'DATABASE_UNAVAILABLE' },
+        { 
+          error: error?.message || 'Database service is temporarily unavailable. Please try again.', 
+          code: 'DATABASE_UNAVAILABLE' 
+        },
         { status: 503 }
       );
     }

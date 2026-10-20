@@ -6,27 +6,47 @@ function getNextOnboardingRoute(user) {
   if (!user) {
     return '/onboarding/role';
   }
+
+  // 1. Direct completed users to Profile Review FIRST before individual step checks.
+  // Never send completed users back to Role, Theme, or Script even if an old step flag is false or null.
+  if (user.onboardingCompleted) {
+    const identifier = user.profileSlug || user.slug || user.id;
+    return identifier ? `/profile/${encodeURIComponent(identifier)}` : '/profile';
+  }
+
+  // 2. Sequential incomplete user progression: Role -> Theme -> Script -> Profile Editor
   if (!user.roleCompleted) {
     return '/onboarding/role';
   }
+
   if (!user.themeCompleted) {
     return '/onboarding/theme';
   }
+
   if (!user.scriptCompleted) {
     return '/onboarding/create';
   }
-  if (!user.onboardingCompleted) {
-    return '/edit-profile';
-  }
-  const identifier = user.profileSlug || user.slug || user.id;
-  return identifier ? `/profile/${encodeURIComponent(identifier)}` : '/profile';
+
+  return '/edit-profile';
 }
 
-// ── 2. Mock Database Layer Replicating DB Step Persistence ──
+class DatabaseUnavailableError extends Error {
+  constructor(message, cause) {
+    super(message);
+    this.name = 'DatabaseUnavailableError';
+    this.status = 503;
+    this.code = 'DATABASE_UNAVAILABLE';
+    if (cause) this.cause = cause;
+  }
+}
+
+// ── 2. Mock Database Layer Replicating DB Step Persistence & Supabase Checks ──
 class MockDatabase {
   constructor() {
     this.users = new Map();
     this.profiles = new Map();
+    this.simulateSchemaColumnMissing = false;
+    this.simulateZeroRowsUpdated = false;
   }
 
   addUser(user) {
@@ -49,30 +69,45 @@ class MockDatabase {
   }
 
   saveStep(userId, step, payload = {}) {
-    const user = this.users.get(userId);
-    if (!user) {
-      throw new Error('User not found in DB');
+    if (this.simulateSchemaColumnMissing) {
+      throw new DatabaseUnavailableError(
+        'Database schema mismatch: missing onboarding columns on users table. Please apply supabase/migrations/20261020_onboarding_flags.sql.',
+        { code: '42703', message: `column "${step}_completed" of relation "users" does not exist` }
+      );
     }
 
+    if (this.simulateZeroRowsUpdated) {
+      throw new DatabaseUnavailableError(
+        `User with ID ${userId} not found in database. Zero rows updated.`
+      );
+    }
+
+    const user = this.users.get(userId);
+    if (!user) {
+      throw new DatabaseUnavailableError(`User with ID ${userId} not found in database.`);
+    }
+
+    const cloned = { ...user };
+
     if (step === 'role') {
-      user.roleCompleted = true;
-      if (payload.role) user.role = payload.role;
+      cloned.roleCompleted = true;
+      if (payload.role) cloned.role = payload.role;
     } else if (step === 'theme') {
-      user.themeCompleted = true;
-      if (payload.theme) user.preferredTheme = payload.theme;
+      cloned.themeCompleted = true;
+      if (payload.theme) cloned.preferredTheme = payload.theme;
     } else if (step === 'script') {
-      user.scriptCompleted = true;
+      cloned.scriptCompleted = true;
     } else {
       throw new Error(`Invalid step: ${step}`);
     }
 
-    this.users.set(userId, user);
-    return { ...user };
+    this.users.set(userId, cloned);
+    return { ...cloned };
   }
 
   saveProfile(userId, profileData, shouldFail = false) {
     if (shouldFail) {
-      throw new Error('Database write error during profile save');
+      throw new DatabaseUnavailableError('Database write error during profile save');
     }
     const user = this.users.get(userId);
     if (!user) throw new Error('User not found');
@@ -96,11 +131,11 @@ class MockDatabase {
 // ── Tests ──
 
 test('Onboarding Helper: All combinations of getNextOnboardingRoute', () => {
-  // Case 1: Null/undefined user
+  // Case 1: Null/undefined user -> Role page
   assert.equal(getNextOnboardingRoute(null), '/onboarding/role');
   assert.equal(getNextOnboardingRoute(undefined), '/onboarding/role');
 
-  // Case 2: New user with no flags
+  // Case 2: New user with no flags -> Role page
   assert.equal(getNextOnboardingRoute({}), '/onboarding/role');
   assert.equal(getNextOnboardingRoute({ roleCompleted: false }), '/onboarding/role');
 
@@ -127,7 +162,7 @@ test('Onboarding Helper: All combinations of getNextOnboardingRoute', () => {
     '/edit-profile'
   );
 
-  // Case 6: Fully completed user -> Profile Review page
+  // Case 6: Fully completed user -> Profile Review page (direct by slug or ID)
   assert.equal(
     getNextOnboardingRoute({
       roleCompleted: true,
@@ -150,7 +185,19 @@ test('Onboarding Helper: All combinations of getNextOnboardingRoute', () => {
     '/profile/usr-999'
   );
 
-  // Case 7: Interrupted user resumes at the FIRST incomplete step
+  // Case 7: Completed user with missing/false step flags MUST STILL land on Profile Review (NOT sent back to Role/Theme)
+  assert.equal(
+    getNextOnboardingRoute({
+      roleCompleted: false, // Old/missing column in DB
+      themeCompleted: false,
+      scriptCompleted: false,
+      onboardingCompleted: true,
+      profileSlug: 'veteran-user'
+    }),
+    '/profile/veteran-user'
+  );
+
+  // Case 8: Interrupted user resumes at the FIRST incomplete step
   assert.equal(
     getNextOnboardingRoute({
       roleCompleted: false,
@@ -176,9 +223,57 @@ test('Onboarding Helper: All combinations of getNextOnboardingRoute', () => {
       roleCompleted: true,
       themeCompleted: true,
       scriptCompleted: false,
-      onboardingCompleted: true
+      onboardingCompleted: false
     }),
     '/onboarding/create'
+  );
+});
+
+test('Onboarding Database Check: Missing database column returns 503 and rejects update without mutations', () => {
+  const db = new MockDatabase();
+  const userId = 'user-schema-err-001';
+  db.addUser({ id: userId, email: 'schema@example.com', roleCompleted: false });
+
+  // Simulate missing column (42703) in Supabase
+  db.simulateSchemaColumnMissing = true;
+
+  assert.throws(
+    () => {
+      db.saveStep(userId, 'role', { role: 'individual' });
+    },
+    (err) => {
+      assert.equal(err instanceof DatabaseUnavailableError, true);
+      assert.equal(err.status, 503);
+      assert.equal(err.code, 'DATABASE_UNAVAILABLE');
+      assert.match(err.message, /missing onboarding columns/);
+      return true;
+    }
+  );
+
+  // Assert ZERO writes/mutations occurred
+  const unchangedUser = db.getUser(userId);
+  assert.equal(unchangedUser.roleCompleted, false);
+  assert.equal(unchangedUser.role, undefined);
+});
+
+test('Onboarding Database Check: Zero-row update is rejected as database unavailable', () => {
+  const db = new MockDatabase();
+  const userId = 'user-zero-row-002';
+  db.addUser({ id: userId, email: 'zero@example.com' });
+
+  // Simulate Supabase update returning zero rows (e.g. user missing from users table)
+  db.simulateZeroRowsUpdated = true;
+
+  assert.throws(
+    () => {
+      db.saveStep(userId, 'theme', { theme: 'cyber' });
+    },
+    (err) => {
+      assert.equal(err instanceof DatabaseUnavailableError, true);
+      assert.equal(err.status, 503);
+      assert.match(err.message, /Zero rows updated/);
+      return true;
+    }
   );
 });
 
@@ -209,7 +304,7 @@ test('Sequential New User Flow: Role -> Theme -> Script -> Editor in DB', () => 
   assert.equal(user.scriptCompleted, true);
   assert.equal(getNextOnboardingRoute(user), '/edit-profile');
 
-  // Verify flags are in DB mock, not dependent on client state
+  // Verify flags are in DB, not dependent on client state
   const persistedUser = db.getUser(userId);
   assert.equal(persistedUser.roleCompleted, true);
   assert.equal(persistedUser.themeCompleted, true);
@@ -246,26 +341,23 @@ test('Profile Save: Sets onboardingCompleted on success, does NOT set on failure
   assert.equal(getNextOnboardingRoute({ ...user, profileSlug: profile.slug }), '/profile/my-slug');
 });
 
-test('Logout & Relogin Flow: Completed user goes directly to Profile Review', () => {
+test('Completed-User Login: User with onboardingCompleted=true goes directly to Profile Review, even with missing old step flags', () => {
   const db = new MockDatabase();
   const userId = 'user-completed-003';
+  // User with onboarding completed in profiles/users, but roleCompleted was false in legacy DB
   db.addUser({
     id: userId,
     email: 'veteran@example.com',
-    roleCompleted: true,
-    themeCompleted: true,
-    scriptCompleted: true,
+    roleCompleted: false, // Old step flag false
+    themeCompleted: false, // Old step flag false
+    scriptCompleted: false,
     onboardingCompleted: true,
     role: 'individual',
     preferredTheme: 'luxe'
   });
   db.saveProfile(userId, { name: 'Veteran Profile', slug: 'veteran-pass' }, false);
 
-  // Simulate logout: Session cookie is cleared
-  let session = null;
-  assert.equal(session, null);
-
-  // Simulate relogin: user credentials verified, DB queried
+  // Simulate login lookup
   const loggedInUser = db.getUser(userId);
   assert.equal(loggedInUser.onboardingCompleted, true);
 
@@ -274,11 +366,11 @@ test('Logout & Relogin Flow: Completed user goes directly to Profile Review', ()
     profileSlug: 'veteran-pass'
   });
 
-  // Direct to Profile Review, NOT onboarding
+  // Direct to Profile Review, NOT sent back to Role or Theme
   assert.equal(route, '/profile/veteran-pass');
 });
 
-test('Route-level simulation: /api/onboarding/step authorization and persistence', async () => {
+test('Route-level simulation: /api/onboarding/step authorization, persistence, and 503 handling', async () => {
   const db = new MockDatabase();
   const userId = 'user-route-004';
   db.addUser({ id: userId, email: 'route@example.com' });
@@ -292,9 +384,16 @@ test('Route-level simulation: /api/onboarding/step authorization and persistence
     if (!['role', 'theme', 'script'].includes(step)) {
       return { status: 400, body: { error: 'Invalid step' } };
     }
-    const updated = db.saveStep(session.id, step, { role, theme });
-    const nextRoute = getNextOnboardingRoute(updated);
-    return { status: 200, body: { success: true, user: updated, nextRoute } };
+    try {
+      const updated = db.saveStep(session.id, step, { role, theme });
+      const nextRoute = getNextOnboardingRoute(updated);
+      return { status: 200, body: { success: true, user: updated, nextRoute } };
+    } catch (err) {
+      if (err instanceof DatabaseUnavailableError) {
+        return { status: 503, body: { error: err.message, code: err.code } };
+      }
+      return { status: 500, body: { error: err.message } };
+    }
   }
 
   // 1. Unauthenticated request returns 401
@@ -318,4 +417,11 @@ test('Route-level simulation: /api/onboarding/step authorization and persistence
   assert.equal(authRes3.status, 200);
   assert.equal(authRes3.body.user.scriptCompleted, true);
   assert.equal(authRes3.body.nextRoute, '/edit-profile');
+
+  // 5. Database failure returns 503 with exact error
+  db.simulateSchemaColumnMissing = true;
+  const failRes = await simulateStepRoute({ id: userId }, { step: 'theme', theme: 'luxe' });
+  assert.equal(failRes.status, 503);
+  assert.equal(failRes.body.code, 'DATABASE_UNAVAILABLE');
+  assert.match(failRes.body.error, /missing onboarding columns/);
 });

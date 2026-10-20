@@ -33,6 +33,14 @@ export function getNextOnboardingRoute(user?: OnboardingUser | null): string {
     return ONBOARDING_ROUTES.ROLE;
   }
 
+  // 1. Direct completed users to Profile Review FIRST before individual step checks.
+  // Never send completed users back to Role, Theme, or Script even if an old step flag is false or null.
+  if (user.onboardingCompleted) {
+    const identifier = user.profileSlug || user.slug || user.id;
+    return identifier ? `/profile/${encodeURIComponent(identifier)}` : '/profile';
+  }
+
+  // 2. Sequential incomplete user progression: Role -> Theme -> Script -> Profile Editor
   if (!user.roleCompleted) {
     return ONBOARDING_ROUTES.ROLE;
   }
@@ -45,10 +53,5 @@ export function getNextOnboardingRoute(user?: OnboardingUser | null): string {
     return ONBOARDING_ROUTES.SCRIPT;
   }
 
-  if (!user.onboardingCompleted) {
-    return ONBOARDING_ROUTES.EDITOR;
-  }
-
-  const identifier = user.profileSlug || user.slug || user.id;
-  return identifier ? `/profile/${encodeURIComponent(identifier)}` : '/profile';
+  return ONBOARDING_ROUTES.EDITOR;
 }
