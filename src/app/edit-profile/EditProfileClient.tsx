@@ -205,10 +205,9 @@ function EditProfileClientInner({
       onCancel();
     } else if (onReturnToView) {
       onReturnToView(undefined); // Explicitly undefined so no unsaved changes are applied
-    } else if (typeof window !== 'undefined' && window.history.length > 1) {
-      router.back();
     } else {
-      router.push(`/profile/${encodeURIComponent(identifier)}`);
+      const slug = identifier || profile.slug || profile.id;
+      router.push(slug ? `/profile/${encodeURIComponent(slug)}` : '/profile');
     }
   };
 
@@ -323,17 +322,26 @@ function EditProfileClientInner({
               </button>
             </div>
 
-            {/* Navigation Back Button - Navigation ONLY, Never Saves */}
+            {/* Navigation Back Button + View Profile Link */}
             <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"
                 onClick={handleBackNavigation}
                 aria-label="Back"
-                title="Back to previous screen"
+                title="Back to saved profile"
                 className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
               </button>
+              <Link
+                href={`/profile/${encodeURIComponent(identifier)}`}
+                aria-label="View Saved Profile"
+                title="View Saved Profile"
+                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-white hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-semibold"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span className="hidden md:inline text-[11px]">View Profile</span>
+              </Link>
             </div>
 
             {/* Inside Action Buttons: Functional Buttons Moved Inside Screen (Save, Theme, Logout) */}

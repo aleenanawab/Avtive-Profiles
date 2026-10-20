@@ -381,7 +381,7 @@ function PublicProfileClientInner({
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Synchronize edit mode with browser URL and listen to popstate (back/forward)
+  // Forward to full original profile editor if ?edit=true is present
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -389,16 +389,15 @@ function PublicProfileClientInner({
       const params = new URLSearchParams(window.location.search);
       const isEditParam = params.get('edit') === 'true' || params.get('edit') === '1';
       if (isEditParam && isOwner) {
-        setIsEditing(true);
-      } else if (!isEditParam) {
-        setIsEditing(false);
+        const slug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
+        router.replace(slug ? `/edit-profile?id=${encodeURIComponent(slug)}` : '/edit-profile');
       }
     };
 
     syncFromUrl();
     window.addEventListener('popstate', syncFromUrl);
     return () => window.removeEventListener('popstate', syncFromUrl);
-  }, [isOwner]);
+  }, [isOwner, profile.slug, profile.id, initialProfile.slug, initialProfile.id, router]);
 
   // Hydrate updated profile from localStorage on mount & listen to real-time updates
   useEffect(() => {
@@ -586,11 +585,8 @@ function PublicProfileClientInner({
 
   const handleOpenEditMode = () => {
     if (!isOwner) return;
-    setIsEditing(true);
     const slug = profile.slug || profile.id || initialProfile.slug || initialProfile.id;
-    if (slug && typeof window !== 'undefined') {
-      window.history.pushState(null, '', `/profile/${encodeURIComponent(slug)}?edit=true`);
-    }
+    router.push(slug ? `/edit-profile?id=${encodeURIComponent(slug)}` : '/edit-profile');
   };
 
   const handleCancelEdit = () => {

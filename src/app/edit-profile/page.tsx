@@ -10,6 +10,7 @@ import {
   createCompany
 } from '@/lib/db';
 import { normalizeProfileType, ProfileTheme } from '@/types/profile';
+import { EditProfileClient } from './EditProfileClient';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -38,7 +39,8 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
     const user = await getUserById(session.id);
 
     // Guard: Prevent users from skipping ahead to profile editor before completing previous steps
-    if (!user?.scriptCompleted) {
+    // Returning completed users can always edit their profile
+    if (!user?.onboardingCompleted && !user?.scriptCompleted) {
       redirect(getNextOnboardingRoute(user));
     }
 
@@ -49,10 +51,14 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
       } catch {}
     }
 
+    let userProfiles: any[] = [];
+    try {
+      userProfiles = await getProfilesByUserId(session.id);
+    } catch {}
+
     // Fallback to user's first profile if no id specified or not found
     if (!targetProfile || targetProfile.userId !== session.id) {
       try {
-        const userProfiles = await getProfilesByUserId(session.id);
         if (userProfiles.length > 0) {
           targetProfile = userProfiles[0];
           if (role || theme) {
@@ -80,6 +86,7 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
             type: selectedRole,
             theme: selectedTheme
           });
+          userProfiles = [targetProfile];
         }
       } catch (profErr) {
         console.error('Error in profile lookup/creation in edit-profile:', profErr);
@@ -107,13 +114,20 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
       }
     }
 
-    const targetSlug = targetProfile?.slug || targetProfile?.id;
-    if (targetSlug) {
-      const editSuffix = edit !== 'false' ? '?edit=true' : '';
-      redirect(`/profile/${encodeURIComponent(targetSlug)}${editSuffix}`);
-    } else {
+    if (!targetProfile) {
       redirect('/dashboard');
     }
+
+    return (
+      <main className="min-h-screen w-full flex items-center justify-center p-0 bg-slate-100 dark:bg-[#070D18] text-slate-900 dark:text-white transition-colors font-sans">
+        <Suspense fallback={<div className="p-8 text-center text-sm font-semibold text-slate-500">Loading profile editor...</div>}>
+          <EditProfileClient 
+            initialProfile={targetProfile} 
+            userProfiles={userProfiles.length > 0 ? userProfiles : [targetProfile]}
+          />
+        </Suspense>
+      </main>
+    );
   } catch (error: any) {
     // Next.js redirect() throws an internal NEXT_REDIRECT error which must be rethrown
     if (error?.digest?.startsWith('NEXT_REDIRECT') || error?.message === 'NEXT_REDIRECT') {

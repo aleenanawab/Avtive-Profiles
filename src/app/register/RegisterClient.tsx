@@ -123,8 +123,8 @@ export default function RegisterClient() {
         localStorage.setItem('avtive_remembered_identifier', email.trim());
       } catch {}
 
-      // New registration proceeds directly to the Role Selection page
-      window.location.href = data.redirectTo || '/onboarding/role';
+      // First-time user workflow: Registration -> Login
+      window.location.href = `/login?email=${encodeURIComponent(email.trim())}&registered=true`;
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during registration. Please try again.');
