@@ -38,11 +38,16 @@ interface DatabaseSchema {
 
 const globalForDb = globalThis as unknown as { __AVTIVE_DB__?: DatabaseSchema };
 
-async function withTimeout<T = any>(promise: PromiseLike<T> | any, ms: number = 6000): Promise<any> {
-  return Promise.race([
-    Promise.resolve(promise),
-    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
-  ]);
+async function withTimeout<T = any>(promise: PromiseLike<T> | any, ms: number = 15000): Promise<any> {
+  let timer: NodeJS.Timeout | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Database operation timed out after ${ms}ms`)), ms);
+  });
+  try {
+    return await Promise.race([Promise.resolve(promise), timeoutPromise]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 async function awaitSupabaseWrite(action: PromiseLike<any>, description: string = 'database operation'): Promise<any> {
@@ -1188,10 +1193,45 @@ export async function saveOnboardingStep(
         query = query.eq('id', userId);
       }
 
-      const res = await withTimeout(
+      let res = await withTimeout(
         query.select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
-        6000
+        15000
       );
+
+      // Fallback: If 0 rows updated, try updating by email
+      if ((!res.data || res.data.length === 0) && user.email) {
+        const emailRes = await withTimeout(
+          supabaseAdmin
+            .from('users')
+            .update(supabaseUserUpdate)
+            .ilike('email', user.email.toLowerCase().trim())
+            .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
+          15000
+        );
+        if (emailRes && emailRes.data && emailRes.data.length > 0) {
+          res = emailRes;
+        }
+      }
+
+      // Resilience Fallback: If still 0 rows, upsert user record to Supabase
+      if ((!res.data || res.data.length === 0) && user.email) {
+        const upsertRes = await withTimeout(
+          supabaseAdmin
+            .from('users')
+            .upsert({
+              id: user.id,
+              name: user.name,
+              email: user.email.toLowerCase().trim(),
+              password_hash: user.passwordHash || '',
+              ...supabaseUserUpdate
+            }, { onConflict: 'email' })
+            .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
+          15000
+        );
+        if (upsertRes && upsertRes.data && upsertRes.data.length > 0) {
+          res = upsertRes;
+        }
+      }
 
       if (res && res.error) {
         console.error(`[Database Error] saveOnboardingStep to Supabase failed for step ${step}:`, res.error.message || res.error);
@@ -1298,10 +1338,45 @@ export async function completeUserOnboarding(
       query = query.eq('id', userId);
     }
 
-    const res = await withTimeout(
+    let res = await withTimeout(
       query.select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
-      6000
+      15000
     );
+
+    // Fallback: If 0 rows updated, try updating by email
+    if ((!res.data || res.data.length === 0) && user.email) {
+      const emailRes = await withTimeout(
+        supabaseAdmin
+          .from('users')
+          .update(supabaseUserUpdate)
+          .ilike('email', user.email.toLowerCase().trim())
+          .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
+        15000
+      );
+      if (emailRes && emailRes.data && emailRes.data.length > 0) {
+        res = emailRes;
+      }
+    }
+
+    // Resilience Fallback: If still 0 rows, upsert user record to Supabase
+    if ((!res.data || res.data.length === 0) && user.email) {
+      const upsertRes = await withTimeout(
+        supabaseAdmin
+          .from('users')
+          .upsert({
+            id: user.id,
+            name: user.name,
+            email: user.email.toLowerCase().trim(),
+            password_hash: user.passwordHash || '',
+            ...supabaseUserUpdate
+          }, { onConflict: 'email' })
+          .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
+        15000
+      );
+      if (upsertRes && upsertRes.data && upsertRes.data.length > 0) {
+        res = upsertRes;
+      }
+    }
 
     if (res && res.error) {
       console.error(`[Database Error] completeUserOnboarding to Supabase failed:`, res.error.message || res.error);
