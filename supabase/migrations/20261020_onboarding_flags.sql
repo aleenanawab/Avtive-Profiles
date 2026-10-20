@@ -26,6 +26,7 @@ ALTER TABLE public.users ADD COLUMN IF NOT EXISTS preferred_theme TEXT DEFAULT '
 -- ------------------------------------------------------------------------------
 -- Backfill onboarding_completed = TRUE only for users who already have a saved,
 -- non-empty profile so they are not forced through onboarding again.
+-- Note: Explicit ::text cast prevents PostgreSQL 42883 (uuid = text operator mismatch).
 UPDATE public.users u
 SET 
   onboarding_completed = TRUE,
@@ -34,7 +35,7 @@ SET
   script_completed = TRUE
 WHERE EXISTS (
   SELECT 1 FROM public.profiles p
-  WHERE p.user_id = u.id
+  WHERE p.user_id::text = u.id::text
     AND (
       (p.slug IS NOT NULL AND p.slug != '') OR
       (p.designation IS NOT NULL AND p.designation != '' AND p.designation != 'Professional') OR
