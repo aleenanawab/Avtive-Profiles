@@ -464,14 +464,8 @@ export class DatabaseUnavailableError extends Error {
   }
 }
 
-export async function getUserByEmail(email: string): Promise<UserRecord | null> {
-  const normalizedEmail = email.toLowerCase().trim();
-  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
-
-  const USER_QUERY_FIELDS = 'id, name, email, password_hash, reset_token, reset_token_expires, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme, created_at';
-  const USER_QUERY_FIELDS_FALLBACK = 'id, name, email, password_hash, reset_token, reset_token_expires, created_at';
-
-  function mapSupabaseUserRow(data: any): UserRecord {
+async function mapSupabaseUserRowWithSchemaFallback(data: any): Promise<UserRecord> {
+  if (data.onboarding_completed !== undefined) {
     return {
       id: data.id,
       name: data.name,
@@ -488,6 +482,64 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
       createdAt: data.created_at || new Date().toISOString()
     };
   }
+
+  // Schema mismatch detected: onboarding columns missing from users table
+  console.warn(
+    '[Database Schema Warning] Missing onboarding columns in users table. Identified schema mismatch. Please apply supabase/migrations/20261020_onboarding_flags.sql.'
+  );
+
+  let hasExistingProfile = false;
+  let fallbackRole: ProfileType | undefined = undefined;
+  let fallbackTheme: ProfileTheme | undefined = undefined;
+
+  if (data.id) {
+    try {
+      const { data: profRows } = await supabaseAdmin
+        .from('profiles')
+        .select('id, type, theme, slug, designation, bio, short_bio')
+        .eq('user_id', data.id)
+        .limit(1);
+
+      if (profRows && profRows.length > 0) {
+        const p = profRows[0];
+        const hasRealData = Boolean(
+          p.slug ||
+          (p.designation && p.designation !== 'Professional') ||
+          (p.bio && !p.bio.includes('Welcome to my digital profile on Avtive.')) ||
+          (p.short_bio && !p.short_bio.includes('Welcome to my digital profile on Avtive.'))
+        );
+        if (hasRealData) {
+          hasExistingProfile = true;
+          if (p.type) fallbackRole = normalizeProfileType(p.type);
+          if (p.theme) fallbackTheme = p.theme;
+        }
+      }
+    } catch {}
+  }
+
+  return {
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    passwordHash: data.password_hash || '',
+    resetToken: data.reset_token,
+    resetTokenExpires: data.reset_token_expires,
+    roleCompleted: hasExistingProfile,
+    themeCompleted: hasExistingProfile,
+    scriptCompleted: hasExistingProfile,
+    onboardingCompleted: hasExistingProfile,
+    role: data.role ? normalizeProfileType(data.role) : fallbackRole,
+    preferredTheme: data.preferred_theme || fallbackTheme,
+    createdAt: data.created_at || new Date().toISOString()
+  };
+}
+
+export async function getUserByEmail(email: string): Promise<UserRecord | null> {
+  const normalizedEmail = email.toLowerCase().trim();
+  const isProduction = process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL);
+
+  const USER_QUERY_FIELDS = 'id, name, email, password_hash, reset_token, reset_token_expires, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme, created_at';
+  const USER_QUERY_FIELDS_FALLBACK = 'id, name, email, password_hash, reset_token, reset_token_expires, created_at';
 
   // In production, Supabase is the sole authoritative source of truth.
   // Never authenticate against bundled db.json or seeded in-memory users in production.
@@ -528,7 +580,7 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
       return null;
     }
 
-    return mapSupabaseUserRow(data);
+    return await mapSupabaseUserRowWithSchemaFallback(data);
   }
 
   // Development / test mode:
@@ -559,7 +611,7 @@ export async function getUserByEmail(email: string): Promise<UserRecord | null> 
     }
 
     if (result && result.data) {
-      return mapSupabaseUserRow(result.data);
+      return await mapSupabaseUserRowWithSchemaFallback(result.data);
     }
 
     // Query succeeded, data is null in Supabase. Check local dev DB
@@ -580,23 +632,7 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
   const USER_QUERY_FIELDS = 'id, name, email, password_hash, reset_token, reset_token_expires, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme, created_at';
   const USER_QUERY_FIELDS_FALLBACK = 'id, name, email, password_hash, reset_token, reset_token_expires, created_at';
 
-  function mapSupabaseUserRow(data: any): UserRecord {
-    return {
-      id: data.id,
-      name: data.name,
-      email: data.email,
-      passwordHash: data.password_hash || '',
-      resetToken: data.reset_token,
-      resetTokenExpires: data.reset_token_expires,
-      roleCompleted: Boolean(data.role_completed),
-      themeCompleted: Boolean(data.theme_completed),
-      scriptCompleted: Boolean(data.script_completed),
-      onboardingCompleted: Boolean(data.onboarding_completed),
-      role: data.role ? normalizeProfileType(data.role) : undefined,
-      preferredTheme: data.preferred_theme || undefined,
-      createdAt: data.created_at || new Date().toISOString()
-    };
-  }
+  // Use mapSupabaseUserRowWithSchemaFallback defined above
 
   if (isProduction) {
     let result: any;
@@ -632,7 +668,7 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
     const data = result?.data;
     if (!data) return null;
 
-    return mapSupabaseUserRow(data);
+    return await mapSupabaseUserRowWithSchemaFallback(data);
   }
 
   // Development fallback:
@@ -657,7 +693,7 @@ export async function getUserById(id: string): Promise<UserRecord | null> {
     }
 
     if (result && !result.error && result.data) {
-      return mapSupabaseUserRow(result.data);
+      return await mapSupabaseUserRowWithSchemaFallback(result.data);
     }
   } catch (err: any) {
     console.warn('[Database Warning] Dev Supabase getUserById error:', err?.message);

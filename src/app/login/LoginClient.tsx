@@ -68,12 +68,7 @@ export default function LoginClient() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Forgot Password Flow State
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [isSendingReset, setIsSendingReset] = useState(false);
-  const [forgotErrorMessage, setForgotErrorMessage] = useState<string | null>(null);
-  const [forgotSuccessMessage, setForgotSuccessMessage] = useState<string | null>(null);
+  // Login state
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -258,59 +253,8 @@ export default function LoginClient() {
     }
   };
 
-  const handleSendResetLink = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setForgotErrorMessage(null);
-    setForgotSuccessMessage(null);
-
-    const trimmedEmail = forgotEmail.trim();
-
-    if (!trimmedEmail) {
-      setForgotErrorMessage('Please enter your email address.');
-      return;
-    }
-
-    if (!EMAIL_REGEX.test(trimmedEmail)) {
-      setForgotErrorMessage('Please enter a valid email address.');
-      return;
-    }
-
-    setIsSendingReset(true);
-
-    try {
-      const res = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmedEmail })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setForgotErrorMessage(data.error || 'Failed to request password reset. Please try again.');
-        setIsSendingReset(false);
-        return;
-      }
-
-      setForgotSuccessMessage(
-        data.message || 'If an account exists with this email address, a password reset link has been sent.'
-      );
-      setIsSendingReset(false);
-    } catch (err) {
-      console.error('Forgot password error:', err);
-      setForgotErrorMessage('Network error occurred. Please try again.');
-      setIsSendingReset(false);
-    }
-  };
-
   const openForgotPasswordView = () => {
     window.location.href = `/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ''}`;
-  };
-
-  const closeForgotPasswordView = () => {
-    setShowForgotPassword(false);
-    setForgotErrorMessage(null);
-    setForgotSuccessMessage(null);
   };
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -335,97 +279,13 @@ export default function LoginClient() {
       {/* Main Login Card - Adapts to Theme (White in Light Mode, #0E1528 in Dark Mode) */}
       <div className="w-full rounded-3xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-xl shadow-slate-200/50 dark:shadow-black/60 p-6 sm:p-8 space-y-5 text-left transition-colors">
         
-        {showForgotPassword ? (
-          /* Forgot Password Sub-Flow */
-          <div className="space-y-5">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={closeForgotPasswordView}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back to Sign In</span>
-              </button>
-            </div>
-
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Forgot Password?</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Enter your email address and we&apos;ll send you a password reset link.
-              </p>
-            </div>
-
-            {forgotSuccessMessage && (
-              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-1">
-                <div className="flex items-center gap-2 font-bold">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                  <span>Password Reset Email Sent</span>
-                </div>
-                <p className="text-[11px] text-emerald-800 dark:text-emerald-200">
-                  {forgotSuccessMessage}
-                </p>
-              </div>
-            )}
-
-            {forgotErrorMessage && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{forgotErrorMessage}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSendResetLink} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Email Address</label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    required
-                    value={forgotEmail}
-                    onChange={(e) => setForgotEmail(e.target.value)}
-                    placeholder="e.g. aleena@example.com"
-                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#070D18] border border-slate-200 dark:border-white/10 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none ${themeStyles.ringFocus} focus:bg-white dark:focus:bg-[#070D18] transition-all`}
-                  />
-                  <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSendingReset}
-                className={`w-full py-3 px-6 rounded-xl font-bold text-sm bg-gradient-to-r ${themeStyles.gradient} text-white shadow-md ${themeStyles.shadowPill} transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2`}
-              >
-                {isSendingReset ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Sending Reset Link...</span>
-                  </>
-                ) : (
-                  <span>Send Reset Link</span>
-                )}
-              </button>
-            </form>
-
-            <div className="pt-1 text-center">
-              <button
-                type="button"
-                onClick={closeForgotPasswordView}
-                className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-              >
-                Remember your password? <span className={`font-semibold ${themeStyles.textLink} hover:underline`}>Sign In</span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Regular Sign In Form */
-          <>
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Sign In</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Enter your credentials or authenticate via Google
-              </p>
-            </div>
+        {/* Regular Sign In Form */}
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Sign In</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Enter your credentials or authenticate via Google
+          </p>
+        </div>
 
             {successMessage && (
               <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-2">
@@ -541,8 +401,6 @@ export default function LoginClient() {
                 Sign Up
               </Link>
             </div>
-          </>
-        )}
 
       </div>
 
@@ -565,82 +423,11 @@ export default function LoginClient() {
             A
           </div>
           <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
-            {showForgotPassword ? 'Reset Password' : 'Sign In'}
+            Sign In
           </h1>
         </div>
 
-        {showForgotPassword ? (
-          /* Mobile Forgot Password View */
-          <div className="w-full max-w-full box-border space-y-4">
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center">
-              Enter your email address and we&apos;ll send you a password reset link.
-            </p>
-
-            {forgotSuccessMessage && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs space-y-1 box-border">
-                <div className="flex items-center gap-2 font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-[11px]">Password Reset Email Sent</span>
-                </div>
-                <p className="text-[10px] text-emerald-800 dark:text-emerald-200">
-                  {forgotSuccessMessage}
-                </p>
-              </div>
-            )}
-
-            {forgotErrorMessage && (
-              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2 box-border">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                <span className="text-[11px]">{forgotErrorMessage}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSendResetLink} className="w-full max-w-full box-border space-y-3">
-              <div className="space-y-1 w-full box-border">
-                <label className="text-[11px] font-medium text-slate-700 dark:text-slate-300">Email Address</label>
-                <div className="relative w-full box-border">
-                  <input
-                    type="email"
-                    required
-                    value={forgotEmail}
-                    onChange={(e) => setForgotEmail(e.target.value)}
-                    placeholder="e.g. aleena@example.com"
-                    className={`w-full max-w-full box-border pl-9 pr-3.5 py-2.5 rounded-xl bg-white dark:bg-[#1B1E26] border border-slate-200 dark:border-white/15 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none ${themeStyles.ringFocus} transition-all`}
-                  />
-                  <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                </div>
-              </div>
-
-              <div className="pt-1 w-full box-border">
-                <button
-                  type="submit"
-                  disabled={isSendingReset}
-                  className={`w-full max-w-full box-border py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r ${themeStyles.gradient} text-white shadow-md ${themeStyles.shadowPill} transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2`}
-                >
-                  {isSendingReset ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Sending Reset Link...</span>
-                    </>
-                  ) : (
-                    <span>Send Reset Link</span>
-                  )}
-                </button>
-              </div>
-            </form>
-
-            <div className="pt-2 text-center">
-              <button
-                type="button"
-                onClick={closeForgotPasswordView}
-                className="text-[11px] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-              >
-                Back to <span className={`font-semibold ${themeStyles.textLink} hover:underline`}>Sign In</span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Mobile Sign In Form */
+        {/* Mobile Sign In Form */}
           <>
             {successMessage && (
               <div className="mb-3 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs flex items-center gap-2 box-border">
@@ -749,7 +536,6 @@ export default function LoginClient() {
               )}
             </button>
           </>
-        )}
       </div>
 
       <div className="pt-4 pb-1 text-center text-[11px] text-slate-500 dark:text-slate-400 w-full box-border">

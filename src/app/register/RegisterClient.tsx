@@ -14,10 +14,7 @@ import {
   Smartphone, 
   Monitor,
   CheckCircle2,
-  ArrowRight,
-  Copy,
-  Check,
-  KeyRound
+  ArrowRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { DualScreenWorkspace } from '@/components/layout/DualScreenWorkspace';
@@ -37,9 +34,6 @@ export default function RegisterClient() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [registeredRecoveryCode, setRegisteredRecoveryCode] = useState<string | null>(null);
-  const [registeredRedirect, setRegisteredRedirect] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
@@ -129,18 +123,8 @@ export default function RegisterClient() {
         localStorage.setItem('avtive_remembered_identifier', email.trim());
       } catch {}
 
-      if (data.redirectTo) {
-        setRegisteredRedirect(data.redirectTo);
-      }
-
-      // If recovery code is provided, show the dedicated copy & save warning modal
-      if (data.recoveryCode) {
-        setRegisteredRecoveryCode(data.recoveryCode);
-        setIsLoading(false);
-        return;
-      }
-
-      window.location.href = data.redirectTo || `/login?email=${encodeURIComponent(email.trim())}&registered=true`;
+      // New registration proceeds directly to the Role Selection page
+      window.location.href = data.redirectTo || '/onboarding/role';
     } catch (err) {
       console.error(err);
       setErrorMessage('Network error during registration. Please try again.');
@@ -545,65 +529,6 @@ export default function RegisterClient() {
         desktopContent={desktopView}
         mobileContent={mobileView}
       />
-
-      {registeredRecoveryCode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md p-6 rounded-3xl bg-white dark:bg-[#0E1528] border border-slate-200 dark:border-white/10 shadow-2xl text-left space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
-                <KeyRound className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Save Your Recovery Code</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Account created successfully</p>
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              Avtive uses secure in-app recovery. If you ever forget your password, you will need this recovery code to reset it.
-            </p>
-
-            <div className="p-3.5 rounded-2xl bg-slate-100 dark:bg-black/50 border border-slate-300 dark:border-white/15 flex items-center justify-between gap-3">
-              <span className="font-mono font-bold text-base tracking-widest text-cyan-600 dark:text-cyan-400 selection:bg-cyan-500/20">
-                {registeredRecoveryCode}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(registeredRecoveryCode);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/20 flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
-              </button>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-300 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <div className="space-y-0.5">
-                <p className="font-bold">Save this code now</p>
-                <p className="text-[11px] leading-tight text-amber-700 dark:text-amber-300/90">
-                  This code will only be shown once. Please copy and store it in a secure location.
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                window.location.href = registeredRedirect || `/login?email=${encodeURIComponent(email.trim())}&registered=true`;
-              }}
-              className="w-full py-2.5 px-4 rounded-xl font-bold text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-md shadow-cyan-500/25 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-            >
-              <span>I have saved my code — Continue</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }

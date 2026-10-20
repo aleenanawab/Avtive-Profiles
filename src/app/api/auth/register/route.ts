@@ -67,19 +67,16 @@ export async function POST(request: NextRequest) {
     // 3. Compute password hash
     const passwordHash = await hashPassword(password);
 
-    // 4. Generate one-time recovery code (format: RC-XXXX-XXXX) and store only its SHA-256 hash
-    const rawCode = crypto.randomBytes(4).toString('hex').toUpperCase();
-    const recoveryCode = `RC-${rawCode.slice(0, 4)}-${rawCode.slice(4)}`;
-    const recoveryCodeHash = crypto.createHash('sha256').update(recoveryCode.trim().toUpperCase()).digest('hex');
-
-    // 5. Save account with recovery code hash. Must check error before issuing session!
+    // 4. Save account. Must check error before issuing session!
     let createResult;
     try {
       createResult = await createUser({
         name: name.trim(),
         email: normalizedEmail,
         passwordHash,
-        recoveryCodeHash,
+        roleCompleted: false,
+        themeCompleted: false,
+        scriptCompleted: false,
         onboardingCompleted: false,
         createProfile: false
       });
@@ -112,7 +109,6 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         message: 'Account created successfully.',
-        recoveryCode, // Sent once to display with copy button and warning
         email: user.email,
         user: sessionUser,
         roleCompleted: Boolean(user.roleCompleted),
