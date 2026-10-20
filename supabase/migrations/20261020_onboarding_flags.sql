@@ -24,9 +24,8 @@ ALTER TABLE public.users ADD COLUMN IF NOT EXISTS preferred_theme TEXT DEFAULT '
 -- ------------------------------------------------------------------------------
 -- 2. NON-DESTRUCTIVE BACKFILL FOR EXISTING USERS WITH SAVED PROFILES
 -- ------------------------------------------------------------------------------
--- Backfill onboarding_completed = TRUE only for users who already have a saved,
--- non-empty profile so they are not forced through onboarding again.
--- Note: Explicit ::text cast prevents PostgreSQL 42883 (uuid = text operator mismatch).
+-- Backfill onboarding_completed = TRUE only for users who already have a saved profile.
+-- Uses explicit ::text casts to safely match UUID and TEXT id columns.
 UPDATE public.users u
 SET 
   onboarding_completed = TRUE,
@@ -36,10 +35,4 @@ SET
 WHERE EXISTS (
   SELECT 1 FROM public.profiles p
   WHERE p.user_id::text = u.id::text
-    AND (
-      (p.slug IS NOT NULL AND p.slug != '') OR
-      (p.designation IS NOT NULL AND p.designation != '' AND p.designation != 'Professional') OR
-      (p.short_bio IS NOT NULL AND p.short_bio != '' AND p.short_bio != 'Welcome to my digital profile on Avtive.') OR
-      (p.full_bio IS NOT NULL AND p.full_bio != '' AND p.full_bio != 'Welcome to my digital profile on Avtive.')
-    )
 );
