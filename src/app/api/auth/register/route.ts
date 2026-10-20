@@ -47,14 +47,11 @@ export async function POST(request: NextRequest) {
     try {
       existingUser = await getUserByEmail(normalizedEmail);
     } catch (err: any) {
-      if (err instanceof DatabaseUnavailableError || err?.code === 'DATABASE_UNAVAILABLE' || err?.status === 503) {
-        console.error('[Register API Error] Database unavailable during duplicate check:', err?.message || 'Database error');
-        return NextResponse.json(
-          { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
-          { status: 503 }
-        );
-      }
-      throw err;
+      console.error('[Register API Error] Database error during duplicate check:', err?.message || err);
+      return NextResponse.json(
+        { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
+        { status: 503 }
+      );
     }
 
     if (existingUser) {
@@ -81,14 +78,11 @@ export async function POST(request: NextRequest) {
         createProfile: false
       });
     } catch (err: any) {
-      if (err instanceof DatabaseUnavailableError || err?.code === 'DATABASE_UNAVAILABLE' || err?.status === 503) {
-        console.error('[Register API Error] Database unavailable during user creation:', err?.message || 'Database error');
-        return NextResponse.json(
-          { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
-          { status: 503 }
-        );
-      }
-      throw err;
+      console.error('[Register API Error] Database error during user creation:', err?.message || err);
+      return NextResponse.json(
+        { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
+        { status: 503 }
+      );
     }
 
     const user = createResult?.user;
@@ -121,23 +115,30 @@ export async function POST(request: NextRequest) {
     );
 
     response.headers.set('Cache-Control', 'no-store, max-age=0');
-    await setSessionCookie(sessionUser, response);
-    setReturningUserCookie(response);
-    clearLegacyCacheCookie(response);
+    try {
+      await setSessionCookie(sessionUser, response);
+      setReturningUserCookie(response);
+      clearLegacyCacheCookie(response);
+    } catch (cookieErr: any) {
+      console.warn('[Register API Warning] Could not set session cookie:', cookieErr?.message || cookieErr);
+      // Account was created in database! The user will be redirected to /login anyway.
+    }
 
     return response;
   } catch (error: any) {
+    console.error('Registration API Error:', error?.message || error);
     if (error instanceof DatabaseUnavailableError || error?.code === 'DATABASE_UNAVAILABLE' || error?.status === 503) {
-      console.error('[Register API Error] Database unavailable:', error?.message);
       return NextResponse.json(
         { error: 'Registration service is temporarily unavailable. Please try again later.', code: 'DATABASE_UNAVAILABLE' },
         { status: 503 }
       );
     }
-    console.error('Registration API Error:', error);
     return NextResponse.json(
-      { error: 'An unexpected error occurred during registration. Please try again.' },
-      { status: 500 }
+      { 
+        error: error?.message || 'An unexpected error occurred during registration. Please try again.',
+        code: error?.code || 'REGISTRATION_ERROR'
+      },
+      { status: error?.status || 500 }
     );
   }
 }

@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
     console.error('Login API Error:', error?.message || error);
     return NextResponse.json(
-      { error: 'An unexpected error occurred during login.' },
+      { error: error?.message || 'An unexpected error occurred during login.', code: error?.code || 'LOGIN_ERROR' },
       { status: 500 }
     );
   }

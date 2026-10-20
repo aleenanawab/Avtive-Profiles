@@ -1,5 +1,5 @@
 import { hashPassword } from '@/lib/auth';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, supabaseServiceKey, supabaseUrl } from '@/lib/supabase';
 
 // In-memory rate limiting map: key -> { count, resetAt }
 interface RateLimitEntry {
@@ -149,8 +149,8 @@ export async function executeDemoPasswordReset(
   // 2. Perform UPDATE restricted strictly to exact email in Supabase
   const client = options?.supabaseClient ?? supabaseAdmin;
   const hasSupabaseConfigured = Boolean(
-    (process.env.NEXT_PUBLIC_SUPABASE_URL || options?.supabaseClient) &&
-    (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || options?.supabaseClient)
+    (supabaseUrl || options?.supabaseClient) &&
+    (supabaseServiceKey || options?.supabaseClient)
   );
 
   if (hasSupabaseConfigured && client && typeof client.from === 'function') {

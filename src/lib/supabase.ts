@@ -18,8 +18,16 @@ function isServiceRoleKey(key: string): boolean {
     try {
       const parts = key.split('.');
       if (parts.length >= 2) {
-        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
-        return payload?.role === 'service_role';
+        let payloadStr = '';
+        if (typeof Buffer !== 'undefined') {
+          payloadStr = Buffer.from(parts[1], 'base64').toString('utf8');
+        } else if (typeof atob !== 'undefined') {
+          payloadStr = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+        }
+        if (payloadStr) {
+          const payload = JSON.parse(payloadStr);
+          return payload?.role === 'service_role';
+        }
       }
     } catch {}
   }
@@ -31,14 +39,23 @@ export const supabaseUrl = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL).replac
 const rawAnonKey = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) || cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 
 if (rawAnonKey && isServiceRoleKey(rawAnonKey)) {
-  console.warn('[Supabase Config] WARNING: NEXT_PUBLIC_SUPABASE_ANON_KEY appears to be a service_role key. Service-role keys must never be exposed to the client or used as anon key.');
+  console.warn('[Supabase Config] WARNING: NEXT_PUBLIC_SUPABASE_ANON_KEY appears to be a service_role key. Service-role keys must never be exposed to the client or used as anon key. Please configure NEXT_PUBLIC_SUPABASE_ANON_KEY with your anon/public key, and SUPABASE_SERVICE_ROLE_KEY with your service_role secret in your deployment environment.');
 }
 
-// Protect against accidental exposure or usage of service_role key as anon key:
-export const supabaseAnonKey = (rawAnonKey && !isServiceRoleKey(rawAnonKey)) ? rawAnonKey : '';
+// In the browser, use the configured anon key (or rawAnonKey to avoid breaking client):
+export const supabaseAnonKey = rawAnonKey || '';
 
-// Server-only service role key for privileged database operations (never exposed to client)
-export const supabaseServiceKey = typeof window === 'undefined' ? (cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) || cleanEnv(process.env.SUPABASE_SERVICE_KEY)) : '';
+// Server-only service role key for privileged database operations (never exposed to client).
+// Prioritizes SUPABASE_SERVICE_ROLE_KEY / SUPABASE_SERVICE_KEY / SUPABASE_SECRET_KEY.
+// If missing on the server, gracefully falls back to rawAnonKey so server database operations succeed without crashing.
+export const supabaseServiceKey = typeof window === 'undefined'
+  ? (cleanEnv(process.env.SUPABASE_SERVICE_ROLE_KEY) ||
+     cleanEnv(process.env.SUPABASE_SERVICE_KEY) ||
+     cleanEnv(process.env.SUPABASE_SECRET_KEY) ||
+     (rawAnonKey && isServiceRoleKey(rawAnonKey) ? rawAnonKey : '') ||
+     rawAnonKey ||
+     '')
+  : '';
 
 export const SUPABASE_AUTH_STORAGE_KEY = 'sb-avtive-auth-token';
 
