@@ -1175,14 +1175,21 @@ export async function saveOnboardingStep(
     supabaseUserUpdate.script_completed = true;
   }
 
-  if (isUuidString(userId) && Object.keys(supabaseUserUpdate).length > 0) {
+  if (Object.keys(supabaseUserUpdate).length > 0) {
     try {
+      const isUuid = isUuidString(userId);
+      let query = supabaseAdmin.from('users').update(supabaseUserUpdate);
+      
+      if (isUuid) {
+        query = query.eq('id', userId);
+      } else if (user.email) {
+        query = query.eq('email', user.email.toLowerCase().trim());
+      } else {
+        query = query.eq('id', userId);
+      }
+
       const res = await withTimeout(
-        supabaseAdmin
-          .from('users')
-          .update(supabaseUserUpdate)
-          .eq('id', userId)
-          .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
+        query.select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
         6000
       );
 
@@ -1197,51 +1204,49 @@ export async function saveOnboardingStep(
 
       // Check whether the expected user row was actually updated
       if (!res.data || res.data.length === 0) {
-        console.error(`[Database Error] saveOnboardingStep: zero rows updated in Supabase users for user ${userId}`);
-        throw new DatabaseUnavailableError(`User with ID ${userId} not found in database. Zero rows updated.`);
+        if (isProduction) {
+          console.error(`[Database Error] saveOnboardingStep: zero rows updated in Supabase users for user ${userId}`);
+          throw new DatabaseUnavailableError(`User with ID ${userId} not found in database. Zero rows updated.`);
+        }
+      } else {
+        // Supabase write confirmed! Update user record with confirmed persisted values
+        const updatedRow = res.data[0];
+        user.roleCompleted = Boolean(updatedRow.role_completed ?? true);
+        user.themeCompleted = Boolean(updatedRow.theme_completed ?? (step === 'theme' ? true : user.themeCompleted));
+        user.scriptCompleted = Boolean(updatedRow.script_completed ?? (step === 'script' ? true : user.scriptCompleted));
+        user.onboardingCompleted = Boolean(updatedRow.onboarding_completed ?? user.onboardingCompleted);
+        if (updatedRow.role) user.role = normalizeProfileType(updatedRow.role);
+        if (updatedRow.preferred_theme) user.preferredTheme = updatedRow.preferred_theme;
       }
-
-      // Supabase write confirmed! Update user record with confirmed persisted values
-      const updatedRow = res.data[0];
-      user.roleCompleted = Boolean(updatedRow.role_completed ?? true);
-      user.themeCompleted = Boolean(updatedRow.theme_completed ?? (step === 'theme' ? true : user.themeCompleted));
-      user.scriptCompleted = Boolean(updatedRow.script_completed ?? (step === 'script' ? true : user.scriptCompleted));
-      user.onboardingCompleted = Boolean(updatedRow.onboarding_completed ?? user.onboardingCompleted);
-      if (updatedRow.role) user.role = normalizeProfileType(updatedRow.role);
-      if (updatedRow.preferred_theme) user.preferredTheme = updatedRow.preferred_theme;
 
       // Sync role or theme to existing profile in Supabase if exists
       if (step === 'role' && payload.role) {
-        await supabaseAdmin
-          .from('profiles')
-          .update({ type: normalizeProfileType(payload.role as string) })
-          .eq('user_id', userId)
-          .catch(() => {});
+        const profQuery = isUuid
+          ? supabaseAdmin.from('profiles').update({ type: normalizeProfileType(payload.role as string) }).eq('user_id', userId)
+          : (user.email ? supabaseAdmin.from('profiles').update({ type: normalizeProfileType(payload.role as string) }).eq('email', user.email.toLowerCase().trim()) : null);
+        if (profQuery) await profQuery.catch(() => {});
       } else if (step === 'theme' && payload.theme) {
-        await supabaseAdmin
-          .from('profiles')
-          .update({ theme: payload.theme })
-          .eq('user_id', userId)
-          .catch(() => {});
+        const profQuery = isUuid
+          ? supabaseAdmin.from('profiles').update({ theme: payload.theme }).eq('user_id', userId)
+          : (user.email ? supabaseAdmin.from('profiles').update({ theme: payload.theme }).eq('email', user.email.toLowerCase().trim()) : null);
+        if (profQuery) await profQuery.catch(() => {});
       }
     } catch (err: any) {
       if (err instanceof DatabaseUnavailableError) throw err;
       console.error(`[Database Error] saveOnboardingStep exception for step ${step}:`, err?.message || err);
       throw new DatabaseUnavailableError(`Database unavailable during onboarding save: ${err?.message || 'Unknown error'}`, err);
     }
-  } else if (isProduction) {
-    throw new DatabaseUnavailableError(`Invalid user ID format: ${userId}.`);
-  } else {
-    // Development / non-UUID mock fallback
-    if (step === 'role') {
-      user.roleCompleted = true;
-      if (payload.role) user.role = normalizeProfileType(payload.role as string);
-    } else if (step === 'theme') {
-      user.themeCompleted = true;
-      if (payload.theme) user.preferredTheme = payload.theme as ProfileTheme;
-    } else if (step === 'script') {
-      user.scriptCompleted = true;
-    }
+  }
+
+  // Update in-memory / cache state
+  if (step === 'role') {
+    user.roleCompleted = true;
+    if (payload.role) user.role = normalizeProfileType(payload.role as string);
+  } else if (step === 'theme') {
+    user.themeCompleted = true;
+    if (payload.theme) user.preferredTheme = payload.theme as ProfileTheme;
+  } else if (step === 'script') {
+    user.scriptCompleted = true;
   }
 
   // Persist to local cache only after confirmed success
@@ -1282,51 +1287,54 @@ export async function completeUserOnboarding(
   if (role) supabaseUserUpdate.role = normalizeProfileType(role);
   if (theme) supabaseUserUpdate.preferred_theme = theme;
 
-  if (isUuidString(userId)) {
-    try {
-      const res = await withTimeout(
-        supabaseAdmin
-          .from('users')
-          .update(supabaseUserUpdate)
-          .eq('id', userId)
-          .select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
-        6000
-      );
+  try {
+    const isUuid = isUuidString(userId);
+    let query = supabaseAdmin.from('users').update(supabaseUserUpdate);
+    if (isUuid) {
+      query = query.eq('id', userId);
+    } else if (user.email) {
+      query = query.eq('email', user.email.toLowerCase().trim());
+    } else {
+      query = query.eq('id', userId);
+    }
 
-      if (res && res.error) {
-        console.error(`[Database Error] completeUserOnboarding to Supabase failed:`, res.error.message || res.error);
-        const isColumnMissing = res.error.code === '42703' || res.error.message?.includes('column');
-        const detailedMsg = isColumnMissing
-          ? `Database schema mismatch: missing onboarding columns on users table. Please apply supabase/migrations/20261020_onboarding_flags.sql.`
-          : `Failed to persist onboarding completion to database: ${res.error.message}`;
-        if (isProduction) {
-          throw new DatabaseUnavailableError(detailedMsg, res.error);
-        }
-      }
+    const res = await withTimeout(
+      query.select('id, role_completed, theme_completed, script_completed, onboarding_completed, role, preferred_theme'),
+      6000
+    );
 
-      if (res && (!res.data || res.data.length === 0)) {
-        console.error(`[Database Error] completeUserOnboarding: zero rows updated in Supabase users for ${userId}`);
-        if (isProduction) {
-          throw new DatabaseUnavailableError(`User with ID ${userId} not found in database. Zero rows updated.`);
-        }
-      }
-
-      const profilePayload: any = {};
-      if (role) profilePayload.type = normalizeProfileType(role);
-      if (theme) profilePayload.theme = theme;
-      if (Object.keys(profilePayload).length > 0) {
-        await supabaseAdmin
-          .from('profiles')
-          .update(profilePayload)
-          .eq('user_id', userId)
-          .catch(() => {});
-      }
-    } catch (err: any) {
-      if (err instanceof DatabaseUnavailableError) throw err;
-      console.error('Error syncing onboarding status to Supabase:', err?.message || err);
+    if (res && res.error) {
+      console.error(`[Database Error] completeUserOnboarding to Supabase failed:`, res.error.message || res.error);
+      const isColumnMissing = res.error.code === '42703' || res.error.message?.includes('column');
+      const detailedMsg = isColumnMissing
+        ? `Database schema mismatch: missing onboarding columns on users table. Please apply supabase/migrations/20261020_onboarding_flags.sql.`
+        : `Failed to persist onboarding completion to database: ${res.error.message}`;
       if (isProduction) {
-        throw new DatabaseUnavailableError(`Failed to persist onboarding completion to database: ${err?.message || 'Unknown error'}`, err);
+        throw new DatabaseUnavailableError(detailedMsg, res.error);
       }
+    }
+
+    if (res && (!res.data || res.data.length === 0)) {
+      console.error(`[Database Error] completeUserOnboarding: zero rows updated in Supabase users for ${userId}`);
+      if (isProduction) {
+        throw new DatabaseUnavailableError(`User with ID ${userId} not found in database. Zero rows updated.`);
+      }
+    }
+
+    const profilePayload: any = {};
+    if (role) profilePayload.type = normalizeProfileType(role);
+    if (theme) profilePayload.theme = theme;
+    if (Object.keys(profilePayload).length > 0) {
+      const profQuery = isUuid
+        ? supabaseAdmin.from('profiles').update(profilePayload).eq('user_id', userId)
+        : (user.email ? supabaseAdmin.from('profiles').update(profilePayload).eq('email', user.email.toLowerCase().trim()) : null);
+      if (profQuery) await profQuery.catch(() => {});
+    }
+  } catch (err: any) {
+    if (err instanceof DatabaseUnavailableError) throw err;
+    console.error('Error syncing onboarding status to Supabase:', err?.message || err);
+    if (isProduction) {
+      throw new DatabaseUnavailableError(`Failed to persist onboarding completion to database: ${err?.message || 'Unknown error'}`, err);
     }
   }
 

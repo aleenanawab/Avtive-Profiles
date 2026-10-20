@@ -47,6 +47,6 @@ export default async function ProfileEditPage({ searchParams }: EditProfilePageP
     }
   }
 
-  const targetSlug = targetProfile?.slug || targetProfile?.id;
-  redirect(targetSlug ? `/edit-profile?id=${encodeURIComponent(targetSlug)}` : '/edit-profile');
+  const targetSlug = targetProfile.slug || targetProfile.id;
+  redirect(`/profile/${encodeURIComponent(targetSlug)}?edit=true`);
 }
