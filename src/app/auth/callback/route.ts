@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { supabaseUrl, supabaseAnonKey } from '@/lib/supabase';
 import { getUserByEmail, getUserById, createUser, getProfileByUserId, getProfilesByUserId } from '@/lib/db';
 import { setSessionCookie, setReturningUserCookie, sanitizeReturnUrl, resolveReturnUrlForExistingUser } from '@/lib/auth';
+import { getNextOnboardingRoute } from '@/lib/onboarding';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,17 +133,16 @@ export async function GET(request: NextRequest) {
       getProfilesByUserId(user.id)
     ]);
     const userProfile = profile || (profiles && profiles.length > 0 ? profiles[0] : null);
-    const hasRealProfileData = Boolean(
-      userProfile && (
-        (userProfile.designation && userProfile.designation !== 'Professional') ||
-        (userProfile.skills && userProfile.skills.length > 0) ||
-        (userProfile.experience && userProfile.experience.length > 0) ||
-        (userProfile.services && userProfile.services.length > 0) ||
-        (userProfile.customFields && userProfile.customFields.length > 0) ||
-        (userProfile.shortBio && !userProfile.shortBio.includes('Welcome to my digital profile on Avtive.'))
-      )
-    );
-    const hasCompletedOnboarding = Boolean(user.onboardingCompleted || hasRealProfileData);
+    const userProfileUrl = getNextOnboardingRoute({
+      id: user.id,
+      roleCompleted: user.roleCompleted,
+      themeCompleted: user.themeCompleted,
+      scriptCompleted: user.scriptCompleted,
+      onboardingCompleted: user.onboardingCompleted,
+      role: user.role || userProfile?.type,
+      preferredTheme: user.preferredTheme || userProfile?.theme,
+      profileSlug: userProfile?.slug || userProfile?.id || null
+    });
 
     const sessionUser = {
       id: user.id,
@@ -152,25 +152,9 @@ export async function GET(request: NextRequest) {
     };
 
     const safeNext = sanitizeReturnUrl(next, null);
-    let destinationPath = '/onboarding/role';
-
-    if (hasCompletedOnboarding && userProfile) {
-      // Completed user: redirect directly to their own profile in view mode (or valid returnUrl)
-      const targetSlug = userProfile.slug || userProfile.id || user.id;
-      const userProfileUrl = `/profile/${targetSlug}`;
-      destinationPath = resolveReturnUrlForExistingUser(safeNext, userProfileUrl);
-    } else {
-      // New user or incomplete onboarding: resume only the missing step
-      const userRole = user.role || userProfile?.type;
-      const userTheme = user.preferredTheme || userProfile?.theme;
-      if (!userRole) {
-        destinationPath = '/onboarding/role';
-      } else if (!userTheme) {
-        destinationPath = `/onboarding/theme?role=${encodeURIComponent(userRole)}`;
-      } else {
-        destinationPath = `/edit-profile?role=${encodeURIComponent(userRole)}&theme=${encodeURIComponent(userTheme)}&edit=true`;
-      }
-    }
+    const destinationPath = user.onboardingCompleted
+      ? resolveReturnUrlForExistingUser(safeNext, userProfileUrl)
+      : userProfileUrl;
 
     const redirectUrl = new URL(destinationPath, request.url);
     const response = NextResponse.redirect(redirectUrl);

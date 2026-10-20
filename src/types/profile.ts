@@ -129,6 +129,9 @@ export interface UserRecord {
   avatar?: string;
   resetToken?: string;
   resetTokenExpires?: string;
+  roleCompleted?: boolean;
+  themeCompleted?: boolean;
+  scriptCompleted?: boolean;
   onboardingCompleted?: boolean;
   recoveryCodeHash?: string;
   preferredTheme?: ProfileTheme;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByEmail, getProfileByUserId, DatabaseUnavailableError } from '@/lib/db';
 import { verifyPassword, setSessionCookie, DUMMY_BCRYPT_HASH, setReturningUserCookie, clearLegacyCacheCookie } from '@/lib/auth';
+import { getNextOnboardingRoute } from '@/lib/onboarding';
 
 export async function POST(request: NextRequest) {
   try {
@@ -74,30 +75,28 @@ export async function POST(request: NextRequest) {
       console.warn('[Login API Warning] Profile fetch error for authenticated user:', profErr?.message || 'Profile lookup failed');
     }
 
-    const hasRealProfileData = Boolean(
-      userProfile && (
-        (userProfile.designation && userProfile.designation !== 'Professional') ||
-        (userProfile.skills && userProfile.skills.length > 0) ||
-        (userProfile.experience && userProfile.experience.length > 0) ||
-        (userProfile.services && userProfile.services.length > 0) ||
-        (userProfile.customFields && userProfile.customFields.length > 0) ||
-        (userProfile.shortBio && !userProfile.shortBio.includes('Welcome to my digital profile on Avtive.'))
-      )
-    );
-    const isOnboardingComplete = Boolean(user.onboardingCompleted || hasRealProfileData);
+    const redirectUrl = getNextOnboardingRoute({
+      id: user.id,
+      roleCompleted: user.roleCompleted,
+      themeCompleted: user.themeCompleted,
+      scriptCompleted: user.scriptCompleted,
+      onboardingCompleted: user.onboardingCompleted,
+      role: user.role || userProfile?.type,
+      preferredTheme: user.preferredTheme || userProfile?.theme,
+      profileSlug: userProfile?.slug || userProfile?.id || null
+    });
 
     const sessionUser = {
       id: user.id,
       name: user.name,
       email: user.email,
-      onboardingCompleted: isOnboardingComplete,
+      roleCompleted: Boolean(user.roleCompleted),
+      themeCompleted: Boolean(user.themeCompleted),
+      scriptCompleted: Boolean(user.scriptCompleted),
+      onboardingCompleted: Boolean(user.onboardingCompleted),
       role: user.role || userProfile?.type || 'individual',
       preferredTheme: user.preferredTheme || userProfile?.theme || 'editorial'
     };
-
-    const redirectUrl = isOnboardingComplete
-      ? `/profile/${userProfile?.slug || userProfile?.id || user.id}`
-      : (!user.role ? '/onboarding/role' : (!user.preferredTheme ? `/onboarding/theme?role=${encodeURIComponent(user.role)}` : `/edit-profile?role=${encodeURIComponent(user.role)}&theme=${encodeURIComponent(user.preferredTheme)}&edit=true`));
 
     const response = NextResponse.json({
       success: true,
@@ -107,7 +106,10 @@ export async function POST(request: NextRequest) {
       profileSlug: userProfile?.slug || userProfile?.id || null,
       profileType: userProfile?.type || user.role || 'individual',
       type: userProfile?.type || user.role || 'individual',
-      onboardingCompleted: isOnboardingComplete,
+      roleCompleted: Boolean(user.roleCompleted),
+      themeCompleted: Boolean(user.themeCompleted),
+      scriptCompleted: Boolean(user.scriptCompleted),
+      onboardingCompleted: Boolean(user.onboardingCompleted),
       role: userProfile?.type || user.role || null,
       redirectTo: redirectUrl
     });

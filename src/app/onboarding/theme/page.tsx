@@ -68,37 +68,82 @@ function ThemeStepContent() {
 
   // Shared theme state between Desktop and Mobile screens
   const [selectedTheme, setSelectedTheme] = useState<ProfileTheme>(initialTheme);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // If user is already authenticated with a completed profile, redirect immediately so theme is not asked again
+  // Route protection: If user already completed this step or entire onboarding, forward them
   React.useEffect(() => {
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
-        if (data.user && data.onboardingCompleted) {
-          const targetSlug = data.profileSlug || data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
-          if (targetSlug) {
-            router.replace(`/profile/${targetSlug}`);
-          } else {
-            router.replace('/dashboard');
+        if (data.user) {
+          if (data.user.onboardingCompleted) {
+            const targetSlug = data.profileSlug || data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
+            router.replace(targetSlug ? `/profile/${targetSlug}` : '/profile');
+          } else if (!data.user.roleCompleted) {
+            // Guard: Cannot skip role selection
+            router.replace('/onboarding/role');
+          } else if (data.user.themeCompleted) {
+            router.replace(data.nextRoute || `/onboarding/create?role=${data.user.role || role}&theme=${selectedTheme}`);
           }
         }
       })
       .catch(() => {});
-  }, [router]);
+  }, [router, role, selectedTheme]);
 
   const handleSelectTheme = (themeId: ProfileTheme) => {
     setSelectedTheme(themeId);
     setContextTheme(themeId as PortfolioTheme);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
     setContextTheme(selectedTheme as PortfolioTheme);
-    window.location.href = `/edit-profile?role=${encodeURIComponent(role)}&theme=${encodeURIComponent(selectedTheme)}&edit=true`;
+
+    try {
+      const res = await fetch('/api/onboarding/step', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step: 'theme', theme: selectedTheme, role })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMessage(data?.error || 'Failed to save theme preference.');
+        setIsSubmitting(false);
+        return;
+      }
+      router.push(data.nextRoute || `/onboarding/create?role=${encodeURIComponent(role)}&theme=${encodeURIComponent(selectedTheme)}`);
+    } catch (err: any) {
+      console.error('Theme save error:', err);
+      setErrorMessage('Network error saving theme.');
+      setIsSubmitting(false);
+    }
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
     setContextTheme('editorial');
-    window.location.href = `/edit-profile?role=${encodeURIComponent(role)}&theme=editorial&edit=true`;
+
+    try {
+      const res = await fetch('/api/onboarding/step', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step: 'theme', theme: 'editorial', role })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMessage(data?.error || 'Failed to save theme.');
+        setIsSubmitting(false);
+        return;
+      }
+      router.push(data.nextRoute || `/onboarding/create?role=${encodeURIComponent(role)}&theme=editorial`);
+    } catch (err: any) {
+      console.error('Theme skip error:', err);
+      setErrorMessage('Network error saving default theme.');
+      setIsSubmitting(false);
+    }
   };
 
   const handleBack = () => {

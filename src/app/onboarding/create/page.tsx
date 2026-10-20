@@ -43,9 +43,27 @@ function CreateProfileContent() {
   const theme = (searchParams.get('theme') as ProfileTheme) || 'editorial';
   const role = normalizeProfileType(searchParams.get('role') || 'individual');
 
+  // Route protection: If user already completed onboarding, forward to profile review.
+  // If user has not completed previous steps, forward to first incomplete step.
   useEffect(() => {
-    window.location.href = `/edit-profile?role=${encodeURIComponent(role)}&theme=${encodeURIComponent(theme)}`;
-  }, [role, theme]);
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          if (data.user.onboardingCompleted) {
+            const targetSlug = data.profileSlug || data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
+            router.replace(targetSlug ? `/profile/${targetSlug}` : '/profile');
+          } else if (!data.user.roleCompleted) {
+            router.replace('/onboarding/role');
+          } else if (!data.user.themeCompleted) {
+            router.replace(`/onboarding/theme?role=${data.user.role || role}`);
+          } else if (data.user.scriptCompleted) {
+            router.replace(data.nextRoute || `/edit-profile?role=${encodeURIComponent(role)}&theme=${encodeURIComponent(theme)}`);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [router, role, theme]);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -181,6 +199,7 @@ function CreateProfileContent() {
     setIsLoading(true);
 
     try {
+      // 1. Persist initial profile draft without setting onboardingCompleted = true
       const res = await fetch('/api/profile/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -198,6 +217,7 @@ function CreateProfileContent() {
           type: role,
           skills,
           projects,
+          markOnboardingComplete: false,
           socialLinks: [
             ...(linkedin ? [{ id: 'soc-li', platform: 'linkedin', url: linkedin }] : []),
             ...(github ? [{ id: 'soc-gh', platform: 'github', url: github }] : []),
@@ -207,35 +227,44 @@ function CreateProfileContent() {
         })
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setErrorMessage(data.error || 'Failed to save profile. Please verify your inputs.');
+        setErrorMessage(data?.error || 'Failed to save identity data. Please verify your inputs.');
+        setIsLoading(false);
+        return;
+      }
+
+      // 2. Persist scriptCompleted = true server-side
+      const stepRes = await fetch('/api/onboarding/step', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step: 'script' })
+      });
+      const stepData = await stepRes.json().catch(() => ({}));
+
+      if (!stepRes.ok) {
+        setErrorMessage(stepData?.error || 'Failed to complete script step.');
         setIsLoading(false);
         return;
       }
 
       const targetSlug = data.profile?.slug || data.profile?.id || data.slug || data.id;
-      if (targetSlug) {
+      if (data.profile) {
         try {
-          if (data.profile) {
-            localStorage.setItem('avtive_last_saved_profile', JSON.stringify(data.profile));
-            if (data.profile.slug) {
-              localStorage.setItem(`avtive_profile_${data.profile.slug}`, JSON.stringify(data.profile));
-            }
-            if (data.profile.id) {
-              localStorage.setItem(`avtive_profile_${data.profile.id}`, JSON.stringify(data.profile));
-            }
-          }
-          localStorage.setItem('avtive_returning_user', 'true');
+          localStorage.setItem('avtive_last_saved_profile', JSON.stringify(data.profile));
         } catch {}
-        window.location.href = `/profile/${encodeURIComponent(targetSlug)}`;
-      } else {
-        window.location.href = '/dashboard';
       }
+
+      // 3. Move to Profile Editor (Step 4)
+      const nextUrl = stepData.nextRoute || (targetSlug
+        ? `/edit-profile?id=${encodeURIComponent(targetSlug)}&role=${encodeURIComponent(role)}&theme=${encodeURIComponent(theme)}&edit=true`
+        : `/edit-profile?role=${encodeURIComponent(role)}&theme=${encodeURIComponent(theme)}&edit=true`);
+
+      window.location.href = nextUrl;
     } catch (err) {
       console.error(err);
-      setErrorMessage('Network error creating profile.');
+      setErrorMessage('Network error saving profile identity.');
       setIsLoading(false);
     }
   };
@@ -287,8 +316,8 @@ function CreateProfileContent() {
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
-                <span>Save &amp; View Live Card</span>
+                <ArrowRight className="w-4 h-4" />
+                <span>Next: Profile Editor</span>
               </>
             )}
           </button>
@@ -703,8 +732,8 @@ function CreateProfileContent() {
             </>
           ) : (
             <>
-              <Check className="w-3.5 h-3.5" />
-              <span>Save Changes</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Next: Profile Editor</span>
             </>
           )}
         </button>

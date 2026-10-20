@@ -7,8 +7,7 @@ import {
   createProfileForUser, 
   updateProfile,
   getCompanyByOwnerUserId,
-  createCompany,
-  completeUserOnboarding 
+  createCompany
 } from '@/lib/db';
 import { normalizeProfileType, ProfileTheme } from '@/types/profile';
 import type { Metadata } from 'next';
@@ -33,6 +32,15 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
     }
 
     const { id, role, theme, edit } = await searchParams;
+
+    const { getUserById } = await import('@/lib/db');
+    const { getNextOnboardingRoute } = await import('@/lib/onboarding');
+    const user = await getUserById(session.id);
+
+    // Guard: Prevent users from skipping ahead to profile editor before completing previous steps
+    if (!user?.scriptCompleted) {
+      redirect(getNextOnboardingRoute(user));
+    }
 
     let targetProfile = null;
     if (id) {
@@ -61,14 +69,9 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
               targetProfile = updateRes.profile;
             }
           }
-          await completeUserOnboarding(
-            session.id,
-            targetProfile.type,
-            targetProfile.theme
-          );
         } else {
-          const selectedRole = normalizeProfileType(role || 'individual');
-          const selectedTheme = (theme && theme !== 'default' ? theme : 'editorial') as ProfileTheme;
+          const selectedRole = normalizeProfileType(role || user?.role || 'individual');
+          const selectedTheme = (theme && theme !== 'default' ? theme : (user?.preferredTheme || 'editorial')) as ProfileTheme;
           targetProfile = await createProfileForUser(session.id, {
             name: session.name,
             email: session.email,
@@ -77,7 +80,6 @@ export default async function EditProfilePage({ searchParams }: EditProfilePageP
             type: selectedRole,
             theme: selectedTheme
           });
-          await completeUserOnboarding(session.id, selectedRole, selectedTheme);
         }
       } catch (profErr) {
         console.error('Error in profile lookup/creation in edit-profile:', profErr);

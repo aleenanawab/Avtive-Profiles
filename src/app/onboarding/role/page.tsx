@@ -52,33 +52,54 @@ function RoleStepContent() {
 
   // Shared state between Desktop and Mobile screens
   const [selectedRole, setSelectedRole] = useState<ProfileType>(initialRole);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Route protection: If user already has an active profile on server, redirect them
+  // Route protection: If user already completed this step or entire onboarding, forward them
   useEffect(() => {
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
-        if (data.user && data.onboardingCompleted) {
-          const targetSlug = data.profileSlug || data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
-          if (targetSlug) {
-            router.replace(`/profile/${targetSlug}`);
-          } else {
-            router.replace('/dashboard');
+        if (data.user) {
+          if (data.user.onboardingCompleted) {
+            const targetSlug = data.profileSlug || data.profiles?.[0]?.slug || data.profile?.slug || data.profile?.id || data.user.id;
+            router.replace(targetSlug ? `/profile/${targetSlug}` : '/profile');
+          } else if (data.user.roleCompleted) {
+            router.replace(data.nextRoute || `/onboarding/theme?role=${data.user.role || selectedRole}&theme=${theme}`);
           }
         }
       })
       .catch(() => {});
-  }, [router]);
+  }, [router, theme, selectedRole]);
 
   const handleBack = () => {
     router.push('/login');
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
     try {
-      localStorage.setItem('avtive_selected_role', selectedRole);
-    } catch {}
-    router.push(`/onboarding/theme?role=${selectedRole}&theme=${theme}`);
+      const res = await fetch('/api/onboarding/step', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ step: 'role', role: selectedRole })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMessage(data?.error || 'Failed to save role. Please try again.');
+        setIsSubmitting(false);
+        return;
+      }
+      try {
+        localStorage.setItem('avtive_selected_role', selectedRole);
+      } catch {}
+      router.push(data.nextRoute || `/onboarding/theme?role=${selectedRole}&theme=${theme}`);
+    } catch (err: any) {
+      console.error('Role save error:', err);
+      setErrorMessage('Network error while saving role preference.');
+      setIsSubmitting(false);
+    }
   };
 
   // ──────────────────────────────────────────────────────────────────────────

@@ -1,11 +1,27 @@
-import { NextResponse } from 'next/server';
-import { clearSessionCookie, RETURNING_USER_COOKIE_NAME } from '@/lib/auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { clearSessionCookie } from '@/lib/auth';
 
-export async function POST() {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
+  try {
+    const loginUrl = new URL('/login', request.url);
+    const response = NextResponse.redirect(loginUrl);
+    await clearSessionCookie(response);
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+    return response;
+  } catch (error) {
+    console.error('Logout GET Error:', error);
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+}
+
+export async function POST(request: NextRequest) {
   try {
     const response = NextResponse.json({
       success: true,
-      message: 'Logged out successfully.'
+      message: 'Logged out successfully.',
+      redirectTo: '/login'
     });
 
     await clearSessionCookie(response);
@@ -23,4 +39,3 @@ export async function POST() {
     );
   }
 }
-

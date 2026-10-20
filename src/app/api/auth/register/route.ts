@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { getUserByEmail, createUser, DatabaseUnavailableError } from '@/lib/db';
 import { hashPassword, setSessionCookie, setReturningUserCookie, clearLegacyCacheCookie } from '@/lib/auth';
+import { getNextOnboardingRoute } from '@/lib/onboarding';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -113,7 +114,12 @@ export async function POST(request: NextRequest) {
         message: 'Account created successfully.',
         recoveryCode, // Sent once to display with copy button and warning
         email: user.email,
-        user: sessionUser
+        user: sessionUser,
+        roleCompleted: Boolean(user.roleCompleted),
+        themeCompleted: Boolean(user.themeCompleted),
+        scriptCompleted: Boolean(user.scriptCompleted),
+        onboardingCompleted: Boolean(user.onboardingCompleted),
+        redirectTo: getNextOnboardingRoute(user)
       },
       { status: 201 }
     );

@@ -5,7 +5,8 @@ import {
   createProfileForUser, 
   setProfileResponseCookies,
   getCompanyByOwnerUserId,
-  createCompany
+  createCompany,
+  completeUserOnboarding
 } from '@/lib/db';
 import { ensureSupabaseAssetUrl } from '@/lib/supabase';
 import { normalizeProfileType } from '@/types/profile';
@@ -97,6 +98,11 @@ export async function POST(request: NextRequest) {
       customFields: body.customFields || [],
       dynamicSections: body.dynamicSections || []
     });
+
+    // Mark onboarding completed for the authenticated user upon successful profile save
+    if (body.markOnboardingComplete !== false) {
+      await completeUserOnboarding(session.id, newProfile.type, newProfile.theme);
+    }
 
     if (newProfile.type === 'team') {
       try {

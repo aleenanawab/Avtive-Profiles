@@ -1,46 +1,73 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { getProfileByUserId, getProfilesByUserId, getUserById } from '@/lib/db';
+import { getNextOnboardingRoute } from '@/lib/onboarding';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
     const session = await getSession();
     if (!session) {
-      return NextResponse.json({ user: null, profile: null, profiles: [], onboardingCompleted: false });
+      return NextResponse.json({
+        user: null,
+        profile: null,
+        profiles: [],
+        roleCompleted: false,
+        themeCompleted: false,
+        scriptCompleted: false,
+        onboardingCompleted: false,
+        nextRoute: '/onboarding/role'
+      });
     }
 
     const [dbUser, profile, profiles] = await Promise.all([
       getUserById(session.id),
-      getProfileByUserId(session.id),
-      getProfilesByUserId(session.id)
+      getProfileByUserId(session.id).catch(() => null),
+      getProfilesByUserId(session.id).catch(() => [])
     ]);
 
     const userProfile = profile || (profiles && profiles.length > 0 ? profiles[0] : null);
-    const hasRealProfileData = Boolean(
-      userProfile && (
-        (userProfile.designation && userProfile.designation !== 'Professional') ||
-        (userProfile.skills && userProfile.skills.length > 0) ||
-        (userProfile.experience && userProfile.experience.length > 0) ||
-        (userProfile.services && userProfile.services.length > 0) ||
-        (userProfile.customFields && userProfile.customFields.length > 0) ||
-        (userProfile.shortBio && !userProfile.shortBio.includes('Welcome to my digital profile on Avtive.'))
-      )
-    );
-    const isOnboardingComplete = Boolean(dbUser?.onboardingCompleted || hasRealProfileData);
+    const profileSlug = userProfile?.slug || userProfile?.id || null;
+
+    const roleCompleted = Boolean(dbUser?.roleCompleted);
+    const themeCompleted = Boolean(dbUser?.themeCompleted);
+    const scriptCompleted = Boolean(dbUser?.scriptCompleted);
+    const onboardingCompleted = Boolean(dbUser?.onboardingCompleted);
+
+    const nextRoute = getNextOnboardingRoute({
+      id: dbUser?.id || session.id,
+      roleCompleted,
+      themeCompleted,
+      scriptCompleted,
+      onboardingCompleted,
+      role: dbUser?.role || userProfile?.type,
+      preferredTheme: dbUser?.preferredTheme || userProfile?.theme,
+      profileSlug
+    });
+
+    const userObj = {
+      ...session,
+      roleCompleted,
+      themeCompleted,
+      scriptCompleted,
+      onboardingCompleted,
+      preferredTheme: dbUser?.preferredTheme || userProfile?.theme || 'editorial',
+      role: dbUser?.role || userProfile?.type || 'individual'
+    };
 
     return NextResponse.json({
-      user: {
-        ...session,
-        onboardingCompleted: isOnboardingComplete,
-        preferredTheme: dbUser?.preferredTheme || userProfile?.theme || 'editorial',
-        role: dbUser?.role || userProfile?.type || 'individual'
-      },
+      user: userObj,
       profile: userProfile || null,
-      profiles,
+      profiles: profiles || [],
       hasProfile: Boolean(userProfile),
-      onboardingCompleted: isOnboardingComplete,
+      roleCompleted,
+      themeCompleted,
+      scriptCompleted,
+      onboardingCompleted,
       role: userProfile?.type || dbUser?.role || null,
-      profileSlug: userProfile?.slug || userProfile?.id || null
+      profileSlug,
+      nextRoute
     });
 
   } catch (error) {
